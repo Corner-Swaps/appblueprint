@@ -1,0 +1,1085 @@
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { PHASES_DATA } from './data/phases';
+import { ChecklistItem, Phase, Project } from './types';
+import { GuardrailSection } from './components/GuardrailSection';
+import { AllPhasesPage } from './components/AllPhasesPage';
+import { ProjectsPage } from './components/ProjectsPage';
+import { ResourcesPage } from './components/ResourcesPage';
+import { SplashScreen } from './components/SplashScreen';
+import { useFluidDragReorder } from './hooks/useFluidDragReorder';
+import { renderPhaseIcon } from './utils/renderPhaseIcon';
+import { getPhaseTheme } from './utils/phaseThemes';
+import { triggerAllCompleteConfetti } from './utils/confetti';
+import { triggerHaptic } from './utils/haptics';
+import { ImpactStyle } from '@capacitor/haptics';
+import { 
+  CheckCircle2, 
+  Folder, 
+  SlidersHorizontal, 
+  RotateCcw,
+  GraduationCap
+} from 'lucide-react';
+import { GripFour } from './components/GripFour';
+
+const TAB_KEYS: Array<'checklist' | 'projects' | 'resources'> = ['checklist', 'projects', 'resources'];
+const TAB_INDEX_MAP: Record<'checklist' | 'projects' | 'resources', number> = {
+  checklist: 0,
+  projects: 1,
+  resources: 2,
+};
+const DOCK_SLOT_DISTANCE = 68; // 56px slot + 12px gap
+const DOCK_PADDING = 8;
+
+const PROJECTS_STORAGE_KEY = 'launchready_projects_v7';
+const ACTIVE_PROJECT_STORAGE_KEY = 'launchready_active_proj_id_v7';
+
+export const PROJECT_COLORS = [
+  '#3B82F6', // Electric Blue
+  '#8B5CF6', // Purple
+  '#10B981', // Emerald
+  '#F59E0B', // Amber
+  '#EF4444', // Red / Coral
+  '#EC4899', // Pink
+  '#06B6D4', // Cyan
+  '#6366F1', // Indigo
+];
+
+export const getProjectColor = (project: Project, index: number = 0): string => {
+  if (project.color) return project.color;
+  return PROJECT_COLORS[index % PROJECT_COLORS.length];
+};
+
+const DEFAULT_PROJECTS: Project[] = [
+  {
+    id: 'proj-1',
+    name: 'My Mobile App',
+    color: '#3B82F6',
+    createdAt: new Date().toISOString(),
+    completedItemIds: ['p1-problem-solution', 'p1-scope-pruning', 'p4-keychain-keystore'],
+  },
+  {
+    id: 'proj-2',
+    name: 'Fitness Tracker v1',
+    color: '#8B5CF6',
+    createdAt: new Date().toISOString(),
+    completedItemIds: [],
+  }
+];
+
+export const App: React.FC = () => {
+  // Multi-Project State (Fresh restart: phaseOrder resets so Idea, Audience & Project Setup is strictly Phase 1)
+  const [projects, setProjects] = useState<Project[]>(() => {
+    try {
+      const saved = localStorage.getItem(PROJECTS_STORAGE_KEY) || localStorage.getItem('launchready_projects_v6') || localStorage.getItem('launchready_projects_v5');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((p: Project) => ({
+            ...p,
+            phaseOrder: undefined, // Fresh restart: reset custom phase ordering so Idea & Audience is first
+            deletedPhaseIds: [],   // Fresh restart: restore all phases
+            completedItemIds: (p.completedItemIds || []).map(id => id === 'p4-keychain' ? 'p4-keychain-keystore' : id)
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load saved projects', e);
+    }
+    return DEFAULT_PROJECTS;
+  });
+
+  const [activeProjectId, setActiveProjectId] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY) || localStorage.getItem('launchready_active_proj_id_v6') || localStorage.getItem('launchready_active_proj_id_v5');
+      if (saved) return saved;
+    } catch (e) {
+      console.warn('Failed to load active project id', e);
+    }
+    return 'proj-1';
+  });
+
+  // Pages & Navigation
+  const [activeTab, setActiveTab] = useState<'checklist' | 'projects' | 'resources'>('checklist');
+  const [displayedTab, setDisplayedTab] = useState<'checklist' | 'projects' | 'resources'>('checklist');
+  const [previousTab, setPreviousTab] = useState<'checklist' | 'projects' | 'resources'>('checklist');
+  const [isAllPhasesPageOpen, setIsAllPhasesPageOpen] = useState(false);
+  const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
+  const [collapseSignal, setCollapseSignal] = useState(0);
+
+  // Page Horizontal Swipe Tracking
+  const pageTouchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  const handleSelectTab = (tab: 'checklist' | 'projects' | 'resources') => {
+    if (tab === activeTab) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    setIsGlobalEditMode(false);
+    setIsAllPhasesPageOpen(false);
+    setPreviousTab(activeTab);
+    setActiveTab(tab);
+    triggerHaptic(ImpactStyle.Light);
+    React.startTransition(() => {
+      setDisplayedTab(tab);
+    });
+  };
+
+  const handlePageTouchStart = (e: React.TouchEvent) => {
+    if (window.innerHeight - e.touches[0].clientY < 115) return;
+    pageTouchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      time: Date.now(),
+    };
+  };
+
+  const handlePageTouchEnd = (e: React.TouchEvent) => {
+    if (!pageTouchStartRef.current) return;
+    const dx = e.changedTouches[0].clientX - pageTouchStartRef.current.x;
+    const dy = e.changedTouches[0].clientY - pageTouchStartRef.current.y;
+    const dt = Date.now() - pageTouchStartRef.current.time;
+    pageTouchStartRef.current = null;
+
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.8 && dt < 600) {
+      const currentIdx = TAB_INDEX_MAP[activeTab];
+      if (dx < 0 && currentIdx < 2) {
+        handleSelectTab(TAB_KEYS[currentIdx + 1]);
+      } else if (dx > 0 && currentIdx > 0) {
+        handleSelectTab(TAB_KEYS[currentIdx - 1]);
+      }
+    }
+  };
+
+  const currentSlotIndex = TAB_INDEX_MAP[activeTab];
+  const targetLensX = currentSlotIndex * DOCK_SLOT_DISTANCE;
+
+  // Splash Loading Screen
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Filter State
+  const [selectedPhaseId, setSelectedPhaseId] = useState<string>('all');
+  const [filterMode, setFilterMode] = useState<'all' | 'completed'>('all');
+
+  // Active Project Reference
+  const activeProject = useMemo(() => {
+    return projects.find(p => p.id === activeProjectId) || projects[0] || DEFAULT_PROJECTS[0];
+  }, [projects, activeProjectId]);
+
+  const activeProjectColor = useMemo(() => {
+    const idx = projects.findIndex(p => p.id === activeProject.id);
+    return getProjectColor(activeProject, idx >= 0 ? idx : 0);
+  }, [projects, activeProject]);
+
+  // Deleted Phases for the Active Project (shown in deleted pill at the bottom with restore capability)
+  const deletedPhases = useMemo<Phase[]>(() => {
+    const deletedIds = activeProject.deletedPhaseIds || [];
+    if (deletedIds.length === 0) return [];
+    const allAvailablePhases: Phase[] = [
+      ...PHASES_DATA,
+      ...(activeProject.customPhases || [])
+    ];
+    return allAvailablePhases.filter(p => deletedIds.includes(p.id));
+  }, [activeProject.deletedPhaseIds, activeProject.customPhases]);
+
+  // Dynamic Phases for the Active Project (incorporating customPhases, customItems, phaseOrder, and deletedPhaseIds)
+  const currentProjectPhases = useMemo<Phase[]>(() => {
+    const allAvailablePhases: Phase[] = [
+      ...PHASES_DATA,
+      ...(activeProject.customPhases || [])
+    ].filter(p => !(activeProject.deletedPhaseIds || []).includes(p.id));
+
+    const phasesWithCustomItems = allAvailablePhases.map(phase => {
+      const customItemsForPhase = activeProject.customItems?.[phase.id];
+      return {
+        ...phase,
+        items: customItemsForPhase ? customItemsForPhase : phase.items
+      };
+    });
+
+    if (activeProject.phaseOrder && activeProject.phaseOrder.length > 0) {
+      const phaseMap = new Map(phasesWithCustomItems.map(p => [p.id, p]));
+      const ordered: Phase[] = [];
+      activeProject.phaseOrder.forEach(id => {
+        const p = phaseMap.get(id);
+        if (p) {
+          ordered.push(p);
+          phaseMap.delete(id);
+        }
+      });
+      phaseMap.forEach(p => ordered.push(p));
+      return ordered.map((p, idx) => ({ ...p, number: idx + 1 }));
+    }
+
+    return phasesWithCustomItems.map((p, idx) => ({ ...p, number: idx + 1 }));
+  }, [activeProject]);
+
+  // Flattened Checklist Items across all current project phases
+  const allItems = useMemo(() => currentProjectPhases.flatMap(p => p.items), [currentProjectPhases]);
+
+  const validItemIdsSet = useMemo(() => new Set(allItems.map(i => i.id)), [allItems]);
+
+  const completedItemIds = useMemo(() => {
+    return (activeProject.completedItemIds || []).filter(id => validItemIdsSet.has(id));
+  }, [activeProject.completedItemIds, validItemIdsSet]);
+
+  // Sync Projects to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+      localStorage.setItem(ACTIVE_PROJECT_STORAGE_KEY, activeProjectId);
+    } catch (e) {
+      console.warn('Failed to persist projects state', e);
+    }
+  }, [projects, activeProjectId]);
+
+  // Ensure activeProjectId is never orphaned
+  useEffect(() => {
+    if (!projects.some(p => p.id === activeProjectId) && projects.length > 0) {
+      setActiveProjectId(projects[0].id);
+    }
+  }, [projects, activeProjectId]);
+
+  // Ensure Light Mode (No pitch black)
+  useEffect(() => {
+    document.documentElement.classList.remove('dark');
+    localStorage.removeItem('launchready_theme');
+  }, []);
+
+  // Whenever switching tabs away from checklist, guarantee edit mode is dismissed
+  useEffect(() => {
+    if (activeTab !== 'checklist') {
+      setIsGlobalEditMode(false);
+    }
+  }, [activeTab]);
+
+  // Prevent background scroll when full modal pages are open
+  useEffect(() => {
+    if (isAllPhasesPageOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isAllPhasesPageOpen]);
+
+  // Toggle Item Completion ("The Little Click") for active project
+  const handleToggleComplete = (itemId: string) => {
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          const exists = proj.completedItemIds.includes(itemId);
+          const updated = exists
+            ? proj.completedItemIds.filter(id => id !== itemId)
+            : [...proj.completedItemIds, itemId];
+          return { ...proj, completedItemIds: updated };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Add Item to a Phase
+  const handleAddItem = (phaseId: string, title: string, description: string) => {
+    const newItem: ChecklistItem = {
+      id: `item-${Date.now()}`,
+      phaseId,
+      title,
+      shortDescription: description || title,
+      category: 'functionality',
+      platform: 'both',
+      priority: 'high',
+      whyItMatters: description || 'Required for production launch quality and platform compliance.',
+      agentPrompt: `You are the autonomous senior mobile software engineer and architect responsible for building this application. Do NOT ask the user to write code, configure settings, or perform manual research—implement this requirement completely and autonomously in our codebase.
+
+REQUIREMENT TO IMPLEMENT:
+"${title}"
+
+SPECIFICATION & DETAILS:
+"${description || title}"
+
+EXECUTION PROTOCOL FOR THE CODING AGENT:
+1. ARCHITECTURE & CODEBASE SCAN: Locate existing components, state management stores, utilities, and configuration files in the codebase. Understand the project layout and dependencies before modifying files.
+2. FULL PRODUCTION IMPLEMENTATION: Write complete, bug-free, production-grade code. Never leave "TODO", "FIXME", stub methods, or fake placeholder mock data. Fully integrate all UI components, state bindings, controllers, and database/API connectors.
+3. PLATFORM & STORE COMPLIANCE: Adhere strictly to Apple Human Interface Guidelines and Google Play developer policies. Implement safe-area padding for notches and gesture bars, ensure minimum touch targets (44x44pt on Apple, 48x48dp on Android), support Dynamic Type text scaling without layout truncation, and support both Dark and Light themes.
+4. DEFENSIVE ERROR & OFFLINE HANDLING: Implement resilient network retry logic, offline data caching or fallback states, loading spinners/skeletons, descriptive user-facing error messages, and sanitize all user inputs.
+5. VERIFICATION & ZERO REGRESSIONS: Run TypeScript compilation ("npx tsc --noEmit"), resolve any type errors or warnings, ensure no unused imports remain, and verify that all surrounding features remain functional without requiring manual coding from the user.`,
+      implementationSteps: [
+        'Define requirements and architecture.',
+        'Implement and integrate into application workflow.',
+        'Verify behavior on real iOS device.'
+      ],
+      commonRejectionTraps: [
+        'Missing edge-case validation or offline state handling.'
+      ],
+      verificationQuestions: [
+        'Does this requirement operate smoothly without crashing?'
+      ]
+    };
+
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          const existingItems = proj.customItems?.[phaseId] || 
+            (currentProjectPhases.find(p => p.id === phaseId)?.items || []);
+          const updatedItems = [...existingItems, newItem];
+          return {
+            ...proj,
+            customItems: {
+              ...(proj.customItems || {}),
+              [phaseId]: updatedItems
+            }
+          };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Reorder Items within a Phase
+  const handleReorderItems = (phaseId: string, newItems: ChecklistItem[]) => {
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          return {
+            ...proj,
+            customItems: {
+              ...(proj.customItems || {}),
+              [phaseId]: newItems
+            }
+          };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Delete an Item from a Phase
+  const handleDeleteItem = (phaseId: string, itemId: string) => {
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          const existingItems = proj.customItems?.[phaseId] || 
+            (currentProjectPhases.find(p => p.id === phaseId)?.items || []);
+          const updatedItems = existingItems.filter(i => i.id !== itemId);
+          return {
+            ...proj,
+            completedItemIds: (proj.completedItemIds || []).filter(id => id !== itemId),
+            customItems: {
+              ...(proj.customItems || {}),
+              [phaseId]: updatedItems
+            }
+          };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Add New Custom Phase
+  const handleAddPhase = (title: string, shortTitle: string, description: string) => {
+    const newPhaseId = `custom-phase-${Date.now()}`;
+    const newPhase: Phase = {
+      id: newPhaseId,
+      number: currentProjectPhases.length + 1,
+      title,
+      shortTitle: shortTitle || title,
+      description: description || 'Custom checklist phase section',
+      iconName: 'ShieldCheck',
+      items: []
+    };
+
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          const customPhases = [...(proj.customPhases || []), newPhase];
+          const currentOrder = proj.phaseOrder || currentProjectPhases.map(p => p.id);
+          return {
+            ...proj,
+            customPhases,
+            phaseOrder: [...currentOrder, newPhaseId]
+          };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Reorder Phases
+  const handleReorderPhases = (reordered: Phase[]) => {
+    const newOrder = reordered.map(p => p.id);
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          return {
+            ...proj,
+            phaseOrder: newOrder
+          };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Fresh Restart: restore default canonical order with Idea & Audience as Phase 1
+  const handleFreshRestartPhases = () => {
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          return {
+            ...proj,
+            phaseOrder: undefined, // Clears custom reordering, restores default PHASES_DATA order
+            deletedPhaseIds: []    // Restores any deleted phases
+          };
+        }
+        return proj;
+      })
+    );
+    setIsGlobalEditMode(false);
+    setCollapseSignal(prev => prev + 1); // Minimizes all drop-downs
+    setSelectedPhaseId('all');
+    triggerHaptic(ImpactStyle.Medium);
+  };
+
+  // Toggle Global Rearrange: minimize all drop-downs & make phases moveable
+  const handleToggleGlobalRearrange = () => {
+    // 1. Always minimize drop-down menus
+    setCollapseSignal(prev => prev + 1);
+    // 2. Toggle global edit mode
+    setIsGlobalEditMode(prev => {
+      const next = !prev;
+      triggerHaptic(ImpactStyle.Light);
+      return next;
+    });
+  };
+
+  // Move Phase Up or Down
+  const handleMovePhase = (fromIdx: number, toIdx: number) => {
+    if (toIdx < 0 || toIdx >= currentProjectPhases.length) return;
+    const reordered = [...currentProjectPhases];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    handleReorderPhases(reordered);
+  };
+
+  // Delete a Phase Section (Custom or Built-in)
+  const handleDeletePhase = (phaseId: string) => {
+    const targetPhase = currentProjectPhases.find(p => p.id === phaseId);
+    const title = targetPhase ? `"${targetPhase.title}"` : 'this section';
+    if (!window.confirm(`Delete phase section ${title}? You can restore it later from the bottom of the page.`)) {
+      return;
+    }
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          const currentDeleted = proj.deletedPhaseIds || [];
+          const updatedDeleted = currentDeleted.includes(phaseId) ? currentDeleted : [...currentDeleted, phaseId];
+          return {
+            ...proj,
+            customPhases: (proj.customPhases || []).filter(p => p.id !== phaseId),
+            phaseOrder: (proj.phaseOrder || []).filter(id => id !== phaseId),
+            deletedPhaseIds: updatedDeleted
+          };
+        }
+        return proj;
+      })
+    );
+    if (selectedPhaseId === phaseId) {
+      setSelectedPhaseId('all');
+    }
+  };
+
+
+  // Delete a Project
+  const handleDeleteProject = (projId: string) => {
+    if (projects.length <= 1) {
+      alert('You must have at least one project.');
+      return;
+    }
+
+    const projToDelete = projects.find(p => p.id === projId);
+    const projName = projToDelete ? `"${projToDelete.name}"` : 'this project';
+
+    if (window.confirm(`Are you sure you want to delete ${projName}?`)) {
+      const remaining = projects.filter(p => p.id !== projId);
+      setProjects(remaining);
+      if (activeProjectId === projId) {
+        setActiveProjectId(remaining[0].id);
+      }
+    }
+  };
+
+  // Restore a Deleted Phase back to the active checklist
+  const handleRestorePhase = (phaseId: string) => {
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          const currentDeleted = proj.deletedPhaseIds || [];
+          const currentOrder = proj.phaseOrder || [];
+          const updatedOrder = currentOrder.includes(phaseId) ? currentOrder : [...currentOrder, phaseId];
+          return {
+            ...proj,
+            deletedPhaseIds: currentDeleted.filter(id => id !== phaseId),
+            phaseOrder: updatedOrder
+          };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Restore All Deleted Phases
+  const handleRestoreAllPhases = () => {
+    setProjects(prevProjects =>
+      prevProjects.map(proj => {
+        if (proj.id === activeProject.id) {
+          return {
+            ...proj,
+            deletedPhaseIds: [],
+            phaseOrder: undefined
+          };
+        }
+        return proj;
+      })
+    );
+  };
+
+  // Overall Statistics for Active Project
+  const totalAll = allItems.length;
+  const completedAll = completedItemIds.length;
+  const overallPercent = totalAll > 0 ? Math.round((completedAll / totalAll) * 100) : 0;
+
+  // Celebrate with grand dual-cannon confetti when the entire project hits 100%!
+  const wasOverall100Ref = useRef(overallPercent === 100 && totalAll > 0);
+
+  useEffect(() => {
+    wasOverall100Ref.current = overallPercent === 100 && totalAll > 0;
+  }, [activeProjectId]);
+
+  useEffect(() => {
+    if (!wasOverall100Ref.current && overallPercent === 100 && totalAll > 0) {
+      triggerAllCompleteConfetti();
+    }
+    wasOverall100Ref.current = overallPercent === 100 && totalAll > 0;
+  }, [overallPercent, totalAll]);
+
+  // Filter items for each phase (all or completed)
+  const getFilteredItemsForPhase = (items: ChecklistItem[]) => {
+    return items.filter(item => {
+      const isDone = completedItemIds.includes(item.id);
+      if (filterMode === 'completed' && !isDone) return false;
+      return true;
+    });
+  };
+
+  // Visible Phases based on selected filter
+  const visiblePhases = useMemo(() => {
+    if (selectedPhaseId === 'all') {
+      return currentProjectPhases;
+    }
+    return currentProjectPhases.filter(p => p.id === selectedPhaseId);
+  }, [selectedPhaseId, currentProjectPhases]);
+
+  const activePhase = useMemo(() => {
+    return currentProjectPhases.find(p => p.id === selectedPhaseId);
+  }, [selectedPhaseId, currentProjectPhases]);
+
+  const currentPhaseIndex = useMemo(() => {
+    return currentProjectPhases.findIndex(p => p.id === selectedPhaseId);
+  }, [selectedPhaseId, currentProjectPhases]);
+
+  const prevPhase = currentPhaseIndex > 0 ? currentProjectPhases[currentPhaseIndex - 1] : null;
+  const nextPhase = currentPhaseIndex >= 0 && currentPhaseIndex < currentProjectPhases.length - 1 ? currentProjectPhases[currentPhaseIndex + 1] : null;
+
+  // Fluid drag-and-drop reordering for phases in main feed
+  const {
+    handleDragStart: handleDragStartPhase,
+    getItemStyle: getPhaseDragStyle,
+    bindItemRef: bindPhaseRef,
+  } = useFluidDragReorder({
+    items: visiblePhases,
+    enabled: selectedPhaseId === 'all',
+    onReorder: handleReorderPhases,
+  });
+
+  return (
+    <div className="min-h-screen bg-[#FAF8F6] text-[#1E2022] flex flex-col font-sans selection:bg-slate-900 selection:text-white overflow-x-hidden">
+      
+      {/* Launch Loading Animation Overlay */}
+      {showSplash && (
+        <SplashScreen onComplete={() => setShowSplash(false)} />
+      )}
+
+      {/* Top Fade Vignette Effect (Compact, not too big) */}
+      <div 
+        className="fixed top-0 left-0 right-0 pointer-events-none z-30 bg-gradient-to-b from-[#FAF8F6] via-[#FAF8F6]/80 to-transparent"
+        style={{ height: 'max(calc(env(safe-area-inset-top, 0px) + 8px), 48px)' }}
+        aria-hidden="true" 
+      />
+
+      {/* Bottom Fade Vignette Effect */}
+      <div 
+        className="fixed bottom-0 left-0 right-0 h-28 pointer-events-none z-30 bg-gradient-to-t from-[#FAF8F6] via-[#FAF8F6]/90 to-transparent" 
+        aria-hidden="true" 
+      />
+
+      {/* 1. Main Content Container (Starts right below iOS safe area with safe bottom clearance for the bottom menu) */}
+      <main 
+        onTouchStart={handlePageTouchStart}
+        onTouchEnd={handlePageTouchEnd}
+        className="flex-1 w-full max-w-xl mx-auto px-4 pt-1 space-y-3 ios-safe-top overflow-x-hidden"
+      >
+        <div className="relative w-full">
+          {/* 1. Checklist Tab */}
+          <div className={displayedTab === 'checklist' ? 'space-y-3.5 pb-4' : 'hidden'}>
+              {/* Project Header at the Top: Centered, tapping opens Projects Page */}
+              <div className="pt-2.5 pb-1 flex items-center justify-center w-full">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleSelectTab('projects');
+                  }}
+                  className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-1 rounded-2xl hover:bg-black/5 group max-w-full"
+                  title="Switch or manage projects"
+                >
+                  <h1 
+                    className="text-[25px] sm:text-[26px] font-medium tracking-normal text-center select-none text-black font-google truncate"
+                  >
+                    {activeProject.name}
+                  </h1>
+                </button>
+              </div>
+
+              {/* Action Bar at the Top of the Phases: 4-circle rearrange handle & Fresh Restart */}
+              <div className="flex items-center justify-between px-1 py-0.5">
+                <div className="flex items-center space-x-1.5 select-none">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    {visiblePhases.length} Phases • {completedItemIds.length} of {totalAll} Verified
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  {/* Fresh Restart button: Restores Phase 1 Idea & Audience first and the rest in canonical order */}
+                  <button
+                    type="button"
+                    onClick={handleFreshRestartPhases}
+                    className="apple-press px-2.5 py-1 rounded-full text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 flex items-center space-x-1 shadow-2xs transition-colors"
+                    title="Fresh Restart: Reset phases to default order (Idea & Audience first)"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 stroke-[2.2]" />
+                    <span className="hidden sm:inline">Fresh Restart</span>
+                  </button>
+
+                  {/* 4-Circle Icon Button at the Top of the Phases */}
+                  <button
+                    type="button"
+                    onClick={handleToggleGlobalRearrange}
+                    className={`apple-press px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border ${
+                      isGlobalEditMode
+                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                        : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900'
+                    }`}
+                    title={isGlobalEditMode ? "Done Rearranging" : "Click to minimize drop-downs and rearrange phases"}
+                  >
+                    <GripFour className={`w-3.5 h-3.5 ${isGlobalEditMode ? 'text-white' : 'text-slate-600'}`} />
+                    <span>{isGlobalEditMode ? 'Done' : 'Rearrange'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Active Rearrange Banner */}
+              {isGlobalEditMode && (
+                <div className="p-3 bg-slate-900 text-white rounded-2xl flex items-center justify-between text-xs shadow-xs animate-fade-in select-none">
+                  <div className="flex items-center space-x-2 min-w-0">
+                    <GripFour className="w-4 h-4 text-slate-300 shrink-0" />
+                    <span className="truncate">Hold &amp; drag the 4-circle handle on any phase to move and reorder.</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsGlobalEditMode(false)}
+                    className="apple-press px-3 py-1 rounded-full bg-white text-slate-900 font-bold text-xs shrink-0 ml-2"
+                  >
+                    Done
+                  </button>
+                </div>
+              )}
+
+            {/* Main Feed: All Project Phases */}
+            <div className="space-y-4 pt-1">
+              {visiblePhases.map((phase, phaseIdx) => (
+                <div 
+                  id={phase.id} 
+                  key={phase.id}
+                  ref={bindPhaseRef(phaseIdx)}
+                  style={getPhaseDragStyle(phaseIdx)}
+                >
+                  <GuardrailSection
+                    phase={phase}
+                    phaseIndex={phaseIdx}
+                    totalPhases={visiblePhases.length}
+                    items={getFilteredItemsForPhase(phase.items)}
+                    completedItemIds={completedItemIds}
+                    onToggleComplete={handleToggleComplete}
+                    defaultExpanded={false}
+                    onAddItem={handleAddItem}
+                    onReorderItems={handleReorderItems}
+                    onDeleteItem={handleDeleteItem}
+                    onMovePhase={handleMovePhase}
+                    onDeletePhase={handleDeletePhase}
+                    isGlobalEditMode={isGlobalEditMode}
+                    collapseSignal={collapseSignal}
+                    onDragStartPhase={handleDragStartPhase}
+                    onToggleGlobalEdit={handleToggleGlobalRearrange}
+                  />
+                </div>
+              ))}
+
+              {/* Empty State when no items match filter */}
+              {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
+                <div className="p-8 rounded-3xl bg-white border border-slate-200/90 text-center space-y-3 shadow-xs">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-base font-bold text-slate-900 font-google">
+                      {filterMode === 'completed' ? 'No Completed Requirements Yet' : 'All Requirements Verified!'}
+                    </h3>
+                    <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                      {filterMode === 'completed'
+                        ? `You haven't marked any requirements as completed yet. Tap the circle checkmark on any requirement to mark it done!`
+                        : `Great job! All items in ${selectedPhaseId === 'all' ? 'the entire checklist' : 'this section'} are verified for ${activeProject.name}.`}
+                    </p>
+                  </div>
+                  {filterMode === 'completed' && (
+                    <button
+                      onClick={() => setFilterMode('all')}
+                      className="apple-press px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs shadow-xs border border-slate-300"
+                    >
+                      View All Requirements
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Deleted Sections Pill (Same style as phase cards with Restore capability) */}
+              {deletedPhases.length > 0 && (
+                <div className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 transition-colors duration-150 shadow-xs space-y-4">
+                  <div className="w-full flex items-start justify-between select-none">
+                    <div className="flex items-start space-x-3.5 pr-2 select-none flex-1">
+                      {/* Squircle Icon: Clean slate background with RotateCcw restore icon */}
+                      <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs text-slate-700">
+                        <RotateCcw className="w-6 h-6 stroke-[2.2]" />
+                      </div>
+
+                      {/* Title & Badge */}
+                      <div className="space-y-1 select-none flex-1">
+                        <div className="flex items-center space-x-2 select-none mt-0.5">
+                          <span className="h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200/80 shadow-xs select-none inline-flex items-center justify-center pt-[1.5px] leading-none">
+                            Deleted ({deletedPhases.length})
+                          </span>
+                          <span className="text-xs text-slate-400 select-none">•</span>
+                          <span className="text-xs font-bold text-slate-600 select-none">
+                            Tap Restore to Re-add
+                          </span>
+                        </div>
+
+                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
+                          Deleted Sections
+                        </h2>
+                      </div>
+                    </div>
+
+                    {deletedPhases.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={handleRestoreAllPhases}
+                        className="apple-press text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
+                        title="Restore All Deleted Sections"
+                      >
+                        Restore All
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none">
+                    Sections you have removed are kept here so you can restore them at any time.
+                  </p>
+
+                  {/* List of Deleted Sections with Individual Restore Buttons */}
+                  <div className="space-y-2.5 pt-1">
+                    {deletedPhases.map((delPhase) => {
+                      const delTheme = getPhaseTheme(delPhase.number);
+                      return (
+                        <div 
+                          key={delPhase.id} 
+                          className="p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/70 flex items-center justify-between transition-colors duration-150"
+                        >
+                          <div className="flex items-center space-x-3 min-w-0 pr-2">
+                            <div className={`w-9 h-9 rounded-xl ${delTheme.iconBg} flex items-center justify-center text-white shrink-0 shadow-2xs`}>
+                              {renderPhaseIcon(delPhase.iconName, "w-4 h-4 text-white stroke-[2.2]")}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center space-x-1.5 mt-0.5">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                  Phase {delPhase.number}
+                                </span>
+                                <span className="text-xs text-slate-300">•</span>
+                                <span className="text-xs text-slate-500">
+                                  {delPhase.items.length} items
+                                </span>
+                              </div>
+                              <h3 className="text-sm font-bold text-slate-900 truncate font-google">
+                                {delPhase.title}
+                              </h3>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRestorePhase(delPhase.id)}
+                            className="apple-press px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center space-x-1.5 shadow-xs shrink-0 transition-colors"
+                            title={`Restore Phase ${delPhase.number}`}
+                          >
+                            <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
+                            <span>Restore</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Empty State when no items match filter */}
+              {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
+                <div className="p-8 rounded-3xl bg-white border border-slate-200/90 text-center space-y-3 shadow-xs">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="w-6 h-6 stroke-[2.2]" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-base font-bold text-slate-900 font-google">No requirements found</h3>
+                    <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                      There are no requirements matching the current filter.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setFilterMode('all');
+                      setSelectedPhaseId('all');
+                    }}
+                    className="apple-press inline-flex items-center space-x-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-2xs"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Spacing clearance above the fixed bottom navigation dock */}
+            <div 
+              className="w-full pointer-events-none select-none transition-all duration-300"
+              style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 96px), 120px)' }}
+              aria-hidden="true" 
+            />
+          </div>
+
+          {/* 2. Projects Tab */}
+          <div className={displayedTab === 'projects' ? 'block' : 'hidden'}>
+            <ProjectsPage
+              projects={projects}
+              activeProjectId={activeProject.id}
+              totalRequirementsCount={allItems.length}
+              onSelectProject={(projId) => {
+                setIsGlobalEditMode(false);
+                setActiveProjectId(projId);
+                setSelectedPhaseId('all');
+                setFilterMode('all');
+                handleSelectTab('checklist');
+                window.dispatchEvent(new CustomEvent('collapse-all'));
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }}
+              onRenameProject={(projId, newName) => {
+                setProjects(prev => prev.map(p => p.id === projId ? { ...p, name: newName } : p));
+              }}
+              onDeleteProject={(projId) => {
+                handleDeleteProject(projId);
+              }}
+              onCreateProject={(name, color) => {
+                const newProj: Project = {
+                  id: `proj-${Date.now()}`,
+                  name: name,
+                  color: color,
+                  createdAt: new Date().toISOString(),
+                  completedItemIds: [],
+                };
+                setProjects(prev => [...prev, newProj]);
+                setActiveProjectId(newProj.id);
+                setSelectedPhaseId('all');
+                setFilterMode('all');
+                handleSelectTab('checklist');
+                window.dispatchEvent(new CustomEvent('collapse-all'));
+                window.scrollTo({ top: 0, behavior: 'instant' });
+              }}
+              onBackToChecklist={() => {
+                handleSelectTab('checklist');
+              }}
+            />
+          </div>
+
+          {/* 3. Resources Tab */}
+          <div className={displayedTab === 'resources' ? 'block' : 'hidden'}>
+            <ResourcesPage onBackToChecklist={() => {
+              handleSelectTab('checklist');
+            }} />
+          </div>
+        </div>
+
+      </main>
+
+      {/* 3. Floating Bottom Navigation Menu (iPhone Liquid Glass Interactive Dock) */}
+      <div className="fixed ios-dock-bottom left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
+        <nav
+          aria-label="Main Navigation"
+          className="pointer-events-auto relative select-none bg-white/80 dark:bg-black/70 backdrop-blur-2xl border border-white/70 dark:border-white/20 rounded-full p-[8px] flex items-center shadow-[0_16px_40px_rgba(0,0,0,0.12),0_2px_6px_rgba(0,0,0,0.04),inset_0_1px_1.5px_rgba(255,255,255,0.95)]"
+        >
+          {/* Dynamic Sliding Liquid Glass Pill */}
+          <div
+            className="absolute top-[8px] left-[8px] w-[56px] h-[56px] rounded-full border pointer-events-none transition-transform duration-[200ms] ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform transform-gpu"
+            style={{
+              transform: `translate3d(${targetLensX}px, 0, 0)`,
+              background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.88) 100%)',
+              borderColor: 'rgba(255, 255, 255, 0.95)',
+              boxShadow: '0 6px 18px -2px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.05), inset 0 1.5px 2px #fff, inset 0 -1px 1.5px rgba(0, 0, 0, 0.03)',
+            }}
+          >
+            {/* Top specular refraction sheen */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-white/70 pointer-events-none" />
+          </div>
+
+          {/* Interactive Menu Icon Buttons on Top of Glass Pill */}
+          <div className="relative z-10 flex items-center space-x-[12px]">
+            {/* 1. Sections / Checklist Button (56px) - Percent Counter with Edge-Forming Circular Progress Ring */}
+            <button
+              type="button"
+              onClick={() => handleSelectTab('checklist')}
+              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center relative shrink-0 cursor-pointer select-none"
+              title={`Checklist Progress (${overallPercent}% complete)`}
+              aria-label={`Checklist Progress ${overallPercent}%`}
+            >
+              {/* Circular Progress Ring that forms the outer edge of the button circle itself */}
+              <svg className="absolute inset-0 w-[56px] h-[56px] -rotate-90 pointer-events-none" viewBox="0 0 56 56">
+                <defs>
+                  <linearGradient id="dockProgressGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#8B5CF6" />  {/* Royal Purple */}
+                    <stop offset="50%" stopColor="#6366F1" /> {/* Indigo */}
+                    <stop offset="100%" stopColor="#3B82F6" /> {/* Electric Blue */}
+                  </linearGradient>
+                </defs>
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="26.75"
+                  fill="none"
+                  stroke="#E2E8F0"
+                  strokeWidth="2.5"
+                />
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="26.75"
+                  fill="none"
+                  stroke="url(#dockProgressGradient)"
+                  strokeWidth="2.5"
+                  strokeDasharray={168.08}
+                  strokeDashoffset={168.08 - (overallPercent / 100) * 168.08}
+                  strokeLinecap="round"
+                  className="transition-all duration-300 ease-out"
+                  style={{ opacity: activeTab === 'checklist' ? 1 : 0.6 }}
+                />
+              </svg>
+
+              {/* Percentage Counter in Center */}
+              <span
+                className={`text-[13px] tracking-tight font-google relative z-10 select-none transition-colors duration-200 ${
+                  activeTab === 'checklist' 
+                    ? 'font-black text-slate-900' 
+                    : 'font-bold text-slate-500'
+                }`}
+              >
+                {overallPercent}%
+              </span>
+            </button>
+
+            {/* 2. Folder / Projects Icon Button */}
+            <button
+              type="button"
+              onClick={() => handleSelectTab('projects')}
+              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center shrink-0 cursor-pointer select-none"
+              title={`Switch Project (${activeProject.name})`}
+              aria-label="Projects"
+            >
+              <Folder 
+                className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
+                  activeTab === 'projects' 
+                    ? 'text-blue-600' 
+                    : 'text-slate-500'
+                }`} 
+              />
+            </button>
+
+            {/* 3. Graduation Cap / Developer Academy & Resources Button */}
+            <button
+              type="button"
+              onClick={() => handleSelectTab('resources')}
+              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center shrink-0 cursor-pointer select-none"
+              title="Developer Academy & Resources"
+              aria-label="Academy and Resources"
+            >
+              <GraduationCap 
+                className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
+                  activeTab === 'resources' 
+                    ? 'text-purple-600' 
+                    : 'text-slate-500'
+                }`} 
+              />
+            </button>
+          </div>
+        </nav>
+      </div>
+
+      {/* 5. Dedicated All Phases Page */}
+      <AllPhasesPage
+        isOpen={isAllPhasesPageOpen}
+        onClose={() => {
+          setIsGlobalEditMode(false);
+          setIsAllPhasesPageOpen(false);
+        }}
+        phases={currentProjectPhases}
+        completedItemIds={completedItemIds}
+        onSelectPhase={(phaseId) => {
+          setIsGlobalEditMode(false);
+          setSelectedPhaseId('all');
+          setPreviousTab(activeTab);
+          setActiveTab('checklist');
+          setIsAllPhasesPageOpen(false);
+          window.dispatchEvent(new CustomEvent('expand-phase', { detail: phaseId }));
+          setTimeout(() => {
+            const el = document.getElementById(phaseId);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }, 80);
+        }}
+        onReorderPhases={handleReorderPhases}
+        onAddPhase={handleAddPhase}
+        onDeletePhase={handleDeletePhase}
+      />
+
+    </div>
+  );
+};
