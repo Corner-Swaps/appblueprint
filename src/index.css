@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Google Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/GoogleSans-Variable.woff2') format('woff2');
+}
+
+.font-google {
+  font-family: 'Google Sans', 'Product Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+}
+
+:root {
+  --ease-apple-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-apple-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-apple-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@layer base {
+  html, body {
+    background-color: #FAF8F6;
+    color: #1E2022;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    overscroll-behavior-y: none;
+  }
+
+  input, select, textarea {
+    font-size: 16px !important;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a, div, span, p {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  *:focus {
+    outline: none !important;
+  }
+}
+
+/* Dedicated Safe-Area Utilities (Clears iPhone Dynamic Island comfortably) */
+.ios-safe-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 16px);
+}
+
+.ios-safe-bottom {
+  padding-bottom: max(calc(env(safe-area-inset-bottom, 0px) + 24px), 28px);
+}
+
+.ios-dock-bottom {
+  bottom: max(calc(env(safe-area-inset-bottom, 0px) + 8px), 16px);
+  position: fixed;
+}
+
+/* Apple Fluid Press response (Instant :active touch feedback) */
+.apple-press {
+  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), opacity 120ms ease;
+  will-change: transform;
+}
+.apple-press:active {
+  transform: scale(0.97);
+  opacity: 0.88;
+}
+
+/* Soft card styling */
+.pastel-card {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Discreet scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+}
+
+/* Hide scrollbar for clean horizontal pills */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Apple Fluid Drawer & Accordion Motion (Critically Damped Spring, Zero Jitter) */
+.apple-drawer-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  overflow: hidden;
+  transition: grid-template-rows 320ms cubic-bezier(0.32, 0.72, 0, 1), opacity 240ms cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: grid-template-rows, opacity;
+}
+
+.apple-drawer-collapse.expanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.apple-drawer-content {
+  min-height: 0;
+  overflow: hidden;
+}
