@@ -62,12 +62,12 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({ isOpen, onClose, localIp
           <div className="flex items-center space-x-3">
             <img
               src="/logo.png"
-              alt="LaunchReady Logo"
+              alt="App Blueprint Logo"
               className="w-10 h-10 rounded-xl shadow-xs object-cover border border-slate-200/60"
             />
             <div>
               <h2 className="text-lg font-bold text-apple-gray-900 dark:text-white">
-                Load LaunchReady on Your Phone
+                Load App Blueprint on Your Phone
               </h2>
               <p className="text-xs text-apple-gray-500 dark:text-apple-gray-400">
                 Install as a standalone home-screen app on your iPhone or Android

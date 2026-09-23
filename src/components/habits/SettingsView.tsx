@@ -135,7 +135,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="space-y-3 text-xs">
           <div className="flex justify-between items-center py-1">
             <span className="text-white/60">Bundle Identifier:</span>
-            <span className="font-mono text-white font-semibold">com.slava.launchready</span>
+            <span className="font-mono text-white font-semibold">com.slava.appblueprint</span>
           </div>
           <div className="flex justify-between items-center py-1 border-t border-white/10">
             <span className="text-white/60">Architecture:</span>

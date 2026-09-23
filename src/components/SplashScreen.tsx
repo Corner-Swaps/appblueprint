@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { AppLogo } from './AppLogo';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -14,13 +15,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     setFadingOut(true);
     setTimeout(() => {
       onComplete();
-    }, 380);
+    }, 420);
   };
 
   useEffect(() => {
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 2450);
+    }, 1100);
 
     return () => {
       clearTimeout(dismissTimer);
@@ -42,51 +43,32 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(circle at 50% 44%, #FAF5FF 0%, #F3E8FF 40%, #EDE9FE 70%, #E9D5FF 100%)',
+        background: 'radial-gradient(ellipse at 50% 45%, #FAF5FF 0%, #F3E8FF 40%, #E9D5FF 80%, #DDD6FE 100%)',
         opacity: fadingOut ? 0 : 1,
-        transition: 'opacity 380ms cubic-bezier(0.4, 0, 0.2, 1)',
+        transform: fadingOut ? 'scale(1.04)' : 'scale(1)',
+        transition: 'opacity 420ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1)',
         overflow: 'hidden',
       }}
-      aria-label="LaunchReady Intro"
+      aria-label="App Blueprint Intro"
     >
-      {/* Soft central ambient radial glow */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.95) 0px, rgba(216, 180, 254, 0.35) 200px, transparent 380px)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* 1. Centered Crisp White Icon with Radiant Violet Drop Shadow (210x210) */}
+      {/* 1. Centered Crisp Purple Gradient Rocket Logo with Radiant Halo */}
       <div
         className="lr-splash-icon"
         style={{
           position: 'relative',
-          width: 210,
-          height: 210,
+          width: 250,
+          height: 250,
           marginTop: -48,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          filter: 'drop-shadow(0 16px 36px rgba(126, 34, 206, 0.25))',
         }}
       >
-        <img
-          src="/launchready_logo_white.png"
-          alt="LaunchReady"
-          style={{
-            width: 210,
-            height: 210,
-            objectFit: 'contain',
-            position: 'relative',
-            zIndex: 2,
-            filter: 'drop-shadow(0 16px 32px rgba(124, 58, 237, 0.28)) drop-shadow(0 4px 10px rgba(139, 92, 246, 0.18))',
-          }}
-        />
+        <AppLogo size={250} />
       </div>
 
-      {/* 2. LaunchReady Title Positioned Lower at the Bottom */}
+      {/* 2. App Blueprint Title Positioned Lower at the Bottom */}
       <div
         className="lr-splash-title"
         style={{
@@ -101,13 +83,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           style={{
             fontFamily: "'Google Sans', 'GoogleSans-Medium', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
             fontSize: 34,
-            fontWeight: 600,
-            color: '#2E1065',
+            fontWeight: 700,
+            color: '#3B0764',
             letterSpacing: '-0.3px',
-            textShadow: '0 2px 10px rgba(124, 58, 237, 0.14)',
           }}
         >
-          LaunchReady
+          App Blueprint
         </span>
       </div>
     </div>

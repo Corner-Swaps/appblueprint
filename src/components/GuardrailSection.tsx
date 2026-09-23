@@ -9,22 +9,95 @@ import {
   ChevronDown, 
   ChevronUp, 
   ExternalLink, 
-  AlertTriangle,
+  AlertTriangle, 
   FileCode, 
   Copy, 
-  Check,
-  Plus,
-  Trash2,
-  SlidersHorizontal,
-  Pencil,
-  Sparkles,
-  X,
-  Terminal,
-  ArrowUpDown,
-  Play
+  Check, 
+  Plus, 
+  Trash2, 
+  SlidersHorizontal, 
+  Pencil, 
+  Sparkles, 
+  X, 
+  Terminal, 
+  ArrowUpDown, 
+  Play,
+  Shield,
+  Scale,
+  Layout,
+  Database,
+  Lightbulb,
+  CheckSquare,
+  Rocket,
+  HelpCircle,
+  Target
 } from 'lucide-react';
 import { PlatformBadge } from './PlatformBadge';
-import { GripFour } from './GripFour';
+import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
+
+const renderChecklistItemIcon = (item: ChecklistItem) => {
+  const id = item.id.toLowerCase();
+  const title = item.title.toLowerCase();
+
+  // 1. Apple specific
+  if (id.includes('apple') || title.includes('apple') || id.includes('keychain') || id.includes('testflight') || id.includes('human interface')) {
+    return (
+      <svg className="w-5 h-5 text-[#1D1D1F]" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.36c.64-.78 1.08-1.86.96-2.95-1 .04-2.14.65-2.8 1.44-.59.68-1.11 1.77-.97 2.83 1.11.09 2.18-.54 2.81-1.32z"/>
+      </svg>
+    );
+  }
+
+  // 2. Google / Android specific
+  if (id.includes('android') || title.includes('android') || id.includes('google') || title.includes('google') || id.includes('play')) {
+    return (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+        <path d="M3.6 1.8C3.3 2.1 3.2 2.6 3.2 3.2V20.8C3.2 21.4 3.4 21.9 3.6 22.2L13.8 12L3.6 1.8Z" fill="#0086F8"/>
+        <path d="M17.2 8.6L13.8 12L17.2 15.4L21.4 13C22.2 12.5 22.2 11.5 21.4 11L17.2 8.6Z" fill="#FFC400"/>
+        <path d="M3.6 22.2C4.1 22.7 4.9 22.8 5.7 22.3L17.2 15.4L13.8 12L3.6 22.2Z" fill="#FF3A44"/>
+        <path d="M3.6 1.8L13.8 12L17.2 8.6L5.7 1.7C4.9 1.2 4.1 1.3 3.6 1.8Z" fill="#00F076"/>
+      </svg>
+    );
+  }
+
+  // 3. Security & Auth
+  if (item.category === 'security' || id.includes('security') || title.includes('security') || title.includes('auth') || title.includes('password') || title.includes('token') || title.includes('crypto')) {
+    return <Shield className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
+  }
+
+  // 4. Legal & Privacy
+  if (item.category === 'legal' || id.includes('legal') || title.includes('terms') || title.includes('privacy') || title.includes('policy') || title.includes('eula')) {
+    return <Scale className="w-5 h-5 text-amber-600 stroke-[2.2]" />;
+  }
+
+  // 5. Design & UI
+  if (item.category === 'design' || title.includes('design') || title.includes('ui') || title.includes('typography') || title.includes('font') || title.includes('screen') || title.includes('haptic') || title.includes('touch')) {
+    return <Layout className="w-5 h-5 text-rose-500 stroke-[2.2]" />;
+  }
+
+  // 6. Store & Launch
+  if (item.category === 'store' || title.includes('store') || title.includes('launch') || title.includes('aso') || title.includes('screenshot') || title.includes('submission')) {
+    return <Rocket className="w-5 h-5 text-cyan-600 stroke-[2.2]" />;
+  }
+
+  // 7. CI/CD & Build
+  if (item.category === 'cicd' || title.includes('build') || title.includes('compile') || title.includes('xcode') || title.includes('environment')) {
+    return <Terminal className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
+  }
+
+  // 8. Backend / Database
+  if (title.includes('database') || title.includes('backend') || title.includes('cloud') || title.includes('api') || title.includes('sync')) {
+    return <Database className="w-5 h-5 text-teal-600 stroke-[2.2]" />;
+  }
+
+  // 9. Idea / Scope
+  if (title.includes('idea') || title.includes('scope') || title.includes('problem') || title.includes('feature') || title.includes('describe')) {
+    return <Lightbulb className="w-5 h-5 text-amber-500 stroke-[2.2]" />;
+  }
+
+  // 10. Default
+  return <CheckSquare className="w-5 h-5 text-blue-600 stroke-[2.2]" />;
+};
 
 interface GuardrailSectionProps {
   phase: Phase;
@@ -74,6 +147,28 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const [newItemTitle, setNewItemTitle] = useState('');
   const [newItemDesc, setNewItemDesc] = useState('');
   const isSetupPhase = phase.number === 0 || phase.id === 'phase-setup';
+
+  // Section reference for smooth scroll to top when collapsing
+  const sectionRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToSectionTop = () => {
+    const targetEl = sectionRef.current || document.getElementById(phase.id);
+    if (targetEl) {
+      const rect = targetEl.getBoundingClientRect();
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      // 64px offset ensures the section header clears any fixed top bar or safe area
+      const targetY = Math.max(0, currentScroll + rect.top - 64);
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    }
+  };
+
+  const handleToggleExpand = () => {
+    setIsExpanded(prev => !prev);
+  };
+
+  const handleCollapseSection = () => {
+    setIsExpanded(false);
+  };
 
   // Fluid drag-and-drop reordering for requirement items
   const {
@@ -217,7 +312,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   if (items.length === 0 && phase.items.length > 0 && !isAddingItem) return null;
 
   return (
-    <div className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
+    <div 
+      ref={sectionRef}
+      className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
       isGlobalEditMode 
         ? 'p-3.5 sm:p-4' 
         : isExpanded 
@@ -230,15 +327,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
           <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
             <div className={`w-11 h-11 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-xs relative`}>
               {renderPhaseIcon(phase.iconName, "w-5.5 h-5.5 text-white stroke-[2.2]")}
-              {isAllComplete && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs">
-                  <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
-                </div>
-              )}
             </div>
             <div className="space-y-0.5 select-none flex-1 min-w-0">
               <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
-                {phase.number === 0 ? 'Set Up Steps' : `Phase ${phase.number}`}
+                {phase.number === 0 ? 'Set Up Steps' : `Step ${phase.number}`}
               </span>
               <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-snug select-none font-google truncate">
                 {phase.title}
@@ -250,7 +342,12 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
             className="flex items-center space-x-2 shrink-0 self-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {onDeletePhase && (
+            {isAllComplete && (
+              <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors mr-0.5`}>
+                <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
+              </div>
+            )}
+            {onDeletePhase && !isSetupPhase && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -266,7 +363,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <Trash2 className="w-4 h-4 stroke-[2.2]" />
               </button>
             )}
-            {onDragStartPhase && typeof phaseIndex === 'number' && (
+            {onDragStartPhase && typeof phaseIndex === 'number' && !isSetupPhase && (
               <button
                 type="button"
                 onPointerDown={(e) => {
@@ -293,7 +390,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         <>
           {/* 1. Full Phase Header Block: Title -> Subtext -> Section Completion -> Drop-down arrow below */}
           <div 
-            onClick={() => setIsExpanded(prev => !prev)}
+            onClick={handleToggleExpand}
             className="space-y-2.5 select-none cursor-pointer"
           >
             <div className="w-full flex items-center justify-between select-none">
@@ -301,18 +398,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 {/* Squircle Icon: White icon, phase color background behind it on the LEFT */}
                 <div className={`w-12 h-12 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-xs relative text-white`}>
                   {renderPhaseIcon(phase.iconName, "w-6 h-6 text-white stroke-[2.2]")}
-                  {isAllComplete && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs">
-                      <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
-                    </div>
-                  )}
                 </div>
 
                 {/* Title & Phase Badge */}
                 <div className="space-y-1 select-none flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
                     <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
-                      {phase.number === 0 ? 'Set Up Steps' : `Phase ${phase.number}`}
+                      {phase.number === 0 ? 'Set Up Steps' : `Step ${phase.number}`}
                     </span>
                     <span className="text-xs text-slate-400 select-none">•</span>
                     <span className="text-xs font-bold text-slate-700 select-none">
@@ -326,28 +418,12 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 </div>
               </div>
 
-              {/* Right Controls: Only show when Edit mode is active */}
-              {isEditing && !isSetupPhase && (
+              {/* Right Controls: Only show when Edit mode is active, or 100% completion circle on top right */}
+              {isEditing && !isSetupPhase ? (
                 <div 
-                  className="flex items-center space-x-2 shrink-0 self-center"
+                  className="flex flex-col items-center space-y-1.5 shrink-0 self-center"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {onDeletePhase && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
-                          onDeletePhase(phase.id);
-                        }
-                      }}
-                      className="apple-press w-9 h-9 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
-                      title="Delete Section"
-                      aria-label="Delete Section"
-                    >
-                      <Trash2 className="w-4 h-4 stroke-[2.2]" />
-                    </button>
-                  )}
                   {onDragStartPhase && typeof phaseIndex === 'number' && (
                     <button
                       type="button"
@@ -362,15 +438,37 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         e.stopPropagation();
                         setIsExpanded(false);
                       }}
-                      className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
+                      className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
                       title="Hold and drag to rearrange phase, or click to minimize drop-down"
                       aria-label="Move & rearrange phase"
                     >
-                      <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
+                      <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
+                    </button>
+                  )}
+                  {onDeletePhase && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
+                          onDeletePhase(phase.id);
+                        }
+                      }}
+                      className="apple-press w-8 h-8 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
+                      title="Delete Section"
+                      aria-label="Delete Section"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
                     </button>
                   )}
                 </div>
-              )}
+              ) : isAllComplete ? (
+                <div className="shrink-0 self-center pl-2 -mr-1">
+                  <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
+                    <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             {/* Subtext: ALWAYS visible underneath the title! */}
@@ -392,18 +490,18 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               </div>
             </div>
 
-            {/* Drop-Down Arrow: Centered directly BELOW Section Completion with light gray circle when pointing down, no circle when pointing up */}
+            {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), Light gray circle when pointing UP (open/expanded) */}
             <div className="flex justify-center -mt-0.5 pb-0 select-none">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsExpanded(prev => !prev);
+                  handleToggleExpand();
                 }}
-                className={`apple-press transition-colors ${
+                className={`apple-press transition-all duration-200 flex items-center justify-center ${
                   !isExpanded 
-                    ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 flex items-center justify-center text-slate-500' 
-                    : 'p-0 text-slate-400 hover:text-slate-600'
+                    ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
+                    : 'w-7 h-7 text-slate-400 hover:text-slate-600'
                 }`}
                 aria-label={isExpanded ? "Collapse requirements" : "Expand requirements"}
                 title={isExpanded ? "Collapse requirements" : "Expand requirements"}
@@ -411,8 +509,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <ChevronDown 
                   strokeWidth={2.5}
                   className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                    isExpanded ? 'rotate-180 text-slate-600' : 'text-slate-500'
-                  }`}
+                    isExpanded ? 'rotate-180 text-slate-700' : 'text-slate-400'
+                  }`} 
                 />
               </button>
             </div>
@@ -438,203 +536,167 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   key={item.id}
                   ref={bindItemRef(idx)}
                   style={getItemDragStyle(idx)}
-                  className={`rounded-2xl transition-colors duration-150 border overflow-hidden ${
-                    isDone 
-                      ? 'bg-white/95 border-slate-300 shadow-xs' 
-                      : 'bg-white border-slate-200/80 hover:border-slate-300 shadow-xs'
+                  className={`rounded-2xl border transition-all duration-200 shadow-xs ${
+                    isDetailOpen 
+                      ? 'bg-white border-slate-300 p-4 sm:p-5 space-y-2.5' 
+                      : isDone
+                        ? 'bg-white/95 border-slate-200/80 hover:border-slate-300 p-4 pb-2 sm:p-5 sm:pb-2.5 space-y-2'
+                        : 'bg-slate-50/70 border-slate-200/80 hover:border-slate-300 p-4 pb-2 sm:p-5 sm:pb-2.5 space-y-2'
                   }`}
                 >
-                  {/* Main Card Row: Clicking drops down details when in normal mode */}
+                  {/* Item Header Block: clicking text minimizes/toggles item */}
                   <div 
                     onClick={() => {
                       if (!isEditing && !isDeleting) {
                         setExpandedItemId(isDetailOpen ? null : item.id);
                       }
                     }}
-                    className={`p-4 flex items-start justify-between select-none ${
-                      !isEditing && !isDeleting ? 'cursor-pointer active:bg-slate-50/60' : ''
-                    } transition-colors`}
+                    className="space-y-2 select-none cursor-pointer"
                   >
-                    <div className="pr-3 space-y-1 flex-1">
-                      
-                      {/* Badge Row (Apple clean gray pills) */}
-                      <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                        <PlatformBadge platform={item.platform} />
-                        {item.storeGuideline && (
-                          <a
-                            href={item.storeGuideline.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200/80 flex items-center space-x-1 hover:bg-slate-200/60 transition-colors apple-press"
-                            title={item.storeGuideline.name}
-                          >
-                            <ExternalLink className="w-2.5 h-2.5 text-slate-500 stroke-[2.5]" />
-                            <span>Store Rule</span>
-                          </a>
-                        )}
-                        {item.videoUrl && (
-                          <a
-                            href={item.videoUrl.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/80 flex items-center space-x-1 hover:bg-rose-100 transition-colors apple-press"
-                            title={item.videoUrl.title}
-                          >
-                            <Play className="w-2.5 h-2.5 text-rose-600 fill-rose-600" />
-                            <span>Video Guide</span>
-                          </a>
-                        )}
-                        {item.directLink && (
-                          <a
-                            href={item.directLink.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200/80 flex items-center space-x-1 hover:bg-blue-100 transition-colors apple-press"
-                            title={item.directLink.label}
-                          >
-                            <ExternalLink className="w-2.5 h-2.5 text-blue-600 stroke-[2.5]" />
-                            <span>{item.directLink.label}</span>
-                          </a>
-                        )}
+                    <div className="w-full flex items-center justify-between select-none">
+                      <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
+                        
+                        {/* Squircle containing item icon */}
+                        <div className="w-11 h-11 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs relative">
+                          {renderChecklistItemIcon(item)}
+                        </div>
+
+                        {/* Title & Badge */}
+                        <div className="space-y-1 select-none flex-1 min-w-0">
+                          <h3 className={`text-sm sm:text-base font-black tracking-tight leading-snug select-none truncate font-google ${
+                            isDone ? 'text-slate-500' : 'text-slate-900'
+                          }`}>
+                            {item.title}
+                          </h3>
+
+                          <div className="flex items-center gap-1.5 flex-wrap select-none">
+                            <PlatformBadge platform={item.platform} />
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Title */}
-                      <h3 className={`text-sm sm:text-[15px] font-bold leading-snug tracking-tight font-google ${
-                        isDone ? 'text-slate-500' : 'text-slate-900'
-                      }`}>
-                        {item.title}
-                      </h3>
-
-                      {/* Short Description (Unselectable so tapping never highlights text) */}
-                      <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none">
-                        {item.shortDescription}
-                      </p>
-                    </div>
-
-                    {/* Action Controls:
-                        - In Edit Mode: Trash and Double-Arrow Reorder together
-                        - In Normal Mode: Circular Completion Button
-                    */}
-                    {isEditing ? (
-                      <div className="flex items-center space-x-2 shrink-0 -mr-1" onClick={(e) => e.stopPropagation()}>
-                        {onDeleteItem && (
+                      {/* Action Controls: Edit handles or Checkmark Toggle */}
+                      {isEditing ? (
+                        <div className="flex flex-col items-center justify-center space-y-1.5 shrink-0 -mr-1 w-10 sm:w-12 pt-0.5" onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"
-                            onClick={(e) => {
+                            onPointerDown={(e) => {
                               e.stopPropagation();
-                              if (window.confirm(`Delete requirement "${item.title}"?`)) {
-                                onDeleteItem(phase.id, item.id);
-                              }
+                              handleDragStartItem(idx, e);
                             }}
-                            className="apple-press w-9 h-9 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
-                            title="Delete requirement"
-                            aria-label="Delete requirement"
+                            className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
+                            title="Drag to rearrange"
+                            aria-label="Drag to rearrange"
                           >
-                            <Trash2 className="w-4 h-4 stroke-[2.2]" />
+                            <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
                           </button>
-                        )}
+                          {onDeleteItem && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm(`Delete requirement "${item.title}"?`)) {
+                                  onDeleteItem(phase.id, item.id);
+                                }
+                              }}
+                              className="apple-press w-8 h-8 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
+                              title="Delete requirement"
+                              aria-label="Delete requirement"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                            </button>
+                          )}
+                        </div>
+                      ) : (
                         <button
                           type="button"
-                          onPointerDown={(e) => {
+                          onClick={(e) => {
                             e.stopPropagation();
-                            handleDragStartItem(idx, e);
+                            try {
+                              if (navigator?.vibrate) navigator.vibrate(10);
+                            } catch {}
+                            onToggleComplete(item.id);
                           }}
-                          className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
-                          title="Drag to rearrange"
-                          aria-label="Drag to rearrange"
+                          className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity"
+                          aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
                         >
-                          <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
+                          {isDone ? (
+                            <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
+                              <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 rounded-full border-2 border-slate-300 hover:border-slate-400 transition-colors bg-white" />
+                          )}
                         </button>
-                      </div>
-                    ) : (
-                      /* Circular Toggle Button: Turns the phase's theme color with a white checkmark! */
+                      )}
+                    </div>
+
+                    {/* Short Description */}
+                    <p className="text-[13px] sm:text-[13.5px] text-slate-600 leading-relaxed select-none pt-0.5">
+                      {item.shortDescription}
+                    </p>
+
+                    {/* Centered Drop-Down Arrow */}
+                    <div className="flex justify-center pt-0.5 pb-0 select-none">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          try {
-                            if (navigator?.vibrate) navigator.vibrate(10);
-                          } catch {}
-                          onToggleComplete(item.id);
+                          if (!isEditing) {
+                            setExpandedItemId(isDetailOpen ? null : item.id);
+                          }
                         }}
-                        className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity"
-                        aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
+                        className={`apple-press transition-all duration-200 flex items-center justify-center ${
+                          !isDetailOpen 
+                            ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
+                            : 'w-7 h-7 text-slate-400 hover:text-slate-600'
+                        }`}
+                        title={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
+                        aria-label={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
                       >
-                        {isDone ? (
-                          <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
-                            <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
-                          </div>
-                        ) : (
-                          <div className="w-8 h-8 rounded-full border-2 border-slate-300 hover:border-slate-400 transition-colors bg-white" />
-                        )}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Centered thick gray arrow to pop down guidance drawer:
-                      Hidden/minimized during edit mode */}
-                  {!isEditing && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedItemId(isDetailOpen ? null : item.id);
-                      }}
-                      className="w-full flex items-center justify-center py-2 min-h-[34px] border-t border-slate-100/90 hover:bg-slate-50/80 active:bg-slate-100/90 transition-colors group cursor-pointer"
-                      title={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
-                      aria-label={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
-                    >
-                      <div className={!isDetailOpen ? 'w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-slate-200/80 transition-colors' : 'p-0 text-slate-400 group-hover:text-slate-600'}>
                         <ChevronDown 
                           strokeWidth={2.5}
-                          className={`w-3.5 h-3.5 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                            isDetailOpen ? 'rotate-180 text-slate-600' : 'text-slate-500'
+                          className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                            isDetailOpen ? 'rotate-180 text-slate-700' : 'text-slate-400'
                           }`} 
                         />
-                      </div>
-                    </button>
-                  )}
+                      </button>
+                    </div>
+                  </div>
 
-                  {/* Expanded Guidance Drawer with Separated Cards & Click-to-Copy */}
+                  {/* Expanded Guidance Drawer: Unified & Contained without bulky pills */}
                   <div className={`apple-drawer-collapse ${!isEditing && isDetailOpen ? 'expanded' : ''}`}>
                     <div className="apple-drawer-content">
                       <div 
                         onClick={() => setExpandedItemId(null)}
-                        className="px-4 pb-4 pt-2.5 border-t border-slate-100/90 bg-slate-50/70 space-y-3 text-xs cursor-pointer select-none"
+                        className="space-y-4 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
                         title="Click anywhere to minimize"
                       >
-                    
-                        {/* 1. Architecture & Review Impact */}
-                        <div 
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2 cursor-auto select-text"
-                        >
-                          <span className="font-bold text-slate-800 uppercase text-[11px] tracking-wider block font-google select-none">
-                            Architecture & Review Impact
-                          </span>
-                          <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
-                            {item.whyItMatters}
-                          </p>
-                          <div className="pt-0.5 select-none">
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-[10.5px] sm:text-[11px] text-slate-600 font-medium border border-slate-200/80 select-none">
-                              Copy to clipboard to transfer instructions to your computer and agent
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* 2. Step-by-Step */}
-                        {item.implementationSteps && item.implementationSteps.length > 0 && (
-                          <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-3 cursor-auto select-text"
-                          >
-                            <div className="flex items-center justify-between select-none">
-                              <span className="font-bold text-slate-800 uppercase text-[11px] tracking-wider block font-google">
-                                Step-by-Step
+                        {/* Subsection 1: Architecture & Review Impact */}
+                        {item.whyItMatters && (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center space-x-1.5 select-none">
+                              <HelpCircle className="w-3.5 h-3.5 text-indigo-600 stroke-[2.2] shrink-0" />
+                              <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                                Architecture &amp; Review Impact
                               </span>
+                            </div>
+                            <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
+                              {item.whyItMatters}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Subsection 2: Step-by-Step Implementation */}
+                        {item.implementationSteps && item.implementationSteps.length > 0 && (
+                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
+                            <div className="flex items-center justify-between select-none">
+                              <div className="flex items-center space-x-1.5 select-none">
+                                <Sparkles className="w-3.5 h-3.5 text-blue-600 stroke-[2.2] shrink-0" />
+                                <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                                  Step-by-Step Implementation
+                                </span>
+                              </div>
                               <button
                                 type="button"
                                 onClick={(e) => {
@@ -644,31 +706,30 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                                     .join('\n');
                                   handleCopyText(`steps-all-${item.id}`, allStepsText);
                                 }}
-                                className="apple-press px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-[11px] font-semibold flex items-center space-x-1.5 transition-colors"
+                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
                                 title="Copy steps to clipboard"
                               >
                                 {copiedSnippetId === `steps-all-${item.id}` ? (
                                   <>
-                                    <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
+                                    <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
                                     <span className="text-emerald-700 font-bold">Copied</span>
                                   </>
                                 ) : (
                                   <>
-                                    <Copy className="w-3.5 h-3.5" />
+                                    <Copy className="w-3 h-3 text-slate-500" />
                                     <span>Copy</span>
                                   </>
                                 )}
                               </button>
                             </div>
 
-                            {/* Clean Numbered Steps */}
-                            <div className="space-y-2.5 pt-1">
+                            <div className="space-y-2 pt-0.5">
                               {item.implementationSteps.map((step, idx) => (
-                                <div key={idx} className="flex items-start space-x-3 text-slate-700">
-                                  <span className="font-bold text-slate-900 text-sm shrink-0 mt-0.5 select-none">
+                                <div key={idx} className="flex items-start space-x-2.5 text-slate-700">
+                                  <span className="font-bold text-slate-900 text-xs shrink-0 mt-0.5 select-none">
                                     {idx + 1}.
                                   </span>
-                                  <p className="text-[13.5px] sm:text-sm leading-relaxed text-slate-800 flex-1 min-w-0">
+                                  <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-slate-800 flex-1 min-w-0">
                                     {step}
                                   </p>
                                 </div>
@@ -677,32 +738,29 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* 3. What Happens Once Completed (Plain-English explanation) */}
-                        <div 
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1.5 cursor-auto select-text"
-                        >
-                          <span className="font-bold text-slate-800 uppercase text-[11px] tracking-wider block font-google select-none">
-                            What Happens Once Completed
-                          </span>
-                          <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
-                            {item.whatHappensNext || "Once you complete this step, this requirement is fully operational in your application, preventing store rejections and ensuring a rock-solid user experience."}
-                          </p>
-                        </div>
+                        {/* Subsection 3: What Happens Once Completed */}
+                        {item.whatHappensNext && (
+                          <div className="space-y-1.5 pt-1 border-t border-slate-100/80">
+                            <div className="flex items-center space-x-1.5 select-none">
+                              <Target className="w-3.5 h-3.5 text-purple-600 stroke-[2.2] shrink-0" />
+                              <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                                What Happens Once Completed
+                              </span>
+                            </div>
+                            <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
+                              {item.whatHappensNext}
+                            </p>
+                          </div>
+                        )}
 
-                        {/* 4. Autonomous AI Coding Agent Directive */}
+                        {/* Subsection 4: AI Coding & Agent Directive */}
                         {item.agentPrompt && (
-                          <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-3 cursor-auto select-text"
-                          >
+                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
                             <div className="flex items-center justify-between select-none">
-                              <div>
+                              <div className="flex items-center space-x-1.5 select-none">
+                                <Terminal className="w-3.5 h-3.5 text-slate-700 stroke-[2.2] shrink-0" />
                                 <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                  AI Coding Agent Directive
-                                </span>
-                                <span className="text-[11.5px] text-slate-500 font-medium block mt-0.5">
-                                  For Cursor, Claude Code, Windsurf, Copilot & Antigravity
+                                  AI Coding &amp; Agent Directive
                                 </span>
                               </div>
                               <button
@@ -711,137 +769,151 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                                   e.stopPropagation();
                                   handleCopyText(`prompt-${item.id}`, item.agentPrompt || '');
                                 }}
-                                className="apple-press px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-[11px] font-semibold flex items-center space-x-1.5 transition-colors shrink-0"
+                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
                                 title="Copy prompt for AI coding agent"
                               >
                                 {copiedSnippetId === `prompt-${item.id}` ? (
-                                  <>
-                                    <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
-                                    <span className="text-emerald-700 font-bold">Copied</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy className="w-3.5 h-3.5" />
-                                    <span>Copy</span>
-                                  </>
-                                )}
-                              </button>
-                            </div>
-
-                            <p className="text-[13px] sm:text-[13.5px] text-slate-600 leading-relaxed select-none">
-                              Built for AI Agents: Give this exact prompt to your AI coding agent. It contains complete architectural specs, guidelines, and verification rules so the agent writes the code and does the work for you.
-                            </p>
-
-                            <div className="text-[12.5px] sm:text-[13px] text-slate-800 font-mono select-text bg-slate-50/80 p-3.5 sm:p-4 rounded-xl border border-slate-200/80 max-h-96 overflow-y-auto space-y-3 leading-relaxed">
-                              {item.agentPrompt.split('\n\n').map((paragraph, pIdx) => (
-                                <p key={pIdx} className="leading-relaxed whitespace-pre-line">
-                                  {paragraph}
-                                </p>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* 5. Relevant Video Guide */}
-                        {item.videoUrl && (
-                          <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2 cursor-auto"
-                          >
-                            <div className="flex items-center justify-between select-none">
-                              <span className="font-bold text-slate-800 uppercase text-[11px] tracking-wider block font-google">
-                                Relevant Video Guide
-                              </span>
-                              <a
-                                href={item.videoUrl.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="apple-press px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-semibold flex items-center space-x-1.5 transition-colors border border-rose-200/60"
-                              >
-                                <Play className="w-3 h-3 fill-rose-600 text-rose-600" />
-                                <span>Watch Video</span>
-                              </a>
-                            </div>
-                            <p className="text-slate-700 leading-relaxed text-[13px] sm:text-[13.5px]">
-                              {item.videoUrl.title}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* 6. Store Review Traps to Avoid (At least 3 per section) */}
-                        {item.commonRejectionTraps && item.commonRejectionTraps.length > 0 && (
-                          <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 text-slate-900 shadow-2xs space-y-2.5 cursor-auto select-text"
-                          >
-                            <span className="font-bold text-slate-800 uppercase text-[11px] tracking-wider block font-google select-none">
-                              Store Review Traps to Avoid
-                            </span>
-                            <ul className="list-disc list-inside space-y-2 text-[13.5px] sm:text-sm text-slate-700 leading-relaxed pt-0.5">
-                              {item.commonRejectionTraps.map((trap, idx) => (
-                                <li key={idx} className="pl-1">
-                                  <span className="text-slate-800">{trap}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {/* Optional Legacy Code Snippet */}
-                        {item.codeSnippet && !item.agentPrompt && (
-                          <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2 cursor-auto select-text"
-                          >
-                            <div className="flex items-center justify-between select-none">
-                              <span className="font-mono text-slate-600 text-[11px] flex items-center space-x-1">
-                                <FileCode className="w-3.5 h-3.5" />
-                                <span>{item.codeSnippet.filename} ({item.codeSnippet.language})</span>
-                              </span>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCopyText(`code-${item.id}`, item.codeSnippet?.code || '');
-                                }}
-                                className="apple-press px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center space-x-1 transition-colors"
-                                title="Copy code snippet"
-                              >
-                                {copiedSnippetId === `code-${item.id}` ? (
                                   <>
                                     <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
                                     <span className="text-emerald-700 font-bold">Copied</span>
                                   </>
                                 ) : (
                                   <>
-                                    <Copy className="w-3 h-3" />
-                                    <span>Copy Code</span>
+                                    <Copy className="w-3 h-3 text-slate-500" />
+                                    <span>Copy</span>
                                   </>
                                 )}
                               </button>
                             </div>
-                            <pre className="p-3 rounded-xl bg-slate-900 text-slate-100 font-mono text-[12px] overflow-x-auto leading-relaxed">
-                              <code>{item.codeSnippet.code}</code>
-                            </pre>
+
+                            <div 
+                              onClick={(e) => e.stopPropagation()}
+                              className="cursor-auto select-text pt-1"
+                            >
+                              {renderFormattedPrompt(item.agentPrompt)}
+                            </div>
                           </div>
                         )}
 
-                        {/* Bottom Centered Arrow Close Drawer Trigger */}
-                        <div className="pt-2 border-t border-slate-200/60 flex flex-col items-center select-none">
+                        {/* Subsection 5: Store Review Traps to Avoid */}
+                        {item.commonRejectionTraps && item.commonRejectionTraps.length > 0 && (
+                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
+                            <div className="flex items-center space-x-1.5 select-none">
+                              <AlertTriangle className="w-3.5 h-3.5 text-rose-600 stroke-[2.2] shrink-0" />
+                              <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                                Store Review Traps to Avoid
+                              </span>
+                            </div>
+                            <div className="space-y-2 pt-0.5">
+                              {item.commonRejectionTraps.map((trap, idx) => (
+                                <div key={idx} className="flex items-start space-x-2.5 text-slate-700">
+                                  <span className="font-bold text-rose-600 text-xs shrink-0 mt-0.5 select-none">
+                                    •
+                                  </span>
+                                  <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-slate-800 flex-1 min-w-0">
+                                    {trap}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Subsection 6: Verification Questions */}
+                        {item.verificationQuestions && item.verificationQuestions.length > 0 && (
+                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
+                            <div className="flex items-center space-x-1.5 select-none">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 stroke-[2.2] shrink-0" />
+                              <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                                Verification Questions
+                              </span>
+                            </div>
+                            <div className="space-y-2 pt-0.5">
+                              {item.verificationQuestions.map((q, idx) => (
+                                <div key={idx} className="flex items-start space-x-2.5 text-slate-700">
+                                  <span className="font-bold text-emerald-600 text-xs shrink-0 mt-0.5 select-none">
+                                    ✓
+                                  </span>
+                                  <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-slate-800 flex-1 min-w-0">
+                                    {q}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action Resource Buttons at the bottom of the drawer */}
+                        {(item.directLink || item.videoUrl || item.storeGuideline) && (
+                          <div className="space-y-2 pt-2 border-t border-slate-100/80">
+                            {/* Blue Button for Direct Link (e.g. Google Antigravity & AI Developer Tools) */}
+                            {item.directLink && (
+                              <a
+                                href={item.directLink.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  try { window.open(item.directLink!.url, '_blank'); } catch {}
+                                }}
+                                className="apple-press w-full py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
+                              >
+                                <span>{item.directLink.label}</span>
+                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90" />
+                              </a>
+                            )}
+
+                            {/* Red Button for Relevant Video Guide */}
+                            {item.videoUrl && (
+                              <a
+                                href={item.videoUrl.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  try { window.open(item.videoUrl!.url, '_blank'); } catch {}
+                                }}
+                                className="apple-press w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
+                              >
+                                <Play className="w-3.5 h-3.5 fill-white text-white" />
+                                <span className="truncate">Watch Video: {item.videoUrl.title}</span>
+                              </a>
+                            )}
+
+                            {/* Dark Button for Official Store Guideline */}
+                            {item.storeGuideline && (
+                              <a
+                                href={item.storeGuideline.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  try { window.open(item.storeGuideline!.url, '_blank'); } catch {}
+                                }}
+                                className="apple-press w-full py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 active:bg-black text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
+                              >
+                                <span className="truncate">Official Store Guideline: {item.storeGuideline.name}</span>
+                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90" />
+                              </a>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Bottom Close Button */}
+                        <div className="pt-2 border-t border-slate-100/80 flex justify-center">
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               setExpandedItemId(null);
                             }}
-                            className="w-full flex items-center justify-center py-1.5 hover:bg-slate-200/50 active:bg-slate-200 rounded-xl transition-colors apple-press group text-slate-500 hover:text-slate-700"
+                            className="w-full flex items-center justify-center py-2 hover:bg-slate-200/50 active:bg-slate-200 rounded-xl transition-colors apple-press group text-slate-500 hover:text-slate-700"
                             title="Close guidance"
                             aria-label="Close guidance"
                           >
                             <ChevronUp 
                               strokeWidth={2.5}
-                              className="w-4 h-4 stroke-[2.5] text-slate-400" 
+                              className="w-4 h-4 stroke-[2.5] text-slate-400 group-hover:text-slate-600" 
                             />
                           </button>
                         </div>
@@ -858,9 +930,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
             <div 
               onClick={() => {
                 // Minimize whole section when clicking outside buttons at the bottom
-                setIsExpanded(false);
+                handleCollapseSection();
               }}
-              className="pt-2.5 pb-1.5 flex flex-wrap items-center justify-center gap-2 select-none cursor-pointer"
+              className="py-3 px-4 flex flex-wrap items-center justify-center gap-2 select-none cursor-pointer"
               title="Click outside buttons to minimize section"
             >
               {onAddItem && (
@@ -940,7 +1012,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 animate-in fade-in duration-200 mt-2"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 font-google">Add Requirement to Phase {phase.number}</span>
+                <span className="text-xs font-bold text-slate-800 font-google">Add Requirement to {isSetupPhase ? 'Set Up Steps' : `Step ${phase.number}`}</span>
                 <button
                   type="button"
                   onClick={() => {

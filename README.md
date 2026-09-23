@@ -1,4 +1,4 @@
-# LaunchReady OS — The Zero-to-AppStore & Google Play Production Blueprint
+# App Blueprint OS — The Zero-to-AppStore & Google Play Production Blueprint
 
 A modern, high-fidelity production readiness operating system and interactive checklist suite designed to guide mobile developers from raw idea to Apple App Store and Google Play approval without missing a single requirement.
 

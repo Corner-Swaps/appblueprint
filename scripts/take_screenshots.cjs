@@ -28,13 +28,24 @@ async function run() {
     hasTouch: true,
   });
 
-  // 1. Initial Launch - Legal Modal
-  console.log('1. Loading app without legal acceptance...');
+  // 0. Splash Screen capture
+  console.log('0. Capturing Splash Screen...');
   await page.evaluateOnNewDocument(() => {
-    localStorage.clear();
+    if (!sessionStorage.getItem('__booted')) {
+      sessionStorage.setItem('__booted', 'true');
+      localStorage.clear();
+    }
   });
-  await page.goto('http://localhost:3000', { waitUntil: 'networkidle0' });
-  await sleep(1500); // Wait for splash animation if any
+  await page.goto('http://localhost:3000', { waitUntil: 'domcontentloaded' });
+  await sleep(600); // During splash animation
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '00_splash_screen.png') });
+  console.log('Saved 00_splash_screen.png');
+
+  // Wait for splash screen to fully finish and dismiss
+  await sleep(2500);
+
+  // 1. Legal Modal (now cleanly visible after splash)
+  console.log('1. Capturing Legal Modal...');
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '01_legal_modal.png') });
   console.log('Saved 01_legal_modal.png');
 
@@ -58,26 +69,27 @@ async function run() {
   const acceptBtn = await page.$('button ::-p-text(I Agree & Accept)');
   if (acceptBtn) {
     await acceptBtn.click();
-    await sleep(600);
+    await sleep(800);
   }
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '03_home_checklist.png') });
   console.log('Saved 03_home_checklist.png');
 
   // 4. Expand Set Up Steps (Phase 0)
   console.log('4. Expanding Set Up Steps...');
-  const setupPhaseHeader = await page.$('#phase-setup');
-  if (setupPhaseHeader) {
-    // Click the accordion header
-    await page.click('#phase-setup button');
+  const setupPhase = await page.$('#phase-setup');
+  if (setupPhase) {
+    // Click the top chevron button of phase-setup
+    const headerBtn = await page.$('#phase-setup > div > div:first-child');
+    if (headerBtn) await headerBtn.click();
     await sleep(600);
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '04_setup_steps_expanded.png') });
     console.log('Saved 04_setup_steps_expanded.png');
 
-    // 5. Expand first setup step item
+    // 5. Expand first setup step item drawer
     console.log('5. Expanding first setup step drawer...');
-    const firstItemBtn = await page.$('#phase-setup [aria-expanded]');
-    if (firstItemBtn) {
-      await firstItemBtn.click();
+    const itemCard = await page.$('#setup-model .cursor-pointer');
+    if (itemCard) {
+      await itemCard.click();
       await sleep(600);
       await page.screenshot({ path: path.join(SCREENSHOT_DIR, '05_setup_item_drawer_open.png') });
       console.log('Saved 05_setup_item_drawer_open.png');
@@ -121,18 +133,18 @@ async function run() {
     await checklistNavBtn.click();
     await sleep(600);
 
-    // Expand Phase 2 (Design, Liquid Glass & Native UI)
-    const phase2Card = await page.$('#phase-2');
-    if (phase2Card) {
-      await page.click('#phase-2 button');
+    // Expand Phase 2 (Design, Layout & Mobile Comfort)
+    const phase2Header = await page.$('#phase-2 > div > div:first-child');
+    if (phase2Header) {
+      await phase2Header.click();
       await sleep(600);
       await page.screenshot({ path: path.join(SCREENSHOT_DIR, '09_phase2_expanded.png') });
       console.log('Saved 09_phase2_expanded.png');
 
       // Expand Liquid Glass item
-      const liquidGlassBtn = await page.$('#p2-liquid-glass button');
-      if (liquidGlassBtn) {
-        await liquidGlassBtn.click();
+      const liquidGlassCard = await page.$('#p2-liquid-glass .cursor-pointer');
+      if (liquidGlassCard) {
+        await liquidGlassCard.click();
         await sleep(600);
         await page.screenshot({ path: path.join(SCREENSHOT_DIR, '10_liquid_glass_drawer.png') });
         console.log('Saved 10_liquid_glass_drawer.png');
@@ -143,12 +155,14 @@ async function run() {
   // 10. Native Review Prompt Modal test
   console.log('10. Triggering Native Review Prompt...');
   await page.evaluate(() => {
+    localStorage.setItem('launchready_legal_agreed_v1', 'true');
     localStorage.setItem('launchready_visits_count', '14');
     sessionStorage.removeItem('launchready_session_counted');
     localStorage.removeItem('launchready_review_prompted_15');
   });
   await page.reload({ waitUntil: 'networkidle0' });
-  await sleep(1800); // wait for 1200ms timer
+  await sleep(4600); // Wait for splash to finish (2.5s) + review timer (1.5s) + render buffer
+  await page.waitForSelector('#review-title', { timeout: 3000 }).catch(() => {});
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '11_native_review_prompt.png') });
   console.log('Saved 11_native_review_prompt.png');
 

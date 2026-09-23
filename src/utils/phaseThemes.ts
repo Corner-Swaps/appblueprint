@@ -32,6 +32,16 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
   },
   2: {
     number: 2,
+    color: '#06B6D4',
+    iconBg: 'bg-[#06B6D4]',
+    iconColor: 'text-white',
+    pillBg: 'bg-[#06B6D4]',
+    pillText: 'text-white',
+    pillBorder: 'border-transparent',
+    progressBg: 'bg-[#06B6D4]',
+  },
+  3: {
+    number: 3,
     color: '#FF4D6D',
     iconBg: 'bg-[#FF4D6D]',
     iconColor: 'text-white',
@@ -40,8 +50,18 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#FF4D6D]',
   },
-  3: {
-    number: 3,
+  4: {
+    number: 4,
+    color: '#7C3AED',
+    iconBg: 'bg-[#7C3AED]',
+    iconColor: 'text-white',
+    pillBg: 'bg-[#7C3AED]',
+    pillText: 'text-white',
+    pillBorder: 'border-transparent',
+    progressBg: 'bg-[#7C3AED]',
+  },
+  5: {
+    number: 5,
     color: '#6366F1',
     iconBg: 'bg-[#6366F1]',
     iconColor: 'text-white',
@@ -50,8 +70,8 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#6366F1]',
   },
-  4: {
-    number: 4,
+  6: {
+    number: 6,
     color: '#D946EF',
     iconBg: 'bg-[#D946EF]',
     iconColor: 'text-white',
@@ -60,8 +80,8 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#D946EF]',
   },
-  5: {
-    number: 5,
+  7: {
+    number: 7,
     color: '#10B981',
     iconBg: 'bg-[#10B981]',
     iconColor: 'text-white',
@@ -70,8 +90,8 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#10B981]',
   },
-  6: {
-    number: 6,
+  8: {
+    number: 8,
     color: '#F97316',
     iconBg: 'bg-[#F97316]',
     iconColor: 'text-white',
@@ -80,8 +100,8 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#F97316]',
   },
-  7: {
-    number: 7,
+  9: {
+    number: 9,
     color: '#0EA5E9',
     iconBg: 'bg-[#0EA5E9]',
     iconColor: 'text-white',
@@ -90,8 +110,8 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#0EA5E9]',
   },
-  8: {
-    number: 8,
+  10: {
+    number: 10,
     color: '#A855F7',
     iconBg: 'bg-[#A855F7]',
     iconColor: 'text-white',
@@ -100,8 +120,8 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#A855F7]',
   },
-  9: {
-    number: 9,
+  11: {
+    number: 11,
     color: '#14B8A6',
     iconBg: 'bg-[#14B8A6]',
     iconColor: 'text-white',
@@ -110,15 +130,15 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
     pillBorder: 'border-transparent',
     progressBg: 'bg-[#14B8A6]',
   },
-  10: {
-    number: 10,
-    color: '#64748B',
-    iconBg: 'bg-[#64748B]',
+  12: {
+    number: 12,
+    color: '#059669',
+    iconBg: 'bg-[#059669]',
     iconColor: 'text-white',
-    pillBg: 'bg-[#64748B]',
+    pillBg: 'bg-[#059669]',
     pillText: 'text-white',
     pillBorder: 'border-transparent',
-    progressBg: 'bg-[#64748B]',
+    progressBg: 'bg-[#059669]',
   }
 };
 

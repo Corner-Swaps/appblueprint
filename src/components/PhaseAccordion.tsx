@@ -113,7 +113,7 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/15 text-white border border-white/20 inline-flex items-center justify-center">
-                  Phase {phase.number}
+                  Step {phase.number}
                 </span>
                 <span className="text-xs text-white/60">•</span>
                 <span className="text-xs font-semibold text-white/90">

@@ -3,9 +3,9 @@ import { Phase } from '../types';
 export const SETUP_STEPS_PHASE: Phase = {
   id: 'phase-setup',
   number: 0,
-  title: 'Set Up Steps & Development Environment',
+  title: 'Step 0: Set Up & Development Environment',
   shortTitle: 'Set Up Steps',
-  description: 'Complete these essential setup steps before diving into the project phases. Choose your AI model, register developer accounts, install Xcode and Android Studio, configure GitHub, and connect your phone to run tests.',
+  description: 'Complete these essential setup steps before diving into the project steps. Choose your AI model, register developer accounts, install Xcode and Android Studio, configure GitHub, and connect your phone to run tests.',
   iconName: 'Laptop',
   items: [
     {
@@ -297,31 +297,43 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/results?search_query=automate+capacitor+xcode+build+terminal+commands'
       },
       implementationSteps: [
-        'Step 1 (Compile & Sync): npm run build && npx cap sync ios',
+        'Step 1 (iOS Compile & Sync): npm run build && npx cap sync ios',
         'Step 2 (Open in Xcode): npx cap open ios',
-        'Step 3 (Build to Phone): Select your physical phone in Xcode and press Cmd+R (or click Play).',
-        'Step 4 (Android Build & Sync): npm run build && npx cap sync android',
-        'Step 5 (Open in Android Studio): npx cap open android'
+        'Step 3 (Build to Physical Phone): Select your connected phone in Xcode top bar and press Cmd+R (or click Play).',
+        'Step 4 (iOS App Store Archive): In Xcode, select Any iOS Device (arm64) > Product > Archive > Distribute App.',
+        'Step 5 (Android Compile & Sync): npm run build && npx cap sync android',
+        'Step 6 (Open in Android Studio): npx cap open android',
+        'Step 7 (Google Play AAB Build): cd android && ./gradlew bundleRelease && cd .. (generates release AAB package).'
       ],
       agentPrompt: `You are the autonomous build automation engineer for this mobile project.
 
 TASK & OBJECTIVE:
-Execute our end-to-end mobile compilation and native synchronization pipeline.
+Execute our end-to-end mobile compilation and native synchronization pipeline for both Apple iOS and Google Play Android.
 
 EXECUTION PROTOCOL FOR THE AGENT:
-1. Run: npm run build
+1. WEB ASSET BUILD:
+   Run: npm run build
    Verify the build succeeds with clean exit code 0.
-2. Run: npx cap sync ios
+
+2. APPLE iOS SYNC & XCODE WORKSPACE:
+   Run: npx cap sync ios
    Verify web assets and plugins copy cleanly to ios/App/App/public.
-3. Open Xcode workspace:
-   npx cap open ios
-4. For automated CLI build verification:
+   Open Xcode workspace: npx cap open ios
+   Automated CLI test build:
    xcodebuild -workspace ios/App/App.xcworkspace -scheme App -destination 'generic/platform=iOS' build
-5. Confirm zero build errors and report readiness to deploy.`,
+
+3. GOOGLE PLAY ANDROID SYNC & PRODUCTION AAB:
+   Run: npx cap sync android
+   Open Android Studio: npx cap open android
+   Build release Android App Bundle (AAB):
+   cd android && ./gradlew bundleRelease && cd ..
+   Verify release binary is generated in 'android/app/build/outputs/bundle/release/app-release.aab'.
+
+4. ZERO REGRESSIONS: Confirm zero compilation errors and report readiness to deploy to physical devices and store consoles.`,
       commonRejectionTraps: [
         'Trying to build an Xcode archive with Debug profile rather than Release configuration.',
         'Attempting to upload to App Store Connect without incrementing CFBundleVersion in Xcode.',
-        'Missing signing certificates in Xcode causing "Code signing failed" errors during device deployment.'
+        'Submitting raw APK files to Google Play instead of the mandatory Android App Bundle (.aab) format.'
       ],
       verificationQuestions: [
         'Does `npm run build && npx cap sync ios` execute cleanly in your terminal?',
