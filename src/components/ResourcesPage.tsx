@@ -64,8 +64,8 @@ import {
   Copy,
   HelpCircle,
   Target,
-  AlertTriangle
 } from 'lucide-react';
+import { fluidScrollTo } from '../utils/fluidScroll';
 
 interface ResourcesPageProps {
   onBackToChecklist?: () => void;
@@ -265,37 +265,76 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
   const isCollapsingCategoryRef = useRef(false);
 
-  const handleToggleSection = (secId: string) => {
+  const handleToggleSection = (secId: string, centerInViewport = false) => {
     if (isCollapsingCategoryRef.current) return;
 
-    setExpandedSectionId(prev => {
-      if (prev === secId) {
-        // Minimizing / Collapsing this category
-        const targetEl = document.getElementById(secId);
-        if (targetEl) {
-          const rect = targetEl.getBoundingClientRect();
-          const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-          const targetY = Math.max(0, currentScroll + rect.top - 72);
-          const isScrolledPast = rect.top < 60;
-
-          if (isScrolledPast) {
-            isCollapsingCategoryRef.current = true;
-            window.scrollTo({ top: targetY, behavior: 'smooth' });
-            setTimeout(() => {
-              setExpandedItemId(null);
-              setExpandedSectionId(null);
-              setTimeout(() => {
-                isCollapsingCategoryRef.current = false;
-              }, 450);
-            }, 200);
-            return prev;
-          }
-        }
+    if (expandedSectionId === secId) {
+      // Minimizing / Collapsing this category
+      const targetEl = document.getElementById(secId);
+      if (!targetEl) {
         setExpandedItemId(null);
-        return null;
+        setExpandedSectionId(null);
+        return;
       }
-      return secId;
-    });
+
+      const rect = targetEl.getBoundingClientRect();
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const sectionDocTop = currentScroll + rect.top;
+      const viewportHeight = window.innerHeight;
+
+      if (centerInViewport) {
+        isCollapsingCategoryRef.current = true;
+        const centeredY = Math.max(0, sectionDocTop - (viewportHeight - 64) / 2);
+        const diff = Math.abs(currentScroll - centeredY);
+
+        if (diff < 15) {
+          // Already centered in viewport, fold closed smoothly
+          setExpandedItemId(null);
+          setExpandedSectionId(null);
+          setTimeout(() => {
+            isCollapsingCategoryRef.current = false;
+          }, 400);
+          return;
+        }
+
+        // Smoothly pull up the viewport to center first, then fold closed without glitching
+        fluidScrollTo(centeredY, {
+          onComplete: () => {
+            setExpandedItemId(null);
+            setExpandedSectionId(null);
+            setTimeout(() => {
+              isCollapsingCategoryRef.current = false;
+            }, 400);
+          },
+        });
+        return;
+      }
+
+      // Default header arrow collapse: glide up if scrolled past, then fold closed
+      const targetY = Math.max(0, currentScroll + rect.top - 72);
+      const isScrolledPast = rect.top < 60;
+
+      if (isScrolledPast) {
+        isCollapsingCategoryRef.current = true;
+        fluidScrollTo(targetY, {
+          onComplete: () => {
+            setExpandedItemId(null);
+            setExpandedSectionId(null);
+            setTimeout(() => {
+              isCollapsingCategoryRef.current = false;
+            }, 400);
+          },
+        });
+      } else {
+        setExpandedItemId(null);
+        setExpandedSectionId(null);
+      }
+      return;
+    }
+
+    // Expanding a new section
+    setExpandedItemId(null);
+    setExpandedSectionId(secId);
   };
 
   const handleToggleItem = (itemId: string) => {
@@ -889,7 +928,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                           <span className="font-bold text-slate-900 text-xs shrink-0 mt-0.5 select-none">
                                             {idx + 1}.
                                           </span>
-                                          <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-slate-800 flex-1 min-w-0">
+                                          <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm flex-1 min-w-0">
                                             {feat}
                                           </p>
                                         </div>
@@ -979,30 +1018,24 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                           e.stopPropagation();
                                           handleCopyPrompt(item.id, item.promptOrCommand || '');
                                         }}
-                                        className={`apple-press px-3 py-1.5 rounded-full text-[11px] font-bold flex items-center space-x-1.5 shrink-0 shadow-2xs transition-all duration-200 cursor-pointer ${
-                                          copiedPromptId === item.id
-                                            ? 'bg-emerald-600 border border-emerald-600 text-white'
-                                            : 'bg-slate-900 hover:bg-slate-800 active:bg-black border border-slate-900 text-white'
-                                        }`}
+                                        className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors cursor-pointer"
                                         title="Copy prompt for your AI coding agent"
                                       >
                                         {copiedPromptId === item.id ? (
                                           <>
-                                            <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />
-                                            <span className="text-white font-bold">Copied!</span>
+                                            <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
+                                            <span className="text-emerald-700 font-bold">Copied!</span>
                                           </>
                                         ) : (
                                           <>
-                                            <Copy className="w-3.5 h-3.5 text-white" />
-                                            <span className="text-white font-bold">Copy Prompt</span>
+                                            <Copy className="w-3 h-3 text-slate-500" />
+                                            <span>Copy Prompt</span>
                                           </>
                                         )}
                                       </button>
                                     </div>
-                                    <div 
-                                      className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text"
-                                    >
-                                      <p className="text-slate-800 text-[13px] sm:text-[13.5px] leading-relaxed whitespace-pre-line font-sans">
+                                    <div className="pt-0.5 select-text font-google">
+                                      <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm whitespace-pre-line font-google">
                                         {item.promptOrCommand}
                                       </p>
                                     </div>
@@ -1060,13 +1093,13 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleToggleSection(sec.id);
+                          handleToggleSection(sec.id, true);
                         }}
                         className="apple-press px-4 py-2 rounded-full flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 border border-slate-200/80 bg-white shadow-2xs transition-colors cursor-pointer"
-                        title={`Collapse ${sec.title}`}
+                        title="Close section"
                       >
                         <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 text-slate-500" />
-                        <span>Collapse {sec.title}</span>
+                        <span>Close</span>
                       </button>
                     </div>
                   </div>

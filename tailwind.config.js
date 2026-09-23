@@ -38,10 +38,12 @@ export default {
           'Product Sans',
           '-apple-system',
           'BlinkMacSystemFont',
+          '"SF Pro Display"',
           'sans-serif'
         ],
         sans: [
           '"Google Sans"',
+          'Product Sans',
           '-apple-system',
           'BlinkMacSystemFont',
           '"SF Pro Display"',

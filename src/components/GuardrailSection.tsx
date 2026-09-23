@@ -34,8 +34,8 @@ import {
 } from 'lucide-react';
 import { PlatformBadge } from './PlatformBadge';
 import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
-import { VideoPlayerModal } from './VideoPlayerModal';
 import { renderChecklistItemIcon } from '../utils/renderChecklistItemIcon';
+import { fluidScrollTo } from '../utils/fluidScroll';
 
 interface GuardrailSectionProps {
   phase: Phase;
@@ -84,14 +84,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState('');
   const [newItemDesc, setNewItemDesc] = useState('');
-  const [activeVideoModal, setActiveVideoModal] = useState<{ title: string; url: string } | null>(null);
   const isSetupPhase = phase.number === 0 || phase.id === 'phase-setup';
 
   // Section reference for smooth scroll to top when collapsing
   const sectionRef = React.useRef<HTMLDivElement>(null);
   const isCollapsingRef = React.useRef(false);
 
-  const collapseSectionSmoothly = () => {
+  const collapseSectionSmoothly = (centerInViewport = false) => {
     if (isCollapsingRef.current) return;
 
     const targetEl = sectionRef.current || document.getElementById(phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`);
@@ -103,26 +102,53 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
     const rect = targetEl.getBoundingClientRect();
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    // 72px offset ensures the section header clears any fixed top bar and notch area
-    const targetY = Math.max(0, currentScroll + rect.top - 72);
-    // If the header has scrolled above comfortable view (rect.top < 60)
-    const isScrolledPast = rect.top < 60;
+    const sectionDocTop = currentScroll + rect.top;
+    const viewportHeight = window.innerHeight;
 
-    if (isScrolledPast) {
+    if (centerInViewport) {
       isCollapsingRef.current = true;
-      // 1. Smoothly glide the viewport back to anchor the section header
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      const centeredY = Math.max(0, sectionDocTop - (viewportHeight - 64) / 2);
+      const diff = Math.abs(currentScroll - centeredY);
 
-      // 2. Start accordion collapse after the scroll is underway so the user's gaze stays anchored
-      setTimeout(() => {
+      if (diff < 15) {
+        // Already centered in viewport, fold closed smoothly
         setIsExpanded(false);
         setExpandedItemId(null);
         setTimeout(() => {
           isCollapsingRef.current = false;
-        }, 450);
-      }, 200);
+        }, 400);
+        return;
+      }
+
+      // Smoothly pull up the viewport to center first, then fold closed without glitching
+      fluidScrollTo(centeredY, {
+        onComplete: () => {
+          setIsExpanded(false);
+          setExpandedItemId(null);
+          setTimeout(() => {
+            isCollapsingRef.current = false;
+          }, 400);
+        },
+      });
+      return;
+    }
+
+    // Default header toggle collapse: glide up if scrolled past, then fold closed
+    const targetY = Math.max(0, currentScroll + rect.top - 72);
+    const isScrolledPast = rect.top < 60;
+
+    if (isScrolledPast) {
+      isCollapsingRef.current = true;
+      fluidScrollTo(targetY, {
+        onComplete: () => {
+          setIsExpanded(false);
+          setExpandedItemId(null);
+          setTimeout(() => {
+            isCollapsingRef.current = false;
+          }, 400);
+        },
+      });
     } else {
-      // Header is already comfortably in view, collapse immediately with fluid 450ms spring easing
       setIsExpanded(false);
       setExpandedItemId(null);
     }
@@ -130,14 +156,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
   const handleToggleExpand = () => {
     if (isExpanded) {
-      collapseSectionSmoothly();
+      collapseSectionSmoothly(false);
     } else {
       setIsExpanded(true);
     }
   };
 
   const handleCollapseSection = () => {
-    collapseSectionSmoothly();
+    collapseSectionSmoothly(true);
   };
 
   // Fluid drag-and-drop reordering for requirement items
@@ -652,40 +678,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 1.5: Dedicated Store Platform & Compliance Scope Pill */}
-                        <div 
-                          className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
-                        >
-                          <div className="select-none flex items-center justify-between">
-                            <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                              Store Platform &amp; Compliance
-                            </span>
-                            <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white border border-slate-200/90 text-slate-700 shadow-2xs select-none">
-                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                                item.platform === 'ios'
-                                  ? 'bg-slate-900'
-                                  : item.platform === 'android'
-                                    ? 'bg-emerald-500'
-                                    : 'bg-blue-600'
-                              }`} />
-                              <span>
-                                {item.platform === 'ios'
-                                  ? 'Apple App Store'
-                                  : item.platform === 'android'
-                                    ? 'Google Play Store'
-                                    : 'Both Apple & Google'}
-                              </span>
-                            </span>
-                          </div>
-                          <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
-                            {item.platform === 'ios'
-                              ? 'Accepted and required specifically for the Apple App Store.'
-                              : item.platform === 'android'
-                                ? 'Accepted and required specifically for the Google Play Store.'
-                                : 'Accepted at Apple App Store & Google Play Store.'}
-                          </p>
-                        </div>
-
                         {/* Subsection 2: Simple Step-by-Step Guide Pill */}
                         {item.implementationSteps && item.implementationSteps.length > 0 && (
                           <div 
@@ -784,7 +776,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                               </button>
                             </div>
 
-                            <div className="pt-0.5 select-text">
+                            <div className="pt-0.5 select-text font-google">
                               {renderFormattedPrompt(item.agentPrompt)}
                             </div>
                           </div>
@@ -850,22 +842,25 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                               </a>
                             )}
 
-                            {/* Red Button for Relevant Video Guide */}
+                            {/* Direct YouTube Video Guide Link */}
                             {item.videoUrl && (
-                              <button
-                                type="button"
+                              <a
+                                href={item.videoUrl.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setActiveVideoModal({
-                                    title: item.videoUrl!.title,
-                                    url: item.videoUrl!.url
-                                  });
+                                  try { window.open(item.videoUrl!.url, '_blank'); } catch {}
                                 }}
-                                className="apple-press w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors text-left"
+                                className="apple-press w-full py-3 px-4 rounded-2xl bg-[#FF0000] hover:bg-[#E60000] active:bg-[#CC0000] text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors cursor-pointer"
+                                title={`Watch ${item.videoUrl.title} on YouTube`}
                               >
-                                <Play className="w-3.5 h-3.5 fill-white text-white shrink-0" />
-                                <span className="truncate">{item.videoUrl.title}</span>
-                              </button>
+                                <svg className="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
+                                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                </svg>
+                                <span className="truncate">Watch on YouTube · {item.videoUrl.title}</span>
+                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90 shrink-0 ml-1" />
+                              </a>
                             )}
 
                             {/* Dark Button for Official Store Guideline */}
@@ -1056,12 +1051,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         </div>
       )}
 
-      {/* In-App Video Modal Player */}
-      <VideoPlayerModal
-        isOpen={!!activeVideoModal}
-        onClose={() => setActiveVideoModal(null)}
-        video={activeVideoModal}
-      />
     </>
   );
 };
