@@ -250,8 +250,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
       implementationSteps: [
         'Enroll in the Apple Developer Program ($99/year) at developer.apple.com. Individual accounts require government photo ID; Company accounts require a free D-U-N-S business number.',
         'Create your Google Play Developer Account ($25 one-time fee) at play.google.com/console and complete identity verification.',
+        'Choose a store-safe App Name (max 30 characters). Avoid trademarked words (e.g. do NOT include "Apple", "iPhone", or "ChatGPT" in your title to prevent instant Guideline 5.2.5 rejections).',
+        'Choose a permanent reverse-DNS Bundle Identifier (e.g. "com.yourname.appname" or "com.yourcompany.appname"). This ID is permanent and cannot be changed once published.',
         'Sign all pending Paid Applications and Tax Agreements in App Store Connect (Agreements, Tax, and Banking).',
-        'Google Play Requirement: Personal developer accounts must recruit 20 testers for a 14-day closed test before going public.'
+        'Google Play Requirement: Personal developer accounts must recruit 20 testers for a 14-day closed test before requesting production access.'
       ],
       agentPrompt: `You are the autonomous mobile release engineer responsible for store registrations and identifier mapping.
 
@@ -296,6 +298,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
         'Unlock your phone and tap "Trust This Computer" on the popup.',
         'On your iPhone, go to Settings > Privacy & Security, scroll down to "Developer Mode", turn it ON, and restart your phone.',
         'After restarting, unlock your phone and tap "Turn On" in the confirmation prompt.',
+        'In Xcode: Open ios/App/App.xcworkspace, select the blue "App" target on the left, go to "Signing & Capabilities", and select your Personal Team or Apple Developer Team under "Team" (check "Automatically manage signing").',
         'Tell your AI assistant: "Build our app and install it onto my connected physical iPhone."'
       ],
       agentPrompt: `You are the autonomous mobile release engineer configuring physical device deployment.
@@ -435,7 +438,9 @@ EXECUTION PROTOCOL FOR THE AGENT:
       implementationSteps: [
         'To test on your phone: Tell your AI: "Build our app and install it onto my connected physical iPhone."',
         'To check for errors: Tell your AI: "Run a type check and verify our codebase has zero errors."',
-        'To prepare for the App Store: Tell your AI: "Create a release archive in Xcode and get our app ready for App Store Connect."',
+        'To free up disk space: Tell your AI: "Clear our temporary Xcode build caches and DerivedData, and rebuild."',
+        'To add tactile feel: Tell your AI: "Connect subtle tactile vibrations (haptics) to our primary buttons and toggles."',
+        'To prepare for TestFlight: Tell your AI: "Create a release archive in Xcode and get our app ready for App Store Connect."',
         'To test on Android: Tell your AI: "Build and bundle our app for Android testing."'
       ],
       agentPrompt: `You are the autonomous build automation engineer for this mobile project.
