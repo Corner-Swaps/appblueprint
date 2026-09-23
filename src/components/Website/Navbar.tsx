@@ -127,8 +127,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </a>
 
-          {/* Mobbin Signature Platform Switcher (Center-Left) */}
-          <div className="hidden md:flex items-center p-1 bg-white/90 backdrop-blur-md rounded-full border border-black/8 shadow-2xs">
+          {/* Mobbin Signature Platform Switcher (Desktop xl+) */}
+          <div className="hidden xl:flex items-center p-1 bg-white/90 backdrop-blur-md rounded-full border border-black/8 shadow-2xs shrink-0">
             <button
               type="button"
               onClick={() => handlePlatformClick('all')}
@@ -168,7 +168,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center space-x-1 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-black/6 shadow-2xs">
+          <nav className="hidden xl:flex items-center space-x-1 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-black/6 shadow-2xs shrink-0">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -182,16 +182,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Header Action CTAs (Search Trigger + Launch App Pill) */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
             {/* Quick Search Shortcut Trigger (Mobbin Style) */}
             <button
               type="button"
               onClick={handleSearchTrigger}
-              className="apple-press hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-slate-600 hover:text-slate-900 border border-black/8 shadow-2xs text-xs font-medium transition-all cursor-pointer"
+              className="apple-press hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-slate-600 hover:text-slate-900 border border-black/8 shadow-2xs text-xs font-medium transition-all cursor-pointer shrink-0"
               title="Search rules and screens"
             >
               <Search className="w-3.5 h-3.5 text-slate-400 stroke-[2.2]" />
-              <span className="text-slate-500">Search rules...</span>
+              <span className="text-slate-500 hidden md:inline">Search rules...</span>
               <kbd className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-slate-100 border border-slate-200 rounded">
                 ⌘K
               </kbd>
@@ -199,7 +199,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <a
               href="support.html"
-              className="hidden lg:inline-flex text-xs font-semibold text-slate-600 hover:text-slate-950 px-2.5 py-1.5 transition-colors"
+              className="hidden lg:inline-flex text-xs font-semibold text-slate-600 hover:text-slate-950 px-2.5 py-1.5 transition-colors shrink-0"
             >
               Support
             </a>
@@ -219,7 +219,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="apple-press xl:hidden w-9 h-9 rounded-xl text-slate-700 hover:text-slate-950 hover:bg-black/5 flex items-center justify-center transition-colors cursor-pointer"
+              className="apple-press xl:hidden w-9 h-9 rounded-xl text-slate-700 hover:text-slate-950 hover:bg-black/5 flex items-center justify-center transition-colors cursor-pointer shrink-0"
               aria-label="Toggle Menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5 stroke-[2.2]" /> : <Menu className="w-5 h-5 stroke-[2.2]" />}
