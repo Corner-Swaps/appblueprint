@@ -14,14 +14,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     setFadingOut(true);
     setTimeout(() => {
       onComplete();
-    }, 450);
+    }, 350);
   };
 
-  // Play animation slowly (2.8 seconds) so the user can clearly see the icon slowly zooming in and transitioning smoothly
+  // Play animation (1.7 seconds) brisk and smooth
   useEffect(() => {
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 2800);
+    }, 1700);
 
     return () => {
       clearTimeout(dismissTimer);
@@ -45,39 +45,24 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         justifyContent: 'center',
         background: '#000000',
         opacity: fadingOut ? 0 : 1,
-        transform: fadingOut ? 'scale(1.15)' : 'scale(1)',
-        transition: 'opacity 450ms cubic-bezier(0.16, 1, 0.3, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1)',
+        transform: fadingOut ? 'scale(1.1)' : 'scale(1)',
+        transition: 'opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1)',
         overflow: 'hidden',
       }}
       aria-label="App Blueprint Launch Screen"
     >
       <style>{`
-        @keyframes splashGlowPulse {
-          0% {
-            opacity: 0.1;
-            transform: scale(0.75);
-          }
-          50% {
-            opacity: 0.85;
-            transform: scale(1.15);
-          }
-          100% {
-            opacity: 0.55;
-            transform: scale(1);
-          }
-        }
-
         @keyframes splashSlowZoom {
           0% {
             opacity: 0;
-            transform: scale(0.88);
+            transform: scale(0.92);
           }
           20% {
             opacity: 1;
           }
           100% {
             opacity: 1;
-            transform: scale(1.05);
+            transform: scale(1.03);
           }
         }
 
@@ -91,28 +76,17 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         }
 
         .splash-logo-container {
-          animation: splashSlowZoom 3.0s cubic-bezier(0.16, 1, 0.3, 1) both;
+          animation: splashSlowZoom 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
           will-change: transform, opacity;
         }
 
         .splash-title-text {
-          animation: splashTitleReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+          animation: splashTitleReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
           will-change: opacity;
         }
       `}</style>
 
-      {/* Ambient luminous radial glow expanding smoothly behind the logo */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0.04) 190px, transparent 360px)',
-          animation: 'splashGlowPulse 2.8s ease-out forwards',
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* 1. Centered Original 3D Chrome Checkmark & Rocket Logo (Unified locked together, zero movement) */}
+      {/* 1. Centered Flat White Logo (Expanded by 15%, No Highlights) */}
       <div
         style={{
           position: 'relative',
@@ -127,20 +101,19 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           className="splash-logo-container"
           style={{
             position: 'relative',
-            width: 240,
-            height: 240,
+            width: 276,
+            height: 276,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            filter: 'drop-shadow(0 16px 36px rgba(255, 255, 255, 0.2))',
           }}
         >
           <img
             src="./logo.png"
             alt="App Blueprint Logo"
             style={{
-              width: 240,
-              height: 240,
+              width: 276,
+              height: 276,
               objectFit: 'contain',
               pointerEvents: 'none',
               display: 'block',
