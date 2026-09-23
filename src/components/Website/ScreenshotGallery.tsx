@@ -12,7 +12,7 @@ export const ScreenshotGallery: React.FC = () => {
     {
       src: './screenshots/02_production_checklist.png',
       title: 'Production Checklist',
-      subtitle: '54 store requirements with deep-dive guidance & traps',
+      subtitle: '101 store requirements with deep-dive guidance & traps',
       tag: 'Checklist',
     },
     {

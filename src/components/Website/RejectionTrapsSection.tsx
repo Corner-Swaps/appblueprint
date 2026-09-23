@@ -111,7 +111,7 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
               Catch Every Rejection Trap Before Store Reviewers Do
             </h4>
             <p className="text-xs sm:text-sm text-slate-400">
-              App Blueprint encodes all 54 store guidelines into an actionable, self-auditing checklist.
+              App Blueprint encodes all 101 store guidelines into an actionable, self-auditing checklist.
             </p>
           </div>
           <button
