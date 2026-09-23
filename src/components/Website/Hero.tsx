@@ -139,7 +139,7 @@ export const Hero: React.FC<HeroProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-                placeholder="Search 101 rules, screens, or guidelines (e.g. IPv6, Privacy, Safe Areas, Keychain)..."
+                placeholder="Search 101 rules & prompts..."
                 className="w-full pl-12 pr-24 py-4 rounded-2xl bg-white border border-black/10 text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-all"
               />
               <div className="absolute right-3 flex items-center space-x-2">
@@ -214,20 +214,31 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="flex items-center justify-center flex-wrap gap-1.5 mt-2.5 text-xs">
               <span className="text-slate-400 font-medium mr-1 hidden sm:inline">Popular:</span>
               {[
-                { label: 'Store Traps', id: 'why-apps-fail' },
-                { label: 'Safe Areas & HIG', id: 'design' },
-                { label: 'Keychain & Security', id: 'security' },
-                { label: 'Privacy Manifest', id: 'legal' },
-                { label: 'Config Generators', id: 'calculator' },
-                { label: 'Launch Academy', id: 'academy' },
+                { label: 'Store Traps', target: '#why-apps-fail' },
+                { label: 'Safe Areas & HIG', category: 'design' },
+                { label: 'Keychain & Security', category: 'security' },
+                { label: 'Privacy Manifest', category: 'legal' },
+                { label: 'Pass Calculator', target: '#calculator' },
+                { label: 'Launch Academy', target: '#academy' },
               ].map(chip => (
-                <a
-                  key={chip.label}
-                  href={`#${chip.id}`}
-                  className="px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-slate-600 hover:text-slate-950 border border-black/5 text-[11px] font-semibold transition-colors"
-                >
-                  {chip.label}
-                </a>
+                chip.category ? (
+                  <button
+                    key={chip.label}
+                    type="button"
+                    onClick={() => handleCategorySelect(chip.category)}
+                    className="apple-press px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-slate-600 hover:text-slate-950 border border-black/5 text-[11px] font-semibold transition-colors cursor-pointer shadow-2xs"
+                  >
+                    {chip.label}
+                  </button>
+                ) : (
+                  <a
+                    key={chip.label}
+                    href={chip.target}
+                    className="apple-press px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-slate-600 hover:text-slate-950 border border-black/5 text-[11px] font-semibold transition-colors shadow-2xs"
+                  >
+                    {chip.label}
+                  </a>
+                )
               ))}
             </div>
           </div>
@@ -336,7 +347,7 @@ export const Hero: React.FC<HeroProps> = ({
               <img
                 src={previewTabs[activePreviewTab].image}
                 alt={previewTabs[activePreviewTab].title}
-                className="w-full h-auto object-cover rounded-xl transition-all duration-300 transform hover:scale-[1.01]"
+                className="w-full h-full object-cover object-top rounded-xl transition-all duration-300 transform hover:scale-[1.01]"
                 loading="eager"
               />
               

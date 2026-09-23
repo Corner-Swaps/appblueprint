@@ -779,12 +779,14 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         <SplashScreen onComplete={() => setShowSplash(false)} />
       )}
 
-      {/* Top Fade Vignette Effect (Compact, not too big) */}
-      <div 
-        className="fixed top-0 left-0 right-0 pointer-events-none z-30 bg-gradient-to-b from-[#FAF8F6] via-[#FAF8F6]/80 to-transparent"
-        style={{ height: 'max(calc(env(safe-area-inset-top, 0px) + 8px), 48px)' }}
-        aria-hidden="true" 
-      />
+      {/* Top Fade Vignette Effect (Only for Native Mobile Status Bar) */}
+      {Capacitor.isNativePlatform() && (
+        <div 
+          className="fixed top-0 left-0 right-0 pointer-events-none z-30 bg-gradient-to-b from-[#FAF8F6] via-[#FAF8F6]/80 to-transparent"
+          style={{ height: 'max(calc(env(safe-area-inset-top, 0px) + 8px), 48px)' }}
+          aria-hidden="true" 
+        />
+      )}
 
       {/* Bottom Fade Vignette Effect */}
       <div 
