@@ -43,7 +43,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(ellipse at 50% 45%, #FAF5FF 0%, #F3E8FF 40%, #E9D5FF 80%, #DDD6FE 100%)',
+        background: '#000000',
         opacity: fadingOut ? 0 : 1,
         transform: fadingOut ? 'scale(1.03)' : 'scale(1)',
         transition: 'opacity 250ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1)',
@@ -51,21 +51,40 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       }}
       aria-label="App Blueprint Intro"
     >
-      {/* 1. Centered Crisp Purple Gradient Rocket Logo with Radiant Halo */}
+      {/* Soft central ambient radial glow */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.08) 0px, rgba(255, 255, 255, 0.02) 180px, transparent 320px)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* 1. Centered Crisp White Rocket Icon */}
       <div
         className="lr-splash-icon"
         style={{
           position: 'relative',
-          width: 250,
-          height: 250,
+          width: 230,
+          height: 230,
           marginTop: -48,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          filter: 'drop-shadow(0 16px 36px rgba(126, 34, 206, 0.25))',
+          filter: 'drop-shadow(0 12px 32px rgba(255, 255, 255, 0.15))',
         }}
       >
-        <AppLogo size={250} />
+        <img
+          src="/logo_solid_white.png"
+          alt="App Blueprint"
+          style={{
+            width: 230,
+            height: 230,
+            objectFit: 'contain',
+            display: 'block',
+          }}
+        />
       </div>
 
       {/* 2. App Blueprint Title Positioned Lower at the Bottom */}
@@ -84,8 +103,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             fontFamily: "'Google Sans', 'GoogleSans-Medium', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
             fontSize: 34,
             fontWeight: 700,
-            color: '#3B0764',
+            color: '#FFFFFF',
             letterSpacing: '-0.3px',
+            textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)',
           }}
         >
           App Blueprint
