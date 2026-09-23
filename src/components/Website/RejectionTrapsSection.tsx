@@ -46,58 +46,68 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
   ];
 
   return (
-    <section id="why-apps-fail" className="scroll-mt-20 py-16 sm:py-24 bg-white/60 border-y border-slate-200/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="why-apps-fail" className="scroll-mt-20 py-20 sm:py-28 bg-[#090C15] text-white border-y border-slate-800/80 relative overflow-hidden">
+      
+      {/* Background Subtle Security Shield Grid Aura */}
+      <div 
+        aria-hidden="true" 
+        className="absolute inset-0 pointer-events-none opacity-20 -z-0"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(239, 68, 68, 0.15), transparent 60%)'
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-red-50 border border-red-200/80 text-xs font-bold text-red-700 uppercase tracking-wider">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-xs font-bold text-rose-400 uppercase tracking-wider backdrop-blur-md">
             <AlertTriangle className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>The Cost of Guesswork</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight font-google">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight font-google">
             Why 40%+ of Mobile Apps Get Rejected on First Review
           </h2>
 
-          <p className="text-base sm:text-lg text-slate-600">
+          <p className="text-base sm:text-lg text-slate-400 leading-relaxed text-balance">
             Apple and Google reviewers don&apos;t just evaluate your design. They run rigorous automated and manual audits across network edge cases, privacy manifests, account lifecycle rules, and platform policies.
           </p>
         </div>
 
-        {/* 4 Cards Grid */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        {/* 4 Cards Diagnostic Grid */}
+        <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
           {traps.map((trap, idx) => {
             const Icon = trap.icon;
             return (
               <div 
                 key={idx}
-                className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between"
+                className="bg-slate-900/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-slate-800 hover:border-slate-700/80 shadow-xl transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${trap.color} flex items-center justify-center text-white shadow-xs`}>
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${trap.color} flex items-center justify-center text-white shadow-md`}>
                       <Icon className="w-6 h-6 stroke-[2.2]" />
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white/10 text-slate-300 border border-white/10">
                       {trap.tag}
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-900 font-google mb-2">
+                  <h3 className="text-xl font-bold text-white font-google mb-2 group-hover:text-blue-300 transition-colors">
                     {trap.title}
                   </h3>
 
-                  <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                  <p className="text-sm text-slate-400 leading-relaxed mb-4">
                     {trap.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex items-center space-x-2 text-xs font-semibold text-emerald-700 bg-emerald-50/60 p-3 rounded-xl border border-emerald-200/60">
-                  <span className="shrink-0 font-bold uppercase tracking-wider text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded">
+                <div className="pt-4 border-t border-slate-800 flex items-center space-x-2.5 text-xs font-semibold text-emerald-300 bg-emerald-950/40 p-3.5 rounded-2xl border border-emerald-800/40">
+                  <span className="shrink-0 font-bold uppercase tracking-wider text-[10px] bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-md font-google">
                     Solution
                   </span>
-                  <span>{trap.guardrail}</span>
+                  <span className="text-emerald-200">{trap.guardrail}</span>
                 </div>
               </div>
             );
@@ -105,9 +115,9 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
         </div>
 
         {/* Banner CTA */}
-        <div className="mt-10 bg-slate-950 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+        <div className="mt-10 sm:mt-12 bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-700/80 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
           <div className="space-y-1 text-center sm:text-left">
-            <h4 className="text-lg sm:text-xl font-bold font-google">
+            <h4 className="text-lg sm:text-xl font-bold font-google text-white">
               Catch Every Rejection Trap Before Store Reviewers Do
             </h4>
             <p className="text-xs sm:text-sm text-slate-400">
@@ -117,7 +127,7 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
           <button
             type="button"
             onClick={onLaunchApp}
-            className="apple-press shrink-0 inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow-xs"
+            className="apple-press shrink-0 inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold px-6 py-3.5 rounded-xl shadow-md transition-colors cursor-pointer"
           >
             <span>Run Store Audit Now</span>
             <ArrowRight className="w-4 h-4 stroke-[2.2]" />
