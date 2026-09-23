@@ -802,7 +802,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         handleToggleSection(sec.id);
                       }}
                       className={`apple-press transition-all duration-200 flex items-center justify-center ${
-                        !isSectionOpen 
+                        isSectionOpen 
                           ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
                           : 'w-7 h-7 text-slate-400 hover:text-slate-600'
                       }`}
@@ -948,7 +948,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   handleToggleItem(item.id);
                                 }}
                                 className={`apple-press transition-all duration-200 flex items-center justify-center ${
-                                  !isItemOpen 
+                                  isItemOpen 
                                     ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
                                     : 'w-7 h-7 text-slate-400 hover:text-slate-600'
                                 }`}

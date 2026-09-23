@@ -240,8 +240,8 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: 'Never commit raw API keys or client secrets into public GitHub repositories or client-side bundles. Always store credentials in .env.local, inspect all agent-generated code for security vulnerabilities, and verify licenses.',
     url: 'https://chatgpt.com',
     iconName: 'Cpu',
-    promptOrCommand: 'curl https://api.openai.com/v1/chat/completions',
-    promptLabel: 'API Endpoint'
+    promptOrCommand: 'API Endpoint: https://api.openai.com/v1/chat/completions\n\nAn API endpoint is the secure web address your mobile app or backend communicates with to query OpenAI models like GPT-4o. You send your user prompt along with your private API key in an HTTP request, and OpenAI returns the AI response.',
+    promptLabel: 'API Endpoint & Connection Details'
   },
   {
     id: 'ai-claude-sonnet',
@@ -1114,8 +1114,8 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: 'Storing sensitive user auth tokens or personal information in unencrypted localStorage or plain SQLite will fail store security scans and violate MASVS security standards. Always use hardware Keychain or Keystore.',
     url: 'https://haveibeenpwned.com/API/v3',
     iconName: 'Key',
-    promptOrCommand: 'curl https://api.pwnedpasswords.com/range/21BD1',
-    promptLabel: 'K-Anonymity Query'
+    promptOrCommand: 'API Endpoint: https://api.pwnedpasswords.com/range/{first_5_hash_chars}\n\nAn API endpoint is a secure web URL your app checks to see if user passwords appeared in known data breaches. It uses k-anonymity to protect user privacy by never sending the actual password.',
+    promptLabel: 'Breach Check API & Connection'
   },
   {
     id: 'sec-letsencrypt',
