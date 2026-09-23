@@ -36,50 +36,56 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="scroll-mt-20 py-16 sm:py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="scroll-mt-20 py-20 sm:py-28 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       
       {/* Header */}
-      <div className="text-center space-y-4 mb-12">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
-          <HelpCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+      <div className="text-center space-y-4 mb-14">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-200/60 border border-slate-300/60 text-xs font-semibold text-slate-800 tracking-wide">
+          <HelpCircle className="w-3.5 h-3.5 text-slate-600 stroke-[2.5]" />
           <span>Got Questions?</span>
         </div>
 
-        <h2 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight font-google">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B0F17] tracking-tight font-google">
           Frequently Asked Questions
         </h2>
 
-        <p className="text-base text-slate-600">
+        <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl mx-auto">
           Everything you need to know about using App Blueprint to ship your mobile apps.
         </p>
       </div>
 
-      {/* Accordion */}
-      <div className="space-y-3">
+      {/* Accordion List */}
+      <div className="space-y-3.5">
         {faqs.map((faq, idx) => {
           const isOpen = openIdx === idx;
           return (
             <div
               key={idx}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all"
+              className={`rounded-2xl border transition-all duration-200 bg-white overflow-hidden ${
+                isOpen 
+                  ? 'border-blue-500 shadow-md ring-2 ring-blue-500/10' 
+                  : 'border-slate-200/90 shadow-2xs hover:border-slate-300'
+              }`}
             >
               <button
                 type="button"
                 onClick={() => toggle(idx)}
-                className="w-full text-left p-5 sm:p-6 flex items-center justify-between space-x-4 cursor-pointer"
+                className="w-full text-left p-5 sm:p-6 flex items-center justify-between space-x-4 cursor-pointer select-none"
               >
                 <span className="text-base sm:text-lg font-bold text-slate-900 font-google">
                   {faq.q}
                 </span>
-                <ChevronDown
-                  className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
-                    isOpen ? 'rotate-180 text-blue-600' : ''
-                  }`}
-                />
+                <div className={`p-1.5 rounded-lg transition-colors ${isOpen ? 'bg-blue-50 text-blue-600' : 'text-slate-400'}`}>
+                  <ChevronDown
+                    className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
               </button>
 
               {isOpen && (
-                <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                <div className="px-5 pb-6 sm:px-6 sm:pb-6 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4 bg-slate-50/50">
                   {faq.a}
                 </div>
               )}

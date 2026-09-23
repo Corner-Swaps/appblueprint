@@ -796,7 +796,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       <main 
         onTouchStart={handlePageTouchStart}
         onTouchEnd={handlePageTouchEnd}
-        className="flex-1 w-full max-w-xl mx-auto px-4 pt-1 space-y-3 ios-safe-top overflow-x-hidden"
+        className="flex-1 w-full max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto px-4 md:px-6 pt-1 space-y-3 ios-safe-top overflow-x-hidden"
       >
         <div className="relative w-full">
           {/* 1. Checklist Tab */}

@@ -52,7 +52,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   // ==========================================
   {
     id: 'type-typewolf',
-    title: 'Typewolf (Curated Typography & Font Pairing Guides)',
+    title: 'Typewolf',
     category: 'typography',
     categoryLabel: 'Curated Typography Guide',
     badge: 'Free',
@@ -76,7 +76,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: 'type-fontshare',
-    title: 'Fontshare (Indian Type Foundry)',
+    title: 'Fontshare Fonts',
     category: 'typography',
     categoryLabel: '100% Free Professional Fonts',
     badge: 'Free',
@@ -100,7 +100,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: 'type-bunny-fonts',
-    title: 'Bunny Fonts (Privacy-First Open Fonts)',
+    title: 'Bunny Fonts',
     category: 'typography',
     categoryLabel: 'GDPR-Compliant Open Fonts',
     badge: 'Free',
@@ -124,7 +124,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: 'type-apple-sf-pro',
-    title: 'Apple SF Pro & SF Compact',
+    title: 'Apple SF Pro',
     category: 'typography',
     categoryLabel: 'Official Apple iOS System Font',
     badge: 'Official',
@@ -148,7 +148,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: 'type-google-fonts-local',
-    title: 'Google Fonts (Self-Hosted Library)',
+    title: 'Google Fonts',
     category: 'typography',
     categoryLabel: 'World\'s Largest Open Font Library',
     badge: 'Free',
@@ -172,7 +172,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: 'type-geist-vercel',
-    title: 'Geist & Geist Mono (Vercel)',
+    title: 'Geist & Geist Mono',
     category: 'typography',
     categoryLabel: 'Modern Technical Typography',
     badge: 'Open Source',
@@ -196,7 +196,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: 'type-uncut-curated',
-    title: 'Uncut.wtf (Contemporary Fonts)',
+    title: 'Uncut Fonts',
     category: 'typography',
     categoryLabel: 'Contemporary Display Fonts',
     badge: 'Free',
@@ -1191,7 +1191,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: 'priv-apple-att',
-    title: 'App Tracking Transparency (ATT)',
+    title: 'App Tracking Transparency',
     category: 'privacy',
     categoryLabel: 'Mandatory User Consent Framework',
     badge: 'Official',
