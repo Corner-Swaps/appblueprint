@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TROUBLESHOOTING_DATA } from '../data/troubleshooting';
 import { TroubleshootingScenario, Platform } from '../types';
+import { copyToClipboard } from '../utils/clipboard';
 import { PlatformBadge } from './PlatformBadge';
 import { 
   Stethoscope, 
@@ -38,7 +39,7 @@ export const TroubleshootingWizard: React.FC = () => {
   });
 
   const handleCopyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
+    copyToClipboard(code);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };

@@ -6,6 +6,7 @@ import {
   generatePrivacyPolicy,
   PrivacyManifestConfig
 } from '../data/generators';
+import { copyToClipboard } from '../utils/clipboard';
 import { 
   FileCode, 
   Copy, 
@@ -87,7 +88,7 @@ export const ConfigGenerators: React.FC = () => {
   const current = getCurrentCode();
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(current.code);
+    copyToClipboard(current.code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

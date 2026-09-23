@@ -73,19 +73,26 @@ export const Hero: React.FC<HeroProps> = ({
     const el = document.getElementById('explorer');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
+      history.pushState(null, '', '#explorer');
     }
   };
 
   const handlePlatformSelect = (p: 'all' | 'ios' | 'android') => {
     if (onSelectPlatform) onSelectPlatform(p);
     const el = document.getElementById('explorer');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      history.pushState(null, '', '#explorer');
+    }
   };
 
   const handleCategorySelect = (cat: string) => {
     if (onSelectCategory) onSelectCategory(cat);
     const el = document.getElementById('explorer');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      history.pushState(null, '', '#explorer');
+    }
   };
 
   return (

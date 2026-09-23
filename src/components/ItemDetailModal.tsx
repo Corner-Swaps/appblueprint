@@ -18,6 +18,7 @@ import {
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { PlatformBadge } from './PlatformBadge';
 import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
+import { copyToClipboard } from '../utils/clipboard';
 
 interface ItemDetailModalProps {
   item: ChecklistItem | null;
@@ -69,7 +70,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
   const handleCopyCode = () => {
     if (item.codeSnippet) {
-      navigator.clipboard.writeText(item.codeSnippet.code);
+      copyToClipboard(item.codeSnippet.code);
       setCopiedCode(true);
       setTimeout(() => setCopiedCode(false), 2000);
     }
@@ -77,7 +78,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
   const handleCopyAgentPrompt = async () => {
     if (item.agentPrompt) {
-      navigator.clipboard.writeText(item.agentPrompt);
+      copyToClipboard(item.agentPrompt);
       try {
         await Haptics.impact({ style: ImpactStyle.Medium });
       } catch (e) {
