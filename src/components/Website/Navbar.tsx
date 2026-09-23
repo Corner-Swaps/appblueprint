@@ -69,8 +69,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Brand Logo & Monogram (Mobbin Style) */}
           <a 
-            href="#" 
-            className="flex items-center space-x-2.5 group focus:outline-hidden shrink-0"
+            href="#overview" 
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center space-x-2.5 group focus:outline-hidden shrink-0 cursor-pointer"
           >
             <div className="w-9 h-9 rounded-xl bg-slate-950 text-white shadow-xs border border-black/10 flex items-center justify-center overflow-hidden transition-transform duration-200 group-hover:scale-105">
               <img 

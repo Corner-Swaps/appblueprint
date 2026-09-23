@@ -691,28 +691,42 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
                               {item.whyItMatters}
                             </p>
-
-                            {/* Store Platform Scope Pill */}
-                            <div className="pt-0.5 select-none flex items-center">
-                              <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white border border-slate-200/90 text-slate-700 shadow-2xs">
-                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                                  item.platform === 'ios'
-                                    ? 'bg-slate-900'
-                                    : item.platform === 'android'
-                                      ? 'bg-emerald-500'
-                                      : 'bg-blue-600'
-                                }`} />
-                                <span>
-                                  {item.platform === 'ios'
-                                    ? 'Apple App Store Exclusive'
-                                    : item.platform === 'android'
-                                      ? 'Google Play Store Exclusive'
-                                      : 'Both Apple App Store & Google Play'}
-                                </span>
-                              </span>
-                            </div>
                           </div>
                         )}
+
+                        {/* Subsection 1.5: Dedicated Store Platform & Compliance Scope Pill */}
+                        <div 
+                          className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
+                        >
+                          <div className="select-none flex items-center justify-between">
+                            <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                              Store Platform &amp; Compliance
+                            </span>
+                            <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white border border-slate-200/90 text-slate-700 shadow-2xs select-none">
+                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                item.platform === 'ios'
+                                  ? 'bg-slate-900'
+                                  : item.platform === 'android'
+                                    ? 'bg-emerald-500'
+                                    : 'bg-blue-600'
+                              }`} />
+                              <span>
+                                {item.platform === 'ios'
+                                  ? 'Apple App Store'
+                                  : item.platform === 'android'
+                                    ? 'Google Play Store'
+                                    : 'Both Apple & Google'}
+                              </span>
+                            </span>
+                          </div>
+                          <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
+                            {item.platform === 'ios'
+                              ? 'Accepted and required specifically for the Apple App Store.'
+                              : item.platform === 'android'
+                                ? 'Accepted and required specifically for the Google Play Store.'
+                                : 'Accepted at Apple App Store & Google Play Store.'}
+                          </p>
+                        </div>
 
                         {/* Subsection 2: Simple Step-by-Step Guide Pill */}
                         {item.implementationSteps && item.implementationSteps.length > 0 && (
@@ -795,22 +809,18 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                                   e.stopPropagation();
                                   handleCopyText(`prompt-${item.id}`, item.agentPrompt || '');
                                 }}
-                                className={`apple-press px-3 py-1.5 rounded-full text-[11px] font-bold flex items-center space-x-1.5 shrink-0 shadow-2xs transition-all duration-200 cursor-pointer ${
-                                  copiedSnippetId === `prompt-${item.id}`
-                                    ? 'bg-emerald-600 border border-emerald-600 text-white'
-                                    : 'bg-slate-900 hover:bg-slate-800 active:bg-black border border-slate-900 text-white'
-                                }`}
+                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors cursor-pointer"
                                 title="Copy prompt for AI coding agent"
                               >
                                 {copiedSnippetId === `prompt-${item.id}` ? (
                                   <>
-                                    <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />
-                                    <span className="text-white font-bold">Copied!</span>
+                                    <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
+                                    <span className="text-emerald-700 font-bold">Copied!</span>
                                   </>
                                 ) : (
                                   <>
-                                    <Copy className="w-3.5 h-3.5 text-white" />
-                                    <span className="text-white font-bold">Copy Prompt</span>
+                                    <Copy className="w-3 h-3 text-slate-500" />
+                                    <span>Copy Prompt</span>
                                   </>
                                 )}
                               </button>

@@ -146,7 +146,7 @@ export const PhasesShowcase: React.FC<PhasesShowcaseProps> = ({ onLaunchApp }) =
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center space-x-2 mb-0.5">
+                      <div className="flex items-center flex-wrap gap-1.5 mb-1">
                         <span className="text-xs font-bold text-slate-900 font-google">
                           {item.title}
                         </span>
