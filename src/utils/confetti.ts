@@ -2,16 +2,18 @@ import confetti from 'canvas-confetti';
 
 /**
  * Fires celebratory confetti burst when a single phase / section completes.
+ * Tuned to burst energetically and fade away promptly on descent.
  */
 export const triggerPhaseCompleteConfetti = () => {
-  // High-altitude celebratory burst shooting to the top and sprinkling down gracefully
   confetti({
-    particleCount: 90,
-    spread: 85,
-    startVelocity: 70,
-    gravity: 0.7,
-    ticks: 380,
-    origin: { y: 0.85 },
+    particleCount: 110,
+    spread: 95,
+    startVelocity: 85,
+    gravity: 0.65,
+    ticks: 280,
+    decay: 0.93,
+    scalar: 1.15,
+    origin: { y: 0.95 },
     colors: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#6366F1'],
     disableForReducedMotion: true,
     zIndex: 9999,
@@ -20,9 +22,10 @@ export const triggerPhaseCompleteConfetti = () => {
 
 /**
  * Fires a grand celebratory multi-cannon confetti show when the entire project is completed.
+ * Tuned to shoot high into the sky and sprinkle gracefully all the way down.
  */
 export const triggerAllCompleteConfetti = () => {
-  const duration = 2400;
+  const duration = 2200;
   const animationEnd = Date.now() + duration;
   const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#6366F1', '#14B8A6'];
 
@@ -35,29 +38,33 @@ export const triggerAllCompleteConfetti = () => {
 
     const particleCount = 45 * (timeLeft / duration);
 
-    // Left high-angle cannon shooting towards the ceiling
+    // Left cannon
     confetti({
       particleCount: Math.floor(particleCount / 2),
-      angle: 65,
-      spread: 60,
-      startVelocity: 75,
-      gravity: 0.65,
-      ticks: 420,
-      origin: { x: 0.08, y: 0.85 },
+      angle: 60,
+      spread: 75,
+      startVelocity: 92,
+      gravity: 0.6,
+      ticks: 320,
+      decay: 0.93,
+      scalar: 1.2,
+      origin: { x: 0.05, y: 0.95 },
       colors: colors,
       zIndex: 9999,
       disableForReducedMotion: true,
     });
 
-    // Right high-angle cannon shooting towards the ceiling
+    // Right cannon
     confetti({
       particleCount: Math.floor(particleCount / 2),
-      angle: 115,
-      spread: 60,
-      startVelocity: 75,
-      gravity: 0.65,
-      ticks: 420,
-      origin: { x: 0.92, y: 0.85 },
+      angle: 120,
+      spread: 75,
+      startVelocity: 92,
+      gravity: 0.6,
+      ticks: 320,
+      decay: 0.93,
+      scalar: 1.2,
+      origin: { x: 0.95, y: 0.95 },
       colors: colors,
       zIndex: 9999,
       disableForReducedMotion: true,

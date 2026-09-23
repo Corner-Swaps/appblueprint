@@ -50,7 +50,7 @@ export const NativeReviewPromptModal: React.FC<NativeReviewPromptModalProps> = (
         {/* Title & Subtitle */}
         <div className="space-y-1 px-1">
           <h3 id="review-title" className="text-lg font-bold text-slate-900 font-google tracking-tight">
-            Enjoying LaunchReady?
+            Enjoying App Blueprint?
           </h3>
           <p className="text-xs text-slate-500 leading-relaxed">
             Tap a star to rate your developer experience. Your feedback helps us improve every checklist and guide.

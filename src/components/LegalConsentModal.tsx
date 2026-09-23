@@ -58,7 +58,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
             <div className="px-5 py-4 overflow-y-auto space-y-4 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100">
               <div className="space-y-2">
                 <p className="font-semibold text-slate-800">
-                  Welcome to LaunchReady (App Creator). By accessing or using this tool, you explicitly acknowledge and agree to the legally binding terms detailed below.
+                  Welcome to App Blueprint. By accessing or using this tool, you explicitly acknowledge and agree to the legally binding terms detailed below.
                 </p>
               </div>
 
@@ -68,7 +68,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>1. Technical Scaffolding &amp; Educational Tool</span>
                 </h3>
                 <p>
-                  LaunchReady is provided strictly as an educational checklist, architecture guide, and developer assistant tool on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis without warranties of any kind, express or implied. It does not guarantee approval by Apple Inc., Google LLC, or any third-party app review board.
+                  App Blueprint is provided strictly as an educational checklist, architecture guide, and developer assistant tool on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis without warranties of any kind, express or implied. It does not guarantee approval by Apple Inc., Google LLC, or any third-party app review board.
                 </p>
               </div>
 
@@ -78,7 +78,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>2. Absolute Limitation of Developer Liability</span>
                 </h3>
                 <p>
-                  Under no circumstances shall the creators, authors, copyright holders, or contributors of LaunchReady be liable for any claims, damages, losses, liabilities, legal actions, financial penalties, account terminations, or operational disruptions arising from, out of, or in connection with the software, code generation, AI directives, architectural prompts, or any application created, compiled, or published by the user. <strong>You assume 100% full, exclusive, and sole legal and commercial liability for all software you build and distribute.</strong>
+                  Under no circumstances shall the creators, authors, copyright holders, or contributors of App Blueprint be liable for any claims, damages, losses, liabilities, legal actions, financial penalties, account terminations, or operational disruptions arising from, out of, or in connection with the software, code generation, AI directives, architectural prompts, or any application created, compiled, or published by the user. <strong>You assume 100% full, exclusive, and sole legal and commercial liability for all software you build and distribute.</strong>
                 </p>
               </div>
 
@@ -88,7 +88,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>3. Strict Prohibition of Inappropriate &amp; Malicious Apps</span>
                 </h3>
                 <p>
-                  You are strictly prohibited from using LaunchReady, its architecture guides, or prompt directives to develop, deploy, or assist with applications that:
+                  You are strictly prohibited from using App Blueprint, its architecture guides, or prompt directives to develop, deploy, or assist with applications that:
                 </p>
                 <ul className="list-disc pl-5 space-y-1 text-slate-600">
                   <li>Facilitate unlawful activities, fraudulent schemes, phishing, scamming, or intellectual property theft.</li>
@@ -166,7 +166,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
             <div className="px-5 py-4 overflow-y-auto space-y-4 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100">
               <div className="space-y-2">
                 <p className="font-semibold text-slate-800">
-                  LaunchReady is architected with strict privacy-by-design principles. We believe your intellectual property and project workflows belong solely to you.
+                  App Blueprint is architected with strict privacy-by-design principles. We believe your intellectual property and project workflows belong solely to you.
                 </p>
               </div>
 

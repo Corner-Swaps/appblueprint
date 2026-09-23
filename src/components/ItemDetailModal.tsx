@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { PlatformBadge } from './PlatformBadge';
+import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
 
 interface ItemDetailModalProps {
   item: ChecklistItem | null;
@@ -162,6 +163,11 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             <p className="bg-white/5 p-4 rounded-2xl border border-white/10 text-white/90 leading-relaxed text-xs sm:text-sm">
               {item.whyItMatters}
             </p>
+            <div className="flex items-center justify-center pt-2.5">
+              <span className="px-3.5 py-1 rounded-full text-[11px] font-medium bg-white/10 text-white/80 border border-white/15 text-center shadow-2xs">
+                Copy to clipboard to transfer instructions to your computer and agent
+              </span>
+            </div>
           </div>
 
           {/* Section: Store Guideline Link */}
@@ -187,60 +193,39 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             </div>
           )}
 
-          {/* Section: AI Coding Agent Directive */}
+          {/* Section: AI Coding */}
           {item.agentPrompt && (
             <div className="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/15 space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2.5">
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0 border border-white/15">
-                    <Terminal className="w-4 h-4 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-bold tracking-tight text-white block">
-                      AI Coding Agent Directive
-                    </h3>
-                    <span className="text-[11px] text-white/60 font-medium block">
-                      For Cursor, Claude Code, Windsurf, Copilot & Antigravity
-                    </span>
-                  </div>
-                </div>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-white/90 font-google">
+                  AI Coding
+                </h3>
                 <button
                   type="button"
                   onClick={handleCopyAgentPrompt}
-                  className={`apple-press px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-sm ${
-                    copiedPrompt
-                      ? 'bg-emerald-500 text-white shadow-emerald-500/20'
-                      : 'bg-white/15 hover:bg-white/25 text-white border border-white/20'
-                  }`}
+                  className="apple-press px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-[11px] font-semibold flex items-center space-x-1.5 transition-colors shrink-0"
                   title="Copy prompt for AI coding agent"
                 >
                   {copiedPrompt ? (
                     <>
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
-                      <span>Copied!</span>
+                      <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-400" />
+                      <span className="text-emerald-300 font-bold">Copied</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5" />
-                      <span>Copy Directive</span>
+                      <span>Copy</span>
                     </>
                   )}
                 </button>
               </div>
 
-              <div className="text-[11px] text-white/80 bg-white/5 px-3.5 py-2 rounded-xl border border-white/10 leading-normal flex items-start space-x-2">
-                <span className="text-sm">⚡</span>
-                <span>
-                  <strong>Built for AI Agents:</strong> Give this exact prompt to your AI coding agent. It contains complete architectural specs, guidelines, and verification rules so the agent writes the code and does the work for you.
-                </span>
-              </div>
+              <p className="text-xs sm:text-[13px] text-white/80 leading-relaxed">
+                Copy to clipboard to transfer instructions to your computer and agent (Cursor, Claude Code, Windsurf, Copilot & Antigravity).
+              </p>
 
-              <div className="p-4 rounded-xl bg-black/80 border border-white/15 text-white/90 font-mono text-xs sm:text-[13px] select-text max-h-72 overflow-y-auto space-y-3.5">
-                {item.agentPrompt.split('\n\n').map((paragraph, pIdx) => (
-                  <p key={pIdx} className="leading-relaxed whitespace-pre-line">
-                    {paragraph}
-                  </p>
-                ))}
+              <div className="p-3.5 sm:p-4 rounded-xl bg-white/10 border border-white/15 text-white/90 text-xs sm:text-[13.5px] select-text max-h-72 overflow-y-auto leading-relaxed">
+                {renderFormattedPrompt(item.agentPrompt, true)}
               </div>
             </div>
           )}

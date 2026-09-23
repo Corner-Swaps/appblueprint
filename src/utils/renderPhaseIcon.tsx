@@ -18,14 +18,18 @@ import {
   Sparkles,
   Compass,
   Sliders,
-  Code
+  Code,
+  LayoutGrid,
+  Database
 } from 'lucide-react';
 
 export const renderPhaseIcon = (name: string, className = "w-5 h-5 text-slate-800 stroke-[2.2]") => {
   const props = { className };
   switch (name) {
     case 'Lightbulb': return <Lightbulb {...props} />;
+    case 'LayoutGrid': return <LayoutGrid {...props} />;
     case 'Palette': return <Palette {...props} />;
+    case 'Database': return <Database {...props} />;
     case 'Cpu': return <Cpu {...props} />;
     case 'ShieldCheck': return <ShieldCheck {...props} />;
     case 'Scale': return <Scale {...props} />;

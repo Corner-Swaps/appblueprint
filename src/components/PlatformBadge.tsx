@@ -23,14 +23,20 @@ export const PlatformBadge: React.FC<PlatformBadgeProps> = ({
   variant = 'light',
   className = ''
 }) => {
-  const baseClasses = variant === 'dark'
-    ? "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white border border-white/15 tracking-wide inline-flex items-center space-x-1"
-    : "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200/80 tracking-wide inline-flex items-center space-x-1";
+  const isDark = variant === 'dark';
+
+  const appleClasses = isDark
+    ? "px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-slate-950 border border-white/90 tracking-wide inline-flex items-center space-x-1 shadow-2xs"
+    : "px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-900 text-white border border-slate-900 tracking-wide inline-flex items-center space-x-1 shadow-2xs";
+
+  const androidClasses = isDark
+    ? "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white border border-emerald-400 tracking-wide inline-flex items-center space-x-1 shadow-2xs"
+    : "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600 text-white border border-emerald-600 tracking-wide inline-flex items-center space-x-1 shadow-2xs";
 
   if (platform === 'ios') {
     return (
-      <span className={`${baseClasses} ${className}`}>
-        <AppleIcon className="w-2.5 h-2.5 shrink-0 -mt-0.5" />
+      <span className={`${appleClasses} ${className}`}>
+        <AppleIcon className={`w-2.5 h-2.5 shrink-0 -mt-0.5 ${isDark ? 'text-slate-950' : 'text-white'}`} />
         <span>Apple</span>
       </span>
     );
@@ -38,21 +44,24 @@ export const PlatformBadge: React.FC<PlatformBadgeProps> = ({
 
   if (platform === 'android') {
     return (
-      <span className={`${baseClasses} ${className}`}>
-        <AndroidIcon className="w-2.5 h-2.5 shrink-0" />
+      <span className={`${androidClasses} ${className}`}>
+        <AndroidIcon className="w-2.5 h-2.5 shrink-0 text-white" />
         <span>Android</span>
       </span>
     );
   }
 
-  // platform === 'both' -> Apple logo + Apple + "+" + Android logo + Android
+  // platform === 'both' -> Separate pills with their own distinct colors!
   return (
-    <span className={`${baseClasses} ${className}`}>
-      <AppleIcon className="w-2.5 h-2.5 shrink-0 -mt-0.5" />
-      <span>Apple</span>
-      <span className={variant === 'dark' ? "text-white/40 font-semibold" : "text-slate-400 font-semibold"}>+</span>
-      <AndroidIcon className="w-2.5 h-2.5 shrink-0" />
-      <span>Android</span>
+    <span className={`inline-flex items-center gap-1.5 ${className}`}>
+      <span className={appleClasses}>
+        <AppleIcon className={`w-2.5 h-2.5 shrink-0 -mt-0.5 ${isDark ? 'text-slate-950' : 'text-white'}`} />
+        <span>Apple</span>
+      </span>
+      <span className={androidClasses}>
+        <AndroidIcon className="w-2.5 h-2.5 shrink-0 text-white" />
+        <span>Android</span>
+      </span>
     </span>
   );
 };

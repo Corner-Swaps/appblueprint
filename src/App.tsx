@@ -9,6 +9,8 @@ import { ResourcesPage } from './components/ResourcesPage';
 import { SplashScreen } from './components/SplashScreen';
 import { LegalConsentModal } from './components/LegalConsentModal';
 import { NativeReviewPromptModal } from './components/NativeReviewPromptModal';
+import { requestNativeStoreReview } from './utils/nativeReview';
+import { Capacitor } from '@capacitor/core';
 import { useFluidDragReorder } from './hooks/useFluidDragReorder';
 import { renderPhaseIcon } from './utils/renderPhaseIcon';
 import { getPhaseTheme } from './utils/phaseThemes';
@@ -20,9 +22,9 @@ import {
   Folder, 
   SlidersHorizontal, 
   RotateCcw,
-  GraduationCap
+  GraduationCap,
+  LayoutGrid
 } from 'lucide-react';
-import { GripFour } from './components/GripFour';
 
 const TAB_KEYS: Array<'checklist' | 'projects' | 'resources'> = ['checklist', 'projects', 'resources'];
 const TAB_INDEX_MAP: Record<'checklist' | 'projects' | 'resources', number> = {
@@ -33,8 +35,8 @@ const TAB_INDEX_MAP: Record<'checklist' | 'projects' | 'resources', number> = {
 const DOCK_SLOT_DISTANCE = 68; // 56px slot + 12px gap
 const DOCK_PADDING = 8;
 
-const PROJECTS_STORAGE_KEY = 'launchready_projects_v7';
-const ACTIVE_PROJECT_STORAGE_KEY = 'launchready_active_proj_id_v7';
+const PROJECTS_STORAGE_KEY = 'appblueprint_projects_v1';
+const ACTIVE_PROJECT_STORAGE_KEY = 'appblueprint_active_proj_id_v1';
 
 export const PROJECT_COLORS = [
   '#3B82F6', // Electric Blue
@@ -73,7 +75,7 @@ export const App: React.FC = () => {
   // Multi-Project State (Fresh restart: phaseOrder resets so Idea, Audience & Project Setup is strictly Phase 1)
   const [projects, setProjects] = useState<Project[]>(() => {
     try {
-      const saved = localStorage.getItem(PROJECTS_STORAGE_KEY) || localStorage.getItem('launchready_projects_v6') || localStorage.getItem('launchready_projects_v5');
+      const saved = localStorage.getItem(PROJECTS_STORAGE_KEY) || localStorage.getItem('launchready_projects_v7') || localStorage.getItem('launchready_projects_v6') || localStorage.getItem('launchready_projects_v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -93,7 +95,7 @@ export const App: React.FC = () => {
 
   const [activeProjectId, setActiveProjectId] = useState<string>(() => {
     try {
-      const saved = localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY) || localStorage.getItem('launchready_active_proj_id_v6') || localStorage.getItem('launchready_active_proj_id_v5');
+      const saved = localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY) || localStorage.getItem('launchready_active_proj_id_v7') || localStorage.getItem('launchready_active_proj_id_v6') || localStorage.getItem('launchready_active_proj_id_v5');
       if (saved) return saved;
     } catch (e) {
       console.warn('Failed to load active project id', e);
@@ -108,46 +110,82 @@ export const App: React.FC = () => {
   const [isAllPhasesPageOpen, setIsAllPhasesPageOpen] = useState(false);
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
   const [collapseSignal, setCollapseSignal] = useState(0);
+  const [resourcesCollapseSignal, setResourcesCollapseSignal] = useState(0);
 
-  // Legal Consent & Store Review State
+  // Splash Loading Screen
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Legal Consent State
   const [showLegalModal, setShowLegalModal] = useState<boolean>(() => {
     try {
-      return !localStorage.getItem('launchready_legal_agreed_v1');
+      return !localStorage.getItem('appblueprint_legal_agreed_v1') && !localStorage.getItem('launchready_legal_agreed_v1');
     } catch {
       return false;
     }
   });
+
   const [showReviewModal, setShowReviewModal] = useState(false);
 
-  // Track session visit count for native review prompt (at 15 and 30 visits, never > 30)
+  const handleCloseReview = () => {
+    setShowReviewModal(false);
+  };
+
+  const handleSubmitReview = (rating: number) => {
+    setShowReviewModal(false);
+    if (rating >= 4) {
+      triggerPhaseCompleteConfetti();
+    }
+  };
+
+  // Track session visit count for authentic native App Store / Google Play review prompt (at 15 and 30 visits, never > 30)
+  // In compliance with Apple Guideline 5.6.1 and Google Play Policy, triggers official native SKStoreReviewController
   useEffect(() => {
     try {
-      const sessionCounted = sessionStorage.getItem('launchready_session_counted');
-      let currentVisits = parseInt(localStorage.getItem('launchready_visits_count') || '0', 10);
+      const sessionCounted = sessionStorage.getItem('appblueprint_session_counted') || sessionStorage.getItem('launchready_session_counted');
+      let currentVisits = parseInt(localStorage.getItem('appblueprint_visits_count') || localStorage.getItem('launchready_visits_count') || '0', 10);
 
       if (!sessionCounted) {
         currentVisits += 1;
-        localStorage.setItem('launchready_visits_count', currentVisits.toString());
-        sessionStorage.setItem('launchready_session_counted', 'true');
+        localStorage.setItem('appblueprint_visits_count', currentVisits.toString());
+        sessionStorage.setItem('appblueprint_session_counted', 'true');
       }
 
-      const hasReviewed15 = localStorage.getItem('launchready_review_prompted_15');
-      const hasReviewed30 = localStorage.getItem('launchready_review_prompted_30');
+      if (showSplash || showLegalModal) return;
+
+      const hasReviewed15 = localStorage.getItem('appblueprint_review_prompted_15') || localStorage.getItem('launchready_review_prompted_15');
+      const hasReviewed30 = localStorage.getItem('appblueprint_review_prompted_30') || localStorage.getItem('launchready_review_prompted_30');
 
       if (currentVisits === 15 && !hasReviewed15) {
-        const timer = setTimeout(() => setShowReviewModal(true), 1200);
+        localStorage.setItem('appblueprint_review_prompted_15', 'true');
+        localStorage.setItem('launchready_review_prompted_15', 'true');
+        const timer = setTimeout(() => {
+          if (Capacitor.isNativePlatform()) {
+            requestNativeStoreReview();
+          } else {
+            setShowReviewModal(true);
+          }
+        }, 1500);
         return () => clearTimeout(timer);
       } else if (currentVisits === 30 && !hasReviewed30) {
-        const timer = setTimeout(() => setShowReviewModal(true), 1200);
+        localStorage.setItem('appblueprint_review_prompted_30', 'true');
+        localStorage.setItem('launchready_review_prompted_30', 'true');
+        const timer = setTimeout(() => {
+          if (Capacitor.isNativePlatform()) {
+            requestNativeStoreReview();
+          } else {
+            setShowReviewModal(true);
+          }
+        }, 1500);
         return () => clearTimeout(timer);
       }
     } catch (e) {
       console.warn('Failed to compute visit count', e);
     }
-  }, []);
+  }, [showSplash, showLegalModal]);
 
   const handleAcceptLegal = () => {
     try {
+      localStorage.setItem('appblueprint_legal_agreed_v1', 'true');
       localStorage.setItem('launchready_legal_agreed_v1', 'true');
     } catch (e) {
       console.warn('Failed to save legal agreement', e);
@@ -155,36 +193,30 @@ export const App: React.FC = () => {
     setShowLegalModal(false);
   };
 
-  const handleCloseReview = () => {
-    try {
-      const visits = parseInt(localStorage.getItem('launchready_visits_count') || '0', 10);
-      if (visits <= 15) {
-        localStorage.setItem('launchready_review_prompted_15', 'true');
-      } else {
-        localStorage.setItem('launchready_review_prompted_30', 'true');
-      }
-    } catch (e) {
-      console.warn(e);
-    }
-    setShowReviewModal(false);
-  };
-
-  const handleSubmitReview = (rating: number) => {
-    handleCloseReview();
-    if (rating >= 4) {
-      triggerPhaseCompleteConfetti();
-    }
-  };
-
   // Page Horizontal Swipe Tracking
   const pageTouchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 
   const handleSelectTab = (tab: 'checklist' | 'projects' | 'resources') => {
+    // When clicking the percentage icon (checklist tab), close all subcategories & phases
+    if (tab === 'checklist') {
+      setCollapseSignal(prev => prev + 1);
+      window.dispatchEvent(new CustomEvent('collapse-all'));
+      window.dispatchEvent(new CustomEvent('collapse-subsections'));
+    } else if (tab === 'resources') {
+      // When clicking the Academy & Resources icon, close all open sections & subcategories
+      setResourcesCollapseSignal(prev => prev + 1);
+      window.dispatchEvent(new CustomEvent('collapse-resources'));
+      window.dispatchEvent(new CustomEvent('collapse-all'));
+      window.dispatchEvent(new CustomEvent('collapse-subsections'));
+    } else {
+      window.dispatchEvent(new CustomEvent('collapse-subsections'));
+    }
+
     if (tab === activeTab) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      triggerHaptic(ImpactStyle.Light);
       return;
     }
-    window.dispatchEvent(new CustomEvent('collapse-subsections'));
     setIsGlobalEditMode(false);
     setIsAllPhasesPageOpen(false);
     setPreviousTab(activeTab);
@@ -223,9 +255,6 @@ export const App: React.FC = () => {
 
   const currentSlotIndex = TAB_INDEX_MAP[activeTab];
   const targetLensX = currentSlotIndex * DOCK_SLOT_DISTANCE;
-
-  // Splash Loading Screen
-  const [showSplash, setShowSplash] = useState(true);
 
   // Filter State
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>('all');
@@ -321,6 +350,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     document.documentElement.classList.remove('dark');
     localStorage.removeItem('launchready_theme');
+    localStorage.removeItem('appblueprint_theme');
   }, []);
 
   // Whenever switching tabs away from checklist, guarantee edit mode is dismissed
@@ -545,7 +575,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
   const handleDeletePhase = (phaseId: string) => {
     const targetPhase = currentProjectPhases.find(p => p.id === phaseId);
     const title = targetPhase ? `"${targetPhase.title}"` : 'this section';
-    if (!window.confirm(`Delete phase section ${title}? You can restore it later from the bottom of the page.`)) {
+    if (!window.confirm(`Delete step section ${title}? You can restore it later from the bottom of the page.`)) {
       return;
     }
     setProjects(prevProjects =>
@@ -712,13 +742,13 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
           {/* 1. Checklist Tab */}
           <div className={displayedTab === 'checklist' ? 'space-y-3.5 pb-4' : 'hidden'}>
               {/* Project Header at the Top: Centered, tapping opens Projects Page */}
-              <div className="pt-2.5 pb-1 flex items-center justify-center w-full">
+              <div className="pt-2 pb-1 flex flex-col items-center justify-center w-full space-y-1.5">
                 <button
                   type="button"
                   onClick={() => {
                     handleSelectTab('projects');
                   }}
-                  className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-1 rounded-2xl hover:bg-black/5 group max-w-full"
+                  className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-0.5 rounded-2xl hover:bg-black/5 group max-w-full"
                   title="Switch or manage projects"
                 >
                   <h1 
@@ -726,6 +756,19 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                   >
                     {activeProject.name}
                   </h1>
+                </button>
+
+                {/* All Steps Roadmap Pill */}
+                <button
+                  type="button"
+                  onClick={() => setIsAllPhasesPageOpen(true)}
+                  className="apple-press inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-white/90 border border-slate-200/90 text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50 transition-colors"
+                  title="View All Steps Roadmap"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
+                  <span>All Steps Roadmap</span>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-slate-500 font-semibold">{visiblePhases.length + 1} Steps</span>
                 </button>
               </div>
 
@@ -873,7 +916,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                             <div className="min-w-0">
                               <div className="flex items-center space-x-1.5 mt-0.5">
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                                  Phase {delPhase.number}
+                                  Step {delPhase.number}
                                 </span>
                                 <span className="text-xs text-slate-300">•</span>
                                 <span className="text-xs text-slate-500">
@@ -890,7 +933,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                             type="button"
                             onClick={() => handleRestorePhase(delPhase.id)}
                             className="apple-press px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center space-x-1.5 shadow-xs shrink-0 transition-colors"
-                            title={`Restore Phase ${delPhase.number}`}
+                            title={`Restore Step ${delPhase.number}`}
                           >
                             <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
                             <span>Restore</span>
@@ -956,9 +999,12 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
 
           {/* 3. Resources Tab */}
           <div className={displayedTab === 'resources' ? 'block' : 'hidden'}>
-            <ResourcesPage onBackToChecklist={() => {
-              handleSelectTab('checklist');
-            }} />
+            <ResourcesPage 
+              collapseSignal={resourcesCollapseSignal}
+              onBackToChecklist={() => {
+                handleSelectTab('checklist');
+              }} 
+            />
           </div>
         </div>
 
@@ -1106,18 +1152,21 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       />
 
       {/* Mandatory First-Launch Terms of Service & Legal Disclaimer Modal */}
-      <LegalConsentModal
-        isOpen={showLegalModal}
-        onAccept={handleAcceptLegal}
-      />
+      {!showSplash && (
+        <LegalConsentModal
+          isOpen={showLegalModal}
+          onAccept={handleAcceptLegal}
+        />
+      )}
 
       {/* Native Store Review Prompt (Shown at visit 15 and 30, never > 30) */}
-      <NativeReviewPromptModal
-        isOpen={showReviewModal}
-        onClose={handleCloseReview}
-        onSubmit={handleSubmitReview}
-      />
-
+      {!showSplash && (
+        <NativeReviewPromptModal
+          isOpen={showReviewModal}
+          onClose={handleCloseReview}
+          onSubmit={handleSubmitReview}
+        />
+      )}
     </div>
   );
 };

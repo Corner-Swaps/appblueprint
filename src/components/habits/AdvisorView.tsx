@@ -40,7 +40,7 @@ const CRITICAL_TRAPS: Trap[] = [
     platform: 'Apple',
     severity: 'BLOCKER',
     remedy: 'Create a permanent, dedicated demo user with pre-loaded sample data. Provide exact credentials, OTP bypass codes (e.g. 000000), and a video demonstration link in App Store Connect Review Notes.',
-    codeSnippet: `// Example Review Notes for App Store Connect:\nUser: demo_reviewer@launchready.app\nPass: AppReview2026!Secure\nSMS 2FA Bypass: 000000\nDemo Video: https://launchready.app/review-walkthrough.mp4`
+    codeSnippet: `// Example Review Notes for App Store Connect:\nUser: demo_reviewer@appblueprint.app\nPass: AppReview2026!Secure\nSMS 2FA Bypass: 000000\nDemo Video: https://appblueprint.app/review-walkthrough.mp4`
   },
   {
     id: 'apple-5-1-1-v',

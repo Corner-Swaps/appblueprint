@@ -11,9 +11,9 @@ import {
   Trash2, 
   X,
   CheckCircle2,
-  Check
+  Check,
+  ArrowUpDown
 } from 'lucide-react';
-import { GripFour } from './GripFour';
 
 interface AllPhasesPageProps {
   isOpen: boolean;
@@ -107,10 +107,10 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
           {/* Title */}
           <div className="flex-1 min-w-0 text-center px-2">
             <h1 className="text-base font-semibold text-slate-900 tracking-normal font-google truncate">
-              All Phases
+              All Steps
             </h1>
             <p className="text-[11px] font-semibold text-slate-500 truncate max-w-[210px] sm:max-w-xs mx-auto">
-              {phases.length} Phases • {completedAll}/{totalAll} Verified ({percentAll}%)
+              {phases.length} Steps • {completedAll}/{totalAll} Verified ({percentAll}%)
             </p>
           </div>
 
@@ -127,7 +127,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                   ? 'bg-slate-200 text-slate-900 border-slate-300 shadow-xs'
                   : 'bg-[#FAF8F6] text-slate-700 border-slate-300/80 hover:bg-slate-200/60 shadow-xs'
               }`}
-              title="Rearrange Phases"
+              title="Rearrange Steps"
             >
               <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
               <span className="hidden sm:inline">{isRearranging ? 'Done' : 'Rearrange'}</span>
@@ -144,10 +144,10 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                   ? 'bg-slate-200 text-slate-900 border-slate-300 shadow-xs'
                   : 'bg-[#FAF8F6] text-slate-800 border border-slate-300/80 hover:bg-slate-200/60 shadow-xs'
               }`}
-              title="Add New Phase"
+              title="Add New Step"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span className="hidden sm:inline">Phase</span>
+              <span className="hidden sm:inline">Step</span>
             </button>
           </div>
         </div>
@@ -157,11 +157,11 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
       <main ref={scrollContainerRef as any} className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-28">
         <div className="max-w-xl mx-auto space-y-3">
 
-          {/* Inline Add Phase Form */}
+          {/* Inline Add Step Form */}
           {isAddingPhase && (
             <form onSubmit={handleCreatePhase} className="p-4 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 animate-in fade-in duration-200">
               <div className="flex items-center justify-between pb-1 border-b border-slate-100">
-                <span className="text-xs font-bold text-slate-800 font-google">Add New Phase Section</span>
+                <span className="text-xs font-bold text-slate-800 font-google">Add New Step Section</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -177,7 +177,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">Phase Title</label>
+                <label className="block text-[11px] font-bold text-slate-600 mb-1">Step Title</label>
                 <input
                   type="text"
                   required
@@ -206,7 +206,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                   rows={2}
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Brief overview of requirements in this phase..."
+                  placeholder="Brief overview of requirements in this step..."
                   className="w-full px-3.5 py-2.5 rounded-xl text-[16px] sm:text-sm bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:ring-1 focus:ring-slate-800 resize-none"
                 />
               </div>
@@ -229,7 +229,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                   disabled={!newTitle.trim()}
                   className="apple-press px-4 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white disabled:opacity-50 shadow-xs"
                 >
-                  Create Phase
+                  Create Step
                 </button>
               </div>
             </form>
@@ -242,6 +242,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
             const phasePercent = phaseTotal > 0 ? Math.round((phaseDone / phaseTotal) * 100) : 0;
             const isAllDone = phaseTotal > 0 && phaseDone === phaseTotal;
             const isCustom = phase.id.startsWith('custom-');
+            const isSetup = phase.id === 'phase-setup' || phase.number === 0;
             const theme = getPhaseTheme(phase.number);
 
             const handleSelect = () => {
@@ -276,17 +277,12 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                   <div className="flex items-start space-x-3 flex-1 min-w-0 pr-2">
                     <div className={`w-12 h-12 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-xs relative`}>
                       {renderPhaseIcon(phase.iconName, "w-6 h-6 text-white stroke-[2.2]")}
-                      {isAllDone && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs">
-                          <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
-                        </div>
-                      )}
                     </div>
 
                     <div className="space-y-1 flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
                         <span className={`h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1.5px] leading-none`}>
-                          {phase.number === 0 ? 'Set Up Steps' : `Phase ${phase.number}`}
+                          {phase.number === 0 ? 'Set Up Steps' : `Step ${phase.number}`}
                         </span>
                         <span className="text-xs text-slate-400">•</span>
                         <span className="text-xs font-bold text-slate-700">
@@ -304,12 +300,26 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                     </div>
                   </div>
 
-                  {/* Right: Controls (Drag handle on right of trashcan in Rearrange mode, or Chevron in normal mode) */}
+                  {/* Right: Controls (Drag handle on top, trashcan underneath in Rearrange mode, or Chevron in normal mode) */}
                   {isRearranging ? (
                     <div 
-                      className="flex items-center space-x-2 shrink-0"
+                      className="flex flex-col items-center space-y-1.5 shrink-0 self-center"
                       onClick={(e) => e.stopPropagation()}
                     >
+                      {!isSetup && (
+                        <button
+                          type="button"
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                            handleDragStart(idx, e);
+                          }}
+                          className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
+                          title="Drag to rearrange step"
+                          aria-label="Drag to rearrange step"
+                        >
+                          <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
+                        </button>
+                      )}
                       {isCustom && onDeletePhase && (
                         <button
                           type="button"
@@ -317,32 +327,27 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                             e.stopPropagation();
                             onDeletePhase(phase.id);
                           }}
-                          className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
-                          title="Delete Phase"
-                          aria-label="Delete Phase"
+                          className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
+                          title="Delete Step"
+                          aria-label="Delete Step"
                         >
-                          <Trash2 className="w-4 h-4 stroke-[2.2]" />
+                          <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onPointerDown={(e) => {
-                          e.stopPropagation();
-                          handleDragStart(idx, e);
-                        }}
-                        className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
-                        title="Drag to rearrange phase"
-                        aria-label="Drag to rearrange phase"
-                      >
-                        <GripFour className="w-4 h-4 text-slate-500" />
-                      </button>
                     </div>
                   ) : (
-                    <div 
-                      className="p-2 rounded-xl text-slate-400 hover:text-slate-700 shrink-0 self-center"
-                      title="Open phase"
-                    >
-                      <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                    <div className="flex items-center space-x-2 shrink-0 self-center">
+                      {isAllDone && (
+                        <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
+                          <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
+                        </div>
+                      )}
+                      <div 
+                        className="p-1 rounded-xl text-slate-400 hover:text-slate-700"
+                        title="Open step"
+                      >
+                        <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                      </div>
                     </div>
                   )}
 
