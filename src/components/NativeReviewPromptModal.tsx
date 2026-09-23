@@ -34,7 +34,7 @@ export const NativeReviewPromptModal: React.FC<NativeReviewPromptModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in select-none">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in select-none">
       <div 
         className="w-full max-w-xs sm:max-w-sm bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/80 p-6 flex flex-col items-center text-center space-y-4 transform transition-all duration-300"
         role="dialog"

@@ -30,7 +30,7 @@ export const AcademyHighlight: React.FC<AcademyHighlightProps> = ({ onLaunchApp 
   ];
 
   return (
-    <section id="academy" className="py-16 sm:py-24 bg-gradient-to-b from-indigo-50/50 to-white/80 border-t border-slate-200/80">
+    <section id="academy" className="scroll-mt-20 py-16 sm:py-24 bg-gradient-to-b from-indigo-50/50 to-white/80 border-t border-slate-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

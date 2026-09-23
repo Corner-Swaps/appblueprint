@@ -18,9 +18,9 @@ export const AppLauncherBar: React.FC<AppLauncherBarProps> = ({ onBackToWebsite 
           <span>Back to Website</span>
         </button>
         <span className="text-slate-500 hidden sm:inline">•</span>
-        <span className="text-slate-300 hidden sm:inline flex items-center space-x-1">
+        <span className="text-slate-300 hidden sm:inline-flex items-center space-x-1">
           <span>App Blueprint Web Edition</span>
-          <span className="px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-400 text-[10px] font-bold">Interactive</span>
+          <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[10px] font-bold">Interactive</span>
         </span>
       </div>
 

@@ -28,7 +28,7 @@ export const PhasesShowcase: React.FC<PhasesShowcaseProps> = ({ onLaunchApp }) =
   const theme = getPhaseTheme(currentPhase.number);
 
   return (
-    <section id="phases" className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="phases" className="scroll-mt-20 py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       {/* Section Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">

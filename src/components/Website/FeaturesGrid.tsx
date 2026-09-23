@@ -69,7 +69,7 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({ onLaunchApp }) => {
   ];
 
   return (
-    <section id="features" className="py-16 sm:py-24 bg-white/60 border-t border-slate-200/80">
+    <section id="features" className="scroll-mt-20 py-16 sm:py-24 bg-white/60 border-t border-slate-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

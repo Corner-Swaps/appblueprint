@@ -137,17 +137,16 @@ export const App: React.FC = () => {
     const handleHash = () => {
       if (window.location.hash === '#app') {
         setViewMode('app');
-      } else if (!window.location.hash.startsWith('#app')) {
-        if (window.location.hash === '' || window.location.hash === '#') {
-          setViewMode('website');
-        }
+        setShowSplash(false);
+      } else {
+        setViewMode('website');
       }
     };
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
-  // Splash Loading Screen: Only shown on initial cold start on native mobile
+  // Splash Loading Screen: Only shown on initial cold start on native mobile platforms
   const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
 
   // Legal Consent State
@@ -774,8 +773,8 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         />
       )}
 
-      {/* Launch Loading Animation Overlay */}
-      {showSplash && (
+      {/* Launch Loading Animation Overlay for Native Mobile */}
+      {showSplash && Capacitor.isNativePlatform() && (
         <SplashScreen onComplete={() => setShowSplash(false)} />
       )}
 
