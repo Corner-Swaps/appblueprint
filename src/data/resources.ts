@@ -1,6 +1,7 @@
 export type ResourceCategory = 
   | 'ai_models' 
   | 'design' 
+  | 'typography'
   | 'github_repos' 
   | 'backend' 
   | 'security' 
@@ -31,6 +32,7 @@ export const RESOURCE_CATEGORIES: { id: ResourceCategory | 'all'; label: string 
   { id: 'all', label: 'All Resources' },
   { id: 'ai_models', label: 'AI Models & Agents' },
   { id: 'design', label: 'Design & UI/UX' },
+  { id: 'typography', label: 'Typography & Fonts' },
   { id: 'github_repos', label: 'Open Source Repos' },
   { id: 'backend', label: 'Backend & Cloud' },
   { id: 'security', label: 'Security & Auth' },
@@ -41,6 +43,136 @@ export const RESOURCE_CATEGORIES: { id: ResourceCategory | 'all'; label: string 
 ];
 
 export const RESOURCES_DATA: ResourceItem[] = [
+
+  // ==========================================
+  // TYPOGRAPHY & FONT SYSTEMS (6 FREE RESOURCES)
+  // ==========================================
+  {
+    id: 'type-fontshare',
+    title: 'Fontshare (Indian Type Foundry)',
+    category: 'typography',
+    categoryLabel: '100% Free Professional Fonts',
+    badge: 'Free',
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    shortDescription: 'A free font service by the Indian Type Foundry offering world-class professional fonts that are 100% free for personal and commercial mobile app use.',
+    whyItMatters: 'Unlike commercial font libraries with thousands in licensing fees, Fontshare gives you top-tier typefaces (Satoshi, General Sans, Cabinet Grotesk, Clash Display) with zero royalties and complete commercial freedom.',
+    keyFeatures: [
+      '100% free for personal and commercial mobile applications with no royalty fees.',
+      'Full variable font weight support for silky smooth font rendering across iOS and Android.',
+      'Includes complete OpenType tabular numbers, ligatures, and international language glyphs.'
+    ],
+    bestUsedFor: 'Modern mobile app UI interfaces, bold dashboard numbers, clean body paragraphs, and distinctive brand typography.',
+    freeTierInfo: '100% completely free with no hidden fees, no subscriptions, and full commercial permission.',
+    url: 'https://www.fontshare.com/',
+    iconName: 'Type',
+    promptOrCommand: 'Configure our typography system to use Satoshi and General Sans from Fontshare. Set up local @font-face rules with variable font weights (300 to 900) and ensure smooth tabular number rendering for all statistics.',
+    promptLabel: 'AI Prompt for Fontshare'
+  },
+  {
+    id: 'type-bunny-fonts',
+    title: 'Bunny Fonts (Privacy-First Open Fonts)',
+    category: 'typography',
+    categoryLabel: 'GDPR-Compliant Open Fonts',
+    badge: 'Free',
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    shortDescription: 'A privacy-first drop-in replacement for Google Fonts that serves open-source fonts with zero tracking, zero IP logging, and full GDPR compliance.',
+    whyItMatters: 'European courts have ruled that loading fonts from Google Fonts pings user IP addresses without consent. Bunny Fonts eliminates all IP logging and provides easy zip downloads to bundle fonts locally in your app.',
+    keyFeatures: [
+      'Strict zero-logging privacy policy ensures 100% compliance with EU GDPR and global privacy laws.',
+      'Drop-in replacement for every open-source Google Font family (Inter, Poppins, Roboto, Outfit).',
+      'Provides direct download bundles so you can self-host font files locally inside your app package.'
+    ],
+    bestUsedFor: 'Privacy-first apps that need standard open-source typefaces without transmitting user IP addresses to third-party ad networks.',
+    freeTierInfo: '100% free open-source font distribution with no rate limits and zero cost.',
+    url: 'https://fonts.bunny.net/',
+    iconName: 'ShieldCheck',
+    promptOrCommand: 'Audit our CSS font loading. Replace any external font links with local self-hosted font files downloaded from Bunny Fonts, eliminating all remote network pings on mobile launch.',
+    promptLabel: 'AI Prompt for Privacy Fonts'
+  },
+  {
+    id: 'type-apple-sf-pro',
+    title: 'Apple SF Pro & SF Compact',
+    category: 'typography',
+    categoryLabel: 'Official Apple iOS System Font',
+    badge: 'Official',
+    badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
+    shortDescription: 'Apple\'s official system font family designed specifically for maximum legibility, optical sizing, and Dynamic Type scaling on iPhone and iPad.',
+    whyItMatters: 'Using Apple\'s native system font stack costs zero extra kilobytes in your bundle, renders instantaneously with zero network lag, and automatically supports user accessibility text zoom in iOS Settings.',
+    keyFeatures: [
+      'Built directly into every iPhone, iPad, Mac, and Apple Watch hardware display.',
+      'Automatic optical sizing adjusts letter-spacing and proportions seamlessly between titles and captions.',
+      'Native Dynamic Type compatibility ensures smooth scaling when users increase text size in iOS Settings.'
+    ],
+    bestUsedFor: 'Building authentic Apple-standard interfaces that feel completely native, ultra-crisp, and seamlessly integrated into iOS.',
+    freeTierInfo: 'Included free with all Apple operating systems and available for free developer download via developer.apple.com.',
+    url: 'https://developer.apple.com/fonts/',
+    iconName: 'Apple',
+    promptOrCommand: 'Apply Apple\'s native system font stack across all text styles. Configure font-family to prioritize \'-apple-system, BlinkMacSystemFont, SF Pro Display, SF Pro Text\' with optical letter tracking (-0.02em for display titles, +0.03em for small captions).',
+    promptLabel: 'AI Prompt for Apple Typography'
+  },
+  {
+    id: 'type-google-fonts-local',
+    title: 'Google Fonts (Self-Hosted Library)',
+    category: 'typography',
+    categoryLabel: 'World\'s Largest Open Font Library',
+    badge: 'Free',
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    shortDescription: 'Over 1,500 open-source font families available under open licenses like SIL Open Font License, with direct downloads for local offline app bundling.',
+    whyItMatters: 'Google Fonts contains the world\'s most popular open typefaces (Inter, Plus Jakarta Sans, Outfit, Space Grotesk). Downloading the TTF/WOFF2 files directly to your project keeps your app offline-ready and 100% privacy-compliant.',
+    keyFeatures: [
+      'Extensive catalog of over 1,500 free, open-source font families with full commercial rights.',
+      'Search and filter by category (Sans Serif, Serif, Display, Monospace) and character set.',
+      'Download full font family packages directly to bundle into your mobile app assets folder.'
+    ],
+    bestUsedFor: 'Finding modern open-source typefaces and downloading the raw font files to embed locally in your mobile project.',
+    freeTierInfo: '100% free and open-source under SIL Open Font License or Apache 2.0.',
+    url: 'https://fonts.google.com/',
+    iconName: 'Globe',
+    promptOrCommand: 'Download the \'Inter\' or \'Plus Jakarta Sans\' font files from Google Fonts into our \'public/fonts/\' directory and create clean @font-face rules so the app loads fonts 100% offline without remote CDN pings.',
+    promptLabel: 'AI Prompt for Local Font Bundling'
+  },
+  {
+    id: 'type-geist-vercel',
+    title: 'Geist & Geist Mono (Vercel)',
+    category: 'typography',
+    categoryLabel: 'Modern Technical Typography',
+    badge: 'Open Source',
+    badgeColor: 'bg-slate-100 text-slate-800 border-slate-300',
+    shortDescription: 'A precision geometric typeface and monospace font family crafted specifically for modern developer interfaces, readable code, and data-dense dashboards.',
+    whyItMatters: 'Geist combines Swiss typography design with high-legibility tabular figures, making financial data, timestamps, analytics dashboards, and code snippets look clean, modern, and razor-sharp.',
+    keyFeatures: [
+      'Designed with precision pixel-grid alignment for supreme clarity on high-density Retina phone displays.',
+      'Geist Mono includes slashed zeros, clear bracket distinctions, and balanced operator spacing.',
+      'Free and open-source under the SIL Open Font License for unrestricted commercial app use.'
+    ],
+    bestUsedFor: 'Developer tools, productivity apps, finance and crypto dashboards, and applications requiring clean monospace formatting.',
+    freeTierInfo: '100% free and open source with full commercial usage permissions.',
+    url: 'https://vercel.com/font',
+    iconName: 'Code',
+    promptOrCommand: 'Import Geist for primary headings and Geist Mono for all numeric counters, IDs, and code blocks. Configure tabular figures (\'tnum\') in CSS so numbers never jitter during counter animations.',
+    promptLabel: 'AI Prompt for Geist Typography'
+  },
+  {
+    id: 'type-uncut-curated',
+    title: 'Uncut.wtf (Contemporary Fonts)',
+    category: 'typography',
+    categoryLabel: 'Contemporary Display Fonts',
+    badge: 'Free',
+    badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    shortDescription: 'A curated catalog of contemporary, cutting-edge typefaces created by independent type designers, all available with 100% free commercial licenses.',
+    whyItMatters: 'If your app needs a distinctive personality—such as an editorial serif for reading apps, a luxury headline font, or a brutalist display face—Uncut provides high-fashion typefaces without expensive licensing fees.',
+    keyFeatures: [
+      'Curated collection of expressive, trend-setting typefaces with unique visual character.',
+      'All listed typefaces have verified free commercial licenses with zero hidden royalty traps.',
+      'Direct font file downloads (.otf, .woff2) ready for immediate local mobile embedding.'
+    ],
+    bestUsedFor: 'Hero welcome screens, brand logos, editorial publications, lifestyle apps, and unique display headings.',
+    freeTierInfo: '100% free with open licenses verified by independent designers.',
+    url: 'https://uncut.wtf/',
+    iconName: 'Sparkles',
+    promptOrCommand: 'Integrate an expressive contemporary display font for our app\'s splash and header typography, pairing it cleanly with an accessible geometric sans body font.',
+    promptLabel: 'AI Prompt for Editorial Typography'
+  },
   // ==========================================
   // 1. AI MODELS & CODING AGENTS (8 RESOURCES)
   // ==========================================

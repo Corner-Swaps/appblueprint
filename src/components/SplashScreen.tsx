@@ -42,7 +42,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#000000',
+        background: 'radial-gradient(circle at 50% 44%, #FAF5FF 0%, #F3E8FF 40%, #EDE9FE 70%, #E9D5FF 100%)',
         opacity: fadingOut ? 0 : 1,
         transition: 'opacity 380ms cubic-bezier(0.4, 0, 0.2, 1)',
         overflow: 'hidden',
@@ -54,12 +54,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.08) 0px, rgba(255, 255, 255, 0.02) 180px, transparent 320px)',
+          background: 'radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.95) 0px, rgba(216, 180, 254, 0.35) 200px, transparent 380px)',
           pointerEvents: 'none',
         }}
       />
 
-      {/* 1. Centered Crisp White Icon (210x210) - positioned slightly above center */}
+      {/* 1. Centered Crisp White Icon with Radiant Violet Drop Shadow (210x210) */}
       <div
         className="lr-splash-icon"
         style={{
@@ -81,7 +81,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             objectFit: 'contain',
             position: 'relative',
             zIndex: 2,
-            filter: 'drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5))',
+            filter: 'drop-shadow(0 16px 32px rgba(124, 58, 237, 0.28)) drop-shadow(0 4px 10px rgba(139, 92, 246, 0.18))',
           }}
         />
       </div>
@@ -101,10 +101,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           style={{
             fontFamily: "'Google Sans', 'GoogleSans-Medium', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
             fontSize: 34,
-            fontWeight: 500,
-            color: '#FFFFFF',
+            fontWeight: 600,
+            color: '#2E1065',
             letterSpacing: '-0.3px',
-            textShadow: '0 2px 6px rgba(0, 0, 0, 0.6)',
+            textShadow: '0 2px 10px rgba(124, 58, 237, 0.14)',
           }}
         >
           LaunchReady
