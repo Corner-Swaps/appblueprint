@@ -253,9 +253,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                 </div>
               </div>
 
-              {/* Description: Exactly matching Set Up and Academy 3-line height */}
+              {/* Description: Exactly matching Set Up and Academy 5-line height */}
               <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
-                Your active mobile app blueprint and compliance roadmap. Track progress across all 12 mobile development phases, verify store rules, and manage checklist requirements.
+                Your active mobile app blueprint and compliance roadmap. Track progress across all 12 mobile development phases, verify store rules, manage checklist requirements, and build your native mobile application.
               </p>
 
               {/* Bottom Indicator matching dropdown chevron geometry */}

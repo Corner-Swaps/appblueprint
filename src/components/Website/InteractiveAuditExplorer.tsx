@@ -177,7 +177,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
 
   // Map phase ID to clean title
   const getPhaseName = (phaseId: string) => {
-    if (phaseId === 'phase-0') return 'Phase 0 • Setup & Pre-flight';
+    if (phaseId.toLowerCase().includes('setup') || phaseId === 'phase-0') return 'Phase 0 • Setup & Pre-flight';
     const num = phaseId.replace('phase-', '');
     const phase = PHASES_DATA.find(p => p.id === phaseId);
     return phase ? `Phase ${num} • ${phase.title}` : `Phase ${num}`;
