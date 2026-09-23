@@ -80,7 +80,7 @@ export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = ({ onLaun
   const status = getStatus();
 
   return (
-    <section id="calculator" className="py-16 sm:py-24 bg-white/70 border-t border-slate-200/80">
+    <section id="calculator" className="scroll-mt-20 py-16 sm:py-24 bg-white/70 border-t border-slate-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -111,12 +111,15 @@ export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = ({ onLaun
             {questions.map((q) => {
               const isChecked = !!answers[q.id];
               return (
-                <div
+                <button
+                  type="button"
                   key={q.id}
                   onClick={() => toggle(q.id)}
-                  className={`apple-press p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer flex items-start space-x-3 select-none ${
+                  role="checkbox"
+                  aria-checked={isChecked}
+                  className={`w-full text-left apple-press p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer flex items-start space-x-3 select-none ${
                     isChecked 
-                      ? 'bg-blue-50/50 border-blue-200/80' 
+                      ? 'bg-blue-50/50 border-blue-200/80 shadow-2xs' 
                       : 'bg-slate-50/70 border-slate-200/70 hover:bg-slate-100/60'
                   }`}
                 >
@@ -133,7 +136,7 @@ export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = ({ onLaun
                       {q.rule}
                     </span>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
