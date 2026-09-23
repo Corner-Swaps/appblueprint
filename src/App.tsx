@@ -861,7 +861,151 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                 </div>
               )}
 
+              {/* Steps Roadmap Section Pill: Positioned right after Set Up */}
+              {selectedPhaseId === 'all' && !isGlobalEditMode && (
+                <div id="project-roadmap-section" className="space-y-3">
+                  <div 
+                    className="rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5"
+                  >
+                    {/* Header Block: clicking text or arrow expands/collapses drop-down */}
+                    <div 
+                      onClick={() => setIsRoadmapExpanded(!isRoadmapExpanded)}
+                      className="space-y-2.5 select-none cursor-pointer"
+                    >
+                      <div className="w-full flex items-center justify-between select-none">
+                        <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
+                          {/* Squircle Icon */}
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-xs shrink-0 relative">
+                            <LayoutGrid className="w-6 h-6 stroke-[2.2]" />
+                          </div>
 
+                          {/* Title & Badge */}
+                          <div className="space-y-1 select-none flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
+                              <span className="h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-600 text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none">
+                                Steps Roadmap
+                              </span>
+                              <span className="text-xs text-slate-400 select-none">•</span>
+                              <span className="text-xs font-bold text-slate-700 select-none">
+                                {completedAll} of {totalAll} Verified
+                              </span>
+                            </div>
+
+                            <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
+                              Project Roadmap &amp; Master Milestones
+                            </h2>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Description: ALWAYS visible underneath the title */}
+                      <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
+                        Overview, track, and jump between all {visiblePhases.length + 1} project steps. Follow step-by-step verification milestones, track your complete launch readiness, and navigate through every guardrail requirement with zero friction.
+                      </p>
+
+                      {/* Section Completion Bar: Matches other pills */}
+                      <div className="space-y-1 pt-1 select-none">
+                        <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+                          <span>Section Completion</span>
+                          <span>{overallPercent}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
+                          <div 
+                            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
+                            style={{ width: `${overallPercent}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), subtle gray circle when pointing UP (open/expanded) */}
+                      <div className="flex justify-center pt-0.5 pb-0 select-none">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsRoadmapExpanded(!isRoadmapExpanded);
+                          }}
+                          className={`apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 ${
+                            isRoadmapExpanded 
+                              ? 'rounded-full bg-slate-100/90 text-slate-700 shadow-2xs' 
+                              : 'text-slate-400 hover:text-slate-700'
+                          }`}
+                          aria-label={isRoadmapExpanded ? "Collapse roadmap" : "Expand roadmap"}
+                          title={isRoadmapExpanded ? "Collapse roadmap" : "Expand roadmap"}
+                        >
+                          <ChevronDown 
+                            strokeWidth={2.5}
+                            className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                              isRoadmapExpanded ? 'rotate-180 text-slate-800' : 'text-slate-400'
+                            }`} 
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expandable Roadmap Drop-Down Content: Standalone step pills */}
+                  <div className={`apple-drawer-collapse ${isRoadmapExpanded ? 'expanded' : ''}`}>
+                    <div className="apple-drawer-content">
+                      <div className="space-y-2.5 pt-1">
+                        {[SETUP_STEPS_PHASE, ...visiblePhases].map((phase, pIdx) => {
+                          const phaseItems = activeProject.customItems?.[phase.id] || phase.items;
+                          const pCompleted = phaseItems.filter(item => completedItemIds.includes(item.id)).length;
+                          const pTotal = phaseItems.length;
+                          const pPercent = pTotal > 0 ? Math.round((pCompleted / pTotal) * 100) : 0;
+                          const pDone = pTotal > 0 && pCompleted === pTotal;
+                          const pTheme = getPhaseTheme(phase.number === 0 ? 0 : (phase.number || pIdx));
+
+                          return (
+                            <div
+                              key={phase.id}
+                              onClick={() => {
+                                const el = document.getElementById(phase.id);
+                                if (el) {
+                                  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                  triggerHaptic(ImpactStyle.Light);
+                                }
+                              }}
+                              className="apple-press p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all flex items-center justify-between text-left cursor-pointer group"
+                            >
+                              <div className="flex items-center space-x-3 min-w-0">
+                                <div className={`w-10 h-10 rounded-xl ${pTheme.iconBg} flex items-center justify-center text-white shrink-0 shadow-xs`}>
+                                  {renderPhaseIcon(phase.iconName, "w-5 h-5 text-white stroke-[2.2]")}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center space-x-2">
+                                    <span className={`h-4 px-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${pTheme.iconBg} text-white shadow-2xs inline-flex items-center justify-center pt-[1px] leading-none`}>
+                                      {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
+                                    </span>
+                                    <span className="text-xs text-slate-400">•</span>
+                                    <span className="text-xs font-semibold text-slate-600">
+                                      {pCompleted} of {pTotal} Verified
+                                    </span>
+                                  </div>
+                                  <h3 className="text-sm font-bold text-slate-900 tracking-tight leading-snug font-google truncate mt-0.5">
+                                    {phase.title}
+                                  </h3>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2 shrink-0 ml-3">
+                                {pDone ? (
+                                  <div className={`w-7 h-7 rounded-full ${pTheme.iconBg} flex items-center justify-center shadow-xs text-white`}>
+                                    <Check strokeWidth={2.5} className="w-4 h-4 text-white" />
+                                  </div>
+                                ) : (
+                                  <span className="text-xs font-bold text-slate-500">
+                                    {pPercent}%
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {visiblePhases.map((phase, phaseIdx) => (
                 <div 
