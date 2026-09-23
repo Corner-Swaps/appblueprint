@@ -1,11 +1,17 @@
 import React from 'react';
 
+const promptCache = new Map<string, React.ReactNode>();
+
 /**
  * Renders an AI agent prompt formatted with standard subsection typography,
- * clearly separated by sections and paragraphs.
+ * clearly separated by sections and paragraphs. Memoized for high performance.
  */
 export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.ReactNode => {
   if (!rawPrompt) return null;
+
+  const cacheKey = `${isDark ? '1' : '0'}_${rawPrompt}`;
+  const cached = promptCache.get(cacheKey);
+  if (cached) return cached;
 
   // Normalize line endings
   const normalized = rawPrompt.replace(/\r\n/g, '\n').trim();
@@ -38,7 +44,7 @@ export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.
     }
   }
 
-  return (
+  const result = (
     <div className="space-y-3 select-text">
       {paragraphs.map((para, idx) => {
         // 1. Check if paragraph starts with a major section header: e.g. "TASK & OBJECTIVE:" or "SPECIFIC EXECUTION REQUIREMENTS:"
@@ -106,4 +112,7 @@ export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.
       })}
     </div>
   );
+
+  promptCache.set(cacheKey, result);
+  return result;
 };

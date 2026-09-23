@@ -1134,6 +1134,8 @@ export const RESOURCES_DATA: ResourceItem[] = [
     ],
     bestUsedFor: 'Securing custom backend API servers, webhook endpoints, and staging servers with zero annual certificate costs.',
     freeTierInfo: '100% free non-profit certificate authority operated for the public\'s benefit.',
+    quickStart: 'Install Certbot on your web server via snap: "sudo certbot --nginx" or "sudo certbot certonly --standalone". Test auto-renewal using "sudo certbot renew --dry-run".',
+    reviewTraps: 'Apple ATS automatically blocks insecure HTTP connections. Always ensure your domain certificate is active before submitting for App Store review.',
     url: 'https://letsencrypt.org',
     iconName: 'Lock'
   },

@@ -4,6 +4,7 @@ import {
   ResourceCategory, 
   ResourceItem 
 } from '../data/resources';
+import { PlatformBadge } from './PlatformBadge';
 import { 
   ChevronDown, 
   ChevronUp,
@@ -292,8 +293,55 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     }
   };
 
+  const renderTierBadge = (badge?: string) => {
+    if (!badge) return null;
+    switch (badge) {
+      case 'Free':
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 tracking-wide inline-flex items-center space-x-1 shadow-2xs">
+            <CheckCircle2 className="w-2.5 h-2.5 shrink-0 text-emerald-600" />
+            <span>100% Free</span>
+          </span>
+        );
+      case 'Open Source':
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200/80 tracking-wide inline-flex items-center space-x-1 shadow-2xs">
+            <Code className="w-2.5 h-2.5 shrink-0 text-blue-600" />
+            <span>Open Source</span>
+          </span>
+        );
+      case 'Official':
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200/80 tracking-wide inline-flex items-center space-x-1 shadow-2xs">
+            <ShieldCheck className="w-2.5 h-2.5 shrink-0 text-purple-600" />
+            <span>Official</span>
+          </span>
+        );
+      case 'AI Model':
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80 tracking-wide inline-flex items-center space-x-1 shadow-2xs">
+            <Brain className="w-2.5 h-2.5 shrink-0 text-indigo-600" />
+            <span>AI Model</span>
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80 tracking-wide inline-flex items-center space-x-1 shadow-2xs">
+            <Zap className="w-2.5 h-2.5 shrink-0 text-amber-600" />
+            <span>{badge}</span>
+          </span>
+        );
+    }
+  };
+
   const handleToggleSection = (secId: string) => {
-    setExpandedSectionId(prev => (prev === secId ? null : secId));
+    setExpandedSectionId(prev => {
+      if (prev === secId) {
+        setExpandedItemId(null);
+        return null;
+      }
+      return secId;
+    });
   };
 
   const handleToggleItem = (itemId: string) => {
@@ -702,77 +750,80 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
       {/* 2. Section Cards */}
       <div className="space-y-4 pt-1">
         {SECTION_CONFIGS.map(sec => {
-          const secItems = RESOURCES_DATA.filter(r => r.category === sec.id).slice(0, 6);
+          const secItems = RESOURCES_DATA.filter(r => r.category === sec.id);
           const isSectionOpen = expandedSectionId === sec.id;
 
           return (
             <div 
               id={sec.id}
               key={sec.id}
-              className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
-                isSectionOpen 
-                  ? 'p-5 sm:p-6 space-y-3' 
-                  : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 flex flex-col justify-between min-h-[168px]'
-              }`}
+              className="space-y-3"
             >
-              {/* Section Header Block: clicking text minimizes/toggles section */}
+              {/* Section Header Card (The original pill) */}
               <div 
-                onClick={() => handleToggleSection(sec.id)}
-                className={`select-none cursor-pointer ${isSectionOpen ? 'space-y-2.5' : 'flex-1 flex flex-col justify-between'}`}
+                className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 ${
+                  !isSectionOpen ? 'flex flex-col justify-between min-h-[168px]' : ''
+                }`}
               >
-                <div className="space-y-2 select-none">
-                  <div className="w-full flex items-center justify-between select-none">
-                    <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
-                      {/* Squircle Icon on the LEFT */}
-                      <div className={`w-12 h-12 rounded-2xl ${sec.iconBg} flex items-center justify-center shrink-0 shadow-xs relative text-white`}>
-                        {sec.icon}
-                      </div>
+                {/* Section Header Block: clicking text minimizes/toggles section */}
+                <div 
+                  onClick={() => handleToggleSection(sec.id)}
+                  className={`select-none cursor-pointer ${isSectionOpen ? 'space-y-2.5' : 'flex-1 flex flex-col justify-between'}`}
+                >
+                  <div className="space-y-2 select-none">
+                    <div className="w-full flex items-center justify-between select-none">
+                      <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
+                        {/* Squircle Icon on the LEFT */}
+                        <div className={`w-12 h-12 rounded-2xl ${sec.iconBg} flex items-center justify-center shrink-0 shadow-xs relative text-white`}>
+                          {sec.icon}
+                        </div>
 
-                      {/* Clean Title First: Prominent and bold with no subtext above */}
-                      <div className="select-none flex-1 min-w-0">
-                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
-                          {sec.title}
-                        </h2>
+                        {/* Clean Title First: Prominent and bold with no subtext above */}
+                        <div className="select-none flex-1 min-w-0">
+                          <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
+                            {sec.title}
+                          </h2>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Section Description: ALWAYS visible underneath the title! */}
+                    <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
+                      {sec.description}
+                    </p>
                   </div>
 
-                  {/* Section Description: ALWAYS visible underneath the title! */}
-                  <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
-                    {sec.description}
-                  </p>
-                </div>
-
-                {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), Light gray circle when pointing UP (open/expanded) */}
-                <div className="flex justify-center pt-2 pb-0.5 select-none">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleSection(sec.id);
-                    }}
-                    className={`apple-press transition-all duration-200 flex items-center justify-center ${
-                      !isSectionOpen 
-                        ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
-                        : 'w-7 h-7 text-slate-400 hover:text-slate-600'
-                    }`}
-                    aria-label={isSectionOpen ? "Collapse section" : "Expand section"}
-                    title={isSectionOpen ? "Collapse section" : "Expand section"}
-                  >
-                    <ChevronDown 
-                      strokeWidth={2.5}
-                      className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                        isSectionOpen ? 'rotate-180 text-slate-700' : 'text-slate-400'
+                  {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), Light gray circle when pointing UP (open/expanded) */}
+                  <div className="flex justify-center pt-2 pb-0.5 select-none">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleSection(sec.id);
+                      }}
+                      className={`apple-press transition-all duration-200 flex items-center justify-center ${
+                        !isSectionOpen 
+                          ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
+                          : 'w-7 h-7 text-slate-400 hover:text-slate-600'
                       }`}
-                    />
-                  </button>
+                      aria-label={isSectionOpen ? "Collapse section" : "Expand section"}
+                      title={isSectionOpen ? "Collapse section" : "Expand section"}
+                    >
+                      <ChevronDown 
+                        strokeWidth={2.5}
+                        className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                          isSectionOpen ? 'rotate-180 text-slate-700' : 'text-slate-400'
+                        }`} 
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Collapsed/Expanded Resource Items inside this Section */}
+              {/* Collapsed/Expanded Resource Items OUTSIDE the original Category Pill */}
               <div className={`apple-drawer-collapse ${isSectionOpen ? 'expanded' : ''}`}>
                 <div className="apple-drawer-content">
-                  <div className="space-y-3 pt-2.5 border-t border-black/5">
+                  <div className="space-y-3 pt-1">
                     {/* If Typography section, display curated font pairing preview cards */}
                     {sec.id === 'typography' && (
                       <div className="space-y-3 pb-1">
@@ -842,10 +893,10 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         <div 
                           id={item.id}
                           key={item.id}
-                          className={`rounded-2xl border transition-all duration-200 shadow-xs ${
+                          className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
                             isItemOpen 
-                              ? 'bg-white border-slate-300 p-4 sm:p-5 space-y-2.5' 
-                              : 'bg-slate-50/70 border-slate-200/80 hover:border-slate-300 p-4 pb-2 sm:p-5 sm:pb-2.5 space-y-2'
+                              ? 'p-5 sm:p-6 space-y-3' 
+                              : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2'
                           }`}
                         >
                           {/* Item Header Block: clicking text minimizes/toggles item */}
@@ -857,14 +908,19 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                               <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
                                 
                                 {/* Squircle containing official brand colored logo */}
-                                <div className="w-11 h-11 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs relative">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs relative">
                                   {renderBrandLogo(item)}
                                 </div>
 
-                                {/* Title Only: Clean and prominent with no subtext/badge above */}
-                                <div className="select-none flex-1 min-w-0">
+                                {/* Title & Badges matching Main Application */}
+                                <div className="space-y-1 select-none flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap select-none mb-0.5">
+                                    <PlatformBadge platform={item.platform || (isApple ? 'ios' : isGooglePlay ? 'android' : 'both')} />
+                                    {renderTierBadge(item.badge)}
+                                  </div>
+
                                   <h3 
-                                    className={`text-sm sm:text-base font-bold tracking-tight leading-snug select-none truncate ${
+                                    className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none truncate ${
                                       isApple 
                                         ? 'text-[#1D1D1F] font-sans' 
                                         : isGooglePlay 
@@ -879,7 +935,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                             </div>
 
                             {/* Subsection: Description directly underneath the title */}
-                            <p className="text-[13px] sm:text-[13.5px] text-slate-600 leading-relaxed select-none pt-0.5">
+                            <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
                               {item.shortDescription}
                             </p>
 
@@ -909,18 +965,21 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                             </div>
                           </div>
 
-                          {/* Expanded Guidance Drawer with Subsections down below */}
+                          {/* Expanded Guidance Drawer with Subsections in their own pills */}
                           <div className={`apple-drawer-collapse ${isItemOpen ? 'expanded' : ''}`}>
                             <div className="apple-drawer-content">
                               <div 
                                 onClick={() => setExpandedItemId(null)}
-                                className="space-y-4 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
+                                className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
                                 title="Click anywhere to minimize"
                               >
                                 
-                                {/* Subsection 1: Why It Matters & Business Tier Model */}
+                                {/* Subsection 1: Why It Matters Pill */}
                                 {item.whyItMatters && (
-                                  <div className="space-y-1.5">
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                  >
                                     <div className="flex items-center space-x-1.5 select-none">
                                       <HelpCircle className="w-3.5 h-3.5 text-indigo-600 stroke-[2.2] shrink-0" />
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -933,9 +992,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 2: Key Highlights - Icon: Sparkles, Color: text-blue-600 */}
+                                {/* Subsection 2: Key Highlights Pill */}
                                 {item.keyFeatures && item.keyFeatures.length > 0 && (
-                                  <div className="space-y-2 pt-1 border-t border-slate-100/80">
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                                  >
                                     <div className="flex items-center space-x-1.5 select-none">
                                       <Sparkles className="w-3.5 h-3.5 text-blue-600 stroke-[2.2] shrink-0" />
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -957,9 +1019,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 3: Best Used For - Icon: Target, Color: text-purple-600 */}
+                                {/* Subsection 3: Best Used For Pill */}
                                 {item.bestUsedFor && (
-                                  <div className="space-y-1.5 pt-1 border-t border-slate-100/80">
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                  >
                                     <div className="flex items-center space-x-1.5 select-none">
                                       <Target className="w-3.5 h-3.5 text-purple-600 stroke-[2.2] shrink-0" />
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -972,9 +1037,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 4: Free Access & Licensing - Icon: CreditCard, Color: text-emerald-600 */}
+                                {/* Subsection 4: Free Access & Licensing Pill */}
                                 {item.freeTierInfo && (
-                                  <div className="space-y-1.5 pt-1 border-t border-slate-100/80">
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                  >
                                     <div className="flex items-center space-x-1.5 select-none">
                                       <CreditCard className="w-3.5 h-3.5 text-emerald-600 stroke-[2.2] shrink-0" />
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -987,9 +1055,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 4: Quick Start & Integration - Icon: Terminal, Color: text-amber-600 */}
+                                {/* Subsection 5: Quick Start & Integration Pill */}
                                 {item.quickStart && (
-                                  <div className="space-y-1.5 pt-1 border-t border-slate-100/80">
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                  >
                                     <div className="flex items-center space-x-1.5 select-none">
                                       <Terminal className="w-3.5 h-3.5 text-amber-600 stroke-[2.2] shrink-0" />
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -1002,9 +1073,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 5: Common Pitfalls & Review Traps - Icon: AlertTriangle, Color: text-rose-600 */}
+                                {/* Subsection 6: Common Pitfalls & Review Traps Pill */}
                                 {item.reviewTraps && (
-                                  <div className="space-y-1.5 pt-1 border-t border-slate-100/80">
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                  >
                                     <div className="flex items-center space-x-1.5 select-none">
                                       <AlertTriangle className="w-3.5 h-3.5 text-rose-600 stroke-[2.2] shrink-0" />
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -1017,9 +1091,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 6: Setup Command / AI Prompt - Styled consistently with Key Highlights with Copy button */}
+                                {/* Subsection 7: Setup Command / AI Prompt Pill */}
                                 {item.promptOrCommand && (
-                                  <div className="space-y-2 pt-1 border-t border-slate-100/80">
+                                  <div 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5 shadow-2xs cursor-auto"
+                                  >
                                     <div className="flex items-center justify-between select-none">
                                       <div className="flex items-center space-x-1.5 select-none">
                                         <Terminal className="w-3.5 h-3.5 text-slate-700 stroke-[2.2] shrink-0" />
@@ -1033,7 +1110,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                           e.stopPropagation();
                                           handleCopyPrompt(item.id, item.promptOrCommand || '');
                                         }}
-                                        className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
+                                        className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
                                         title="Copy to clipboard"
                                       >
                                         {copiedPromptId === item.id ? (
@@ -1050,8 +1127,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                       </button>
                                     </div>
                                     <div 
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 select-text cursor-text"
+                                      className="p-3 rounded-xl bg-white border border-slate-200/70 select-text cursor-text"
                                     >
                                       <p className="text-slate-800 font-mono text-[12px] leading-relaxed whitespace-pre-line">
                                         {item.promptOrCommand}
@@ -1060,8 +1136,8 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 5: Visit Official Resource Link */}
-                                <div className="pt-2">
+                                {/* Subsection: Visit Official Resource Link */}
+                                <div className="pt-1">
                                   <a
                                     href={item.url}
                                     target="_blank"
@@ -1097,7 +1173,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     />
                                   </button>
                                 </div>
-
                               </div>
                             </div>
                           </div>

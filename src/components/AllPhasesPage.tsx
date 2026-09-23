@@ -282,7 +282,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                     <div className="space-y-1 flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
                         <span className={`h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1.5px] leading-none`}>
-                          {phase.number === 0 ? 'Set Up Steps' : `Step ${phase.number}`}
+                          {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
                         </span>
                         <span className="text-xs text-slate-400">•</span>
                         <span className="text-xs font-bold text-slate-700">

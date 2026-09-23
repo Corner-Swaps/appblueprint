@@ -15,13 +15,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     setFadingOut(true);
     setTimeout(() => {
       onComplete();
-    }, 420);
+    }, 250);
   };
 
   useEffect(() => {
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 1100);
+    }, 400);
 
     return () => {
       clearTimeout(dismissTimer);
@@ -45,8 +45,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         justifyContent: 'center',
         background: 'radial-gradient(ellipse at 50% 45%, #FAF5FF 0%, #F3E8FF 40%, #E9D5FF 80%, #DDD6FE 100%)',
         opacity: fadingOut ? 0 : 1,
-        transform: fadingOut ? 'scale(1.04)' : 'scale(1)',
-        transition: 'opacity 420ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+        transform: fadingOut ? 'scale(1.03)' : 'scale(1)',
+        transition: 'opacity 250ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1)',
         overflow: 'hidden',
       }}
       aria-label="App Blueprint Intro"
