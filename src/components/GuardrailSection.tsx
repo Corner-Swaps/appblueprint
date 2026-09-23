@@ -155,6 +155,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const handleCollapseSection = () => {
     setIsExpanded(false);
     setExpandedItemId(null);
+    scrollToSectionTop();
   };
 
   // Fluid drag-and-drop reordering for requirement items
@@ -932,9 +933,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               );
             })}
 
-            {/* Separate Action Pills: Add, Edit */}
+            {/* Separate Action Pills: Add, Edit, Collapse */}
             <div 
-              className="py-3 px-4 flex items-center justify-center gap-2 select-none"
+              className="py-3 px-4 flex items-center justify-center gap-2 select-none flex-wrap"
             >
               {onAddItem && (
                 <button
@@ -979,6 +980,32 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   <Pencil className="w-3.5 h-3.5 stroke-[2.2]" />
                 )}
                 <span>{isEditing ? 'Done' : 'Edit'}</span>
+              </button>
+
+              {/* Collapse Section Pill */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCollapseSection();
+                }}
+                className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border bg-white border-slate-200/90 hover:bg-slate-50 text-slate-700 hover:text-slate-900 cursor-pointer"
+                title={
+                  isSetupPhase
+                    ? 'Collapse Set Up & Environment'
+                    : typeof phase.number === 'number' && phase.number > 0
+                    ? `Collapse Step ${phase.number}`
+                    : `Collapse ${phase.title}`
+                }
+              >
+                <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 text-slate-500" />
+                <span>
+                  {isSetupPhase
+                    ? 'Collapse Set Up & Environment'
+                    : typeof phase.number === 'number' && phase.number > 0
+                    ? `Collapse Step ${phase.number}`
+                    : `Collapse ${phase.title}`}
+                </span>
               </button>
             </div>
 
