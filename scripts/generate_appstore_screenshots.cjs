@@ -14,9 +14,16 @@ const DIR_DOCS = path.join(__dirname, '../docs/screenshots');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
+// Clean up old LaunchReady file names from 6.5 and 6.9 directories
+[DIR_6_5, DIR_6_9].forEach(dir => {
+  ['01_welcome.png', '03_interactive_roadmap.png', '05_production_playbook.png'].forEach(file => {
+    const fPath = path.join(dir, file);
+    if (fs.existsSync(fPath)) fs.unlinkSync(fPath);
+  });
+});
+
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
-// Simple static server for docs
 function startServer(port = 3456) {
   const mimeTypes = {
     '.html': 'text/html',
@@ -50,14 +57,27 @@ function startServer(port = 3456) {
   });
 }
 
-// Injects iOS Status Bar & Dynamic Island
 async function injectIOSChrome(page, isDark = false) {
   await page.evaluate((dark) => {
-    // Remove web launcher bar if present
+    // Hide web launcher bar
     document.querySelectorAll('.bg-slate-900.text-white.text-xs, [aria-label="Back to Website"]').forEach(el => {
       const topBar = el.closest('div.sticky.top-0');
-      if (topBar) topBar.remove();
+      if (topBar) topBar.style.display = 'none';
     });
+
+    // Ensure page content clears Dynamic Island with safe padding
+    let styleTag = document.getElementById('ios-safe-area-style');
+    if (!styleTag) {
+      styleTag = document.createElement('style');
+      styleTag.id = 'ios-safe-area-style';
+      styleTag.innerHTML = `
+        .min-h-screen {
+          padding-top: 58px !important;
+          padding-bottom: 34px !important;
+        }
+      `;
+      document.head.appendChild(styleTag);
+    }
 
     // Remove any existing overlay
     const existing = document.getElementById('ios-statusbar-overlay');
@@ -172,35 +192,42 @@ async function captureScreenSet(browser, config) {
     localStorage.setItem('launchready_legal_agreed_v1', 'true');
     localStorage.setItem('appblueprint_visits_count', '5');
 
-    // Multi-project mock setup
+    // Rich multi-project setup with 72% completion
+    const completedList = [
+      'setup-model', 'setup-developer-accounts', 'setup-xcode-studio', 'setup-github-repo', 'setup-device-pairing', 'setup-typescript-swift',
+      'p1-problem-solution', 'p1-scope-pruning', 'p1-tech-stack', 'p1-developer-accounts',
+      'p1-monetization-model', 'p1-duns-organization', 'p1-bundle-id-naming',
+      'p2-screen-inventory', 'p2-screen-anatomy', 'p2-spatial-grid', 'p2-nav-hierarchy',
+      'p2-design-inspiration', 'p2-liquid-glass', 'p2-touch-targets', 'p2-safe-areas',
+      'p2-dynamic-type', 'p2-dark-mode', 'p2-app-icon', 'p2-launch-splash',
+      'p4-schema-models', 'p4-local-persistence', 'p4-state-restoration',
+      'p4-privacy-manifest', 'p4-keychain-keystore', 'p4-transit-security',
+      'p3-offline-sync', 'p3-network-resilience', 'p3-sign-in-apple', 'p3-haptic-feedback',
+      'p4-permissions-hygiene', 'p4-privacy-logging', 'p5-cold-start', 'p5-memory-leaks',
+      'p6-screenshots', 'p6-privacy-nutrition', 'p6-export-compliance', 'p7-testflight-internal'
+    ];
+
     const projects = [
       {
         id: 'proj-1',
         name: 'App Blueprint v1.0',
         color: '#3B82F6',
         createdAt: new Date().toISOString(),
-        completedItemIds: [
-          'p1-problem-solution', 'p1-scope-pruning', 'p1-target-audience',
-          'p2-liquid-glass', 'p2-safe-areas', 'p2-haptics', 'p2-dark-mode',
-          'p3-state-architecture', 'p3-deep-linking',
-          'p4-keychain-keystore', 'p4-privacy-manifest', 'p4-network-security',
-          'p5-cold-start', 'p5-memory-leaks',
-          'p6-screenshots', 'p6-privacy-nutrition'
-        ]
+        completedItemIds: completedList
       },
       {
         id: 'proj-2',
-        name: 'Fitness Tracker v1',
+        name: 'Fitness Tracker Pro',
         color: '#8B5CF6',
         createdAt: new Date().toISOString(),
-        completedItemIds: ['p1-problem-solution', 'p2-liquid-glass']
+        completedItemIds: ['p1-problem-solution', 'p2-liquid-glass', 'p2-haptics']
       },
       {
         id: 'proj-3',
         name: 'SaaS Mobile Companion',
         color: '#10B981',
         createdAt: new Date().toISOString(),
-        completedItemIds: ['p1-problem-solution', 'p3-state-architecture']
+        completedItemIds: ['p1-problem-solution', 'p3-state-architecture', 'p4-privacy-manifest']
       }
     ];
 
@@ -210,45 +237,50 @@ async function captureScreenSet(browser, config) {
 
   // Load app directly with #app
   await page.goto('http://localhost:3456/?mode=app#app', { waitUntil: 'networkidle0' });
-  await sleep(1200); // Allow render & animation settle
+  // Wait for splash screen to completely finish and dismiss (takes 2.5s)
+  await sleep(3500);
 
-  // 1. Production Checklist (Main Home)
+  // 1. Production Checklist (Main Home with 72% Readiness Dial)
   console.log(`[${name}] 1. Capturing 01_production_checklist...`);
   await injectIOSChrome(page, false);
-  await sleep(400);
+  await sleep(500);
   const shot1 = path.join(outDir, '01_production_checklist.png');
   await page.screenshot({ path: shot1 });
   console.log(`Saved: ${shot1}`);
 
-  // 2. Architecture & HIG Audit (Expanded Phase 2)
+  // 2. Architecture & HIG Audit (Expanded Liquid Glass Drawer)
   console.log(`[${name}] 2. Capturing 02_architecture_audit...`);
-  // Click on Phase 2 header
-  const phase2Btn = await page.$('#phase-2-layout, #phase-2 > div > div:first-child');
-  if (phase2Btn) {
-    await phase2Btn.click();
+  // Open Step 3: Visual Design System
+  const p3Btn = await page.$('#phase-2 > div > div:first-child');
+  if (p3Btn) {
+    await p3Btn.click();
     await sleep(600);
   }
-  // Click on Liquid Glass item drawer
-  const liquidCard = await page.$('#p2-liquid-glass .cursor-pointer');
-  if (liquidCard) {
-    await liquidCard.click();
+  // Expand Liquid Glass item
+  const liquidGlass = await page.$('#p2-liquid-glass .cursor-pointer');
+  if (liquidGlass) {
+    await liquidGlass.click();
     await sleep(600);
+    // Scroll slightly down to center guidelines
+    await page.evaluate(() => window.scrollBy({ top: 180, behavior: 'instant' }));
+    await sleep(400);
   }
   await injectIOSChrome(page, false);
-  await sleep(300);
+  await sleep(400);
   const shot2 = path.join(outDir, '02_architecture_audit.png');
   await page.screenshot({ path: shot2 });
   console.log(`Saved: ${shot2}`);
 
   // 3. Multi-Project Manager
   console.log(`[${name}] 3. Capturing 03_projects_manager...`);
+  await page.evaluate(() => window.scrollTo(0, 0));
   const projectsTab = await page.$('button[aria-label="Projects"]');
   if (projectsTab) {
     await projectsTab.click();
     await sleep(700);
   }
   await injectIOSChrome(page, false);
-  await sleep(300);
+  await sleep(400);
   const shot3 = path.join(outDir, '03_projects_manager.png');
   await page.screenshot({ path: shot3 });
   console.log(`Saved: ${shot3}`);
@@ -261,28 +293,23 @@ async function captureScreenSet(browser, config) {
     await sleep(700);
   }
   await injectIOSChrome(page, false);
-  await sleep(300);
+  await sleep(400);
   const shot4 = path.join(outDir, '04_app_launch_academy.png');
   await page.screenshot({ path: shot4 });
   console.log(`Saved: ${shot4}`);
 
-  // 5. Config Generators & Store Manifest
+  // 5. Config Generators & Curated Prompts (Expanded Section in Resources)
   console.log(`[${name}] 5. Capturing 05_config_generators...`);
-  // In Resources tab, scroll to and open Config Generators or Typography
-  const configSection = await page.$('button ::-p-text(Config Generators)');
-  if (configSection) {
-    await configSection.click();
+  // Click on Frontier AI Models drawer pill
+  const aiModelsPill = await page.$('button ::-p-text(Frontier AI Models & Coding Agents)');
+  if (aiModelsPill) {
+    await aiModelsPill.click();
     await sleep(600);
-  } else {
-    // If not found, open Typography & Font Systems
-    const typoSection = await page.$('button ::-p-text(Typography & Font Systems)');
-    if (typoSection) {
-      await typoSection.click();
-      await sleep(600);
-    }
+    await page.evaluate(() => window.scrollBy({ top: 120, behavior: 'instant' }));
+    await sleep(300);
   }
   await injectIOSChrome(page, false);
-  await sleep(300);
+  await sleep(400);
   const shot5 = path.join(outDir, '05_config_generators.png');
   await page.screenshot({ path: shot5 });
   console.log(`Saved: ${shot5}`);
@@ -322,7 +349,7 @@ async function run() {
   await browser.close();
   server.close();
 
-  // Copy to public/screenshots and docs/screenshots for website
+  // Sync into public/screenshots and docs/screenshots for website
   console.log('\nSyncing to public/screenshots and docs/screenshots...');
   const files = [
     { src: '01_production_checklist.png', dest: '01_welcome.png' },
