@@ -197,7 +197,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           {item.agentPrompt && (
             <div className="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/15 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white/90 font-google">
+                <h3 className="text-[10.5px] font-bold uppercase tracking-wider text-white/90 font-google">
                   AI Coding
                 </h3>
                 <button
@@ -220,11 +220,11 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                 </button>
               </div>
 
-              <p className="text-xs sm:text-[13px] text-white/80 leading-relaxed">
+              <p className="text-[11.5px] sm:text-xs text-white/80 leading-relaxed font-google">
                 Copy to clipboard to transfer instructions to your computer and agent (Cursor, Claude Code, Windsurf, Copilot & Antigravity).
               </p>
 
-              <div className="p-3.5 sm:p-4 rounded-xl bg-white/10 border border-white/15 text-white/90 text-xs sm:text-[13.5px] select-text max-h-72 overflow-y-auto leading-relaxed">
+              <div className="p-3.5 sm:p-4 rounded-xl bg-white/10 border border-white/15 text-white/90 text-[12.5px] sm:text-[13px] select-text max-h-72 overflow-y-auto leading-relaxed font-google">
                 {renderFormattedPrompt(item.agentPrompt, true)}
               </div>
             </div>

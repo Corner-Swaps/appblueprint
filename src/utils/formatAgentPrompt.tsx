@@ -6,10 +6,12 @@ const promptCache = new Map<string, React.ReactNode>();
  * Renders an AI agent prompt formatted with standard subsection typography,
  * clearly separated by sections and paragraphs. Memoized for high performance.
  */
+const CACHE_VERSION = 'v3_standardized_';
+
 export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.ReactNode => {
   if (!rawPrompt) return null;
 
-  const cacheKey = `${isDark ? '1' : '0'}_${rawPrompt}`;
+  const cacheKey = `${CACHE_VERSION}${isDark ? '1' : '0'}_${rawPrompt}`;
   const cached = promptCache.get(cacheKey);
   if (cached) return cached;
 
@@ -45,7 +47,7 @@ export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.
   }
 
   const result = (
-    <div className="space-y-3 select-text">
+    <div className="space-y-2.5 select-text font-google">
       {paragraphs.map((para, idx) => {
         // 1. Check if paragraph starts with a major section header: e.g. "TASK & OBJECTIVE:" or "SPECIFIC EXECUTION REQUIREMENTS:"
         const headerMatch = para.match(/^(TASK & OBJECTIVE|SPECIFIC EXECUTION REQUIREMENTS|EXECUTION PROTOCOL FOR THE AGENT|STORE GUIDELINE COMPLIANCE|PREREQUISITES|KEY VERIFICATION RULES):?\s*([\s\S]*)$/i);
@@ -54,15 +56,15 @@ export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.
           const headerTitle = headerMatch[1].toUpperCase();
           const rest = headerMatch[2].trim();
           return (
-            <div key={idx} className="space-y-1 pt-0.5">
+            <div key={idx} className="space-y-1 pt-0.5 font-google">
               <span className={`font-bold uppercase text-[11px] tracking-wider block font-google ${
-                isDark ? 'text-white/90' : 'text-slate-900'
+                isDark ? 'text-white' : 'text-slate-900'
               }`}>
                 {headerTitle}
               </span>
               {rest && (
-                <p className={`leading-relaxed text-[13.5px] sm:text-sm whitespace-pre-line ${
-                  isDark ? 'text-white/80' : 'text-slate-700'
+                <p className={`leading-relaxed text-[13.5px] sm:text-sm whitespace-pre-line font-google ${
+                  isDark ? 'text-white/85' : 'text-slate-700'
                 }`}>
                   {rest}
                 </p>
@@ -75,12 +77,12 @@ export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.
         const numberedStepMatch = para.match(/^(\d+\.\s+[^:]+:)\s*([\s\S]*)$/);
         if (numberedStepMatch) {
           return (
-            <div key={idx} className="flex items-start space-x-1.5 text-[13.5px] sm:text-sm leading-relaxed">
-              <p className={`flex-1 min-w-0 ${isDark ? 'text-white/80' : 'text-slate-700'}`}>
-                <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <div key={idx} className="flex items-start space-x-1.5 text-[13.5px] sm:text-sm leading-relaxed font-google">
+              <p className={`flex-1 min-w-0 font-google ${isDark ? 'text-white/85' : 'text-slate-700'}`}>
+                <span className={`font-bold font-google text-[11.5px] sm:text-xs tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {numberedStepMatch[1]}
                 </span>{' '}
-                <span className="whitespace-pre-line">{numberedStepMatch[2]}</span>
+                <span className="whitespace-pre-line font-google">{numberedStepMatch[2]}</span>
               </p>
             </div>
           );
@@ -90,11 +92,11 @@ export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.
         const simpleNumberedMatch = para.match(/^(\d+\.)\s+([\s\S]*)$/);
         if (simpleNumberedMatch) {
           return (
-            <div key={idx} className="flex items-start space-x-2 text-[13.5px] sm:text-sm leading-relaxed">
-              <span className={`font-bold shrink-0 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <div key={idx} className="flex items-start space-x-2 text-[13.5px] sm:text-sm leading-relaxed font-google">
+              <span className={`font-bold shrink-0 font-google text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {simpleNumberedMatch[1]}
               </span>
-              <p className={`flex-1 min-w-0 whitespace-pre-line ${isDark ? 'text-white/80' : 'text-slate-700'}`}>
+              <p className={`flex-1 min-w-0 whitespace-pre-line font-google ${isDark ? 'text-white/85' : 'text-slate-700'}`}>
                 {simpleNumberedMatch[2]}
               </p>
             </div>
@@ -103,8 +105,8 @@ export const renderFormattedPrompt = (rawPrompt: string, isDark = false): React.
 
         // 4. Standard paragraph (intro role, context, etc.)
         return (
-          <p key={idx} className={`leading-relaxed text-[13.5px] sm:text-sm whitespace-pre-line ${
-            isDark ? 'text-white/80' : 'text-slate-700'
+          <p key={idx} className={`leading-relaxed text-[13.5px] sm:text-sm whitespace-pre-line font-google ${
+            isDark ? 'text-white/85' : 'text-slate-700'
           }`}>
             {para}
           </p>

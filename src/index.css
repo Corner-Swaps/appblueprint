@@ -26,6 +26,7 @@
   }
 
   html, body {
+    font-family: 'Google Sans', 'Product Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
     background-color: #FAF8F6;
     color: #1E2022;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
