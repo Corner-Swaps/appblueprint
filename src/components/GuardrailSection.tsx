@@ -318,14 +318,15 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   if (items.length === 0 && phase.items.length > 0 && !isAddingItem) return null;
 
   return (
-    <div 
-      id={`phase-${phase.number}`}
-      ref={sectionRef}
-      className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
-      isGlobalEditMode 
-        ? 'p-3.5 sm:p-4' 
-        : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5'
-    }`}>
+    <>
+      <div 
+        id={phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`}
+        ref={sectionRef}
+        className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
+        isGlobalEditMode 
+          ? 'p-3.5 sm:p-4' 
+          : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5'
+      }`}>
       {isGlobalEditMode ? (
         /* Compact Card in Global Rearrange Mode */
         <div className="w-full flex items-center justify-between select-none">
@@ -520,9 +521,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               </button>
             </div>
           </div>
+        </>
+      )}
+    </div>
 
-          {/* 2. Interactive Checklist Items in standalone pills matching Academy style */}
-          <div className={`apple-drawer-collapse ${isExpanded ? 'expanded' : ''}`}>
+    {/* 2. Interactive Checklist Items in standalone pills matching Academy style */}
+    {!isGlobalEditMode && (
+      <div className={`apple-drawer-collapse ${isExpanded ? 'expanded' : ''}`}>
             <div className="apple-drawer-content">
               <div className="space-y-3 pt-1">
             {items.length === 0 && (
@@ -574,7 +579,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             </div>
                           )}
 
-                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none truncate font-google ${
+                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none font-google ${
                             isDone ? 'text-slate-500' : 'text-slate-900'
                           }`}>
                             {item.title}

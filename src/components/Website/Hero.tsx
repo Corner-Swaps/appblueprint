@@ -23,9 +23,9 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
     {
       id: 'checklist',
       title: 'Production Checklist',
-      subtitle: '54 store requirements with 1-click AI prompts & traps',
+      subtitle: '101 store requirements with 1-click AI prompts & traps',
       image: './screenshots/02_production_checklist.png',
-      badge: '54 Guardrails',
+      badge: '101 Guardrails',
     },
     {
       id: 'roadmap',
@@ -64,14 +64,15 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
         <div className="text-center max-w-3xl mx-auto space-y-6">
           
           {/* Eyebrow Badge */}
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-slate-200/90 shadow-2xs text-xs font-semibold text-slate-800">
-            <span className="flex h-2 w-2 relative">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-slate-200/90 shadow-2xs text-xs font-semibold text-slate-800 max-w-full">
+            <span className="flex h-2 w-2 relative shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
             </span>
-            <span className="font-google text-slate-900 font-bold">2026 Mobile Production Readiness OS</span>
-            <span className="text-slate-300">•</span>
-            <span className="text-slate-500">Apple HIG &amp; Google Play</span>
+            <span className="font-google text-slate-900 font-bold hidden sm:inline">2026 Mobile Production Readiness OS</span>
+            <span className="font-google text-slate-900 font-bold sm:hidden">2026 Production OS</span>
+            <span className="text-slate-300 shrink-0">•</span>
+            <span className="text-slate-500 shrink-0">Apple HIG &amp; Google Play</span>
           </div>
 
           {/* Main Title */}
@@ -84,7 +85,7 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
-            The zero-to-store production operating system for indie builders, mobile engineers, and AI coding agents. 10 structured phases, 54 audit-proof requirements, battle-tested guardrails, and 1-click AI prompts.
+            The zero-to-store production operating system for indie builders, mobile engineers, and AI coding agents. 10 structured phases, 101 audit-proof requirements, battle-tested guardrails, and 1-click AI prompts.
           </p>
 
           {/* Call to Actions */}
@@ -111,7 +112,7 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
           {/* Quick Metrics Bar */}
           <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
             <div className="bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
-              <div className="text-xl sm:text-2xl font-black text-slate-900 font-google">54</div>
+              <div className="text-xl sm:text-2xl font-black text-slate-900 font-google">101</div>
               <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">Production Rules</div>
             </div>
             <div className="bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
@@ -134,26 +135,28 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
         <div id="preview" className="mt-14 sm:mt-18 max-w-5xl mx-auto">
           
           {/* Tab Selector Buttons */}
-          <div className="flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar space-x-2 pb-4">
-            {previewTabs.map((tab, idx) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActivePreviewTab(idx)}
-                className={`apple-press px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center space-x-2 cursor-pointer ${
-                  activePreviewTab === idx
-                    ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-600/20'
-                    : 'bg-white/80 text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-white'
-                }`}
-              >
-                <span>{tab.title}</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                  activePreviewTab === idx ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
-                }`}>
-                  {tab.badge}
-                </span>
-              </button>
-            ))}
+          <div className="w-full overflow-x-auto no-scrollbar py-1">
+            <div className="flex items-center justify-start sm:justify-center min-w-max mx-auto space-x-2 px-4 pb-3">
+              {previewTabs.map((tab, idx) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActivePreviewTab(idx)}
+                  className={`apple-press px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all flex items-center space-x-2 cursor-pointer ${
+                    activePreviewTab === idx
+                      ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-600/20'
+                      : 'bg-white/80 text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-white'
+                  }`}
+                >
+                  <span>{tab.title}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                    activePreviewTab === idx ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    {tab.badge}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Device Mockup Container */}
