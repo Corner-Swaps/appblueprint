@@ -30,11 +30,11 @@ import {
 import { Website } from './components/Website/Website';
 import { AppLauncherBar } from './components/Website/AppLauncherBar';
 
-const TAB_KEYS: Array<'checklist' | 'projects' | 'resources'> = ['checklist', 'projects', 'resources'];
-const TAB_INDEX_MAP: Record<'checklist' | 'projects' | 'resources', number> = {
+const TAB_KEYS: Array<'checklist' | 'resources' | 'projects'> = ['checklist', 'resources', 'projects'];
+const TAB_INDEX_MAP: Record<'checklist' | 'resources' | 'projects', number> = {
   checklist: 0,
-  projects: 1,
-  resources: 2,
+  resources: 1,
+  projects: 2,
 };
 const DOCK_SLOT_DISTANCE = 68; // 56px slot + 12px gap
 const DOCK_PADDING = 8;
@@ -823,7 +823,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
             <div className="space-y-4 pt-1">
               {/* Set Up Section (Foundational setup before Phase 1) */}
               {(selectedPhaseId === 'all' || selectedPhaseId === SETUP_STEPS_PHASE.id) && (
-                <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
+                <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id} className="space-y-3">
                   <GuardrailSection
                     phase={SETUP_STEPS_PHASE}
                     phaseIndex={0}
@@ -855,6 +855,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                   key={phase.id}
                   ref={bindPhaseRef(phaseIdx)}
                   style={getPhaseDragStyle(phaseIdx)}
+                  className="space-y-3"
                 >
                   <GuardrailSection
                     phase={phase}
