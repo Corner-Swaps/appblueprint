@@ -45,6 +45,8 @@ interface GuardrailSectionProps {
   completedItemIds: string[];
   onToggleComplete: (id: string) => void;
   defaultExpanded?: boolean;
+  isExpanded?: boolean;
+  onToggleExpandSection?: (phaseId: string) => void;
   onAddItem?: (phaseId: string, title: string, description: string) => void;
   onReorderItems?: (phaseId: string, items: ChecklistItem[]) => void;
   onDeleteItem?: (phaseId: string, itemId: string) => void;
@@ -64,6 +66,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   completedItemIds,
   onToggleComplete,
   defaultExpanded = false,
+  isExpanded: isExpandedProp,
+  onToggleExpandSection,
   onAddItem,
   onReorderItems,
   onDeleteItem,
@@ -74,7 +78,28 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   onDragStartPhase,
   onToggleGlobalEdit,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded ?? false);
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded ?? false);
+  const isControlled = isExpandedProp !== undefined;
+  const isExpanded = isControlled ? isExpandedProp : internalExpanded;
+
+  const setIsExpanded = (newVal: boolean | ((prev: boolean) => boolean)) => {
+    const nextVal = typeof newVal === 'function' ? newVal(isExpanded) : newVal;
+    if (isControlled && onToggleExpandSection) {
+      if (nextVal !== isExpanded) {
+        onToggleExpandSection(phase.id);
+      }
+    } else {
+      setInternalExpanded(nextVal);
+    }
+  };
+
+  // Automatically clear expanded sub-items whenever this section is collapsed
+  React.useEffect(() => {
+    if (!isExpanded) {
+      setExpandedItemId(null);
+    }
+  }, [isExpanded]);
+
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const [copiedSnippetId, setCopiedSnippetId] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -95,7 +120,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     setIsJustMinimized(true);
     pulseTimeoutRef.current = setTimeout(() => {
       setIsJustMinimized(false);
-    }, 1200);
+    }, 1550);
   };
 
   // Section reference for smooth scroll to top when collapsing
@@ -104,6 +129,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
   const collapseSectionSmoothly = (centerInViewport = false) => {
     if (isCollapsingRef.current) return;
+
+    setIsEditMode(false);
+    setIsAddingItem(false);
 
     const targetEl = sectionRef.current || document.getElementById(phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`);
     if (!targetEl) {
@@ -120,11 +148,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
     if (centerInViewport) {
       isCollapsingRef.current = true;
-      const centeredY = Math.max(0, sectionDocTop - (viewportHeight - 64) / 2);
+      // Vertically center the collapsed pill (~100px tall) in the viewport
+      const collapsedPillHeight = 100;
+      const centeredY = Math.max(0, sectionDocTop - (viewportHeight - collapsedPillHeight) / 2);
       const diff = Math.abs(currentScroll - centeredY);
 
-      if (diff < 15) {
-        // Already centered in viewport, fold closed smoothly
+      if (diff < 20) {
+        // Already centered in viewport, fold closed directly
         setIsExpanded(false);
         setExpandedItemId(null);
         setTimeout(() => {
@@ -134,28 +164,24 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         return;
       }
 
-      // Smoothly pull up the viewport and fold closed concurrently
-      let hasFolded = false;
-      const triggerFold = () => {
-        if (!hasFolded) {
-          hasFolded = true;
-          setIsExpanded(false);
-          setExpandedItemId(null);
-        }
-      };
-
-      // Start folding early into scroll motion (80ms) so drawer folds seamlessly as it centers
-      const foldTimer = setTimeout(triggerFold, 80);
+      // Step 1: Smoothly scroll up FIRST while keeping drawer open (zero jumping/glitching)
+      // Step 2: Once scroll is back at top/centered, fold the drawer closed
+      // Step 3: Once folded, do the gentle ambient glow!
+      const scrollDuration = Math.min(520, Math.max(400, Math.round(diff * 0.28 + 260)));
 
       fluidScrollTo(centeredY, {
-        duration: Math.min(340, Math.max(220, diff * 0.20)),
+        duration: scrollDuration,
         onComplete: () => {
-          clearTimeout(foldTimer);
-          triggerFold();
+          // Viewport is now smoothly centered on the section header.
+          // Now fold closed with scroll stationary:
+          setIsExpanded(false);
+          setExpandedItemId(null);
+
+          // Once drawer has finished folding up into the pill, trigger the gentle glow!
           setTimeout(() => {
             triggerPillPulse();
             isCollapsingRef.current = false;
-          }, 160);
+          }, 320);
         },
       });
       return;
@@ -167,25 +193,18 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
     if (isScrolledPast) {
       isCollapsingRef.current = true;
-      let hasFolded = false;
-      const triggerFold = () => {
-        if (!hasFolded) {
-          hasFolded = true;
-          setIsExpanded(false);
-          setExpandedItemId(null);
-        }
-      };
-      const foldTimer = setTimeout(triggerFold, 80);
+      const diff = Math.abs(currentScroll - targetY);
+      const scrollDuration = Math.min(520, Math.max(400, Math.round(diff * 0.28 + 260)));
 
       fluidScrollTo(targetY, {
-        duration: Math.min(340, Math.max(220, Math.abs(currentScroll - targetY) * 0.20)),
+        duration: scrollDuration,
         onComplete: () => {
-          clearTimeout(foldTimer);
-          triggerFold();
+          setIsExpanded(false);
+          setExpandedItemId(null);
           setTimeout(() => {
             triggerPillPulse();
             isCollapsingRef.current = false;
-          }, 160);
+          }, 320);
         },
       });
     } else {
