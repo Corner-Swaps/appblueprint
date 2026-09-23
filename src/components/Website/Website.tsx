@@ -20,19 +20,29 @@ export const Website: React.FC<WebsiteProps> = ({ onLaunchApp }) => {
   const [activePlatform, setActivePlatform] = useState<'all' | 'ios' | 'android'>('all');
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  // Smooth scroll support for hash links
+  // Smooth scroll support for hash links (both on initial mount and on hashchange)
   useEffect(() => {
-    const handleHashChange = () => {
+    const scrollToHash = () => {
       const hash = window.location.hash;
-      if (hash && hash !== '#app') {
-        const el = document.querySelector(hash);
+      if (!hash || hash === '#' || hash === '#app') return;
+      try {
+        const id = hash.replace(/^#/, '');
+        const el = document.getElementById(id);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth' });
         }
+      } catch {
+        // Safe fallback
       }
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+
+    // Run on initial mount if hash is present
+    if (window.location.hash && window.location.hash !== '#app' && window.location.hash !== '#') {
+      setTimeout(scrollToHash, 200);
+    }
+
+    window.addEventListener('hashchange', scrollToHash);
+    return () => window.removeEventListener('hashchange', scrollToHash);
   }, []);
 
   // Global ⌘K keyboard shortcut to focus search

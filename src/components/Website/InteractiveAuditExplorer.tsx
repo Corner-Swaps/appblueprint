@@ -810,7 +810,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
             onClick={() => setVisibleCount(prev => prev + 12)}
             className="apple-press inline-flex items-center space-x-2 bg-white hover:bg-slate-50 text-slate-900 font-bold text-sm px-7 py-3 rounded-full border border-black/10 shadow-sm transition-all cursor-pointer"
           >
-            <span>Load More Screens ({Math.min(visibleCount + 12, filteredItems.length)} of {filteredItems.length})</span>
+            <span>Load More {viewMode === 'grid' ? 'Screens' : 'Requirements'} ({Math.min(visibleCount + 12, filteredItems.length)} of {filteredItems.length})</span>
             <ChevronDown className="w-4 h-4 stroke-[2.2]" />
           </button>
           <div>
