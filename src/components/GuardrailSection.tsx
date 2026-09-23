@@ -1070,11 +1070,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               </div>
             </form>
           )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
-  )}
-</div>
-);
+  );
 };
