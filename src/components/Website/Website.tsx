@@ -32,7 +32,7 @@ export const Website: React.FC<WebsiteProps> = ({ onLaunchApp }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FAF8F6] text-[#1E2022] font-sans selection:bg-slate-900 selection:text-white flex flex-col antialiased">
+    <div className="website-root min-h-screen bg-[#FAF8F6] text-[#1E2022] font-sans selection:bg-slate-900 selection:text-white flex flex-col antialiased">
       {/* Navigation Bar */}
       <Navbar onLaunchApp={onLaunchApp} />
 

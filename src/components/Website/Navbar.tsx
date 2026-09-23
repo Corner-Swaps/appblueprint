@@ -23,7 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchApp }) => {
     { label: '10 Phases', href: '#phases' },
     { label: 'Pass Calculator', href: '#calculator' },
     { label: 'Why Apps Fail', href: '#why-apps-fail' },
-    { label: 'Screenshots', href: '#preview' },
+    { label: 'Screenshots', href: '#screenshots' },
     { label: 'Academy', href: '#academy' },
     { label: 'FAQ', href: '#faq' },
   ];

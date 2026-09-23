@@ -177,7 +177,7 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
             </div>
 
             {/* Device Screen Frame */}
-            <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex items-center justify-center max-w-sm sm:max-w-md mx-auto">
+            <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex items-center justify-center max-w-sm sm:max-w-md mx-auto aspect-[9/19.5]">
               <img
                 src={previewTabs[activePreviewTab].image}
                 alt={previewTabs[activePreviewTab].title}
