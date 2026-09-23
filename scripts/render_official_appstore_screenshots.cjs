@@ -53,14 +53,12 @@ function startServer(port = 3495) {
 }
 
 // 72% completed checklist items
-const completedList = [
-  'setup-model', 'setup-developer-accounts', 'setup-xcode-android-studio', 'setup-github-repo', 'setup-connect-phone', 'setup-typescript-swift', 'setup-agent-commands', 'setup-clear-caches',
-  'p1-problem-solution', 'p1-scope-pruning', 'p1-tech-stack', 'p1-developer-accounts', 'p1-monetization-model', 'p1-duns-organization', 'p1-bundle-id-naming',
-  'p2-screen-inventory', 'p2-screen-anatomy', 'p2-spatial-grid', 'p2-nav-hierarchy', 'p2-touch-targets', 'p2-safe-areas', 'p2-dynamic-type', 'p2-dark-mode', 'p2-app-icon', 'p2-launch-splash',
-  'p4-schema-models', 'p4-local-persistence', 'p4-state-restoration', 'p4-privacy-manifest', 'p4-keychain-keystore', 'p4-transit-security',
-  'p3-offline-sync', 'p3-network-resilience', 'p3-sign-in-apple', 'p3-haptic-feedback', 'p4-permissions-hygiene', 'p4-privacy-logging', 'p5-cold-start', 'p5-memory-leaks',
-  'p6-screenshots', 'p6-privacy-nutrition', 'p6-export-compliance', 'p7-testflight-internal'
-];
+let completedList = [];
+try {
+  completedList = JSON.parse(fs.readFileSync(path.join(__dirname, 'completed_72_ids.json'), 'utf8'));
+} catch (e) {
+  completedList = [];
+}
 
 // Injects iPhone status bar with 9:41 (center is left clear for official bezel Dynamic Island)
 async function injectCleanIPhoneStatus(page, isScrolled = false) {
@@ -311,13 +309,15 @@ async function captureRawScreens(browser, isIpad = false) {
   }
 
   // Pre-seed storage
-  await page.evaluateOnNewDocument((completedItems) => {
+  const listLiteral = JSON.stringify(completedList);
+  await page.evaluateOnNewDocument((listRaw) => {
     localStorage.clear();
     sessionStorage.clear();
     localStorage.setItem('appblueprint_legal_agreed_v1', 'true');
     localStorage.setItem('launchready_legal_agreed_v1', 'true');
     localStorage.setItem('appblueprint_visits_count', '5');
 
+    const completedItems = JSON.parse(listRaw);
     const projects = [
       {
         id: 'proj-1',
@@ -344,7 +344,7 @@ async function captureRawScreens(browser, isIpad = false) {
 
     localStorage.setItem('appblueprint_projects_v1', JSON.stringify(projects));
     localStorage.setItem('appblueprint_active_proj_id_v1', 'proj-1');
-  }, completedList);
+  }, listLiteral);
 
   await page.goto('http://localhost:3495/?mode=app#app', { waitUntil: 'networkidle0' });
   await sleep(3500);

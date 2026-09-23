@@ -678,14 +678,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
                         title="Click anywhere to minimize"
                       >
-                        {/* Subsection 1: Why This Matters & Store Rules Pill */}
+                        {/* Subsection 1: Architecture & Review Impact Pill */}
                         {item.whyItMatters && (
                           <div 
                             className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                Why This Matters &amp; Store Rules
+                                Architecture &amp; Review Impact
                               </span>
                             </div>
                             <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
@@ -769,7 +769,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                                   <span className="font-bold text-slate-900 text-xs shrink-0 mt-0.5 select-none">
                                     {idx + 1}.
                                   </span>
-                                  <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-slate-800 flex-1 min-w-0">
+                                  <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm flex-1 min-w-0">
                                     {step}
                                   </p>
                                 </div>
@@ -826,9 +826,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                               </button>
                             </div>
 
-                            <div 
-                              className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text"
-                            >
+                            <div className="pt-0.5 select-text">
                               {renderFormattedPrompt(item.agentPrompt)}
                             </div>
                           </div>
@@ -846,14 +844,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             </div>
                             <div className="space-y-2 pt-0.5">
                               {item.commonRejectionTraps.map((trap, idx) => (
-                                <div key={idx} className="flex items-start space-x-2.5 text-slate-700">
-                                  <span className="font-bold text-rose-600 text-xs shrink-0 mt-0.5 select-none">
-                                    •
-                                  </span>
-                                  <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-slate-800 flex-1 min-w-0">
-                                    {trap}
-                                  </p>
-                                </div>
+                                <p key={idx} className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
+                                  {trap}
+                                </p>
                               ))}
                             </div>
                           </div>
@@ -871,14 +864,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             </div>
                             <div className="space-y-2 pt-0.5">
                               {item.verificationQuestions.map((q, idx) => (
-                                <div key={idx} className="flex items-start space-x-2.5 text-slate-700">
-                                  <span className="font-bold text-emerald-600 text-xs shrink-0 mt-0.5 select-none">
-                                    ✓
-                                  </span>
-                                  <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-slate-800 flex-1 min-w-0">
-                                    {q}
-                                  </p>
-                                </div>
+                                <p key={idx} className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
+                                  {q}
+                                </p>
                               ))}
                             </div>
                           </div>
