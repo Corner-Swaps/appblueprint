@@ -521,10 +521,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
             </div>
           </div>
 
-          {/* 2. Interactive Checklist Items ("The Little Clicks" that the user loved) */}
-          <div className={`apple-drawer-collapse ${isExpanded ? 'expanded mt-2.5' : '!mt-0'}`}>
+          {/* 2. Interactive Checklist Items in standalone pills matching Academy style */}
+          <div className={`apple-drawer-collapse ${isExpanded ? 'expanded' : ''}`}>
             <div className="apple-drawer-content">
-              <div className="space-y-2.5 pt-1 border-t border-black/5">
+              <div className="space-y-3 pt-1">
             {items.length === 0 && (
               <div className="py-6 px-4 text-center rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 select-none">
                 <p className="text-xs font-bold text-slate-700 font-google">No requirements added yet</p>
@@ -541,12 +541,12 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   key={item.id}
                   ref={bindItemRef(idx)}
                   style={getItemDragStyle(idx)}
-                  className={`rounded-2xl border transition-all duration-200 shadow-xs p-4 pb-2.5 sm:p-5 sm:pb-3 space-y-2 ${
+                  className={`rounded-3xl border transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2 ${
                     isDetailOpen 
                       ? 'bg-white border-slate-300' 
                       : isDone
-                        ? 'bg-white/95 border-slate-200/80 hover:border-slate-300'
-                        : 'bg-slate-50/70 border-slate-200/80 hover:border-slate-300'
+                        ? 'bg-white/95 border-slate-200/90 hover:border-slate-300'
+                        : 'bg-white border-slate-200/90 hover:border-slate-300'
                   }`}
                 >
                   {/* Item Header Block: clicking text minimizes/toggles item */}
@@ -561,28 +561,28 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     <div className="w-full flex items-center justify-between select-none">
                       <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
                         
-                        {/* Squircle containing item icon */}
-                        <div className="w-11 h-11 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs relative">
+                        {/* Squircle containing item icon matching Academy size */}
+                        <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs relative">
                           {renderChecklistItemIcon(item)}
                         </div>
 
-                        {/* Title & Badge */}
+                        {/* Title & Badge matching Academy typography */}
                         <div className="space-y-1 select-none flex-1 min-w-0">
-                          <h3 className={`text-sm sm:text-base font-black tracking-tight leading-snug select-none truncate font-google ${
+                          {(item.platform === 'ios' || item.platform === 'android') && (
+                            <div className="flex items-center gap-1.5 flex-wrap select-none mb-0.5">
+                              <PlatformBadge platform={item.platform} />
+                            </div>
+                          )}
+
+                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none truncate font-google ${
                             isDone ? 'text-slate-500' : 'text-slate-900'
                           }`}>
                             {item.title}
                           </h3>
-
-                          {(item.platform === 'ios' || item.platform === 'android') && (
-                            <div className="flex items-center gap-1.5 flex-wrap select-none">
-                              <PlatformBadge platform={item.platform} />
-                            </div>
-                          )}
                         </div>
                       </div>
 
-                      {/* Action Controls: Edit handles or Checkmark Toggle */}
+                      {/* Action Controls: Edit handles or Checkmark Toggle vertically centered on the right side */}
                       {isEditing ? (
                         <div className="flex flex-col items-center justify-center space-y-1.5 shrink-0 -mr-1 w-10 sm:w-12 pt-0.5" onClick={(e) => e.stopPropagation()}>
                           <button
@@ -624,7 +624,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             } catch {}
                             onToggleComplete(item.id);
                           }}
-                          className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity"
+                          className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity self-center"
                           aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
                         >
                           {isDone ? (
@@ -638,8 +638,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       )}
                     </div>
 
-                    {/* Short Description */}
-                    <p className="text-[13px] sm:text-[13.5px] text-slate-600 leading-relaxed select-none pt-0.5">
+                    {/* Short Description matching Academy subtext */}
+                    <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
                       {item.shortDescription}
                     </p>
 
