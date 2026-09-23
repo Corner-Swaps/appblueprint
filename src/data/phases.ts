@@ -768,10 +768,10 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.youtube.com/watch?v=7WiSBNxhriQ"
         },
         "implementationSteps": [
-          "Create formal TypeScript interfaces for all domain entities with mandatory vs optional properties clearly marked.",
-          "Use runtime schema validation (or lightweight type guards) to validate incoming API responses and local storage payloads before rendering.",
-          "Eliminate all implicit and explicit any types across the entire application codebase.",
-          "Write type-checking scripts (npx tsc --noEmit) to verify zero type mismatches in continuous integration."
+          "Ask your AI assistant: 'Check all our data models to make sure every property is clearly defined with zero missing values or bugs.'",
+          "Ensure that if the app receives unexpected data from storage or the internet, it displays a friendly error instead of crashing.",
+          "Ask your AI assistant: 'Run a type check across the codebase to ensure there are no hidden type errors.'",
+          "Test opening the app on your phone to confirm all screens load smoothly with zero blank pages."
         ],
         "agentPrompt": "You are the autonomous senior mobile software architect. Do NOT ask the user to declare data models\u2014audit and enforce strict TypeScript data models and validation schemas autonomously.\n\nTASK & OBJECTIVE:\nAudit, harden, and type-check all data models, entity definitions, and state interfaces across the application codebase to guarantee zero runtime null-pointer crashes.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. SCHEMA AUDIT: Inspect src/types.ts and all data store files. Verify that every entity has a formal interface without any properties.\n2. RUNTIME VALIDATION: Implement runtime guard functions or validators for parsing serialized local storage snapshots and remote API responses.\n3. STRICT NULL CHECKS: Ensure tsconfig.json has strict: true and noImplicitAny: true. Resolve all optional chaining (?.) and nullish coalescing (??) edge cases.\n4. VERIFICATION: Execute npx tsc --noEmit. Verify zero compiler errors across the entire codebase.",
         "commonRejectionTraps": [
@@ -803,10 +803,10 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.youtube.com/watch?v=kjOx-Le5gB8"
         },
         "implementationSteps": [
-          "Implement automatic debounced persistence (300ms-500ms debounce) for all draft forms and user modifications.",
-          "Use robust local storage solutions (Capacitor Preferences, SQLite, or IndexedDB) with fallback safety.",
-          "Handle storage quota limits gracefully with try/catch blocks and warning alerts before capacity overflows.",
-          "Add visual Saved feedback indicators so users feel confident their progress is secure."
+          "Ask your AI assistant: 'Save all user entries, draft text, and toggle states automatically as the user interacts.'",
+          "Ensure that even if someone closes the app suddenly, their work is safely saved and restored when they open it again.",
+          "Show a subtle 'Saved' indicator or checkmark so users know their progress was safely recorded.",
+          "Test typing in a text field, force-closing the app on your phone, and reopening it to verify your text is still there."
         ],
         "agentPrompt": "You are the autonomous mobile data engineer. Do NOT ask the user to wire storage\u2014implement resilient local-first persistence and auto-save mechanics autonomously.\n\nTASK & OBJECTIVE:\nImplement debounced auto-save persistence and local-first storage across all user-editable states to guarantee zero data loss during background app suspensions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. STORAGE LAYER AUDIT: Inspect state management hooks and persistence layers.\n2. DEBOUNCED AUTO-SAVE: Wrap state persistence in a debounced handler (300ms-500ms) to prevent excessive disk writes while capturing every keystroke.\n3. ERROR RECOVERY: Wrap all storage read/write calls in try/catch handlers. Provide safe fallback defaults if storage is corrupted or quota is exceeded.\n4. FEEDBACK: Render subtle auto-save status indicators ('Saved' checkmark or sync indicator) during state persistence.\n5. VERIFICATION: Test editing an item, force-closing the browser tab or app, and reopening. Confirm that 100% of entered text is preserved.",
         "commonRejectionTraps": [
@@ -838,10 +838,10 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.youtube.com/watch?v=SJw3Nu_h8kk"
         },
         "implementationSteps": [
-          "Listen for app lifecycle events (App.addListener('appStateChange')) to record active route when going to the background.",
-          "On cold start, check for saved route state and restore the active screen, tab, and scroll offset seamlessly.",
-          "Preserve in-flight operations (e.g. queued drafts, active form inputs) across background suspensions.",
-          "Ensure authentication tokens refresh silently in the background without forcing an unexpected re-login."
+          "Ask your AI assistant: 'Remember the user's active tab and screen when they switch away to another app.'",
+          "When the user taps back into the app, bring them right back to where they left off instead of restarting at the splash screen.",
+          "Keep entered text and active work safe if the user steps away to copy a password or answer a phone call.",
+          "Test switching away from your app to another app and returning, checking that you remain on the exact same screen."
         ],
         "agentPrompt": "You are the autonomous mobile systems engineer. Do NOT ask the user to configure lifecycle handlers\u2014implement app lifecycle listeners and state restoration hooks autonomously.\n\nTASK & OBJECTIVE:\nConfigure app lifecycle listeners and state restoration mechanisms so the application restores active route, active tab, and modal state when resumed from background suspension.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. LIFECYCLE LISTENERS: Connect @capacitor/app lifecycle listeners (appStateChange, pause, resume) to detect when the app transitions between foreground and background.\n2. STATE CAPTURE: On pause, record the currently active tab ID, selected route, and open sheet state into persistent storage.\n3. RESTORATION ON LAUNCH: On cold launch, check stored navigation state and restore the last viewed screen if the session was active within the past 24 hours.\n4. VERIFICATION: Test backgrounding the app, simulating memory purge, and resuming. Confirm that the application returns to the exact prior view without reset.",
         "commonRejectionTraps": [
@@ -1129,9 +1129,9 @@ export const PHASES_DATA: Phase[] = [
         "priority": "high",
         "whyItMatters": "When a user taps an email verification link, invite code, or product link, they should land straight on the right screen inside your app instead of getting stuck in a mobile web browser.",
         "implementationSteps": [
-          "Apple Universal Links: Host an `apple-app-site-association` file on your HTTPS website.",
-          "Android App Links: Host an `assetlinks.json` file with your signing key fingerprint on your website.",
-          "Enable the Associated Domains capability in your Xcode and Android settings."
+          "Ask your AI assistant: 'Set up Universal Links so shared links open directly in our app instead of a mobile browser.'",
+          "Your AI assistant will create the two small link-matching verification files required for Apple and Google.",
+          "Test by sending a link to your phone via Notes or Messages and tapping it—it should open right into your app."
         ],
         "agentPrompt": "You are the autonomous mobile linking specialist. Do NOT ask the user to configure web routes\u2014implement Universal Links and Android App Links autonomously.\n\nTASK & OBJECTIVE:\nConfigure Universal Links for Apple iOS and App Links for Android so that web URLs matching our domain open directly inside the mobile app without opening the browser.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect routing configuration, URL scheme settings, and deep link event listeners.\n2. IMPLEMENTATION:\n   - Create domain verification files:\n     - `apple-app-site-association` for iOS with `applinks` configuration, App ID, and path patterns.\n     - `assetlinks.json` for Android with package name and SHA-256 certificate fingerprint.\n   - Configure deep link listeners in Capacitor (`App.addListener('appUrlOpen')`): parse incoming URLs, validate and sanitize path and query parameters, and route the user directly to the target screen.\n   - Handle cold launch deep links (when the app is opened via a link from a closed state).\n3. STORE COMPLIANCE: Complies with Apple and Google modern mobile linking specifications, ensuring seamless user experience.\n4. VERIFICATION: Test opening sample deep links. Verify parameter parsing and ensure proper navigation routing with zero crashes.",
         "commonRejectionTraps": [
@@ -1159,9 +1159,9 @@ export const PHASES_DATA: Phase[] = [
         "priority": "medium",
         "whyItMatters": "Tactile haptics make mobile apps feel physical, responsive, and authentic to iOS and Android. Modern Apple Human Interface Guidelines encourage light impact haptics on selection toggles, success moments, and destructive warnings.",
         "implementationSteps": [
-          "Integrate native haptic engines (@capacitor/haptics or UIImpactFeedbackGenerator).",
-          "Trigger light impact haptics on tab switches, toggle changes, and list item selections.",
-          "Trigger notification success haptics on task completions and warning vibrations on destructive actions."
+          "Ask your AI assistant: 'Add subtle tactile haptic vibrations when users tap buttons, check off items, or complete tasks.'",
+          "Make sure the vibrations are gentle and rewarding—like a soft tap rather than a jarring buzz.",
+          "Test on your real phone to ensure the vibrations feel crisp and natural in your palm."
         ],
         "agentPrompt": "You are the autonomous mobile interaction engineer. Do NOT ask the user to write vibration logic\u2014implement Apple-grade tactile haptics autonomously across all primary interactive controls.\n\nTASK & OBJECTIVE:\nIntegrate subtle, authentic tactile haptic feedback across all primary touch interactions, switches, completions, and gestures using the Capacitor Haptics API.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect buttons, checkboxes, modal openers, tabs, switches, and completion triggers across the app.\n2. IMPLEMENTATION:\n   - Integrate `@capacitor/haptics`:\n     - Light Impact (`ImpactStyle.Light`): on tab navigation, button taps, and pill toggles.\n     - Medium Impact (`ImpactStyle.Medium`): on copying code/prompts, opening sheets, and modal confirmations.\n     - Notification Success (`NotificationType.Success`): when marking an item complete, saving a project, or finishing a checklist.\n     - Notification Warning (`NotificationType.Warning`): when triggering a destructive action (like deleting a project).\n   - Ensure haptic triggers are wrapped in try-catch blocks to run silently on desktop web environments without throwing errors.\n3. STORE COMPLIANCE: Follows Apple Human Interface Guidelines for tactile response, giving the application the authentic feel of a premium native iOS app.\n4. VERIFICATION: Test on a physical iOS/Android device. Confirm crisp haptic vibrations occur on taps and completions without performance overhead.",
         "commonRejectionTraps": [
@@ -1189,9 +1189,9 @@ export const PHASES_DATA: Phase[] = [
         "priority": "blocker",
         "whyItMatters": "Declaring background modes (audio, VoIP, location, background fetch) in UIBackgroundModes without providing clear user functionality is one of Apple's swiftest Guideline 2.5.4 rejections.",
         "implementationSteps": [
-          "Open Info.plist and inspect UIBackgroundModes; delete any unused modes (e.g. location, voip, audio).",
-          "If background fetch is required for sync, implement BGAppRefreshTask and document exact justification for Apple reviewers.",
-          "Ensure battery-draining continuous background loops terminate when the app enters the background."
+          "Ask your AI assistant: 'Audit our project settings and make sure we don\\'t have any unused background features turned on.'",
+          "Apple rejects apps that ask to run in the background (like continuous GPS or audio) if the app doesn't actually need them.",
+          "Ensure your app goes to sleep properly when closed so it never drains your users' phone batteries."
         ],
         "agentPrompt": "You are the autonomous mobile background execution specialist. Do NOT ask the user to edit Plist keys\u2014audit and configure background modes autonomously in our project files.\n\nTASK & OBJECTIVE:\nAudit `Info.plist` and `AndroidManifest.xml` for background execution modes, removing any unnecessary background declarations and ensuring legitimate background tasks finish within strict OS limits.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Info.plist` for `UIBackgroundModes` array and `AndroidManifest.xml` for background services.\n2. IMPLEMENTATION:\n   - Audit `UIBackgroundModes`: remove any unused entries (such as `audio`, `location`, `voip`, or `external-accessory`) unless the core feature genuinely requires continuous background operation.\n   - For legitimate background operations (like silent push data sync or periodic background fetch), ensure handlers strictly complete within Apple's 30-second execution window and call the completion handler promptly (`UIBackgroundFetchResultNewData`).\n   - On Android, ensure WorkManager is utilized for deferrable background jobs instead of lingering foreground services.\n3. STORE COMPLIANCE: Apple Guideline 2.5.4 strictly rejects apps that declare background modes without using them actively or that fail to justify why continuous background execution is needed.\n4. VERIFICATION: Confirm `Info.plist` contains only justified background modes and all background handlers invoke completion callbacks cleanly.",
         "commonRejectionTraps": [
@@ -1200,8 +1200,8 @@ export const PHASES_DATA: Phase[] = [
           "Enabling background audio or location capabilities in Xcode without actual corresponding background user features (Guideline 2.5.4)."
         ],
         "verificationQuestions": [
-          "Are only strictly essential background modes declared in Info.plist?",
-          "Do background tasks properly call setTaskCompletedWithSuccess within the iOS execution budget?"
+          "Are only strictly essential background modes enabled for your app?",
+          "Does the app pause cleanly in the background without draining battery?"
         ],
         "whatHappensNext": "Background audio, location, or sync features operate reliably without draining battery or triggering App Store review rejections."
       }
