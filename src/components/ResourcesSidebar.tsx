@@ -151,13 +151,13 @@ export const ResourcesSidebar: React.FC<ResourcesSidebarProps> = ({
                   <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl ${cat.iconBg} flex items-center justify-center text-white shrink-0 shadow-xs`}>
                     {cat.icon}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center space-x-1.5 mb-0.5">
                       <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         {cat.badge}
                       </span>
                     </div>
-                    <p className={`text-sm sm:text-[15px] font-bold truncate font-google transition-colors ${
+                    <p className={`text-sm sm:text-base font-bold font-google leading-snug break-words transition-colors ${
                       isActive ? 'text-blue-700' : 'text-slate-900 group-hover:text-blue-600'
                     }`}>
                       {cat.title}

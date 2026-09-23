@@ -8,10 +8,13 @@ import {
   SlidersHorizontal, 
   ExternalLink, 
   Layers, 
-  BookOpen
+  BookOpen,
+  Folder
 } from 'lucide-react';
 
 interface PhaseRoadmapSidebarProps {
+  activeProjectName: string;
+  onSelectProject: () => void;
   phases: Phase[];
   setupPhase: Phase;
   completedItemIds: string[];
@@ -23,6 +26,8 @@ interface PhaseRoadmapSidebarProps {
 }
 
 export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
+  activeProjectName,
+  onSelectProject,
   phases,
   setupPhase,
   completedItemIds,
@@ -35,9 +40,32 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
   const allPhasesWithSetup = [setupPhase, ...phases];
 
   return (
-    <aside className="space-y-4">
-      {/* Platform Switcher with Apple and Android Logos on the Left Side */}
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-black/8 shadow-sm p-1.5 flex items-center justify-between gap-1.5 select-none">
+    <aside className="space-y-3.5">
+      {/* 1. Active Project Title Button on the Left above the platform switcher */}
+      <button
+        type="button"
+        onClick={onSelectProject}
+        className="w-full apple-press flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-white/95 hover:bg-white border border-black/8 shadow-xs transition-all group"
+        title="Switch or manage projects"
+      >
+        <div className="flex items-center space-x-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shrink-0 shadow-2xs">
+            <Folder className="w-4 h-4" />
+          </div>
+          <div className="text-left min-w-0">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Active Project
+            </div>
+            <div className="text-sm font-black text-slate-900 truncate font-google group-hover:text-blue-600 transition-colors">
+              {activeProjectName}
+            </div>
+          </div>
+        </div>
+        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors shrink-0" />
+      </button>
+
+      {/* 2. Platform Switcher with Apple and Android Logos directly underneath Project Title */}
+      <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-black/8 shadow-xs p-1.5 flex items-center justify-between gap-1.5 select-none">
         <button
           type="button"
           onClick={() => onSelectPlatform('all')}
@@ -85,8 +113,8 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
         </button>
       </div>
 
-      {/* Larger Phase Roadmap Directory Card */}
-      <div className="bg-white/90 backdrop-blur-md rounded-3xl border border-black/8 shadow-sm p-4 sm:p-5 space-y-3.5">
+      {/* 3. Phase Roadmap Directory Card */}
+      <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-black/8 shadow-sm p-4 sm:p-5 space-y-3.5">
         <div className="flex items-center justify-between pb-2.5 border-b border-black/5">
           <div className="flex items-center space-x-2">
             <Layers className="w-4.5 h-4.5 text-blue-600 stroke-[2.2]" />
@@ -109,7 +137,7 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
           Select any phase below to open its requirements and autonomous AI prompts.
         </p>
 
-        {/* Phase List with larger pills & cards */}
+        {/* Phase List with larger pills & cards without truncation */}
         <div className="space-y-2 pt-1">
           {allPhasesWithSetup.map((phase) => {
             const isSetup = phase.id === setupPhase.id;
@@ -134,13 +162,13 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
                   <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl ${theme.iconBg} flex items-center justify-center text-white shrink-0 shadow-xs`}>
                     {renderPhaseIcon(phase.iconName, "w-4.5 h-4.5 text-white stroke-[2.2]")}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center space-x-1.5 mb-0.5">
                       <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         {isSetup ? 'Setup' : `Phase ${phase.number}`}
                       </span>
                     </div>
-                    <p className={`text-sm sm:text-[15px] font-bold truncate font-google transition-colors ${
+                    <p className={`text-sm sm:text-base font-bold font-google leading-snug break-words transition-colors ${
                       isActive ? 'text-blue-700' : 'text-slate-900 group-hover:text-blue-600'
                     }`}>
                       {phase.shortTitle || phase.title}
