@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, X, Sparkles } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -16,8 +16,6 @@ export const NativeReviewPromptModal: React.FC<NativeReviewPromptModalProps> = (
 }) => {
   const [selectedRating, setSelectedRating] = useState<number>(5);
 
-  if (!isOpen) return null;
-
   const handleStarClick = (rating: number) => {
     triggerHaptic(ImpactStyle.Light);
     setSelectedRating(rating);
@@ -33,13 +31,31 @@ export const NativeReviewPromptModal: React.FC<NativeReviewPromptModalProps> = (
     onClose();
   };
 
+  // Close on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleDismiss();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in select-none">
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in select-none cursor-pointer"
+      onClick={handleDismiss}
+    >
       <div 
-        className="w-full max-w-xs sm:max-w-sm bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/80 p-6 flex flex-col items-center text-center space-y-4 transform transition-all duration-300"
+        className="w-full max-w-xs sm:max-w-sm bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/80 p-6 flex flex-col items-center text-center space-y-4 transform transition-all duration-300 cursor-default"
         role="dialog"
         aria-modal="true"
         aria-labelledby="review-title"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Top App Icon with radiant purple accent */}
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-100 via-purple-50 to-indigo-100 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-inner relative">

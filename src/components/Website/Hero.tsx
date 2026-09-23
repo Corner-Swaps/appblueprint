@@ -234,7 +234,17 @@ export const Hero: React.FC<HeroProps> = ({
                   <a
                     key={chip.label}
                     href={chip.target}
-                    className="apple-press px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-slate-600 hover:text-slate-950 border border-black/5 text-[11px] font-semibold transition-colors shadow-2xs"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!chip.target) return;
+                      const targetId = chip.target.replace(/^#/, '');
+                      const el = document.getElementById(targetId);
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth' });
+                        history.pushState(null, '', chip.target);
+                      }
+                    }}
+                    className="apple-press px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-slate-600 hover:text-slate-950 border border-black/5 text-[11px] font-semibold transition-colors shadow-2xs cursor-pointer"
                   >
                     {chip.label}
                   </a>
@@ -328,22 +338,22 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="relative mt-2 rounded-3xl bg-slate-950 p-3 sm:p-5 lg:p-7 shadow-2xl border border-slate-800">
             
             {/* macOS Chrome Header Bar */}
-            <div className="flex items-center justify-between text-white/70 text-xs px-2 sm:px-3 pb-3 sm:pb-4 border-b border-slate-800/80 mb-3 sm:mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-1.5">
+            <div className="flex items-center justify-between text-white/70 text-xs px-2 sm:px-3 pb-3 sm:pb-4 border-b border-slate-800/80 mb-3 sm:mb-4 gap-2">
+              <div className="flex items-center space-x-3 min-w-0 pr-1">
+                <div className="flex items-center space-x-1.5 shrink-0">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
                 </div>
-                <div className="flex items-center space-x-2 pl-2">
-                  <span className="font-semibold text-slate-200">{previewTabs[activePreviewTab].title}</span>
-                  <span className="text-slate-500 hidden sm:inline">— {previewTabs[activePreviewTab].subtitle}</span>
+                <div className="flex items-center space-x-2 pl-2 min-w-0">
+                  <span className="font-semibold text-slate-200 truncate">{previewTabs[activePreviewTab].title}</span>
+                  <span className="text-slate-500 hidden sm:inline truncate">— {previewTabs[activePreviewTab].subtitle}</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={onLaunchApp}
-                className="apple-press inline-flex items-center space-x-1.5 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                className="apple-press inline-flex items-center space-x-1.5 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors shrink-0"
               >
                 <span>Try Live App</span>
                 <ExternalLink className="w-3.5 h-3.5" />

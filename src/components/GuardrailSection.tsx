@@ -116,18 +116,31 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         setExpandedItemId(null);
         setTimeout(() => {
           isCollapsingRef.current = false;
-        }, 400);
+        }, 280);
         return;
       }
 
-      // Smoothly pull up the viewport to center first, then fold closed without glitching
-      fluidScrollTo(centeredY, {
-        onComplete: () => {
+      // Smoothly pull up the viewport and fold closed concurrently
+      let hasFolded = false;
+      const triggerFold = () => {
+        if (!hasFolded) {
+          hasFolded = true;
           setIsExpanded(false);
           setExpandedItemId(null);
+        }
+      };
+
+      // Start folding early into scroll motion (60ms) so drawer folds seamlessly as it centers
+      const foldTimer = setTimeout(triggerFold, 60);
+
+      fluidScrollTo(centeredY, {
+        duration: Math.min(260, Math.max(160, diff * 0.16)),
+        onComplete: () => {
+          clearTimeout(foldTimer);
+          triggerFold();
           setTimeout(() => {
             isCollapsingRef.current = false;
-          }, 400);
+          }, 150);
         },
       });
       return;
@@ -139,13 +152,24 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
     if (isScrolledPast) {
       isCollapsingRef.current = true;
-      fluidScrollTo(targetY, {
-        onComplete: () => {
+      let hasFolded = false;
+      const triggerFold = () => {
+        if (!hasFolded) {
+          hasFolded = true;
           setIsExpanded(false);
           setExpandedItemId(null);
+        }
+      };
+      const foldTimer = setTimeout(triggerFold, 60);
+
+      fluidScrollTo(targetY, {
+        duration: Math.min(260, Math.max(160, Math.abs(currentScroll - targetY) * 0.16)),
+        onComplete: () => {
+          clearTimeout(foldTimer);
+          triggerFold();
           setTimeout(() => {
             isCollapsingRef.current = false;
-          }, 400);
+          }, 150);
         },
       });
     } else {

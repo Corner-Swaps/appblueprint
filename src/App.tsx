@@ -131,10 +131,10 @@ export const App: React.FC = () => {
     return 'website';
   });
 
-  // Hash change synchronization so back button works smoothly
+  // Hash and history navigation synchronization so back/forward buttons work smoothly
   useEffect(() => {
     if (Capacitor.isNativePlatform()) return;
-    const handleHash = () => {
+    const handleNavigation = () => {
       if (window.location.hash === '#app') {
         setViewMode('app');
         setShowSplash(false);
@@ -142,8 +142,12 @@ export const App: React.FC = () => {
         setViewMode('website');
       }
     };
-    window.addEventListener('hashchange', handleHash);
-    return () => window.removeEventListener('hashchange', handleHash);
+    window.addEventListener('hashchange', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    return () => {
+      window.removeEventListener('hashchange', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
+    };
   }, []);
 
   // Splash Loading Screen: Only shown on initial cold start on native mobile platforms

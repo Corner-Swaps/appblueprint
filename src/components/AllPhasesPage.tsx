@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Phase } from '../types';
 import { renderPhaseIcon } from '../utils/renderPhaseIcon';
 import { getPhaseTheme } from '../utils/phaseThemes';
@@ -54,6 +54,18 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
     onReorder: onReorderPhases,
     scrollContainer: scrollContainerRef,
   });
+
+  // Close modal on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

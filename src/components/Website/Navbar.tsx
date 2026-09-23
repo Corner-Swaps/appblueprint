@@ -25,6 +25,17 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
   const navLinks = [
     { label: 'Screens & Rules', href: '#explorer' },
     { label: '10 Phases', href: '#phases' },
@@ -217,6 +228,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         </div>
 
+        {/* Backdrop overlay to dismiss mobile menu when clicking outside */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 top-16 bg-black/25 backdrop-blur-xs z-[-1] xl:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Mobile Dropdown Menu with Mobbin Platform Selector */}
         {isMobileMenuOpen && (
           <div className="xl:hidden mt-2.5 pt-3 pb-4 border-t border-black/8 bg-white/95 backdrop-blur-lg rounded-2xl px-4 shadow-lg space-y-3">
@@ -265,7 +285,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <a
                   key={link.label}
                   href={link.href}
-                  onClick={(e) => handleNavLinkClick(e, link.href)}
+                  onClick={(e) => {
+                    setIsMobileMenuOpen(false);
+                    handleNavLinkClick(e, link.href);
+                  }}
                   className="block text-sm font-semibold text-slate-700 hover:text-slate-950 py-1.5 px-2 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   {link.label}
@@ -276,12 +299,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="pt-2 border-t border-slate-100 flex flex-col space-y-2">
               <a
                 href="support.html"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="block text-sm font-semibold text-slate-600 py-1 px-2"
               >
                 Support &amp; Customer Care
               </a>
               <a
                 href="privacy.html"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="block text-sm font-semibold text-slate-600 py-1 px-2"
               >
                 Privacy Policy
