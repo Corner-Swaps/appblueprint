@@ -70,52 +70,29 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         @keyframes splashLogoReveal {
           0% {
             opacity: 0;
-            transform: translateY(18px) scale(0.92);
-          }
-          70% {
-            opacity: 1;
-            transform: translateY(-2px) scale(1.01);
           }
           100% {
             opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        @keyframes splashFloatBreath {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-6px);
           }
         }
 
         @keyframes splashTitleReveal {
           0% {
             opacity: 0;
-            transform: translateY(14px);
-            letter-spacing: 0.04em;
           }
           100% {
             opacity: 1;
-            transform: translateY(0);
-            letter-spacing: -0.3px;
           }
         }
 
         .splash-logo-container {
-          animation: splashLogoReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-          will-change: transform, opacity;
-        }
-
-        .splash-float-container {
-          animation: splashFloatBreath 3.4s ease-in-out infinite 1.8s;
+          animation: splashLogoReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+          will-change: opacity;
         }
 
         .splash-title-text {
-          animation: splashTitleReveal 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
-          will-change: transform, opacity;
+          animation: splashTitleReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+          will-change: opacity;
         }
       `}</style>
 
@@ -130,9 +107,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         }}
       />
 
-      {/* 1. Centered Original 3D Chrome Checkmark & Simple Rocket Logo (Assembled unified logo) */}
+      {/* 1. Centered Original 3D Chrome Checkmark & Rocket Logo (Unified locked together, zero movement) */}
       <div
-        className="splash-float-container"
         style={{
           position: 'relative',
           marginTop: -48,

@@ -149,8 +149,9 @@ export const App: React.FC = () => {
   // Splash Loading Screen: Only shown on initial cold start on native mobile platforms
   const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
 
-  // Legal Consent State
+  // Legal Consent State (On native mobile; web visitors can explore immediately)
   const [showLegalModal, setShowLegalModal] = useState<boolean>(() => {
+    if (!Capacitor.isNativePlatform()) return false;
     try {
       return !localStorage.getItem('appblueprint_legal_agreed_v1') && !localStorage.getItem('launchready_legal_agreed_v1');
     } catch {
