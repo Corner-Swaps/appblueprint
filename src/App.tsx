@@ -1138,24 +1138,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
               </span>
             </button>
 
-            {/* 2. Folder / Projects Icon Button */}
-            <button
-              type="button"
-              onClick={() => handleSelectTab('projects')}
-              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center shrink-0 cursor-pointer select-none"
-              title={`Switch Project (${activeProject.name})`}
-              aria-label="Projects"
-            >
-              <Folder 
-                className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
-                  activeTab === 'projects' 
-                    ? 'text-blue-600' 
-                    : 'text-slate-500'
-                }`} 
-              />
-            </button>
-
-            {/* 3. Graduation Cap / Developer Academy & Resources Button */}
+            {/* 2. Graduation Cap / Developer Academy & Resources Button */}
             <button
               type="button"
               onClick={() => handleSelectTab('resources')}
@@ -1167,6 +1150,23 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                 className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
                   activeTab === 'resources' 
                     ? 'text-purple-600' 
+                    : 'text-slate-500'
+                }`} 
+              />
+            </button>
+
+            {/* 3. Folder / Projects Icon Button */}
+            <button
+              type="button"
+              onClick={() => handleSelectTab('projects')}
+              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center shrink-0 cursor-pointer select-none"
+              title={`Switch Project (${activeProject.name})`}
+              aria-label="Projects"
+            >
+              <Folder 
+                className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
+                  activeTab === 'projects' 
+                    ? 'text-blue-600' 
                     : 'text-slate-500'
                 }`} 
               />
