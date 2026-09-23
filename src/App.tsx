@@ -162,8 +162,8 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
-  // Splash Loading Screen: Only show on native platform
-  const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
+  // Splash Loading Screen: Shown on initial application load
+  const [showSplash, setShowSplash] = useState(true);
 
   // Legal Consent State
   const [showLegalModal, setShowLegalModal] = useState<boolean>(() => {
@@ -767,6 +767,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       <Website 
         onLaunchApp={() => {
           setViewMode('app');
+          setShowSplash(true);
           window.location.hash = '#app';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }} 
