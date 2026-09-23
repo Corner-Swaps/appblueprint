@@ -319,13 +319,12 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
   return (
     <div 
+      id={`phase-${phase.number}`}
       ref={sectionRef}
       className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
       isGlobalEditMode 
         ? 'p-3.5 sm:p-4' 
-        : isExpanded 
-          ? 'p-5 sm:p-6 space-y-2.5' 
-          : 'p-5 pb-1 sm:p-6 sm:pb-1.5 space-y-2'
+        : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5'
     }`}>
       {isGlobalEditMode ? (
         /* Compact Card in Global Rearrange Mode */
@@ -496,18 +495,18 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               </div>
             </div>
 
-            {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), Light gray circle when pointing UP (open/expanded) */}
-            <div className="flex justify-center -mt-0.5 pb-0 select-none">
+            {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), translucent gray circle when pointing UP (open/expanded) */}
+            <div className="flex justify-center pt-0.5 pb-0 select-none">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleToggleExpand();
                 }}
-                className={`apple-press transition-all duration-200 flex items-center justify-center ${
+                className={`apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 ${
                   isExpanded 
-                    ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
-                    : 'w-7 h-7 text-slate-400 hover:text-slate-600'
+                    ? 'rounded-full bg-slate-100/90 text-slate-700 shadow-2xs' 
+                    : 'text-slate-400 hover:text-slate-700'
                 }`}
                 aria-label={isExpanded ? "Collapse requirements" : "Expand requirements"}
                 title={isExpanded ? "Collapse requirements" : "Expand requirements"}
@@ -515,17 +514,17 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <ChevronDown 
                   strokeWidth={2.5}
                   className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                    isExpanded ? 'rotate-180 text-slate-700' : 'text-slate-400'
+                    isExpanded ? 'rotate-180 text-slate-800' : 'text-slate-400'
                   }`} 
                 />
               </button>
             </div>
           </div>
 
-          {/* 2. Interactive Checklist Items ("The Little Clicks" that the user loved) */}
+          {/* 2. Interactive Checklist Items in standalone pills matching Academy style */}
           <div className={`apple-drawer-collapse ${isExpanded ? 'expanded' : ''}`}>
             <div className="apple-drawer-content">
-              <div className="space-y-2.5 pt-1 border-t border-black/5">
+              <div className="space-y-3 pt-1">
             {items.length === 0 && (
               <div className="py-6 px-4 text-center rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 select-none">
                 <p className="text-xs font-bold text-slate-700 font-google">No requirements added yet</p>
@@ -542,12 +541,12 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   key={item.id}
                   ref={bindItemRef(idx)}
                   style={getItemDragStyle(idx)}
-                  className={`rounded-2xl border transition-all duration-200 shadow-xs ${
+                  className={`rounded-3xl border transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2 ${
                     isDetailOpen 
-                      ? 'bg-white border-slate-300 p-4 sm:p-5 space-y-2.5' 
+                      ? 'bg-white border-slate-300' 
                       : isDone
-                        ? 'bg-white/95 border-slate-200/80 hover:border-slate-300 p-4 pb-2 sm:p-5 sm:pb-2.5 space-y-2'
-                        : 'bg-slate-50/70 border-slate-200/80 hover:border-slate-300 p-4 pb-2 sm:p-5 sm:pb-2.5 space-y-2'
+                        ? 'bg-white/95 border-slate-200/90 hover:border-slate-300'
+                        : 'bg-white border-slate-200/90 hover:border-slate-300'
                   }`}
                 >
                   {/* Item Header Block: clicking text minimizes/toggles item */}
@@ -562,28 +561,28 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     <div className="w-full flex items-center justify-between select-none">
                       <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
                         
-                        {/* Squircle containing item icon */}
-                        <div className="w-11 h-11 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs relative">
+                        {/* Squircle containing item icon matching Academy size */}
+                        <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 shadow-2xs relative">
                           {renderChecklistItemIcon(item)}
                         </div>
 
-                        {/* Title & Badge */}
+                        {/* Title & Badge matching Academy typography */}
                         <div className="space-y-1 select-none flex-1 min-w-0">
-                          <h3 className={`text-sm sm:text-base font-black tracking-tight leading-snug select-none truncate font-google ${
+                          {(item.platform === 'ios' || item.platform === 'android') && (
+                            <div className="flex items-center gap-1.5 flex-wrap select-none mb-0.5">
+                              <PlatformBadge platform={item.platform} />
+                            </div>
+                          )}
+
+                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none truncate font-google ${
                             isDone ? 'text-slate-500' : 'text-slate-900'
                           }`}>
                             {item.title}
                           </h3>
-
-                          {(item.platform === 'ios' || item.platform === 'android') && (
-                            <div className="flex items-center gap-1.5 flex-wrap select-none">
-                              <PlatformBadge platform={item.platform} />
-                            </div>
-                          )}
                         </div>
                       </div>
 
-                      {/* Action Controls: Edit handles or Checkmark Toggle */}
+                      {/* Action Controls: Edit handles or Checkmark Toggle vertically centered on the right side */}
                       {isEditing ? (
                         <div className="flex flex-col items-center justify-center space-y-1.5 shrink-0 -mr-1 w-10 sm:w-12 pt-0.5" onClick={(e) => e.stopPropagation()}>
                           <button
@@ -625,7 +624,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             } catch {}
                             onToggleComplete(item.id);
                           }}
-                          className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity"
+                          className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity self-center"
                           aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
                         >
                           {isDone ? (
@@ -639,8 +638,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       )}
                     </div>
 
-                    {/* Short Description */}
-                    <p className="text-[13px] sm:text-[13.5px] text-slate-600 leading-relaxed select-none pt-0.5">
+                    {/* Short Description matching Academy subtext */}
+                    <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
                       {item.shortDescription}
                     </p>
 
@@ -654,18 +653,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             setExpandedItemId(isDetailOpen ? null : item.id);
                           }
                         }}
-                        className={`apple-press transition-all duration-200 flex items-center justify-center ${
-                          isDetailOpen 
-                            ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
-                            : 'w-7 h-7 text-slate-400 hover:text-slate-600'
-                        }`}
+                        className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-slate-400 hover:text-slate-700 shrink-0"
                         title={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
                         aria-label={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
                       >
                         <ChevronDown 
                           strokeWidth={2.5}
                           className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                            isDetailOpen ? 'rotate-180 text-slate-700' : 'text-slate-400'
+                            isDetailOpen ? 'rotate-180 text-slate-800' : 'text-slate-400'
                           }`} 
                         />
                       </button>
@@ -683,8 +678,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         {/* Subsection 1: Architecture & Review Impact Pill */}
                         {item.whyItMatters && (
                           <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -700,8 +694,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         {/* Subsection 2: Step-by-Step Implementation Pill */}
                         {item.implementationSteps && item.implementationSteps.length > 0 && (
                           <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="flex items-center justify-between select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -751,8 +744,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         {/* Subsection 3: What Happens Once Completed Pill */}
                         {item.whatHappensNext && (
                           <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -768,8 +760,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         {/* Subsection 4: AI Coding & Agent Directive Pill */}
                         {item.agentPrompt && (
                           <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5 shadow-2xs cursor-auto"
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="flex items-center justify-between select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -799,8 +790,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             </div>
 
                             <div 
-                              onClick={(e) => e.stopPropagation()}
-                              className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text cursor-text"
+                              className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text"
                             >
                               {renderFormattedPrompt(item.agentPrompt)}
                             </div>
@@ -810,8 +800,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         {/* Subsection 5: Store Review Traps to Avoid Pill */}
                         {item.commonRejectionTraps && item.commonRejectionTraps.length > 0 && (
                           <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -836,8 +825,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         {/* Subsection 6: Verification Questions Pill */}
                         {item.verificationQuestions && item.verificationQuestions.length > 0 && (
                           <div 
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -923,13 +911,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                               e.stopPropagation();
                               setExpandedItemId(null);
                             }}
-                            className="w-full flex items-center justify-center py-2 hover:bg-slate-200/50 active:bg-slate-200 rounded-xl transition-colors apple-press group text-slate-500 hover:text-slate-700"
+                            className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
                             title="Close guidance"
                             aria-label="Close guidance"
                           >
                             <ChevronUp 
                               strokeWidth={2.5}
-                              className="w-4 h-4 stroke-[2.5] text-slate-400 group-hover:text-slate-600" 
+                              className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" 
                             />
                           </button>
                         </div>
