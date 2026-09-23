@@ -29,6 +29,8 @@ import {
 } from 'lucide-react';
 import { UnifiedAppHeader } from './components/UnifiedAppHeader';
 import { PhaseRoadmapSidebar } from './components/PhaseRoadmapSidebar';
+import { ResourcesSidebar } from './components/ResourcesSidebar';
+import { ResourceCategory } from './data/resources';
 import { PhoneModal } from './components/PhoneModal';
 
 const TAB_KEYS: Array<'checklist' | 'resources' | 'projects'> = ['checklist', 'resources', 'projects'];
@@ -118,10 +120,15 @@ export const App: React.FC = () => {
   const [resourcesCollapseSignal, setResourcesCollapseSignal] = useState(0);
 
 
-  // Unified App Header & Platform Filter State
+  // Single-Accordion Mode: Only ONE phase is open at a time (defaults to Set Up)
+  const [openPhaseId, setOpenPhaseId] = useState<string | null>(SETUP_STEPS_PHASE.id);
+
+  // Academy Resources 2-Column: Active category (defaults to AI Models)
+  const [activeResourceCategoryId, setActiveResourceCategoryId] = useState<ResourceCategory>('ai_models');
+
+  // Platform Filter State (All / iOS HIG / Android Play)
   const [activePlatform, setActivePlatform] = useState<'all' | 'ios' | 'android'>('all');
   const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
-  const [isAllExpanded, setIsAllExpanded] = useState(false);
 
   // Splash Loading Screen: Only shown on initial cold start on native mobile platforms
   const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
@@ -706,11 +713,15 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     });
   };
 
+  const handleTogglePhase = (phaseId: string) => {
+    setOpenPhaseId(prev => (prev === phaseId ? null : phaseId));
+  };
+
   const handleSelectPhaseFromSidebar = (phaseId: string) => {
     setSelectedPhaseId('all');
     setActiveTab('checklist');
     setDisplayedTab('checklist');
-    window.dispatchEvent(new CustomEvent('expand-phase', { detail: phaseId }));
+    setOpenPhaseId(phaseId);
     setTimeout(() => {
       const el = document.getElementById(phaseId);
       if (el) {
@@ -719,16 +730,6 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }, 60);
-  };
-
-  const handleToggleExpandAll = () => {
-    if (isAllExpanded) {
-      window.dispatchEvent(new CustomEvent('collapse-all'));
-      setIsAllExpanded(false);
-    } else {
-      window.dispatchEvent(new CustomEvent('expand-phase', { detail: 'all' }));
-      setIsAllExpanded(true);
-    }
   };
 
   const handleResetAll = () => {
@@ -777,16 +778,11 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
   return (
     <div className="min-h-screen bg-[#FAF8F6] text-[#1E2022] flex flex-col font-sans selection:bg-slate-900 selection:text-white overflow-x-hidden">
       
-      {/* 1. Unified App Header at top explaining what it does, with platform filter & progress */}
+      {/* 1. Unified App Header at top explaining what it does, with centered progress telemetry */}
       <UnifiedAppHeader
         overallPercent={overallPercent}
         totalItems={allItems.length}
         completedItems={completedItemIds.length}
-        activePlatform={activePlatform}
-        onSelectPlatform={setActivePlatform}
-        onOpenPhoneModal={() => setIsPhoneModalOpen(true)}
-        isAllExpanded={isAllExpanded}
-        onToggleExpandAll={handleToggleExpandAll}
         onResetProgress={handleResetAll}
       />
 
@@ -817,20 +813,33 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-32 lg:pb-20 overflow-x-hidden"
       >
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-start">
-          {/* Left Column (Desktop lg+): 10 Phase Roadmap & Reference Directory */}
-          <div className="hidden lg:block lg:col-span-4 sticky top-6 self-start">
-            <PhaseRoadmapSidebar
-              phases={currentProjectPhases}
-              setupPhase={SETUP_STEPS_PHASE}
-              completedItemIds={completedItemIds}
-              activePhaseId={selectedPhaseId}
-              onSelectPhase={handleSelectPhaseFromSidebar}
-              onOpenManagePhases={() => setIsAllPhasesPageOpen(true)}
-            />
-          </div>
+          {/* Left Column (Desktop lg+): Changes based on active tab */}
+          {displayedTab === 'checklist' && (
+            <div className="hidden lg:block lg:col-span-4 sticky top-6 self-start">
+              <PhaseRoadmapSidebar
+                phases={currentProjectPhases}
+                setupPhase={SETUP_STEPS_PHASE}
+                completedItemIds={completedItemIds}
+                activePhaseId={openPhaseId}
+                activePlatform={activePlatform}
+                onSelectPlatform={setActivePlatform}
+                onSelectPhase={handleSelectPhaseFromSidebar}
+                onOpenManagePhases={() => setIsAllPhasesPageOpen(true)}
+              />
+            </div>
+          )}
+
+          {displayedTab === 'resources' && (
+            <div className="hidden lg:block lg:col-span-4 sticky top-6 self-start">
+              <ResourcesSidebar
+                activeCategoryId={activeResourceCategoryId}
+                onSelectCategory={setActiveResourceCategoryId}
+              />
+            </div>
+          )}
 
           {/* Right Column: The App housed in a big panel containing everything together */}
-          <div className="lg:col-span-8 w-full min-w-0">
+          <div className={`${displayedTab === 'projects' ? 'lg:col-span-12' : 'lg:col-span-8'} w-full min-w-0`}>
             {/* 1. Checklist Tab */}
             <div className={displayedTab === 'checklist' ? 'space-y-4' : 'hidden'}>
               {/* The Big Panel containing everything together */}
@@ -896,7 +905,8 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                         )}
                         completedItemIds={completedItemIds}
                         onToggleComplete={handleToggleComplete}
-                        defaultExpanded={false}
+                        isExpanded={openPhaseId === SETUP_STEPS_PHASE.id}
+                        onToggleExpandSection={handleTogglePhase}
                         onAddItem={handleAddItem}
                         onReorderItems={handleReorderItems}
                         onDeleteItem={handleDeleteItem}
@@ -913,6 +923,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                   {visiblePhases.map((phase, phaseIdx) => (
                     <div 
                       key={phase.id}
+                      id={phase.id}
                       ref={bindPhaseRef(phaseIdx)}
                       style={getPhaseDragStyle(phaseIdx)}
                     >
@@ -923,7 +934,8 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                         items={getFilteredItemsForPhase(phase.items)}
                         completedItemIds={completedItemIds}
                         onToggleComplete={handleToggleComplete}
-                        defaultExpanded={false}
+                        isExpanded={openPhaseId === phase.id}
+                        onToggleExpandSection={handleTogglePhase}
                         onAddItem={handleAddItem}
                         onReorderItems={handleReorderItems}
                         onDeleteItem={handleDeleteItem}
@@ -1106,6 +1118,8 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
             {/* 3. Resources Tab */}
             <div className={displayedTab === 'resources' ? 'block' : 'hidden'}>
               <ResourcesPage 
+                activeCategoryId={activeResourceCategoryId}
+                onSelectCategory={setActiveResourceCategoryId}
                 collapseSignal={resourcesCollapseSignal}
                 onBackToChecklist={() => {
                   handleSelectTab('checklist');

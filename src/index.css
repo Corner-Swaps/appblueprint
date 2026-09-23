@@ -143,24 +143,39 @@
   transition: grid-template-rows 340ms cubic-bezier(0.25, 1, 0.5, 1), opacity 260ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Subtle Apple Focus Pulse (Blue highlight ring & glow once minimized) */
-@keyframes apple-blue-pulse {
+/* Subtle Apple Focus Glow (Gentle blue ambient halo once minimized - soft, subtle, calm) */
+@keyframes apple-gentle-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 0 rgba(59, 130, 246, 0);
     border-color: rgba(226, 232, 240, 0.9);
   }
-  30% {
-    box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.55), 0 4px 20px rgba(59, 130, 246, 0.3);
-    border-color: #3b82f6;
+  38% {
+    box-shadow: 0 0 16px 1px rgba(59, 130, 246, 0.14), 0 0 0 1.5px rgba(59, 130, 246, 0.18);
+    border-color: rgba(147, 197, 253, 0.60);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 0 rgba(59, 130, 246, 0);
+    border-color: rgba(226, 232, 240, 0.9);
+  }
+}
+
+@keyframes apple-blue-pulse {
+  0% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 0 rgba(59, 130, 246, 0);
+    border-color: rgba(226, 232, 240, 0.9);
+  }
+  38% {
+    box-shadow: 0 0 16px 1px rgba(59, 130, 246, 0.14), 0 0 0 1.5px rgba(59, 130, 246, 0.18);
+    border-color: rgba(147, 197, 253, 0.60);
+  }
+  100% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 0 rgba(59, 130, 246, 0);
     border-color: rgba(226, 232, 240, 0.9);
   }
 }
 
 .apple-section-pulse {
-  animation: apple-blue-pulse 1100ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  animation: apple-gentle-glow 1500ms cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
 }
 
 .apple-drawer-content {
