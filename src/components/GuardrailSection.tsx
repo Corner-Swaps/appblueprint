@@ -431,8 +431,17 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         <>
           {/* 1. Full Phase Header Block: Title -> Subtext -> Section Completion -> Drop-down arrow below */}
           <div 
+            role="button"
+            tabIndex={0}
+            aria-expanded={isExpanded}
             onClick={handleToggleExpand}
-            className="space-y-2.5 select-none cursor-pointer"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleToggleExpand();
+              }
+            }}
+            className="space-y-2.5 select-none cursor-pointer focus:outline-none"
           >
             <div className="w-full flex items-center justify-between select-none">
               <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
