@@ -38,7 +38,7 @@ function startServer(port = 5173) {
         res.end('Error reading file');
       } else {
         res.writeHead(200, { 'Content-Type': contentType });
-        res.end(content, 'utf-8');
+        res.end(content);
       }
     });
   });
@@ -84,6 +84,13 @@ async function verify() {
   // 1. Check Horizontal Overflow on Desktop
   const desktopOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   console.log('Desktop 1440x900 horizontal overflow:', desktopOverflow);
+
+  // Scroll to trigger all image rendering
+  await page.evaluate(async () => {
+    window.scrollTo(0, document.body.scrollHeight);
+    await new Promise(r => setTimeout(r, 500));
+    window.scrollTo(0, 0);
+  });
 
   // 2. Check Broken Images
   const brokenImages = await page.evaluate(() => {

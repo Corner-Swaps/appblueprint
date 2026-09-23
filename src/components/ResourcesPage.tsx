@@ -663,14 +663,14 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     <div className="space-y-3.5 pb-4">
       
       {/* 1. Centered Title */}
-      <div className="pt-2.5 pb-2 flex items-center justify-center w-full">
+      <div className="pt-2.5 pb-3 flex items-center justify-center w-full">
         <button
           type="button"
           onClick={onBackToChecklist}
-          className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-1 rounded-2xl hover:bg-black/5 group max-w-full"
+          className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-1 rounded-2xl hover:bg-black/5 group max-w-full min-h-[42px]"
           title="Back to Checklist"
         >
-          <h1 className="text-[25px] sm:text-[26px] font-medium tracking-normal text-center select-none text-black font-google truncate">
+          <h1 className="text-[28px] sm:text-[29px] font-medium tracking-normal text-center select-none text-black font-google leading-tight truncate">
             Academy & Resources
           </h1>
         </button>
@@ -716,7 +716,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                           </span>
                         </div>
 
-                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
+                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
                           {sec.title}
                         </h2>
                       </div>
@@ -735,11 +735,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         e.stopPropagation();
                         handleToggleSection(sec.id);
                       }}
-                      className={`apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 ${
-                        isSectionOpen 
-                          ? 'rounded-full bg-slate-100/90 text-slate-700 shadow-2xs' 
-                          : 'text-slate-400 hover:text-slate-700'
-                      }`}
+                      className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 text-slate-400 hover:text-slate-700"
                       aria-label={isSectionOpen ? "Collapse section" : "Expand section"}
                       title={isSectionOpen ? "Collapse section" : "Expand section"}
                     >
@@ -757,7 +753,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
               {/* Collapsed/Expanded Resource Items OUTSIDE the original Category Pill */}
               <div className={`apple-drawer-collapse ${isSectionOpen ? 'expanded' : ''}`}>
                 <div className="apple-drawer-content">
-                  <div className="space-y-3 pt-1">
+                  <div className="space-y-3 pt-3">
                     {secItems.map((item, itemIdx) => {
                       const isItemOpen = expandedItemId === item.id;
                       const isApple = item.id.includes('apple') || item.id.includes('att') || item.id.includes('testflight') || item.id.includes('sf-pro');
