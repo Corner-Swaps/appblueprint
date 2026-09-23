@@ -51,20 +51,24 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
   ];
 
   return (
-    <section id="overview" className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 overflow-hidden">
+    <section id="overview" className="relative pt-24 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
       
-      {/* Background Subtle Gradient Blobs */}
-      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 pointer-events-none opacity-40 blur-3xl -z-10">
-        <div className="w-full h-full bg-gradient-to-r from-blue-300 via-indigo-200 to-purple-200 rounded-full" />
-      </div>
+      {/* Refined Ambient Radial Aura */}
+      <div 
+        aria-hidden="true"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[480px] pointer-events-none -z-10"
+        style={{
+          background: 'radial-gradient(ellipse 65% 55% at 50% 10%, rgba(59, 130, 246, 0.12), rgba(99, 102, 241, 0.06) 45%, transparent 70%)'
+        }}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Hero Top Content */}
-        <div className="text-center max-w-3xl mx-auto space-y-6">
+        {/* Editorial Hero Content */}
+        <div className="text-center max-w-4xl mx-auto space-y-6 sm:space-y-8">
           
-          {/* Eyebrow Badge */}
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-slate-200/90 shadow-2xs text-xs font-semibold text-slate-800 max-w-full">
+          {/* Eyebrow Status Badge */}
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/80 shadow-2xs text-xs font-semibold text-slate-800 backdrop-blur-md max-w-full">
             <span className="flex h-2 w-2 relative shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
@@ -72,28 +76,28 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
             <span className="font-google text-slate-900 font-bold hidden sm:inline">2026 Mobile Production Readiness OS</span>
             <span className="font-google text-slate-900 font-bold sm:hidden">2026 Production OS</span>
             <span className="text-slate-300 shrink-0">•</span>
-            <span className="text-slate-500 shrink-0">Apple HIG &amp; Google Play</span>
+            <span className="text-slate-500 shrink-0 font-medium">Apple HIG &amp; Google Play</span>
           </div>
 
-          {/* Main Title */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight font-google leading-[1.08]">
-            Ship Your Mobile App <br className="hidden sm:block" />
+          {/* Main Title - Authoritative Editorial Scale */}
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-[-0.035em] text-[#0A0D12] font-google leading-[1.04]">
+            Ship Your Mobile App <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
               Without Rejections.
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto text-balance">
             The zero-to-store production operating system for indie builders, mobile engineers, and AI coding agents. 10 structured phases, 101 audit-proof requirements, battle-tested guardrails, and 1-click AI prompts.
           </p>
 
-          {/* Call to Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          {/* Action CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
             <button
               type="button"
               onClick={onLaunchApp}
-              className="apple-press w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-slate-950 hover:bg-slate-800 text-white font-bold text-sm sm:text-base px-6 py-3.5 rounded-2xl shadow-md hover:shadow-lg transition-all cursor-pointer group"
+              className="apple-press w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-slate-950 hover:bg-slate-900 text-white font-bold text-sm sm:text-base px-6 py-3.5 rounded-2xl shadow-md hover:shadow-lg transition-all cursor-pointer group"
             >
               <Rocket className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform stroke-[2.2]" />
               <span>Launch Interactive Blueprint</span>
@@ -102,41 +106,43 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
 
             <a
               href="#phases"
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm sm:text-base px-6 py-3.5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm sm:text-base px-6 py-3.5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all backdrop-blur-xs"
             >
               <Layers className="w-4 h-4 text-slate-500 stroke-[2.2]" />
               <span>Explore 10 Phases</span>
             </a>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
-              <div className="text-xl sm:text-2xl font-black text-slate-900 font-google">101</div>
-              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">Production Rules</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
-              <div className="text-xl sm:text-2xl font-black text-indigo-600 font-google">10</div>
-              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">Guided Phases</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
-              <div className="text-xl sm:text-2xl font-black text-emerald-600 font-google">100%</div>
-              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">Private &amp; Local</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-slate-200/80 shadow-2xs text-center">
-              <div className="text-xl sm:text-2xl font-black text-purple-600 font-google">2026</div>
-              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">Store Guidelines</div>
+          {/* Integrated Telemetry & Metrics Ribbon */}
+          <div className="pt-2 flex justify-center">
+            <div className="inline-grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-0 sm:divide-x sm:divide-slate-200/90 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-2xs p-1.5 sm:p-2">
+              <div className="px-4 py-2 text-center">
+                <div className="text-xl sm:text-2xl font-black text-slate-900 font-google tracking-tight">101</div>
+                <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Production Rules</div>
+              </div>
+              <div className="px-4 py-2 text-center">
+                <div className="text-xl sm:text-2xl font-black text-indigo-600 font-google tracking-tight">10</div>
+                <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Guided Phases</div>
+              </div>
+              <div className="px-4 py-2 text-center">
+                <div className="text-xl sm:text-2xl font-black text-emerald-600 font-google tracking-tight">100%</div>
+                <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Private &amp; Local</div>
+              </div>
+              <div className="px-4 py-2 text-center">
+                <div className="text-xl sm:text-2xl font-black text-purple-600 font-google tracking-tight">2026</div>
+                <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Store Guidelines</div>
+              </div>
             </div>
           </div>
 
         </div>
 
-        {/* Interactive App Showcase & Phone Mockup */}
-        <div id="preview" className="mt-14 sm:mt-18 max-w-5xl mx-auto">
+        {/* Interactive App Showcase Window Chassis */}
+        <div id="preview" className="mt-12 sm:mt-16 max-w-5xl mx-auto">
           
-          {/* Tab Selector Buttons */}
-          <div className="w-full overflow-x-auto no-scrollbar py-1">
-            <div className="flex items-center justify-start sm:justify-center min-w-max mx-auto space-x-2 px-4 pb-3">
+          {/* Native Segmented Tab Selector */}
+          <div className="w-full max-w-full overflow-x-auto no-scrollbar py-1">
+            <div className="inline-flex items-center space-x-2 px-4 pb-3 lg:w-full lg:justify-center">
               {previewTabs.map((tab, idx) => (
                 <button
                   key={tab.id}
@@ -159,20 +165,27 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
             </div>
           </div>
 
-          {/* Device Mockup Container */}
-          <div className="relative mt-2 rounded-3xl bg-gradient-to-b from-slate-900 to-slate-950 p-3 sm:p-6 lg:p-8 shadow-2xl border border-slate-800">
+          {/* Authentic Hardware Frame / macOS Window Container */}
+          <div className="relative mt-2 rounded-3xl bg-slate-950 p-2 sm:p-5 lg:p-7 shadow-2xl border border-slate-800">
             
-            {/* Top Mockup Status Bar Info */}
-            <div className="flex items-center justify-between text-white/70 text-xs px-2 pb-4">
-              <div className="flex items-center space-x-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                <span className="font-medium text-slate-200">{previewTabs[activePreviewTab].title}</span>
-                <span className="text-slate-500 hidden sm:inline">— {previewTabs[activePreviewTab].subtitle}</span>
+            {/* macOS Chrome Header Bar */}
+            <div className="flex items-center justify-between text-white/70 text-xs px-2 sm:px-3 pb-3 sm:pb-4 border-b border-slate-800/80 mb-3 sm:mb-4">
+              <div className="flex items-center space-x-3">
+                {/* Traffic light window controls */}
+                <div className="flex items-center space-x-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                </div>
+                <div className="flex items-center space-x-2 pl-2">
+                  <span className="font-semibold text-slate-200">{previewTabs[activePreviewTab].title}</span>
+                  <span className="text-slate-500 hidden sm:inline">— {previewTabs[activePreviewTab].subtitle}</span>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={onLaunchApp}
-                className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                className="apple-press inline-flex items-center space-x-1.5 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
               >
                 <span>Try Live App</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -180,7 +193,7 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
             </div>
 
             {/* Device Screen Frame */}
-            <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex items-center justify-center max-w-sm sm:max-w-md mx-auto aspect-[9/19.5]">
+            <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800/80 shadow-inner flex items-center justify-center max-w-sm sm:max-w-md mx-auto aspect-[9/19.5]">
               <img
                 src={previewTabs[activePreviewTab].image}
                 alt={previewTabs[activePreviewTab].title}
@@ -189,9 +202,9 @@ export const Hero: React.FC<HeroProps> = ({ onLaunchApp }) => {
               />
               
               {/* Floating Live Badge */}
-              <div className="absolute bottom-4 left-4 right-4 bg-slate-950/80 backdrop-blur-md border border-white/10 p-3 rounded-xl flex items-center justify-between text-white shadow-lg">
+              <div className="absolute bottom-4 left-4 right-4 bg-slate-950/85 backdrop-blur-md border border-white/10 p-3 rounded-xl flex items-center justify-between text-white shadow-lg">
                 <div className="min-w-0 pr-2">
-                  <div className="text-xs font-bold truncate">Interactive Web Edition</div>
+                  <div className="text-xs font-bold truncate font-google">Interactive Web Edition</div>
                   <div className="text-[11px] text-slate-400 truncate">Run the full blueprint in your browser</div>
                 </div>
                 <button

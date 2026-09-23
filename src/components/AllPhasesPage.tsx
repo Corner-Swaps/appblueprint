@@ -88,7 +88,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
       
       {/* Top Navigation Bar (with iOS Safe Area - Gray/Warm background matching page) */}
       <header className="ios-safe-top bg-[#FAF8F6]/95 backdrop-blur-xl border-b border-slate-200/90 px-4 pb-2.5 pt-1 shrink-0">
-        <div className="max-w-xl mx-auto flex items-center justify-between">
+        <div className="max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto flex items-center justify-between">
           
           {/* Back Button (Grown by 10%, Scroll all the way to top) */}
           <button
@@ -155,7 +155,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
 
       {/* Main Scrollable Content */}
       <main ref={scrollContainerRef as any} className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-28">
-        <div className="max-w-xl mx-auto space-y-3">
+        <div className="max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto space-y-3">
 
           {/* Inline Add Step Form */}
           {isAddingPhase && (

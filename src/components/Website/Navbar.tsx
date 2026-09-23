@@ -71,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchApp }) => {
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2 bg-white/80 backdrop-blur-xs px-3 py-1.5 rounded-full border border-black/6 shadow-2xs">
+          <nav className="hidden lg:flex items-center space-x-1 lg:space-x-1.5 bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/8 shadow-2xs">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -103,12 +103,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchApp }) => {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex sm:hidden items-center space-x-2">
+          {/* Mobile & Tablet Menu Button */}
+          <div className="flex lg:hidden items-center space-x-2">
             <button
               type="button"
               onClick={onLaunchApp}
-              className="apple-press inline-flex items-center space-x-1.5 bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-2xs"
+              className="sm:hidden apple-press inline-flex items-center space-x-1.5 bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-2xs"
             >
               <Rocket className="w-3.5 h-3.5 stroke-[2.4]" />
               <span>Launch App</span>
@@ -116,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchApp }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="apple-press w-10 h-10 rounded-xl text-slate-700 hover:text-slate-950 hover:bg-black/5 flex items-center justify-center transition-colors"
+              className="apple-press w-10 h-10 rounded-xl text-slate-700 hover:text-slate-950 hover:bg-black/5 flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Toggle Menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5 stroke-[2.2]" /> : <Menu className="w-5 h-5 stroke-[2.2]" />}
@@ -125,9 +125,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchApp }) => {
 
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile & Tablet Dropdown Menu */}
         {isMobileMenuOpen && (
-          <div className="sm:hidden mt-3 pt-3 pb-4 border-t border-black/8 bg-white/95 backdrop-blur-lg rounded-2xl px-4 shadow-lg space-y-2">
+          <div className="lg:hidden mt-3 pt-3 pb-4 border-t border-black/8 bg-white/95 backdrop-blur-lg rounded-2xl px-4 shadow-lg space-y-2">
             {navLinks.map((link) => (
               <a
                 key={link.label}

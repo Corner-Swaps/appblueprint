@@ -14,14 +14,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     setFadingOut(true);
     setTimeout(() => {
       onComplete();
-    }, 380);
+    }, 450);
   };
 
-  // Play animation slowly (3.0 seconds) so the user can clearly see the logo and title
+  // Play animation slowly (2.8 seconds) so the user can clearly see the icon slowly zooming in and transitioning smoothly
   useEffect(() => {
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 3000);
+    }, 2800);
 
     return () => {
       clearTimeout(dismissTimer);
@@ -45,8 +45,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         justifyContent: 'center',
         background: '#000000',
         opacity: fadingOut ? 0 : 1,
-        transform: fadingOut ? 'scale(1.02)' : 'scale(1)',
-        transition: 'opacity 380ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 380ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+        transform: fadingOut ? 'scale(1.15)' : 'scale(1)',
+        transition: 'opacity 450ms cubic-bezier(0.16, 1, 0.3, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1)',
         overflow: 'hidden',
       }}
       aria-label="App Blueprint Launch Screen"
@@ -67,12 +67,17 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           }
         }
 
-        @keyframes splashLogoReveal {
+        @keyframes splashSlowZoom {
           0% {
             opacity: 0;
+            transform: scale(0.88);
+          }
+          20% {
+            opacity: 1;
           }
           100% {
             opacity: 1;
+            transform: scale(1.05);
           }
         }
 
@@ -86,8 +91,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         }
 
         .splash-logo-container {
-          animation: splashLogoReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-          will-change: opacity;
+          animation: splashSlowZoom 3.0s cubic-bezier(0.16, 1, 0.3, 1) both;
+          will-change: transform, opacity;
         }
 
         .splash-title-text {

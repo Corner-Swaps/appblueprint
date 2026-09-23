@@ -3,7 +3,7 @@ import { Phase } from '../types';
 export const SETUP_STEPS_PHASE: Phase = {
   id: 'phase-setup',
   number: 0,
-  title: 'Set Up & Development Environment',
+  title: 'Set Up & Environment',
   shortTitle: 'Set Up',
   description: 'Complete these essential setup steps before diving into the project steps. Choose your AI model, register developer accounts, install Xcode and Android Studio, configure GitHub, and connect your phone to run tests.',
   iconName: 'Laptop',
@@ -11,7 +11,7 @@ export const SETUP_STEPS_PHASE: Phase = {
     {
       id: 'setup-model',
       phaseId: 'phase-setup',
-      title: 'Choose Your AI Coding Environment & Frontier Model',
+      title: 'Choose AI Coding Model',
       shortDescription: 'Pick the right AI coding assistant (Antigravity by Google, Claude Code, Cursor, or Windsurf) for your project.',
       category: 'functionality',
       platform: 'both',
@@ -23,8 +23,8 @@ export const SETUP_STEPS_PHASE: Phase = {
         url: 'https://ai.google.dev/'
       },
       videoUrl: {
-        title: 'How to Build Mobile Apps with Modern AI Coding Agents',
-        url: 'https://www.youtube.com/results?search_query=build+mobile+app+ai+coding+agent+cursor+claude+code'
+        title: 'AI Coding Agents Guide',
+        url: 'https://www.youtube.com/watch?v=2hsHF_RKKWU'
       },
       implementationSteps: [
         'Select your primary AI environment: Antigravity by Google, Claude Code CLI, Cursor, or Windsurf.',
@@ -55,7 +55,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-developer-accounts',
       phaseId: 'phase-setup',
-      title: 'Enroll in Apple Developer Program & Google Play Console',
+      title: 'Enroll Developer Accounts',
       shortDescription: 'Register official developer accounts so you have legal authorization to test on phones and publish to the stores.',
       category: 'store',
       platform: 'both',
@@ -67,8 +67,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://developer.apple.com/programs/enroll/'
       },
       videoUrl: {
-        title: 'Apple Developer Account Enrollment Step-by-Step Guide',
-        url: 'https://www.youtube.com/results?search_query=apple+developer+account+enrollment+step+by+step'
+        title: 'Developer Accounts Setup',
+        url: 'https://www.youtube.com/watch?v=FWcmdBhCHgs'
       },
       implementationSteps: [
         'Go to developer.apple.com and enroll with your Apple ID ($99/year). If enrolling as an organization, request a free D-U-N-S business number first.',
@@ -100,7 +100,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-xcode-android-studio',
       phaseId: 'phase-setup',
-      title: 'Download & Install Xcode (Mac) and Android Studio',
+      title: 'Install Xcode & Android Studio',
       shortDescription: 'Install the official Apple and Google IDEs and command-line tools to compile native mobile binaries.',
       category: 'functionality',
       platform: 'both',
@@ -112,8 +112,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://apps.apple.com/us/app/xcode/id497799835'
       },
       videoUrl: {
-        title: 'How to Install Xcode and Command Line Tools on Mac',
-        url: 'https://www.youtube.com/results?search_query=install+xcode+command+line+tools+mac'
+        title: 'Install Xcode & Tools',
+        url: 'https://www.youtube.com/watch?v=yvp1_-dc7qc'
       },
       implementationSteps: [
         'Open the Mac App Store and download the latest version of Xcode (requires ~20 GB free disk space).',
@@ -145,7 +145,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-github-repo',
       phaseId: 'phase-setup',
-      title: 'Initialize Git & GitHub Repository for Cloud Backups & Localhost Tests',
+      title: 'Initialize Git & GitHub',
       shortDescription: 'Store your codebase safely in the cloud, track revision history, and run local testing servers.',
       category: 'functionality',
       platform: 'both',
@@ -157,8 +157,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://github.com/new'
       },
       videoUrl: {
-        title: 'Git & GitHub Tutorial for Beginners',
-        url: 'https://www.youtube.com/results?search_query=git+and+github+tutorial+for+beginners+mobile+app'
+        title: 'Git & GitHub Basics',
+        url: 'https://www.youtube.com/watch?v=RGOj5yH7evk'
       },
       implementationSteps: [
         'Initialize local git tracking in your project root: git init',
@@ -191,7 +191,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-connect-phone',
       phaseId: 'phase-setup',
-      title: 'Connect Physical iPhone to Xcode & Enable Developer Mode',
+      title: 'Connect Physical iPhone',
       shortDescription: 'Pair your real phone via cable or Wi-Fi to test tactile haptics, animations, and real touch interactions.',
       category: 'functionality',
       platform: 'ios',
@@ -203,8 +203,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device'
       },
       videoUrl: {
-        title: 'How to Run Xcode Apps on a Real Physical iPhone',
-        url: 'https://www.youtube.com/results?search_query=how+to+run+xcode+app+on+real+physical+iphone'
+        title: 'Run on Physical iPhone',
+        url: 'https://www.youtube.com/watch?v=ZqEwUnNB-dg'
       },
       implementationSteps: [
         'Connect your iPhone to your Mac using a USB-C or Lightning cable.',
@@ -236,7 +236,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-typescript-swift',
       phaseId: 'phase-setup',
-      title: 'TypeScript Frontend with Native Swift & Kotlin Bridge',
+      title: 'TypeScript & Native Bridge',
       shortDescription: 'Understand how modern TypeScript combines with native Swift and Kotlin for maximum speed and store compliance.',
       category: 'design',
       platform: 'both',
@@ -248,8 +248,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://capacitorjs.com/docs/core-apis'
       },
       videoUrl: {
-        title: 'How Capacitor Bridges Web Apps into Native iOS Swift',
-        url: 'https://www.youtube.com/results?search_query=how+capacitor+bridges+web+to+native+swift+ios'
+        title: 'Capacitor Native Bridge',
+        url: 'https://www.youtube.com/watch?v=JMBtuNqy2QI'
       },
       implementationSteps: [
         'Write your frontend in TypeScript with strict typing to prevent null pointers and logic bugs.',
@@ -281,7 +281,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-agent-commands',
       phaseId: 'phase-setup',
-      title: 'Commands for AI Agents to Build & Run to Xcode & Phone',
+      title: 'AI Agent Build Commands',
       shortDescription: 'Copy-ready terminal commands and prompts for your AI agents to build, sync, and deploy your app.',
       category: 'functionality',
       platform: 'both',
@@ -293,8 +293,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://capacitorjs.com/docs/cli'
       },
       videoUrl: {
-        title: 'Automating Mobile App Builds with Terminal Commands',
-        url: 'https://www.youtube.com/results?search_query=automate+capacitor+xcode+build+terminal+commands'
+        title: 'Automate Build Commands',
+        url: 'https://www.youtube.com/watch?v=SSv--IrWH3c'
       },
       implementationSteps: [
         'Step 1 (iOS Compile & Sync): npm run build && npx cap sync ios',
@@ -343,7 +343,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-clear-caches',
       phaseId: 'phase-setup',
-      title: 'System Maintenance: Clear Caches & Keep Computer Storage Clean',
+      title: 'Clear Build Caches',
       shortDescription: 'Free up tens of gigabytes of disk space and resolve strange compiler bugs by clearing Xcode DerivedData and package caches.',
       category: 'functionality',
       platform: 'both',
@@ -355,8 +355,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://developer.apple.com/documentation/xcode/managing-storage-in-xcode'
       },
       videoUrl: {
-        title: 'How to Clear Xcode DerivedData and Free Up Mac Disk Space',
-        url: 'https://www.youtube.com/results?search_query=how+to+clear+xcode+deriveddata+free+disk+space+mac'
+        title: 'Clear Xcode DerivedData',
+        url: 'https://www.youtube.com/watch?v=MtCzNJ1EA4E'
       },
       implementationSteps: [
         'Clear Xcode DerivedData (often 20+ GB): rm -rf ~/Library/Developer/Xcode/DerivedData',
