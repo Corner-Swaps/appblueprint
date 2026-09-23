@@ -54,11 +54,14 @@ export const Footer: React.FC<FooterProps> = ({ onLaunchApp }) => {
             </div>
             <ul className="space-y-2 text-sm">
               <li><a href="#overview" className="hover:text-white transition-colors">Overview</a></li>
-              <li><a href="#why-apps-fail" className="hover:text-white transition-colors">Why Apps Fail Review</a></li>
+              <li><a href="#explorer" className="hover:text-white transition-colors">Screens &amp; 101 Rules</a></li>
               <li><a href="#phases" className="hover:text-white transition-colors">10 Production Phases</a></li>
+              <li><a href="#calculator" className="hover:text-white transition-colors">Pass Readiness Calculator</a></li>
+              <li><a href="#why-apps-fail" className="hover:text-white transition-colors">Why Apps Fail Review</a></li>
               <li><a href="#features" className="hover:text-white transition-colors">AI Coding Prompts</a></li>
-              <li><a href="#academy" className="hover:text-white transition-colors">Launch Academy</a></li>
               <li><a href="#screenshots" className="hover:text-white transition-colors">App Store Screenshots</a></li>
+              <li><a href="#academy" className="hover:text-white transition-colors">Launch Academy</a></li>
+              <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
             </ul>
           </div>
 

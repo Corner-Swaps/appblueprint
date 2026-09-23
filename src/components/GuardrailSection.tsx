@@ -131,31 +131,55 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
   // Section reference for smooth scroll to top when collapsing
   const sectionRef = React.useRef<HTMLDivElement>(null);
+  const isCollapsingRef = React.useRef(false);
 
-  const scrollToSectionTop = () => {
-    const targetEl = sectionRef.current || document.getElementById(phase.id);
-    if (targetEl) {
-      const rect = targetEl.getBoundingClientRect();
-      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-      // 64px offset ensures the section header clears any fixed top bar or safe area
-      const targetY = Math.max(0, currentScroll + rect.top - 64);
+  const collapseSectionSmoothly = () => {
+    if (isCollapsingRef.current) return;
+
+    const targetEl = sectionRef.current || document.getElementById(phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`);
+    if (!targetEl) {
+      setIsExpanded(false);
+      setExpandedItemId(null);
+      return;
+    }
+
+    const rect = targetEl.getBoundingClientRect();
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    // 72px offset ensures the section header clears any fixed top bar and notch area
+    const targetY = Math.max(0, currentScroll + rect.top - 72);
+    // If the header has scrolled above comfortable view (rect.top < 60)
+    const isScrolledPast = rect.top < 60;
+
+    if (isScrolledPast) {
+      isCollapsingRef.current = true;
+      // 1. Smoothly glide the viewport back to anchor the section header
       window.scrollTo({ top: targetY, behavior: 'smooth' });
+
+      // 2. Start accordion collapse after the scroll is underway so the user's gaze stays anchored
+      setTimeout(() => {
+        setIsExpanded(false);
+        setExpandedItemId(null);
+        setTimeout(() => {
+          isCollapsingRef.current = false;
+        }, 450);
+      }, 200);
+    } else {
+      // Header is already comfortably in view, collapse immediately with fluid 450ms spring easing
+      setIsExpanded(false);
+      setExpandedItemId(null);
     }
   };
 
   const handleToggleExpand = () => {
-    setIsExpanded(prev => {
-      if (prev) {
-        setExpandedItemId(null);
-      }
-      return !prev;
-    });
+    if (isExpanded) {
+      collapseSectionSmoothly();
+    } else {
+      setIsExpanded(true);
+    }
   };
 
   const handleCollapseSection = () => {
-    setIsExpanded(false);
-    setExpandedItemId(null);
-    scrollToSectionTop();
+    collapseSectionSmoothly();
   };
 
   // Fluid drag-and-drop reordering for requirement items
@@ -654,14 +678,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
                         title="Click anywhere to minimize"
                       >
-                        {/* Subsection 1: Architecture & Review Impact Pill */}
+                        {/* Subsection 1: Why This Matters & Store Rules Pill */}
                         {item.whyItMatters && (
                           <div 
                             className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                Architecture &amp; Review Impact
+                                Why This Matters &amp; Store Rules
                               </span>
                             </div>
                             <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
@@ -690,14 +714,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 2: Step-by-Step Implementation Pill */}
+                        {/* Subsection 2: Simple Step-by-Step Guide Pill */}
                         {item.implementationSteps && item.implementationSteps.length > 0 && (
                           <div 
                             className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="flex items-center justify-between select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                Step-by-Step Implementation
+                                Simple Step-by-Step Guide
                               </span>
                               <button
                                 type="button"
@@ -740,14 +764,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 3: What Happens Once Completed Pill */}
+                        {/* Subsection 3: What This Achieves Pill */}
                         {item.whatHappensNext && (
                           <div 
                             className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                What Happens Once Completed
+                                What This Achieves
                               </span>
                             </div>
                             <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
@@ -756,14 +780,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 4: AI Coding & Agent Directive Pill */}
+                        {/* Subsection 4: AI Agent Prompt (Copy & Paste) Pill */}
                         {item.agentPrompt && (
                           <div 
                             className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="flex items-center justify-between select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                AI Coding &amp; Agent Directive
+                                AI Agent Prompt (Copy &amp; Paste)
                               </span>
                               <button
                                 type="button"
@@ -800,14 +824,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 5: Store Review Traps to Avoid Pill */}
+                        {/* Subsection 5: Common Store Traps to Avoid Pill */}
                         {item.commonRejectionTraps && item.commonRejectionTraps.length > 0 && (
                           <div 
                             className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                Store Review Traps to Avoid
+                                Common Store Traps to Avoid
                               </span>
                             </div>
                             <div className="space-y-2 pt-0.5">
@@ -825,14 +849,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 6: Verification Questions Pill */}
+                        {/* Subsection 6: How to Verify on Your Phone Pill */}
                         {item.verificationQuestions && item.verificationQuestions.length > 0 && (
                           <div 
                             className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                Verification Questions
+                                How to Verify on Your Phone
                               </span>
                             </div>
                             <div className="space-y-2 pt-0.5">

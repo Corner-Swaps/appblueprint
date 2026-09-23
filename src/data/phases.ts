@@ -269,10 +269,10 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.youtube.com/watch?v=fHmTuoZRUzU"
         },
         "implementationSteps": [
-          "Zone 1 (Top Header): Pinned with env(safe-area-inset-top) containing screen title, contextual back/close buttons, and secondary action icons.",
-          "Zone 2 (Scrollable Body): Unconstrained vertical scrolling container with momentum inertia (-webkit-overflow-scrolling: touch) and bottom padding to clear the dock.",
-          "Zone 3 (Bottom Dock/Tab Bar): Pinned above env(safe-area-inset-bottom) containing primary call-to-action buttons or persistent tab navigation.",
-          "Add dynamic top and bottom fade vignettes or subtle divider borders between pinned bars and scrolling content."
+          "Zone 1 (Top Header): Keep the top bar pinned at the top so screen titles, back buttons, and actions are always easily reachable.",
+          "Zone 2 (Scrollable Content): Allow smooth touch scrolling for your main content, leaving enough space at the bottom so it never gets covered by buttons.",
+          "Zone 3 (Bottom Action Bar): Keep your main action buttons or tab bar pinned at the bottom so thumbs can tap them comfortably.",
+          "Ask your AI assistant: 'Make sure all our screens use standard 3-zone anatomy: pinned header, scrollable body, and pinned bottom bar.'"
         ],
         "agentPrompt": "You are the autonomous mobile systems layout engineer. Do NOT ask the user to adjust layout containers\u2014enforce standard 3-zone mobile screen anatomy across all views autonomously.\n\nTASK & OBJECTIVE:\nRefactor all views in the codebase to adhere to standard 3-zone mobile screen anatomy: pinned safe-area header, unconstrained scrollable body, and anchored bottom dock.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect layout wrappers across all components. Identify any screens where primary call-to-action buttons are pushed off-screen or scroll away unexpectedly.\n2. THREE-ZONE ARCHITECTURE:\n   - Pin top navigation bar with ios-safe-top and backdrop-blur-xl.\n   - Ensure main content body uses flex-1 overflow-y-auto overscroll-contain with sufficient bottom padding (pb-28 to pb-36) to clear bottom dock.\n   - Pin bottom action dock or tab bar with ios-safe-bottom so actions remain accessible regardless of scroll position.\n3. VERIFICATION: Test on small and large mobile viewports. Confirm smooth scrolling with rubber-band bounce and zero overlapping content.",
         "commonRejectionTraps": [
@@ -304,10 +304,10 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.youtube.com/watch?v=ohF93_k3IMk"
         },
         "implementationSteps": [
-          "Set standard mobile screen outer margins to 16px (or 20px on larger displays) so content never touches phone edges.",
-          "Use 8px spacing between tightly related items (e.g. icon + text label) and 12px-16px between distinct list elements.",
-          "Use 24px-32px spacing between major card sections to establish clear visual grouping.",
-          "Standardize card border radii (e.g. 16px for internal cards, 24px-28px for full sheet containers) and consistent 1px hairline borders."
+          "Keep comfortable margins (16px to 20px) on the left and right edges so text and buttons never awkwardly touch the phone screen borders.",
+          "Use consistent spacing between items (8px between labels and icons, 16px between cards) so screens look clean and organized.",
+          "Give major sections breathing room (24px to 32px) so users can easily distinguish between different sections.",
+          "Ask your AI assistant: 'Align all spacing to a consistent 8-point grid and give all cards rounded corners with subtle borders.'"
         ],
         "agentPrompt": "You are the autonomous design system architect. Do NOT ask the user to adjust CSS margins\u2014audit and enforce strict 8pt spatial grid geometry autonomously across our UI.\n\nTASK & OBJECTIVE:\nAudit and standardize all padding, margins, gutters, and card hierarchy across the codebase to adhere to a strict 8-point spatial grid.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. SPATIAL AUDIT: Scan all Tailwind CSS classes across components. Replace arbitrary spacing (e.g., p-[11px], m-[19px]) with standardized 8pt tokens (p-2 (8px), p-4 (16px), p-6 (24px), p-8 (32px)).\n2. CARD CONTAINERS: Standardize card styling: rounded-2xl (16px) or rounded-3xl (24px), subtle hairline border (border-slate-200/90 dark:border-white/10), and multi-tier subtle elevation shadow.\n3. TYPOGRAPHIC RHYTHM: Ensure headline margins and body text line-heights align with base-4 vertical rhythm.\n4. VERIFICATION: Test layout rendering across phone widths (375px, 390px, 430px). Confirm zero awkward edge collisions or misaligned elements.",
         "commonRejectionTraps": [

@@ -5,7 +5,7 @@ export const SETUP_STEPS_PHASE: Phase = {
   number: 0,
   title: 'Set Up & Environment',
   shortTitle: 'Set Up',
-  description: 'Complete these essential setup steps before diving into the project steps. Choose your AI model, register developer accounts, install Xcode and Android Studio, configure GitHub, and connect your phone to run tests.',
+  description: 'Complete these essential setup steps before diving into the project steps. Choose your AI assistant, register developer accounts, install Xcode and Android Studio, configure GitHub, and connect your phone to run tests.',
   iconName: 'Laptop',
   items: [
     {
@@ -16,8 +16,8 @@ export const SETUP_STEPS_PHASE: Phase = {
       category: 'functionality',
       platform: 'both',
       priority: 'blocker',
-      whyItMatters: 'Modern autonomous AI coding agents can inspect your whole codebase, generate native screens, resolve TypeScript errors, and connect device APIs. Picking a capable frontier reasoning model saves weeks of manual coding.',
-      whatHappensNext: 'You will have a specialized AI coding assistant configured on your computer with full terminal access, ready to read specifications and write production-grade code autonomously.',
+      whyItMatters: 'Modern AI coding tools can create full screens, connect buttons, and fix bugs for you. Picking a capable AI assistant lets you build your entire app without having to write code by hand.',
+      whatHappensNext: 'You will have your AI assistant connected to your project folder, ready to turn your ideas and prompts into working screens.',
       directLink: {
         label: 'Google Antigravity & AI Developer Tools',
         url: 'https://ai.google.dev/'
@@ -27,10 +27,10 @@ export const SETUP_STEPS_PHASE: Phase = {
         url: 'https://www.youtube.com/watch?v=2hsHF_RKKWU'
       },
       implementationSteps: [
-        'Select your primary AI environment: Antigravity by Google, Claude Code CLI, Cursor, or Windsurf.',
-        'Choose a frontier reasoning model (e.g. Gemini 1.5 Pro / Ultra, Claude 3.5 Sonnet, or GPT-4o) with strong software architecture capabilities.',
-        'Verify your AI agent has read and write access to your project workspace folder and terminal execution permissions.',
-        'Ensure the agent is instructed to write production-grade code with zero placeholders or dummy data.'
+        'Pick an AI tool you enjoy working with: Antigravity by Google, Cursor, Windsurf, or Claude Code.',
+        'Open your project folder in your chosen AI tool so it can read and update your app files.',
+        'Use a capable model (like Gemini 2.0 Pro / Ultra, Claude 3.7 Sonnet, or GPT-4o) so it understands full app design and store guidelines.',
+        'Tell your AI assistant: "Always write complete, working code with zero dummy buttons or unfinished placeholders."'
       ],
       agentPrompt: `You are the autonomous senior mobile software architect configuring our development environment.
 
@@ -43,25 +43,25 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. CODEBASE SCAN: Ensure TypeScript compiler flags in 'tsconfig.json' enforce strict mode without allowing implicit any.
 4. ZERO REGRESSIONS: Ensure all workspace dependencies are installed with clean exit code.`,
       commonRejectionTraps: [
-        'Relying on AI agents without strict TypeScript validation, leading to silent runtime crashes on physical devices.',
-        'Accepting placeholder or "Coming Soon" code stubs that Apple rejects under Guideline 2.1 (App Completeness).',
-        'Accidentally committing private AI API keys or environment secrets directly into client-side code.'
+        'Letting an AI assistant insert fake "Coming Soon" buttons—Apple rejects apps that have unfinished features (Guideline 2.1).',
+        'Accepting code with hidden errors without testing the screen on your real phone.',
+        'Accidentally sharing your private API keys or passwords in public files.'
       ],
       verificationQuestions: [
-        'Is your AI coding assistant configured and able to modify files in your project directory?',
-        'Does the AI model have access to terminal commands for testing and building?'
+        'Can your AI assistant open and edit files in your project folder?',
+        'When you give your AI a prompt, does it make the change and show you the result on screen?'
       ]
     },
     {
       id: 'setup-developer-accounts',
       phaseId: 'phase-setup',
       title: 'Enroll Developer Accounts',
-      shortDescription: 'Register official developer accounts so you have legal authorization to test on phones and publish to the stores.',
+      shortDescription: 'Register official accounts with Apple and Google so you have legal permission to test on phones and launch.',
       category: 'store',
       platform: 'both',
       priority: 'blocker',
-      whyItMatters: 'Identity and business verification takes 1 to 3 weeks. Apple charges $99/year and Google charges a $25 one-time fee. Doing this upfront prevents launch delays when your app is finished.',
-      whatHappensNext: 'Your developer status is officially recognized by Apple and Google. You gain access to TestFlight beta distribution, push notifications, native capabilities, and App Store Connect.',
+      whyItMatters: 'Apple and Google require identity verification before letting anyone put apps on people\'s phones. This review can take 1 to 3 weeks, so registering right away ensures your launch is never delayed.',
+      whatHappensNext: 'Your developer status is officially recognized by Apple and Google. You can install your app directly on your phone and invite friends to test it through TestFlight.',
       directLink: {
         label: 'Enroll in Apple Developer Program',
         url: 'https://developer.apple.com/programs/enroll/'
@@ -71,11 +71,11 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=FWcmdBhCHgs'
       },
       implementationSteps: [
-        'Go to developer.apple.com and enroll with your Apple ID ($99/year). If enrolling as an organization, request a free D-U-N-S business number first.',
-        'Go to play.google.com/console and create a Google Play Developer account ($25 one-time registration fee).',
-        'Upload your government ID or business documentation for identity verification.',
-        'Fill out required banking, tax, and trader declarations in App Store Connect and Google Play Console if offering in-app purchases or paid downloads.',
-        'Note for Google Play personal accounts: Plan for the mandatory closed test requirement (20 testers for 14 continuous days).'
+        'Go to developer.apple.com, sign in with your Apple ID, and enroll in the Apple Developer Program ($99/year). If enrolling as a company, request a free D-U-N-S business number first.',
+        'Go to play.google.com/console and create your Google Play Developer account ($25 one-time registration fee).',
+        'Submit your photo ID (or business registration if applying as a company) for identity verification.',
+        'Sign the store agreements and fill out your banking details in App Store Connect and Google Play Console if offering subscriptions or paid features.',
+        'Google Play reminder: Personal accounts must run a 14-day closed test with 20 friends before going public.'
       ],
       agentPrompt: `You are the autonomous mobile release engineer responsible for store registrations and identifier mapping.
 
@@ -88,25 +88,25 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. CREDENTIAL MAPPING: Document our App Store Team ID, Bundle ID, and SKU in a clean markdown reference for store deployment.
 4. ZERO REGRESSIONS: Verify that 'npx cap sync' runs without identifier mismatch warnings.`,
       commonRejectionTraps: [
-        'Waiting until your app is finished to register developer accounts, causing weeks of identity review delays.',
-        'Mismatch between legal account holder name and government photo ID or banking records.',
-        'Attempting to publish health, financial, or kids apps under personal accounts rather than verified legal entities.'
+        'Waiting until your app is 100% finished to register—identity checks take up to 2 weeks and will delay your launch.',
+        'Using a name or credit card that doesn\'t match your government photo ID.',
+        'Forgetting to accept the latest store agreements in App Store Connect, which freezes your ability to test on real phones.'
       ],
       verificationQuestions: [
-        'Has your Apple Developer enrollment been approved and showing "Active"?',
-        'Have you accepted all required store agreements in App Store Connect?'
+        'Does your Apple Developer account show "Active" with your membership confirmed?',
+        'Have you completed the identity verification in Google Play Console?'
       ]
     },
     {
       id: 'setup-xcode-android-studio',
       phaseId: 'phase-setup',
       title: 'Install Xcode & Android Studio',
-      shortDescription: 'Install the official Apple and Google IDEs and command-line tools to compile native mobile binaries.',
+      shortDescription: 'Install the official Apple and Google tools so your computer can build your app for iPhone and Android.',
       category: 'functionality',
       platform: 'both',
       priority: 'blocker',
-      whyItMatters: 'Xcode is the only software authorized to compile and code-sign iOS apps for iPhones. Android Studio provides the Android SDK and Gradle build engine for Google Play packages.',
-      whatHappensNext: 'Your Mac will possess the official compilers, simulators, and device bridging tools required to transform TypeScript code into real native mobile applications.',
+      whyItMatters: 'To put an app on an iPhone, Apple requires a free Mac program called Xcode. Android uses Android Studio. You don\'t need to write code inside them—your AI assistant handles that—they just need to be on your computer to build the app.',
+      whatHappensNext: 'Your computer has everything it needs to transform your app design into a real, installable mobile app on your iPhone or Android phone.',
       directLink: {
         label: 'Download Xcode from Mac App Store',
         url: 'https://apps.apple.com/us/app/xcode/id497799835'
@@ -116,11 +116,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=yvp1_-dc7qc'
       },
       implementationSteps: [
-        'Open the Mac App Store and download the latest version of Xcode (requires ~20 GB free disk space).',
-        'Open Terminal and install command line developer tools: xcode-select --install',
-        'Open Xcode once to accept the license agreement and let it install required system components.',
-        'Download and install Android Studio from developer.android.com/studio to build Android APK/AAB packages.',
-        'In Xcode Settings > Platforms, download the latest iOS Simulator runtime.'
+        'Open the Mac App Store, search for "Xcode", and click Get/Install (requires ~20 GB free space).',
+        'Open Xcode once after it downloads, accept the license terms, and let it install its background components.',
+        'If you plan to launch on Android, download and install Android Studio from developer.android.com/studio.',
+        'Tell your AI assistant: "Check that Xcode and our command-line tools are ready to build iOS apps."'
       ],
       agentPrompt: `You are the autonomous mobile systems engineer verifying local native compilation toolchains.
 
@@ -133,25 +132,25 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. FIX PATHS: If Xcode tools are unlinked, specify the command 'sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer'.
 4. ZERO REGRESSIONS: Ensure native iOS project workspace opens cleanly without schema migration errors.`,
       commonRejectionTraps: [
-        'Using an outdated Xcode version that Apple refuses to accept on App Store Connect.',
-        'Missing command line developer tools, causing automated build scripts to fail with cryptic exit codes.',
-        'Insufficient disk space during installation leading to corrupted Xcode platforms and derived data.'
+        'Running an outdated version of Xcode—Apple requires apps to be built with the latest release.',
+        'Running low on Mac hard drive space (less than 20 GB free) which causes builds to freeze.',
+        'Never opening Xcode once after downloading to let it finish its initial setup.'
       ],
       verificationQuestions: [
-        'Does `xcodebuild -version` run in your terminal without errors?',
-        'Does Xcode open and show your Apple ID in Settings > Accounts?'
+        'Did you open Xcode and accept the initial setup agreement?',
+        'Does your Mac have at least 25 GB of free storage for smooth builds?'
       ]
     },
     {
       id: 'setup-github-repo',
       phaseId: 'phase-setup',
       title: 'Initialize Git & GitHub',
-      shortDescription: 'Store your codebase safely in the cloud, track revision history, and run local testing servers.',
+      shortDescription: 'Safely back up your app to private cloud storage so you never lose your work or progress.',
       category: 'functionality',
       platform: 'both',
       priority: 'blocker',
-      whyItMatters: 'A private GitHub repository protects your app from accidental data loss, allows safe branching for new features, and enables instant localhost web previewing during development.',
-      whatHappensNext: 'Every line of code is securely backed up and versioned. You can preview changes live in your browser on localhost and roll back mistakes with a single git command.',
+      whyItMatters: 'Think of GitHub as an automatic time-machine backup for your app. If an AI edit breaks something or your laptop has an issue, you can instantly restore your app to the exact moment it was working perfectly.',
+      whatHappensNext: 'Every screen and feature you build is safely saved in the cloud. You can experiment freely without fear of losing your progress.',
       directLink: {
         label: 'Create a New Repository on GitHub',
         url: 'https://github.com/new'
@@ -161,12 +160,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=RGOj5yH7evk'
       },
       implementationSteps: [
-        'Initialize local git tracking in your project root: git init',
-        'Create a comprehensive .gitignore file to exclude node_modules, build outputs, and private .env secrets.',
-        'Create a private repository on GitHub (e.g. github.com/new).',
-        'Link your local folder to GitHub: git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git',
-        'Push your initial commit: git add . && git commit -m "Initial commit" && git push -u origin main',
-        'Run local dev server: npm run dev to test the app on your computer browser at http://localhost:5173'
+        'Create a free account at github.com if you don\'t have one yet.',
+        'Create a new Private repository on GitHub to store your app code.',
+        'Tell your AI assistant: "Initialize git in this project, set up our .gitignore to keep private keys safe, and back up our code to our private GitHub repo."',
+        'Tell your AI assistant: "Start our local testing server so I can preview the app in my computer browser."'
       ],
       agentPrompt: `You are the autonomous senior DevOps engineer configuring our project's version control.
 
@@ -179,25 +176,25 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. SCRIPT AUDIT: Confirm 'npm run dev' and 'npm run build' are properly defined in 'package.json'.
 4. ZERO REGRESSIONS: Ensure project compiles cleanly and local dev server spins up with zero errors.`,
       commonRejectionTraps: [
-        'Accidentally committing sensitive API secret keys or payment tokens to a public GitHub repository.',
-        'Missing a proper .gitignore, causing gigabytes of generated cache files to bloat the repository.',
-        'Failing to back up work to GitHub, leading to catastrophic data loss if a laptop breaks or updates fail.'
+        'Accidentally making your GitHub repository public and exposing private API keys or secrets.',
+        'Making big changes without saving a backup first, making it harder to undo an AI mistake.',
+        'Forgetting to keep private .env files out of your cloud backup.'
       ],
       verificationQuestions: [
-        'Is your code pushed to a private GitHub repository?',
-        'Does `npm run dev` start a local testing server on your computer?'
+        'Is your project code backed up to a private repository on GitHub?',
+        'Can you view and test your app live on your computer screen?'
       ]
     },
     {
       id: 'setup-connect-phone',
       phaseId: 'phase-setup',
       title: 'Connect Physical iPhone',
-      shortDescription: 'Pair your real phone via cable or Wi-Fi to test tactile haptics, animations, and real touch interactions.',
+      shortDescription: 'Plug your real phone into your computer to test touch gestures, animations, and how it feels in your hand.',
       category: 'functionality',
       platform: 'ios',
       priority: 'blocker',
-      whyItMatters: 'Computer simulators cannot replicate real thumb reachability, battery consumption, offline cell signal drops, or tactile vibrations. Testing on your real iPhone is crucial before store submission.',
-      whatHappensNext: 'The actual app runs directly on your iPhone hardware. You can tap real buttons, test performance in your hand, and show friends your working prototype.',
+      whyItMatters: 'A computer screen can never tell you if a button is too small for a thumb, if text is hard to read in sunlight, or if animations feel choppy. Testing on your real phone is the secret to building an app people love.',
+      whatHappensNext: 'Your app opens right on your iPhone or Android phone. You can hold it, tap the buttons, and experience it exactly like your future users will.',
       directLink: {
         label: 'Apple Developer Mode Documentation',
         url: 'https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device'
@@ -207,11 +204,11 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=ZqEwUnNB-dg'
       },
       implementationSteps: [
-        'Connect your iPhone to your Mac using a USB-C or Lightning cable.',
-        'Unlock your iPhone and tap "Trust This Computer" when prompted.',
-        'On your iPhone, go to Settings > Privacy & Security > scroll down to Developer Mode, toggle it ON, and restart your iPhone.',
-        'After restart, unlock your iPhone and tap "Turn On" in the Developer Mode confirmation prompt.',
-        'Open your project in Xcode (npx cap open ios), select your target device at the top bar, and click the Play button to build and install.'
+        'Plug your iPhone into your Mac using a charging cable.',
+        'Unlock your phone and tap "Trust This Computer" when the popup appears.',
+        'On your iPhone, go to Settings > Privacy & Security, scroll down to "Developer Mode", turn it ON, and restart your phone.',
+        'After restarting, unlock your phone and tap "Turn On" in the confirmation prompt.',
+        'Tell your AI assistant: "Build and install our app onto my connected iPhone."'
       ],
       agentPrompt: `You are the autonomous mobile release engineer configuring device deployment.
 
@@ -224,25 +221,25 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. RUN CHECKS: Run 'xcrun devicectl list devices' in terminal to detect connected physical iOS hardware.
 4. ZERO REGRESSIONS: Ensure bundle identifier matches the Apple Developer provisioning profile.`,
       commonRejectionTraps: [
-        'Testing solely on desktop simulators and getting rejected for device-specific crashes or camera permission bugs.',
-        'Forgetting to turn on Developer Mode in iOS Settings, preventing Xcode from mounting developer disk images.',
-        'Ignoring safe-area margins on real devices where Dynamic Island or home indicators obscure buttons.'
+        'Only testing on a computer screen and missing buttons that are too close to the phone\'s home bar or Dynamic Island.',
+        'Forgetting to turn on Developer Mode in iPhone Settings, which prevents your computer from installing the test build.',
+        'Submitting to the App Store without testing on a physical device, leading to surprise crashes during Apple\'s review.'
       ],
       verificationQuestions: [
         'Is Developer Mode enabled in your iPhone Settings > Privacy & Security?',
-        'Does your physical iPhone appear in Xcode as a run destination?'
+        'Did the app open and run directly on your physical iPhone screen?'
       ]
     },
     {
       id: 'setup-typescript-swift',
       phaseId: 'phase-setup',
       title: 'TypeScript & Native Bridge',
-      shortDescription: 'Understand how modern TypeScript combines with native Swift and Kotlin for maximum speed and store compliance.',
+      shortDescription: 'Understand how your app connects simple web designs to native phone features like haptics and the camera.',
       category: 'design',
       platform: 'both',
       priority: 'high',
-      whyItMatters: 'TypeScript gives you rapid UI iteration, strong type safety, and cross-platform flexibility. Capacitor bridges your TypeScript code directly into native Swift for iOS and Kotlin for Android.',
-      whatHappensNext: 'You have a clean mental model of how your frontend code transforms into native Swift view controllers and Kotlin activities with full access to device hardware.',
+      whyItMatters: 'You don\'t need to learn Swift or Kotlin to build for iPhone and Android. You create your app using friendly web building blocks (TypeScript, React, Tailwind), and a tool called Capacitor automatically translates it into native phone features like tactile vibrations, camera, and offline storage.',
+      whatHappensNext: 'You understand how your screens talk to your phone\'s hardware, giving you native performance without writing complex native code.',
       directLink: {
         label: 'Capacitor Native Bridge Architecture',
         url: 'https://capacitorjs.com/docs/core-apis'
@@ -252,11 +249,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=JMBtuNqy2QI'
       },
       implementationSteps: [
-        'Write your frontend in TypeScript with strict typing to prevent null pointers and logic bugs.',
-        'Use Capacitor plugins for native phone features (haptics, camera, keychain, network status).',
-        'When you run npm run build && npx cap sync ios, Capacitor bundles your code and updates the native Swift project in Xcode.',
-        'If you need custom native capabilities, you can write native Swift extensions directly in ios/App/App/ directory.',
-        'For Android, Capacitor generates a standard Gradle project in android/ directory using Kotlin and Java.'
+        'Design and build your screens using clean web components (buttons, cards, menus).',
+        'When you want phone features (like tactile buzzes or camera access), ask your AI to connect the official Capacitor plugin.',
+        'Whenever you want to test on your phone, tell your AI assistant: "Build our web assets and sync them to iOS."',
+        'Test the feature on your phone to confirm that buttons buzz and screens transition smoothly.'
       ],
       agentPrompt: `You are the autonomous senior mobile architect responsible for our native bridge layer.
 
@@ -269,25 +265,25 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. SYNC NATIVE: Run 'npx cap sync ios' and 'npx cap sync android' to update native platforms.
 4. VERIFY NATIVE PLUGINS: Ensure all Capacitor plugins (Haptics, Storage, StatusBar) are linked without missing pod warnings.`,
       commonRejectionTraps: [
-        'Forgetting to run "npm run build" before syncing to Xcode, resulting in an outdated app build on your phone.',
-        'Using unsupported web browser APIs (like localStorage without size limits) that fail or clear unexpectedly on mobile.',
-        'Bloating the web bundle with heavy dependencies, causing slow app launch times that trigger store rejection.'
+        'Forgetting to ask your AI to build and sync before opening Xcode, which loads an older version of your app.',
+        'Using desktop web features that don\'t work on phones without checking on a real device.',
+        'Adding huge, uncompressed image files that make your app slow to load on mobile data.'
       ],
       verificationQuestions: [
-        'Does `npx tsc --noEmit` pass with zero errors across all files?',
-        'Does `npx cap sync ios` complete without missing plugin warnings?'
+        'Does your app sync to iOS without warnings or missing plugin errors?',
+        'Do touch interactions and vibrations feel crisp on your phone?'
       ]
     },
     {
       id: 'setup-agent-commands',
       phaseId: 'phase-setup',
       title: 'AI Agent Build Commands',
-      shortDescription: 'Copy-ready terminal commands and prompts for your AI agents to build, sync, and deploy your app.',
+      shortDescription: 'Simple instructions you can give your AI assistant to build, test, and launch your app automatically.',
       category: 'functionality',
       platform: 'both',
       priority: 'high',
-      whyItMatters: 'Instead of manually clicking through complex menus, you can give your AI coding agent these standardized terminal commands to build your project and launch it on your phone automatically.',
-      whatHappensNext: 'Your AI agent can autonomously compile your code, sync native plugins, open Xcode, and deploy test builds without requiring manual intervention.',
+      whyItMatters: 'You never need to remember complex terminal code. Whenever you want to test on your phone or prepare a release, just copy and paste these plain-language requests to your AI assistant.',
+      whatHappensNext: 'Your AI assistant handles building the code, syncing the phone files, and deploying the app to your phone without you clicking through technical menus.',
       directLink: {
         label: 'Capacitor CLI Command Reference',
         url: 'https://capacitorjs.com/docs/cli'
@@ -297,13 +293,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=SSv--IrWH3c'
       },
       implementationSteps: [
-        'Step 1 (iOS Compile & Sync): npm run build && npx cap sync ios',
-        'Step 2 (Open in Xcode): npx cap open ios',
-        'Step 3 (Build to Physical Phone): Select your connected phone in Xcode top bar and press Cmd+R (or click Play).',
-        'Step 4 (iOS App Store Archive): In Xcode, select Any iOS Device (arm64) > Product > Archive > Distribute App.',
-        'Step 5 (Android Compile & Sync): npm run build && npx cap sync android',
-        'Step 6 (Open in Android Studio): npx cap open android',
-        'Step 7 (Google Play AAB Build): cd android && ./gradlew bundleRelease && cd .. (generates release AAB package).'
+        'To test on your phone: Tell your AI: "Build our app and sync it to our connected iPhone."',
+        'To check for errors: Tell your AI: "Run a type check and make sure our codebase has zero errors."',
+        'To prepare for the App Store: Tell your AI: "Create a release archive in Xcode and get our app ready for App Store Connect."',
+        'To test on Android: Tell your AI: "Build and bundle our app for Android testing."'
       ],
       agentPrompt: `You are the autonomous build automation engineer for this mobile project.
 
@@ -331,25 +324,25 @@ EXECUTION PROTOCOL FOR THE AGENT:
 
 4. ZERO REGRESSIONS: Confirm zero compilation errors and report readiness to deploy to physical devices and store consoles.`,
       commonRejectionTraps: [
-        'Trying to build an Xcode archive with Debug profile rather than Release configuration.',
-        'Attempting to upload to App Store Connect without incrementing CFBundleVersion in Xcode.',
-        'Submitting raw APK files to Google Play instead of the mandatory Android App Bundle (.aab) format.'
+        'Submitting a test build with debug settings turned on instead of a clean production release.',
+        'Forgetting to increase your app version number (e.g., from 1.0 to 1.1) before uploading a new build to Apple.',
+        'Uploading raw test packages to Google Play instead of the official App Bundle format.'
       ],
       verificationQuestions: [
-        'Does `npm run build && npx cap sync ios` execute cleanly in your terminal?',
-        'Does `npx cap open ios` launch your Xcode workspace properly?'
+        'Can your AI assistant successfully build and deploy your app with one prompt?',
+        'Does your app launch cleanly without crashing on your test device?'
       ]
     },
     {
       id: 'setup-clear-caches',
       phaseId: 'phase-setup',
       title: 'Clear Build Caches',
-      shortDescription: 'Free up tens of gigabytes of disk space and resolve strange compiler bugs by clearing Xcode DerivedData and package caches.',
+      shortDescription: 'Free up storage space and fix strange build hiccups by having your AI clear temporary files.',
       category: 'functionality',
       platform: 'both',
       priority: 'medium',
-      whyItMatters: 'Over time, Xcode accumulates gigabytes of cached "DerivedData" build artifacts, and npm keeps duplicate packages. Clearing these caches keeps your Mac fast and prevents mysterious compilation errors.',
-      whatHappensNext: 'Your computer reclaims significant storage space, and your next build starts fresh without corrupted cache files or stale dependencies.',
+      whyItMatters: 'As you build your app, Xcode and build tools create temporary files that can take up 20+ gigabytes of space. If a build ever acts strange or your Mac is running low on room, a quick cache clean fixes it immediately.',
+      whatHappensNext: 'Your computer reclaims gigabytes of free storage space, and your next build starts completely fresh with no stuck files.',
       directLink: {
         label: 'Xcode DerivedData Management Guide',
         url: 'https://developer.apple.com/documentation/xcode/managing-storage-in-xcode'
@@ -359,11 +352,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=MtCzNJ1EA4E'
       },
       implementationSteps: [
-        'Clear Xcode DerivedData (often 20+ GB): rm -rf ~/Library/Developer/Xcode/DerivedData',
-        'Clear npm package cache: npm cache clean --force',
-        'Clean Android Gradle cache (if using Android): cd android && ./gradlew clean && cd ..',
-        'Clean CocoaPods cache (if applicable): pod cache clean --all',
-        'Re-build cleanly: npm run build && npx cap sync'
+        'If a build ever gets stuck or fails unexpectedly, don\'t panic—it is usually just temporary cached files.',
+        'Tell your AI assistant: "Clear our Xcode DerivedData cache, clean temporary package caches, and run a fresh build."',
+        'Let your AI run the cleanup and rebuild your project.',
+        'Verify that your Mac gained free space and your app builds with zero errors.'
       ],
       agentPrompt: `You are the autonomous system optimization engineer maintaining our build environment.
 
@@ -376,13 +368,13 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. FRESH REBUILD: Execute 'npm run build && npx cap sync ios' to re-create a clean, optimized distribution.
 4. STORAGE VERIFICATION: Verify that disk space is restored and the subsequent build compiles with zero errors.`,
       commonRejectionTraps: [
-        'Wasting hours debugging mysterious build failures caused by corrupted Xcode DerivedData rather than actual code bugs.',
-        'Letting disk space fall below 10 GB, which causes Xcode archive generation to fail silently without clear error messages.',
-        'Accidentally deleting source files instead of temporary cache directories. Always verify paths before deleting.'
+        'Spending hours stressing over a weird build bug when simply clearing the Xcode cache solves it in 10 seconds.',
+        'Letting your Mac get down to less than 10 GB of free space, which causes Xcode to fail with confusing errors.',
+        'Deleting original project files by mistake instead of just the temporary cache folder.'
       ],
       verificationQuestions: [
-        'Have you cleared your Xcode DerivedData folder recently?',
-        'Does your Mac have at least 25 GB of free storage for smooth builds?'
+        'Does your Mac have plenty of free disk space for building apps?',
+        'Does your project build cleanly from a fresh start?'
       ]
     }
   ]
