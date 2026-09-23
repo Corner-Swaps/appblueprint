@@ -28,7 +28,8 @@
     <script>
       if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+          const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+          navigator.serviceWorker.register(basePath + 'sw.js').catch(err => console.log('SW registration failed:', err));
         });
       }
     </script>

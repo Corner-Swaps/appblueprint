@@ -772,18 +772,22 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                                   e.stopPropagation();
                                   handleCopyText(`prompt-${item.id}`, item.agentPrompt || '');
                                 }}
-                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors cursor-pointer"
+                                className={`apple-press px-3 py-1.5 rounded-full text-[11px] font-bold flex items-center space-x-1.5 shrink-0 shadow-2xs transition-all duration-200 cursor-pointer ${
+                                  copiedSnippetId === `prompt-${item.id}`
+                                    ? 'bg-emerald-600 border border-emerald-600 text-white'
+                                    : 'bg-slate-900 hover:bg-slate-800 active:bg-black border border-slate-900 text-white'
+                                }`}
                                 title="Copy prompt for AI coding agent"
                               >
                                 {copiedSnippetId === `prompt-${item.id}` ? (
                                   <>
-                                    <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
-                                    <span className="text-emerald-700 font-bold">Copied!</span>
+                                    <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                                    <span className="text-white font-bold">Copied!</span>
                                   </>
                                 ) : (
                                   <>
-                                    <Copy className="w-3 h-3 text-slate-500" />
-                                    <span>Copy</span>
+                                    <Copy className="w-3.5 h-3.5 text-white" />
+                                    <span className="text-white font-bold">Copy Prompt</span>
                                   </>
                                 )}
                               </button>
