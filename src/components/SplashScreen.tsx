@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { AppLogo } from './AppLogo';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -108,16 +109,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             justifyContent: 'center',
           }}
         >
-          <img
-            src="./logo.png"
-            alt="App Blueprint Logo"
-            style={{
-              width: 276,
-              height: 276,
-              objectFit: 'contain',
-              pointerEvents: 'none',
-              display: 'block',
-            }}
+          <AppLogo 
+            size={276} 
+            color="#FFFFFF" 
+            expanded15={true} 
+            style={{ pointerEvents: 'none' }}
           />
         </div>
       </div>

@@ -58,7 +58,7 @@ export const AcademyHighlight: React.FC<AcademyHighlightProps> = ({ onLaunchApp 
                 key={idx}
                 className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xl shadow-slate-200/30 hover:border-indigo-300 hover:shadow-2xl transition-all duration-300 flex items-start space-x-5 group"
               >
-                <div className="w-13 h-13 rounded-2xl bg-indigo-50/80 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-2xs">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-50/80 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-2xs">
                   <Icon className="w-6 h-6 stroke-[2.2]" />
                 </div>
                 <div className="min-w-0 flex-1">

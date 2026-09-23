@@ -35,49 +35,7 @@ import {
 import { PlatformBadge } from './PlatformBadge';
 import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
 import { VideoPlayerModal } from './VideoPlayerModal';
-
-const renderChecklistItemIcon = (item: ChecklistItem) => {
-  const id = item.id.toLowerCase();
-  const title = item.title.toLowerCase();
-
-  // 1. Security & Auth
-  if (item.category === 'security' || id.includes('security') || id.includes('keychain') || title.includes('security') || title.includes('auth') || title.includes('password') || title.includes('token') || title.includes('crypto')) {
-    return <Shield className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
-  }
-
-  // 4. Legal & Privacy
-  if (item.category === 'legal' || id.includes('legal') || title.includes('terms') || title.includes('privacy') || title.includes('policy') || title.includes('eula')) {
-    return <Scale className="w-5 h-5 text-amber-600 stroke-[2.2]" />;
-  }
-
-  // 5. Design & UI
-  if (item.category === 'design' || title.includes('design') || title.includes('ui') || title.includes('typography') || title.includes('font') || title.includes('screen') || title.includes('haptic') || title.includes('touch')) {
-    return <Layout className="w-5 h-5 text-rose-500 stroke-[2.2]" />;
-  }
-
-  // 6. Store & Launch
-  if (item.category === 'store' || title.includes('store') || title.includes('launch') || title.includes('aso') || title.includes('screenshot') || title.includes('submission')) {
-    return <Rocket className="w-5 h-5 text-cyan-600 stroke-[2.2]" />;
-  }
-
-  // 7. CI/CD & Build
-  if (item.category === 'cicd' || title.includes('build') || title.includes('compile') || title.includes('xcode') || title.includes('environment')) {
-    return <Terminal className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
-  }
-
-  // 8. Backend / Database
-  if (title.includes('database') || title.includes('backend') || title.includes('cloud') || title.includes('api') || title.includes('sync')) {
-    return <Database className="w-5 h-5 text-teal-600 stroke-[2.2]" />;
-  }
-
-  // 9. Idea / Scope
-  if (title.includes('idea') || title.includes('scope') || title.includes('problem') || title.includes('feature') || title.includes('describe')) {
-    return <Lightbulb className="w-5 h-5 text-amber-500 stroke-[2.2]" />;
-  }
-
-  // 10. Default
-  return <CheckSquare className="w-5 h-5 text-blue-600 stroke-[2.2]" />;
-};
+import { renderChecklistItemIcon } from '../utils/renderChecklistItemIcon';
 
 interface GuardrailSectionProps {
   phase: Phase;

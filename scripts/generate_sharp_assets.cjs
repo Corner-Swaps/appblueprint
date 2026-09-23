@@ -6,17 +6,17 @@ const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrom
 const svgLogoPath = path.join(__dirname, '../public/logo.svg');
 const svgRaw = fs.readFileSync(svgLogoPath, 'utf8');
 
-// The solid black background requested by user: "bring it back to black the black background"
+// The solid black background requested by user
 const SOLID_BG = '#000000';
 
-// 25% bigger icon transformation
-const SVG_25_PERCENT_BIGGER = svgRaw.replace(
+// 15% bigger icon transformation: scaled centered at (512.5, 501)
+const SVG_15_PERCENT_BIGGER = svgRaw.replace(
   '<g fill="#FFFFFF">',
-  '<g fill="#FFFFFF" transform="matrix(1.22 0 0 1.22 -112.6 -110.8)">'
+  '<g fill="#FFFFFF" transform="matrix(1.15 0 0 1.15 -76.875 -75.15)">'
 );
 
 async function generateAssets() {
-  console.log('Launching Chrome to render razor-sharp vector assets on solid black...');
+  console.log('Launching Chrome to render razor-sharp vector assets...');
   const browser = await puppeteer.launch({
     executablePath: CHROME_PATH,
     headless: 'new',
@@ -25,8 +25,8 @@ async function generateAssets() {
 
   const page = await browser.newPage();
 
-  // 1. Render AppIcon-512@2x.png (1024x1024) - Solid Black with Crisp White Logo (25% bigger)
-  console.log('Rendering 1024x1024 master AppIcon-512@2x.png (black background, 25% bigger white logo)...');
+  // 1. Render AppIcon-512@2x.png (1024x1024) - Solid Black with Crisp White Logo (15% bigger)
+  console.log('Rendering 1024x1024 master AppIcon-512@2x.png (black background, 15% bigger white logo)...');
   await page.setViewport({ width: 1024, height: 1024, deviceScaleFactor: 1 });
   await page.setContent(`
     <!DOCTYPE html>
@@ -39,7 +39,7 @@ async function generateAssets() {
         </style>
       </head>
       <body>
-        ${SVG_25_PERCENT_BIGGER}
+        ${SVG_15_PERCENT_BIGGER}
       </body>
     </html>
   `);
@@ -62,7 +62,7 @@ async function generateAssets() {
         </style>
       </head>
       <body>
-        ${SVG_25_PERCENT_BIGGER}
+        ${SVG_15_PERCENT_BIGGER}
       </body>
     </html>
   `);
@@ -70,77 +70,7 @@ async function generateAssets() {
   await page.screenshot({ path: icon512Path, omitBackground: false });
   console.log('Saved:', icon512Path);
 
-  const logoPngPath = path.join(__dirname, '../public/logo.png');
-  await page.screenshot({ path: logoPngPath, omitBackground: false });
-  console.log('Saved:', logoPngPath);
-
-  // 3. Render public/icon-192.png
-  console.log('Rendering public/icon-192.png...');
-  await page.setViewport({ width: 192, height: 192, deviceScaleFactor: 1 });
-  await page.setContent(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { width: 192px; height: 192px; overflow: hidden; background: ${SOLID_BG}; }
-          svg { width: 192px; height: 192px; display: block; }
-        </style>
-      </head>
-      <body>
-        ${SVG_25_PERCENT_BIGGER}
-      </body>
-    </html>
-  `);
-  const icon192Path = path.join(__dirname, '../public/icon-192.png');
-  await page.screenshot({ path: icon192Path, omitBackground: false });
-  console.log('Saved:', icon192Path);
-
-  // 4. Render public/apple-touch-icon.png (180x180)
-  console.log('Rendering public/apple-touch-icon.png...');
-  await page.setViewport({ width: 180, height: 180, deviceScaleFactor: 1 });
-  await page.setContent(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { width: 180px; height: 180px; overflow: hidden; background: ${SOLID_BG}; }
-          svg { width: 180px; height: 180px; display: block; }
-        </style>
-      </head>
-      <body>
-        ${SVG_25_PERCENT_BIGGER}
-      </body>
-    </html>
-  `);
-  const appleTouchPath = path.join(__dirname, '../public/apple-touch-icon.png');
-  await page.screenshot({ path: appleTouchPath, omitBackground: false });
-  console.log('Saved:', appleTouchPath);
-
-  // 5. Render public/favicon.png (32x32)
-  console.log('Rendering public/favicon.png...');
-  await page.setViewport({ width: 32, height: 32, deviceScaleFactor: 1 });
-  await page.setContent(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { width: 32px; height: 32px; overflow: hidden; background: ${SOLID_BG}; }
-          svg { width: 32px; height: 32px; display: block; }
-        </style>
-      </head>
-      <body>
-        ${SVG_25_PERCENT_BIGGER}
-      </body>
-    </html>
-  `);
-  const faviconPath = path.join(__dirname, '../public/favicon.png');
-  await page.screenshot({ path: faviconPath, omitBackground: false });
-  console.log('Saved:', faviconPath);
-
-  // 6. Render transparent pure white logo: public/logo_composite.png & logo_solid_white.png (1024x1024)
+  // 3. Render transparent pure white logo: public/logo.png, public/logo_composite.png, public/logo_solid_white.png (1024x1024)
   console.log('Rendering transparent pure white logo (1024x1024)...');
   await page.setViewport({ width: 1024, height: 1024, deviceScaleFactor: 1 });
   await page.setContent(`
@@ -154,10 +84,14 @@ async function generateAssets() {
         </style>
       </head>
       <body>
-        ${svgRaw}
+        ${SVG_15_PERCENT_BIGGER}
       </body>
     </html>
   `);
+  const logoPngPath = path.join(__dirname, '../public/logo.png');
+  await page.screenshot({ path: logoPngPath, omitBackground: true });
+  console.log('Saved:', logoPngPath);
+
   const logoCompPath = path.join(__dirname, '../public/logo_composite.png');
   await page.screenshot({ path: logoCompPath, omitBackground: true });
   console.log('Saved:', logoCompPath);
@@ -166,9 +100,71 @@ async function generateAssets() {
   await page.screenshot({ path: logoSolidWhitePath, omitBackground: true });
   console.log('Saved:', logoSolidWhitePath);
 
-  const launchreadySolidWhitePath = path.join(__dirname, '../public/launchready_solid_white.png');
-  await page.screenshot({ path: launchreadySolidWhitePath, omitBackground: true });
-  console.log('Saved:', launchreadySolidWhitePath);
+  // 4. Render public/icon-192.png
+  console.log('Rendering public/icon-192.png...');
+  await page.setViewport({ width: 192, height: 192, deviceScaleFactor: 1 });
+  await page.setContent(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { width: 192px; height: 192px; overflow: hidden; background: ${SOLID_BG}; }
+          svg { width: 192px; height: 192px; display: block; }
+        </style>
+      </head>
+      <body>
+        ${SVG_15_PERCENT_BIGGER}
+      </body>
+    </html>
+  `);
+  const icon192Path = path.join(__dirname, '../public/icon-192.png');
+  await page.screenshot({ path: icon192Path, omitBackground: false });
+  console.log('Saved:', icon192Path);
+
+  // 5. Render public/apple-touch-icon.png (180x180)
+  console.log('Rendering public/apple-touch-icon.png...');
+  await page.setViewport({ width: 180, height: 180, deviceScaleFactor: 1 });
+  await page.setContent(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { width: 180px; height: 180px; overflow: hidden; background: ${SOLID_BG}; }
+          svg { width: 180px; height: 180px; display: block; }
+        </style>
+      </head>
+      <body>
+        ${SVG_15_PERCENT_BIGGER}
+      </body>
+    </html>
+  `);
+  const appleTouchPath = path.join(__dirname, '../public/apple-touch-icon.png');
+  await page.screenshot({ path: appleTouchPath, omitBackground: false });
+  console.log('Saved:', appleTouchPath);
+
+  // 6. Render public/favicon.png (64x64)
+  console.log('Rendering public/favicon.png...');
+  await page.setViewport({ width: 64, height: 64, deviceScaleFactor: 1 });
+  await page.setContent(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { width: 64px; height: 64px; overflow: hidden; background: ${SOLID_BG}; }
+          svg { width: 64px; height: 64px; display: block; }
+        </style>
+      </head>
+      <body>
+        ${SVG_15_PERCENT_BIGGER}
+      </body>
+    </html>
+  `);
+  const faviconPath = path.join(__dirname, '../public/favicon.png');
+  await page.screenshot({ path: faviconPath, omitBackground: false });
+  console.log('Saved:', faviconPath);
 
   // 7. Render iOS native launch images in Splash.imageset (2732x2732) - Solid Black
   console.log('Rendering iOS native launch images (2732x2732) on solid black...');
@@ -189,15 +185,15 @@ async function generateAssets() {
             justify-content: center;
           }
           .logo-container {
-            width: 780px;
-            height: 780px;
+            width: 820px;
+            height: 820px;
           }
           svg { width: 100%; height: 100%; display: block; }
         </style>
       </head>
       <body>
         <div class="logo-container">
-          ${svgRaw}
+          ${SVG_15_PERCENT_BIGGER}
         </div>
       </body>
     </html>
@@ -215,7 +211,7 @@ async function generateAssets() {
   }
 
   await browser.close();
-  console.log('ALL ASSETS GENERATED ON SOLID BLACK WITH 25% BIGGER WHITE LOGO!');
+  console.log('ALL ASSETS GENERATED WITH CRISP VECTOR PRECISION AND 15% EXPANSION!');
 }
 
 generateAssets().catch(err => {

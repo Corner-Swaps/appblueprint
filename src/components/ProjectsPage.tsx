@@ -114,164 +114,11 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
 
       {/* 2. List of Projects */}
       <div className="space-y-4 pt-1">
-        {/* Selected / Active Project Pill: Exact same height and geometry as Checklist and Academy first pills */}
-        {(() => {
-          const activeProj = projects.find(p => p.id === activeProjectId) || projects[0];
-          if (!activeProj) return null;
-          const projColor = getProjectColor(activeProj, projects.indexOf(activeProj));
-          const isEditingThisProj = editingProjectId === activeProj.id;
-          const completedCount = (activeProj.completedItemIds || []).length;
 
-          return (
-            <div
-              id="active-project-pill"
-              key={activeProj.id}
-              onClick={() => {
-                if (editingProjectId && editingProjectId !== activeProj.id) {
-                  handleSaveRename(editingProjectId);
-                }
-                if (editingProjectId === activeProj.id) return;
-                onSelectProject(activeProj.id);
-                onBackToChecklist?.();
-              }}
-              className="rounded-3xl border border-slate-200/90 bg-white shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 select-none cursor-pointer"
-            >
-              <div className="w-full flex items-center justify-between select-none">
-                <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
-                  {/* Squircle with project color and white folder icon */}
-                  <div 
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs text-white"
-                    style={{ backgroundColor: projColor }}
-                  >
-                    <Folder className="w-6 h-6 stroke-[2.2]" />
-                  </div>
-
-                  <div className="space-y-1 select-none flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
-                      <span className="h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-900 text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none">
-                        Active Project
-                      </span>
-                      <span className="text-xs text-slate-400 select-none">•</span>
-                      <span className="text-xs font-bold text-slate-700 select-none">
-                        {completedCount} of {totalRequirementsCount} Verified
-                      </span>
-                    </div>
-
-                    {isEditingThisProj ? (
-                      <div 
-                        data-rename-controls
-                        className="flex items-center space-x-1.5 pt-0.5" 
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <input
-                          type="text"
-                          value={editingProjectName}
-                          onChange={(e) => setEditingProjectName(e.target.value)}
-                          onBlur={(e) => {
-                            if (isCancellingRenameRef.current) {
-                              isCancellingRenameRef.current = false;
-                              return;
-                            }
-                            const nextTarget = e.relatedTarget as HTMLElement | null;
-                            if (nextTarget && nextTarget.closest('[data-rename-controls]')) {
-                              return;
-                            }
-                            handleSaveRename(activeProj.id);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleSaveRename(activeProj.id);
-                            if (e.key === 'Escape') {
-                              isCancellingRenameRef.current = true;
-                              setEditingProjectId(null);
-                            }
-                          }}
-                          className="px-2.5 py-1 text-[16px] sm:text-[17.5px] font-bold text-slate-900 bg-white border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-slate-900 flex-1 min-w-0 font-google tracking-tight"
-                          autoFocus
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleSaveRename(activeProj.id)}
-                          className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0 apple-press"
-                          title="Save name"
-                        >
-                          <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                        </button>
-                        <button
-                          type="button"
-                          onPointerDown={() => {
-                            isCancellingRenameRef.current = true;
-                          }}
-                          onClick={() => {
-                            isCancellingRenameRef.current = true;
-                            setEditingProjectId(null);
-                          }}
-                          className="w-7 h-7 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center shrink-0 apple-press"
-                          title="Cancel"
-                        >
-                          <X className="w-3.5 h-3.5 stroke-[2.5]" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between gap-2">
-                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words flex-1 min-w-0">
-                          {activeProj.name}
-                        </h2>
-
-                        <div className="flex items-center space-x-1 shrink-0 -my-1">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingProjectId(activeProj.id);
-                              setEditingProjectName(activeProj.name);
-                            }}
-                            className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 apple-press transition-colors"
-                            title="Rename Project"
-                            aria-label="Rename Project"
-                          >
-                            <Pencil className="w-[18px] h-[18px] stroke-[2.2]" />
-                          </button>
-
-                          {projects.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onDeleteProject(activeProj.id);
-                              }}
-                              className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 apple-press transition-colors"
-                              title="Delete Project"
-                              aria-label="Delete Project"
-                            >
-                              <Trash2 className="w-[18px] h-[18px] stroke-[2.2]" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Description: Exactly matching Set Up and Academy 5-line height */}
-              <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
-                Your active mobile app blueprint and compliance roadmap. Track progress across all 12 mobile development phases, verify store rules, manage checklist requirements, and build your native mobile application.
-              </p>
-
-              {/* Bottom Indicator matching dropdown chevron geometry */}
-              <div className="flex justify-center pt-0.5 pb-0 select-none">
-                <div className="flex items-center justify-center w-7 h-7 text-slate-600">
-                  <Check strokeWidth={2.5} className="w-4 h-4 text-emerald-600 stroke-[2.5]" />
-                </div>
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* Other Projects (if any) */}
-        {projects.filter(p => p.id !== activeProjectId).map((proj, idx) => {
+        {projects.map((proj, idx) => {
           const projColor = getProjectColor(proj, idx);
           const isEditingThisProj = editingProjectId === proj.id;
+          const isActive = proj.id === activeProjectId;
           const completedCount = (proj.completedItemIds || []).length;
           const percent = totalRequirementsCount > 0 
             ? Math.round((completedCount / totalRequirementsCount) * 100) 
@@ -279,6 +126,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
 
           return (
             <div
+              id={isActive ? "active-project-pill" : undefined}
               key={proj.id}
               onClick={() => {
                 if (editingProjectId && editingProjectId !== proj.id) {
@@ -288,7 +136,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                 onSelectProject(proj.id);
                 onBackToChecklist?.();
               }}
-              className="rounded-3xl border border-slate-200/90 hover:border-slate-300 bg-white p-5 sm:p-6 transition-colors duration-150 shadow-xs space-y-4 select-none cursor-pointer"
+              style={isActive ? { borderColor: projColor } : undefined}
+              className={`rounded-3xl border bg-white p-5 sm:p-6 transition-all duration-150 shadow-xs space-y-4 select-none cursor-pointer ${
+                isActive ? 'border-2 ring-1 ring-black/5' : 'border-slate-200/90 hover:border-slate-300'
+              }`}
             >
               <div className="flex items-start justify-between gap-3 select-none">
                 <div className="flex items-start space-x-3.5 pr-2 select-none flex-1 min-w-0">

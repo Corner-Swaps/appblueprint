@@ -6,6 +6,23 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onLaunchApp }) => {
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const targetId = href.replace(/^#/, '');
+      if (targetId === 'overview') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.pushState(null, '', window.location.pathname + window.location.search);
+        return;
+      }
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        history.pushState(null, '', href);
+      }
+    }
+  };
+
   return (
     <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,15 +70,15 @@ export const Footer: React.FC<FooterProps> = ({ onLaunchApp }) => {
               Product &amp; System
             </div>
             <ul className="space-y-2 text-sm">
-              <li><a href="#overview" className="hover:text-white transition-colors">Overview</a></li>
-              <li><a href="#explorer" className="hover:text-white transition-colors">Screens &amp; 101 Rules</a></li>
-              <li><a href="#phases" className="hover:text-white transition-colors">10 Production Phases</a></li>
-              <li><a href="#calculator" className="hover:text-white transition-colors">Pass Readiness Calculator</a></li>
-              <li><a href="#why-apps-fail" className="hover:text-white transition-colors">Why Apps Fail Review</a></li>
-              <li><a href="#features" className="hover:text-white transition-colors">AI Coding Prompts</a></li>
-              <li><a href="#screenshots" className="hover:text-white transition-colors">App Store Screenshots</a></li>
-              <li><a href="#academy" className="hover:text-white transition-colors">Launch Academy</a></li>
-              <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
+              <li><a href="#overview" onClick={(e) => handleScrollTo(e, '#overview')} className="hover:text-white transition-colors cursor-pointer">Overview</a></li>
+              <li><a href="#explorer" onClick={(e) => handleScrollTo(e, '#explorer')} className="hover:text-white transition-colors cursor-pointer">Screens &amp; 101 Rules</a></li>
+              <li><a href="#phases" onClick={(e) => handleScrollTo(e, '#phases')} className="hover:text-white transition-colors cursor-pointer">10 Production Phases</a></li>
+              <li><a href="#calculator" onClick={(e) => handleScrollTo(e, '#calculator')} className="hover:text-white transition-colors cursor-pointer">Pass Readiness Calculator</a></li>
+              <li><a href="#why-apps-fail" onClick={(e) => handleScrollTo(e, '#why-apps-fail')} className="hover:text-white transition-colors cursor-pointer">Why Apps Fail Review</a></li>
+              <li><a href="#features" onClick={(e) => handleScrollTo(e, '#features')} className="hover:text-white transition-colors cursor-pointer">AI Coding Prompts</a></li>
+              <li><a href="#screenshots" onClick={(e) => handleScrollTo(e, '#screenshots')} className="hover:text-white transition-colors cursor-pointer">App Store Screenshots</a></li>
+              <li><a href="#academy" onClick={(e) => handleScrollTo(e, '#academy')} className="hover:text-white transition-colors cursor-pointer">Launch Academy</a></li>
+              <li><a href="#faq" onClick={(e) => handleScrollTo(e, '#faq')} className="hover:text-white transition-colors cursor-pointer">FAQ</a></li>
             </ul>
           </div>
 

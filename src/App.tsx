@@ -768,7 +768,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         <AppLauncherBar 
           onBackToWebsite={() => {
             setViewMode('website');
-            window.location.hash = '';
+            history.pushState(null, '', window.location.pathname + window.location.search);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }} 
         />

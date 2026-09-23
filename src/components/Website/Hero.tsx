@@ -257,7 +257,15 @@ export const Hero: React.FC<HeroProps> = ({
 
             <a
               href="#phases"
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm sm:text-base px-6 py-3.5 rounded-full border border-black/10 shadow-2xs hover:border-black/20 transition-all"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById('phases');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                  history.pushState(null, '', '#phases');
+                }
+              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm sm:text-base px-6 py-3.5 rounded-full border border-black/10 shadow-2xs hover:border-black/20 transition-all cursor-pointer"
             >
               <Layers className="w-4 h-4 text-slate-500 stroke-[2.2]" />
               <span>Explore 10 Phases</span>
