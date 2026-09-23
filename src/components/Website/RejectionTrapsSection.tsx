@@ -103,8 +103,8 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-800 flex items-center space-x-2.5 text-xs font-semibold text-emerald-300 bg-emerald-950/40 p-3.5 rounded-2xl border border-emerald-800/40">
-                  <span className="shrink-0 font-bold uppercase tracking-wider text-[10px] bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-md font-google">
+                <div className="pt-4 border-t border-slate-800 flex items-start space-x-2.5 text-xs font-semibold text-emerald-300 bg-emerald-950/40 p-3.5 rounded-2xl border border-emerald-800/40">
+                  <span className="shrink-0 font-bold uppercase tracking-wider text-[10px] bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-md font-google mt-0.5">
                     Solution
                   </span>
                   <span className="text-emerald-200">{trap.guardrail}</span>

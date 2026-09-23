@@ -107,19 +107,19 @@ export const PhasesShowcase: React.FC<PhasesShowcaseProps> = ({ onLaunchApp }) =
             
             {/* Header of Active Phase */}
             <div className="flex items-start justify-between pb-6 border-b border-slate-100">
-              <div className="flex items-center space-x-4">
-                <div className={`w-14 h-14 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-md`}>
-                  {renderPhaseIcon(currentPhase.iconName, 'w-7 h-7 text-white stroke-[2.2]')}
+              <div className="flex items-start sm:items-center space-x-3.5 sm:space-x-4 min-w-0">
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-md`}>
+                  {renderPhaseIcon(currentPhase.iconName, 'w-6 h-6 sm:w-7 sm:h-7 text-white stroke-[2.2]')}
                 </div>
-                <div>
-                  <div className="flex items-center space-x-2">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center flex-wrap gap-1.5">
                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
                       {currentPhase.id === SETUP_STEPS_PHASE.id ? 'Foundational Step' : `Phase ${currentPhase.number}`}
                     </span>
-                    <span className="text-slate-300">•</span>
+                    <span className="text-slate-300 hidden sm:inline">•</span>
                     <span className="text-xs font-semibold text-slate-500">{currentPhase.items.length} Production Requirements</span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-google tracking-tight mt-1">
+                  <h3 className="text-lg sm:text-2xl font-black text-slate-900 font-google tracking-tight mt-1">
                     {currentPhase.title}
                   </h3>
                 </div>

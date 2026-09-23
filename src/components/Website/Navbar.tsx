@@ -56,6 +56,24 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
+  const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      setIsMobileMenuOpen(false);
+      const targetId = href.replace(/^#/, '');
+      if (targetId === 'overview') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.pushState(null, '', window.location.pathname + window.location.search);
+        return;
+      }
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        history.pushState(null, '', href);
+      }
+    }
+  };
+
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -70,10 +88,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Brand Logo & Monogram (Mobbin Style) */}
           <a 
             href="#overview" 
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={(e) => handleNavLinkClick(e, '#overview')}
             className="flex items-center space-x-2.5 group focus:outline-hidden shrink-0 cursor-pointer"
           >
             <div className="w-9 h-9 rounded-xl bg-slate-950 text-white shadow-xs border border-black/10 flex items-center justify-center overflow-hidden transition-transform duration-200 group-hover:scale-105">
@@ -147,7 +162,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               <a
                 key={link.label}
                 href={link.href}
-                className="text-xs font-semibold text-slate-600 hover:text-slate-950 px-2.5 py-1 rounded-full hover:bg-black/4 transition-colors"
+                onClick={(e) => handleNavLinkClick(e, link.href)}
+                className="text-xs font-semibold text-slate-600 hover:text-slate-950 px-2.5 py-1 rounded-full hover:bg-black/4 transition-colors cursor-pointer"
               >
                 {link.label}
               </a>
@@ -249,8 +265,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <a
                   key={link.label}
                   href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-sm font-semibold text-slate-700 hover:text-slate-950 py-1.5 px-2 rounded-lg hover:bg-slate-100 transition-colors"
+                  onClick={(e) => handleNavLinkClick(e, link.href)}
+                  className="block text-sm font-semibold text-slate-700 hover:text-slate-950 py-1.5 px-2 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   {link.label}
                 </a>

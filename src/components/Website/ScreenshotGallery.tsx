@@ -97,13 +97,13 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ onLaunchAp
       <div className="max-w-5xl mx-auto">
         
         {/* Navigation Controls Bar */}
-        <div className="flex items-center justify-between mb-5 px-2">
-          <div className="flex items-center space-x-3">
-            <span className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">
+        <div className="flex items-center justify-between mb-5 px-2 gap-2">
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 pr-1">
+            <span className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider shrink-0">
               {flowScreens[activeIdx].flowStep}
             </span>
-            <span className="text-slate-300">•</span>
-            <span className="text-sm sm:text-base font-bold text-slate-900 font-google">
+            <span className="text-slate-300 shrink-0">•</span>
+            <span className="text-sm sm:text-base font-bold text-slate-900 font-google truncate">
               {flowScreens[activeIdx].title}
             </span>
           </div>
