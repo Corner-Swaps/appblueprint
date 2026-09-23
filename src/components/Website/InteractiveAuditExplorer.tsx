@@ -183,6 +183,14 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
     return phase ? `Phase ${num} • ${phase.title}` : `Phase ${num}`;
   };
 
+  // Map phase ID to short title for badges and cards
+  const getPhaseShortName = (phaseId: string) => {
+    if (phaseId.toLowerCase().includes('setup') || phaseId === 'phase-0') return 'Phase 0 • Setup';
+    const num = phaseId.replace('phase-', '');
+    const phase = PHASES_DATA.find(p => p.id === phaseId);
+    return phase ? `Phase ${num} • ${phase.shortTitle || phase.title}` : `Phase ${num}`;
+  };
+
   // Render authentic Mobbin screen UI preview inside the card
   const renderScreenMockup = (item: ChecklistItem) => {
     // 1. Screenshot mappings for key flagship cards
@@ -335,7 +343,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by flow, guideline, requirement, or prompt (e.g., IPv6, Privacy Manifest, Safe Areas, Keychain)..."
+              placeholder="Search 101 rules & prompts..."
               className="w-full pl-12 pr-24 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-slate-950/15 focus:border-slate-950 transition-all shadow-inner"
             />
             <div className="absolute right-3 flex items-center space-x-2">
@@ -357,80 +365,53 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
         </div>
 
         {/* Secondary Filter Bar & View Mode Switcher (Mobbin Style) */}
-        <div className="px-4 py-3.5 sm:px-6 bg-slate-50/70 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div className="px-4 py-3 sm:px-6 bg-slate-50/70 border-b border-slate-100 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
           
-          {/* Platform Pills */}
-          <div className="flex items-center flex-wrap gap-1.5">
-            <button
-              type="button"
-              onClick={() => setActivePlatform('all')}
-              className={`apple-press inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activePlatform === 'all'
-                  ? 'bg-slate-950 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-950 border border-black/6'
-              }`}
-            >
-              <Globe className="w-3 h-3" />
-              <span>All Platforms ({allItems.length})</span>
-            </button>
+          {/* Mobile Row 1 / Desktop Left: Platform Pills + Mobile View Switcher */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => setActivePlatform('all')}
+                className={`apple-press inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  activePlatform === 'all'
+                    ? 'bg-slate-950 text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-950 border border-black/6'
+                }`}
+              >
+                <Globe className="w-3 h-3" />
+                <span>All ({allItems.length})</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActivePlatform('ios')}
-              className={`apple-press inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activePlatform === 'ios'
-                  ? 'bg-slate-950 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-950 border border-black/6'
-              }`}
-            >
-              <Apple className="w-3 h-3" />
-              <span>Apple iOS ({iosCount})</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActivePlatform('ios')}
+                className={`apple-press inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  activePlatform === 'ios'
+                    ? 'bg-slate-950 text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-950 border border-black/6'
+                }`}
+              >
+                <Apple className="w-3 h-3" />
+                <span>iOS ({iosCount})</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActivePlatform('android')}
-              className={`apple-press inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activePlatform === 'android'
-                  ? 'bg-slate-950 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:text-slate-950 border border-black/6'
-              }`}
-            >
-              <Smartphone className="w-3 h-3" />
-              <span>Google Play ({androidCount})</span>
-            </button>
-          </div>
-
-          {/* Right Controls: Category Filter + Grid/List View Toggle */}
-          <div className="flex items-center justify-between w-full md:w-auto space-x-3">
-            {/* Category Dropdown / Pills */}
-            <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5">
-              {[
-                { id: 'all', label: 'All Categories' },
-                { id: 'blockers', label: `Blockers (${blockerCount})`, isAlert: true },
-                { id: 'design', label: 'Design & HIG' },
-                { id: 'security', label: 'Security & Auth' },
-                { id: 'legal', label: 'Privacy & Legal' },
-              ].map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`apple-press px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                    activeCategory === cat.id
-                      ? 'bg-slate-200/90 text-slate-950 font-bold'
-                      : cat.isAlert
-                      ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/60'
-                      : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+              <button
+                type="button"
+                onClick={() => setActivePlatform('android')}
+                className={`apple-press inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  activePlatform === 'android'
+                    ? 'bg-slate-950 text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-slate-950 border border-black/6'
+                }`}
+              >
+                <Smartphone className="w-3 h-3" />
+                <span>Android ({androidCount})</span>
+              </button>
             </div>
 
-            {/* Grid vs List View Switcher (Mobbin signature!) */}
-            <div className="flex items-center p-0.5 bg-white rounded-xl border border-black/8 shadow-2xs shrink-0">
+            {/* Mobile View Switcher */}
+            <div className="flex items-center p-0.5 bg-white rounded-xl border border-black/8 shadow-2xs shrink-0 lg:hidden">
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
@@ -454,7 +435,60 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
                 <List className="w-4 h-4" />
               </button>
             </div>
+          </div>
 
+          {/* Category Filter Pills (Full horizontal scroll on mobile, inline on desktop) */}
+          <div className="flex items-center justify-between space-x-3 w-full lg:w-auto">
+            <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-0.5 w-full">
+              {[
+                { id: 'all', label: 'All Categories' },
+                { id: 'blockers', label: `Blockers (${blockerCount})`, isAlert: true },
+                { id: 'design', label: 'Design & HIG' },
+                { id: 'security', label: 'Security & Auth' },
+                { id: 'legal', label: 'Privacy & Legal' },
+              ].map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`apple-press px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
+                    activeCategory === cat.id
+                      ? 'bg-slate-200/90 text-slate-950 font-bold'
+                      : cat.isAlert
+                      ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/60'
+                      : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop Grid vs List View Switcher */}
+            <div className="hidden lg:flex items-center p-0.5 bg-white rounded-xl border border-black/8 shadow-2xs shrink-0">
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`apple-press p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  viewMode === 'grid' ? 'bg-slate-950 text-white shadow-2xs' : 'text-slate-500 hover:text-slate-950'
+                }`}
+                title="Mobbin Grid View"
+                aria-label="Grid View"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={`apple-press p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  viewMode === 'list' ? 'bg-slate-950 text-white shadow-2xs' : 'text-slate-500 hover:text-slate-950'
+                }`}
+                title="Compact List View"
+                aria-label="List View"
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
         </div>
@@ -494,7 +528,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
                     </div>
                     <div className="min-w-0">
                       <div className="text-xs font-bold text-slate-900 truncate font-google">
-                        {getPhaseName(item.phaseId)}
+                        {getPhaseShortName(item.phaseId)}
                       </div>
                       <div className="text-[10px] text-slate-400 truncate capitalize">
                         {item.category} • {item.platform}
@@ -645,7 +679,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
                           </span>
                         )}
                         <span className="text-[11px] font-medium text-slate-400 capitalize">
-                          {getPhaseName(item.phaseId)}
+                          {getPhaseShortName(item.phaseId)}
                         </span>
                       </div>
 
@@ -796,55 +830,59 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
       {/* ========================================================================= */}
       {inspectingItem && (
         <div 
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 lg:p-8"
+          className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 lg:p-8"
           onClick={() => setInspectingItem(null)}
         >
           <div 
-            className="bg-white rounded-3xl max-w-5xl w-full max-h-[92vh] flex flex-col md:flex-row overflow-hidden shadow-2xl border border-white/20 relative"
+            className="bg-white rounded-3xl max-w-5xl w-full max-h-[92vh] flex flex-col md:flex-row overflow-y-auto md:overflow-hidden shadow-2xl border border-white/20 relative"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Top Close & Navigation Bar */}
-            <div className="absolute top-4 right-4 z-20 flex items-center space-x-2">
-              <div className="hidden sm:flex items-center space-x-1 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full text-white text-xs">
+            {/* Mobile Top Header (Sticky across scroll) */}
+            <div className="sticky top-0 z-30 flex md:hidden items-center justify-between px-4 py-2.5 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 shrink-0">
+              <div className="flex items-center space-x-1 bg-white/10 px-2.5 py-1 rounded-full text-white text-xs">
                 <button
                   type="button"
                   onClick={handlePrevModal}
-                  className="apple-press p-1 hover:text-blue-300"
+                  className="apple-press p-1 hover:text-blue-300 cursor-pointer"
                   title="Previous (Left Arrow)"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
-                <span className="text-[11px] font-mono px-1">
+                <span className="text-[11px] font-mono font-bold px-1 text-slate-200">
                   {filteredItems.findIndex(i => i.id === inspectingItem.id) + 1} / {filteredItems.length}
                 </span>
                 <button
                   type="button"
                   onClick={handleNextModal}
-                  className="apple-press p-1 hover:text-blue-300"
+                  className="apple-press p-1 hover:text-blue-300 cursor-pointer"
                   title="Next (Right Arrow)"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
+              </div>
+
+              <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+                {inspectingItem.platform.toUpperCase()} VIEW
               </div>
 
               <button
                 type="button"
                 onClick={() => setInspectingItem(null)}
-                className="apple-press w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center shadow-xs cursor-pointer"
+                className="apple-press w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer"
                 title="Close (Esc)"
               >
-                <X className="w-5 h-5 stroke-[2.2]" />
+                <X className="w-4 h-4 stroke-[2.2]" />
               </button>
             </div>
 
             {/* LEFT COLUMN: Hardware Screen Frame (Mobbin Style) */}
-            <div className="w-full md:w-5/12 bg-slate-950 p-6 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-800">
-              <div className="text-[11px] font-mono text-slate-400 mb-3 uppercase tracking-wider">
+            <div className="w-full md:w-5/12 bg-slate-950 p-4 sm:p-6 md:p-8 shrink-0 flex flex-col items-center justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-800">
+              <div className="hidden md:block text-[11px] font-mono text-slate-400 mb-3 uppercase tracking-wider">
                 {inspectingItem.platform.toUpperCase()} DEVICE VIEW
               </div>
 
               {/* Mobile Phone Mockup */}
-              <div className="w-full max-w-[260px] aspect-[9/18] rounded-3xl bg-slate-900 border-4 border-slate-800 shadow-2xl overflow-hidden relative flex flex-col">
+              <div className="w-full max-w-[210px] md:max-w-[260px] aspect-[9/17] md:aspect-[9/18] rounded-3xl bg-slate-900 border-4 border-slate-800 shadow-2xl overflow-hidden relative flex flex-col">
                 {renderScreenMockup(inspectingItem)}
               </div>
 
@@ -854,31 +892,67 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
             </div>
 
             {/* RIGHT COLUMN: Full Specification Sheet & AI Prompt */}
-            <div className="w-full md:w-7/12 p-6 sm:p-8 overflow-y-auto flex flex-col justify-between space-y-5 bg-white">
+            <div className="w-full md:w-7/12 p-6 sm:p-8 overflow-y-visible md:overflow-y-auto flex flex-col justify-between space-y-5 bg-white">
               <div className="space-y-4">
                 
-                {/* Badges Bar */}
-                <div className="flex items-center flex-wrap gap-2">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 border border-slate-200">
-                    {getPhaseName(inspectingItem.phaseId)}
-                  </span>
-                  {inspectingItem.priority === 'blocker' && (
-                    <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center space-x-1">
-                      <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
-                      <span>Store Blocker</span>
+                {/* Header Row: Badges on left, Desktop Stepper + Close on right (Normal Flex Flow) */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center flex-wrap gap-2">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 border border-slate-200">
+                      {getPhaseShortName(inspectingItem.phaseId)}
                     </span>
-                  )}
-                  {inspectingItem.storeGuideline && (
-                    <a
-                      href={inspectingItem.storeGuideline.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center space-x-1 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200/60"
+                    {inspectingItem.priority === 'blocker' && (
+                      <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center space-x-1">
+                        <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
+                        <span>Store Blocker</span>
+                      </span>
+                    )}
+                    {inspectingItem.storeGuideline && (
+                      <a
+                        href={inspectingItem.storeGuideline.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center space-x-1 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200/60"
+                      >
+                        <span>{inspectingItem.storeGuideline.name}</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Desktop Navigation & Close Controls */}
+                  <div className="hidden md:flex items-center space-x-2 shrink-0">
+                    <div className="flex items-center space-x-1 bg-slate-100 px-2 py-1 rounded-full text-slate-800 text-xs">
+                      <button
+                        type="button"
+                        onClick={handlePrevModal}
+                        className="apple-press p-1 hover:text-blue-600 cursor-pointer"
+                        title="Previous (Left Arrow)"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-[11px] font-mono font-bold px-1 text-slate-700">
+                        {filteredItems.findIndex(i => i.id === inspectingItem.id) + 1} / {filteredItems.length}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleNextModal}
+                        className="apple-press p-1 hover:text-blue-600 cursor-pointer"
+                        title="Next (Right Arrow)"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setInspectingItem(null)}
+                      className="apple-press w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center cursor-pointer shadow-2xs"
+                      title="Close (Esc)"
                     >
-                      <span>{inspectingItem.storeGuideline.name}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
+                      <X className="w-4 h-4 stroke-[2.2]" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Title & Description */}

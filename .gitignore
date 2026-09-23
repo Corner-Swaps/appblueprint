@@ -32,3 +32,6 @@ yarn-debug.log*
 .env
 .env.*
 !.env.example
+
+# Temporary Audits
+screenshots/audit/

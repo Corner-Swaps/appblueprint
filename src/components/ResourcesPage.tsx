@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   RESOURCES_DATA, 
   ResourceCategory, 
@@ -263,9 +263,34 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     }
   };
 
+  const isCollapsingCategoryRef = useRef(false);
+
   const handleToggleSection = (secId: string) => {
+    if (isCollapsingCategoryRef.current) return;
+
     setExpandedSectionId(prev => {
       if (prev === secId) {
+        // Minimizing / Collapsing this category
+        const targetEl = document.getElementById(secId);
+        if (targetEl) {
+          const rect = targetEl.getBoundingClientRect();
+          const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+          const targetY = Math.max(0, currentScroll + rect.top - 72);
+          const isScrolledPast = rect.top < 60;
+
+          if (isScrolledPast) {
+            isCollapsingCategoryRef.current = true;
+            window.scrollTo({ top: targetY, behavior: 'smooth' });
+            setTimeout(() => {
+              setExpandedItemId(null);
+              setExpandedSectionId(null);
+              setTimeout(() => {
+                isCollapsingCategoryRef.current = false;
+              }, 450);
+            }, 200);
+            return prev;
+          }
+        }
         setExpandedItemId(null);
         return null;
       }
@@ -905,14 +930,14 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 5: Quick Start & Integration Pill */}
+                                {/* Subsection 5: How to Connect with AI Pill */}
                                 {item.quickStart && (
                                   <div 
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                        Quick Start &amp; Integration
+                                        How to Connect with AI
                                       </span>
                                     </div>
                                     <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
@@ -921,14 +946,14 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
 
-                                {/* Subsection 6: Common Pitfalls & Review Traps Pill */}
+                                {/* Subsection 6: How to Stay on Track & Avoid Traps Pill */}
                                 {item.reviewTraps && (
                                   <div 
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                        Common Pitfalls &amp; Review Traps
+                                        How to Stay on Track &amp; Avoid Traps
                                       </span>
                                     </div>
                                     <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
@@ -945,7 +970,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     <div className="flex items-center justify-between select-none">
                                       <div className="flex items-center space-x-1.5 select-none">
                                         <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                          {item.promptLabel || 'Install & Setup Command'}
+                                          {item.promptLabel || 'AI Agent Prompt to Connect It'}
                                         </span>
                                       </div>
                                       <button
