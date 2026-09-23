@@ -40,29 +40,8 @@ const renderChecklistItemIcon = (item: ChecklistItem) => {
   const id = item.id.toLowerCase();
   const title = item.title.toLowerCase();
 
-  // 1. Apple specific
-  if (id.includes('apple') || title.includes('apple') || id.includes('keychain') || id.includes('testflight') || id.includes('human interface')) {
-    return (
-      <svg className="w-5 h-5 text-[#1D1D1F]" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.36c.64-.78 1.08-1.86.96-2.95-1 .04-2.14.65-2.8 1.44-.59.68-1.11 1.77-.97 2.83 1.11.09 2.18-.54 2.81-1.32z"/>
-      </svg>
-    );
-  }
-
-  // 2. Google / Android specific
-  if (id.includes('android') || title.includes('android') || id.includes('google') || title.includes('google') || id.includes('play')) {
-    return (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-        <path d="M3.6 1.8C3.3 2.1 3.2 2.6 3.2 3.2V20.8C3.2 21.4 3.4 21.9 3.6 22.2L13.8 12L3.6 1.8Z" fill="#0086F8"/>
-        <path d="M17.2 8.6L13.8 12L17.2 15.4L21.4 13C22.2 12.5 22.2 11.5 21.4 11L17.2 8.6Z" fill="#FFC400"/>
-        <path d="M3.6 22.2C4.1 22.7 4.9 22.8 5.7 22.3L17.2 15.4L13.8 12L3.6 22.2Z" fill="#FF3A44"/>
-        <path d="M3.6 1.8L13.8 12L17.2 8.6L5.7 1.7C4.9 1.2 4.1 1.3 3.6 1.8Z" fill="#00F076"/>
-      </svg>
-    );
-  }
-
-  // 3. Security & Auth
-  if (item.category === 'security' || id.includes('security') || title.includes('security') || title.includes('auth') || title.includes('password') || title.includes('token') || title.includes('crypto')) {
+  // 1. Security & Auth
+  if (item.category === 'security' || id.includes('security') || id.includes('keychain') || title.includes('security') || title.includes('auth') || title.includes('password') || title.includes('token') || title.includes('crypto')) {
     return <Shield className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
   }
 
@@ -420,7 +399,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     </span>
                   </div>
 
-                  <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
+                  <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
                     {phase.title}
                   </h2>
                 </div>
@@ -484,19 +463,21 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               {phase.description}
             </p>
 
-            {/* Section Progress Bar: ALWAYS visible underneath the subtext! */}
-            <div className="space-y-1 pt-1 select-none">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
-                <span>Section Completion</span>
-                <span>{percent}%</span>
+            {/* Section Progress Bar: Only for steps 1-12, matching Academy on Setup pill */}
+            {!isSetupPhase && (
+              <div className="space-y-1 pt-1 select-none">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+                  <span>Section Completion</span>
+                  <span>{percent}%</span>
+                </div>
+                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
+                  <div 
+                    className={`h-full ${theme.progressBg} rounded-full transition-all duration-500 ease-out`}
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
-                <div 
-                  className={`h-full ${theme.progressBg} rounded-full transition-all duration-500 ease-out`}
-                  style={{ width: `${percent}%` }}
-                />
-              </div>
-            </div>
+            )}
 
             {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), translucent gray circle when pointing UP (open/expanded) */}
             <div className="flex justify-center pt-0.5 pb-0 select-none">
@@ -506,11 +487,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   e.stopPropagation();
                   handleToggleExpand();
                 }}
-                className={`apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 ${
-                  isExpanded 
-                    ? 'rounded-full bg-slate-100/90 text-slate-700 shadow-2xs' 
-                    : 'text-slate-400 hover:text-slate-700'
-                }`}
+                className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 text-slate-400 hover:text-slate-700"
                 aria-label={isExpanded ? "Collapse requirements" : "Expand requirements"}
                 title={isExpanded ? "Collapse requirements" : "Expand requirements"}
               >
@@ -531,7 +508,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     {!isGlobalEditMode && (
       <div className={`apple-drawer-collapse ${isExpanded ? 'expanded' : ''}`}>
             <div className="apple-drawer-content">
-              <div className="space-y-3 pt-1">
+              <div className="space-y-3 pt-3">
             {items.length === 0 && (
               <div className="py-6 px-4 text-center rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 select-none">
                 <p className="text-xs font-bold text-slate-700 font-google">No requirements added yet</p>
@@ -573,14 +550,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           {renderChecklistItemIcon(item)}
                         </div>
 
-                        {/* Title & Badge matching Academy typography */}
-                        <div className="space-y-1 select-none flex-1 min-w-0">
-                          {(item.platform === 'ios' || item.platform === 'android') && (
-                            <div className="flex items-center gap-1.5 flex-wrap select-none mb-0.5">
-                              <PlatformBadge platform={item.platform} />
-                            </div>
-                          )}
-
+                        {/* Title matching Academy typography */}
+                        <div className="select-none flex-1 min-w-0">
                           <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none font-google break-words ${
                             isDone ? 'text-slate-500' : 'text-slate-900'
                           }`}>
@@ -685,7 +656,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         {/* Subsection 1: Architecture & Review Impact Pill */}
                         {item.whyItMatters && (
                           <div 
-                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2.5 shadow-2xs cursor-pointer transition-colors"
                           >
                             <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -695,6 +666,26 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm">
                               {item.whyItMatters}
                             </p>
+
+                            {/* Store Platform Scope Pill */}
+                            <div className="pt-0.5 select-none flex items-center">
+                              <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white border border-slate-200/90 text-slate-700 shadow-2xs">
+                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                  item.platform === 'ios'
+                                    ? 'bg-slate-900'
+                                    : item.platform === 'android'
+                                      ? 'bg-emerald-500'
+                                      : 'bg-blue-600'
+                                }`} />
+                                <span>
+                                  {item.platform === 'ios'
+                                    ? 'Apple App Store Exclusive'
+                                    : item.platform === 'android'
+                                      ? 'Google Play Store Exclusive'
+                                      : 'Both Apple App Store & Google Play'}
+                                </span>
+                              </span>
+                            </div>
                           </div>
                         )}
 

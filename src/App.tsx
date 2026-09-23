@@ -802,17 +802,17 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
           {/* 1. Checklist Tab */}
           <div className={displayedTab === 'checklist' ? 'space-y-3.5 pb-4' : 'hidden'}>
               {/* Project Header at the Top: Centered, tapping opens Projects Page */}
-              <div className="pt-2 pb-1 flex flex-col items-center justify-center w-full">
+              <div className="pt-2.5 pb-3 flex items-center justify-center w-full">
                 <button
                   type="button"
                   onClick={() => {
                     handleSelectTab('projects');
                   }}
-                  className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-0.5 rounded-2xl hover:bg-black/5 group max-w-full"
+                  className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-1 rounded-2xl hover:bg-black/5 group max-w-full min-h-[42px]"
                   title="Switch or manage projects"
                 >
                   <h1 
-                    className="text-[25px] sm:text-[26px] font-medium tracking-normal text-center select-none text-black font-google truncate"
+                    className="text-[28px] sm:text-[29px] font-medium tracking-normal text-center select-none text-black font-google leading-tight truncate"
                   >
                     {activeProject.name}
                   </h1>
