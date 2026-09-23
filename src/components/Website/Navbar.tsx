@@ -37,13 +37,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [isMobileMenuOpen]);
 
   const navLinks = [
-    { label: 'Screens & Rules', href: '#explorer' },
-    { label: '10 Phases', href: '#phases' },
-    { label: 'Pass Calculator', href: '#calculator' },
-    { label: 'Why Apps Fail', href: '#why-apps-fail' },
-    { label: 'App Flows', href: '#screenshots' },
-    { label: 'Academy', href: '#academy' },
-    { label: 'FAQ', href: '#faq' },
+    { label: 'Screens & Rules', shortLabel: 'Rules', href: '#explorer' },
+    { label: '10 Phases', shortLabel: 'Phases', href: '#phases' },
+    { label: 'Pass Calculator', shortLabel: 'Calculator', href: '#calculator' },
+    { label: 'Why Apps Fail', shortLabel: 'Traps', href: '#why-apps-fail' },
+    { label: 'App Flows', shortLabel: 'Flows', href: '#screenshots' },
+    { label: 'Academy', shortLabel: 'Academy', href: '#academy' },
+    { label: 'FAQ', shortLabel: 'FAQ', href: '#faq' },
   ];
 
   const handlePlatformClick = (platform: 'all' | 'ios' | 'android') => {
@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
           
           {/* Brand Logo & Monogram (Mobbin Style) */}
           <a 
@@ -121,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   2026
                 </span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium hidden md:block">
+              <span className="text-[10px] text-slate-500 font-medium hidden 2xl:block">
                 Mobile Production &amp; Design System
               </span>
             </div>
@@ -132,7 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => handlePlatformClick('all')}
-              className={`apple-press inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              className={`apple-press inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activePlatform === 'all'
                   ? 'bg-slate-950 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-black/4'
@@ -144,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => handlePlatformClick('ios')}
-              className={`apple-press inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              className={`apple-press inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activePlatform === 'ios'
                   ? 'bg-slate-950 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-black/4'
@@ -156,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => handlePlatformClick('android')}
-              className={`apple-press inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              className={`apple-press inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activePlatform === 'android'
                   ? 'bg-slate-950 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-black/4'
@@ -168,30 +168,31 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center space-x-1 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-black/6 shadow-2xs shrink-0">
+          <nav className="hidden xl:flex items-center space-x-0.5 bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-black/6 shadow-2xs shrink-0">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={(e) => handleNavLinkClick(e, link.href)}
-                className="text-xs font-semibold text-slate-600 hover:text-slate-950 px-2.5 py-1 rounded-full hover:bg-black/4 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-950 px-2 py-1 rounded-full hover:bg-black/4 transition-colors cursor-pointer"
               >
-                {link.label}
+                <span className="hidden 2xl:inline">{link.label}</span>
+                <span className="2xl:hidden">{link.shortLabel}</span>
               </a>
             ))}
           </nav>
 
           {/* Header Action CTAs (Search Trigger + Launch App Pill) */}
-          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+          <div className="flex items-center space-x-2 shrink-0">
             {/* Quick Search Shortcut Trigger (Mobbin Style) */}
             <button
               type="button"
               onClick={handleSearchTrigger}
-              className="apple-press hidden sm:inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-slate-600 hover:text-slate-900 border border-black/8 shadow-2xs text-xs font-medium transition-all cursor-pointer shrink-0"
+              className="apple-press hidden sm:inline-flex items-center space-x-1.5 px-2.5 py-1.5 rounded-full bg-white/90 hover:bg-white text-slate-600 hover:text-slate-900 border border-black/8 shadow-2xs text-xs font-medium transition-all cursor-pointer shrink-0"
               title="Search rules and screens"
             >
               <Search className="w-3.5 h-3.5 text-slate-400 stroke-[2.2]" />
-              <span className="text-slate-500 hidden md:inline">Search rules...</span>
+              <span className="text-slate-500 hidden 2xl:inline">Search rules...</span>
               <kbd className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-slate-100 border border-slate-200 rounded">
                 ⌘K
               </kbd>
@@ -199,7 +200,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <a
               href="support.html"
-              className="hidden lg:inline-flex text-xs font-semibold text-slate-600 hover:text-slate-950 px-2.5 py-1.5 transition-colors shrink-0"
+              className="hidden lg:inline-flex text-xs font-semibold text-slate-600 hover:text-slate-950 px-2 py-1.5 transition-colors shrink-0"
             >
               Support
             </a>

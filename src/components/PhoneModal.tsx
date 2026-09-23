@@ -74,9 +74,12 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({ isOpen, onClose, localIp
         <div className="p-6 border-b border-apple-gray-200 dark:border-apple-gray-800 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img
-              src="/logo.png"
+              src="./logo.png"
               alt="App Blueprint Logo"
               className="w-10 h-10 rounded-xl shadow-xs object-cover border border-slate-200/60"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = './favicon.png';
+              }}
             />
             <div>
               <h2 className="text-lg font-bold text-apple-gray-900 dark:text-white">
