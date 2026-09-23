@@ -146,8 +146,8 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
-  // Splash Loading Screen: Shown on initial application load (local web and mobile)
-  const [showSplash, setShowSplash] = useState(true);
+  // Splash Loading Screen: Only shown on initial cold start on native mobile platforms
+  const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
 
   // Legal Consent State
   const [showLegalModal, setShowLegalModal] = useState<boolean>(() => {
@@ -748,18 +748,14 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
   // On web, if viewMode is 'website', render the product marketing website
   if (viewMode === 'website' && !Capacitor.isNativePlatform()) {
     return (
-      <>
-        {showSplash && (
-          <SplashScreen onComplete={() => setShowSplash(false)} />
-        )}
-        <Website 
-          onLaunchApp={() => {
-            setViewMode('app');
-            window.location.hash = '#app';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }} 
-        />
-      </>
+      <Website 
+        onLaunchApp={() => {
+          setViewMode('app');
+          setShowSplash(false);
+          window.location.hash = '#app';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} 
+      />
     );
   }
 
@@ -777,8 +773,8 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         />
       )}
 
-      {/* Launch Loading Animation Overlay */}
-      {showSplash && (
+      {/* Launch Loading Animation Overlay for Native Mobile */}
+      {showSplash && Capacitor.isNativePlatform() && (
         <SplashScreen onComplete={() => setShowSplash(false)} />
       )}
 
