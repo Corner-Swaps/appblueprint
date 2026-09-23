@@ -86,6 +86,18 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const [newItemDesc, setNewItemDesc] = useState('');
   const isSetupPhase = phase.number === 0 || phase.id === 'phase-setup';
 
+  // Blue pulse highlight around section pill when minimized
+  const [isJustMinimized, setIsJustMinimized] = useState(false);
+  const pulseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerPillPulse = () => {
+    if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current);
+    setIsJustMinimized(true);
+    pulseTimeoutRef.current = setTimeout(() => {
+      setIsJustMinimized(false);
+    }, 1200);
+  };
+
   // Section reference for smooth scroll to top when collapsing
   const sectionRef = React.useRef<HTMLDivElement>(null);
   const isCollapsingRef = React.useRef(false);
@@ -97,6 +109,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     if (!targetEl) {
       setIsExpanded(false);
       setExpandedItemId(null);
+      triggerPillPulse();
       return;
     }
 
@@ -115,8 +128,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         setIsExpanded(false);
         setExpandedItemId(null);
         setTimeout(() => {
+          triggerPillPulse();
           isCollapsingRef.current = false;
-        }, 280);
+        }, 320);
         return;
       }
 
@@ -130,17 +144,18 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         }
       };
 
-      // Start folding early into scroll motion (60ms) so drawer folds seamlessly as it centers
-      const foldTimer = setTimeout(triggerFold, 60);
+      // Start folding early into scroll motion (80ms) so drawer folds seamlessly as it centers
+      const foldTimer = setTimeout(triggerFold, 80);
 
       fluidScrollTo(centeredY, {
-        duration: Math.min(260, Math.max(160, diff * 0.16)),
+        duration: Math.min(340, Math.max(220, diff * 0.20)),
         onComplete: () => {
           clearTimeout(foldTimer);
           triggerFold();
           setTimeout(() => {
+            triggerPillPulse();
             isCollapsingRef.current = false;
-          }, 150);
+          }, 160);
         },
       });
       return;
@@ -160,21 +175,25 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
           setExpandedItemId(null);
         }
       };
-      const foldTimer = setTimeout(triggerFold, 60);
+      const foldTimer = setTimeout(triggerFold, 80);
 
       fluidScrollTo(targetY, {
-        duration: Math.min(260, Math.max(160, Math.abs(currentScroll - targetY) * 0.16)),
+        duration: Math.min(340, Math.max(220, Math.abs(currentScroll - targetY) * 0.20)),
         onComplete: () => {
           clearTimeout(foldTimer);
           triggerFold();
           setTimeout(() => {
+            triggerPillPulse();
             isCollapsingRef.current = false;
-          }, 150);
+          }, 160);
         },
       });
     } else {
       setIsExpanded(false);
       setExpandedItemId(null);
+      setTimeout(() => {
+        triggerPillPulse();
+      }, 320);
     }
   };
 
