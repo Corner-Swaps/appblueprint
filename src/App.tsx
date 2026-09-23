@@ -1031,6 +1031,10 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                   color: color,
                   createdAt: new Date().toISOString(),
                   completedItemIds: [],
+                  deletedPhaseIds: [],
+                  phaseOrder: undefined,
+                  customPhases: [],
+                  customItems: {},
                 };
                 setProjects(prev => [...prev, newProj]);
                 setActiveProjectId(newProj.id);
