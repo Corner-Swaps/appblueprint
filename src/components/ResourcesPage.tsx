@@ -914,10 +914,11 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
                                 {/* Title & Badges matching Main Application */}
                                 <div className="space-y-1 select-none flex-1 min-w-0">
-                                  <div className="flex items-center gap-1.5 flex-wrap select-none mb-0.5">
-                                    <PlatformBadge platform={item.platform || (isApple ? 'ios' : isGooglePlay ? 'android' : 'both')} />
-                                    {renderTierBadge(item.badge)}
-                                  </div>
+                                  {(item.platform === 'ios' || item.platform === 'android') && (
+                                    <div className="flex items-center gap-1.5 flex-wrap select-none mb-0.5">
+                                      <PlatformBadge platform={item.platform} />
+                                    </div>
+                                  )}
 
                                   <h3 
                                     className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none truncate ${
@@ -980,8 +981,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     onClick={(e) => e.stopPropagation()}
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
                                   >
-                                    <div className="flex items-center space-x-1.5 select-none">
-                                      <HelpCircle className="w-3.5 h-3.5 text-indigo-600 stroke-[2.2] shrink-0" />
+                                    <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                         Why It Matters
                                       </span>
@@ -998,8 +998,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     onClick={(e) => e.stopPropagation()}
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
                                   >
-                                    <div className="flex items-center space-x-1.5 select-none">
-                                      <Sparkles className="w-3.5 h-3.5 text-blue-600 stroke-[2.2] shrink-0" />
+                                    <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                         Key Highlights
                                       </span>
@@ -1025,8 +1024,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     onClick={(e) => e.stopPropagation()}
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
                                   >
-                                    <div className="flex items-center space-x-1.5 select-none">
-                                      <Target className="w-3.5 h-3.5 text-purple-600 stroke-[2.2] shrink-0" />
+                                    <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                         Best Used For
                                       </span>
@@ -1043,8 +1041,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     onClick={(e) => e.stopPropagation()}
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
                                   >
-                                    <div className="flex items-center space-x-1.5 select-none">
-                                      <CreditCard className="w-3.5 h-3.5 text-emerald-600 stroke-[2.2] shrink-0" />
+                                    <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                         Free Access &amp; Licensing
                                       </span>
@@ -1061,8 +1058,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     onClick={(e) => e.stopPropagation()}
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
                                   >
-                                    <div className="flex items-center space-x-1.5 select-none">
-                                      <Terminal className="w-3.5 h-3.5 text-amber-600 stroke-[2.2] shrink-0" />
+                                    <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                         Quick Start &amp; Integration
                                       </span>
@@ -1079,8 +1075,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     onClick={(e) => e.stopPropagation()}
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
                                   >
-                                    <div className="flex items-center space-x-1.5 select-none">
-                                      <AlertTriangle className="w-3.5 h-3.5 text-rose-600 stroke-[2.2] shrink-0" />
+                                    <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                         Common Pitfalls &amp; Review Traps
                                       </span>
@@ -1099,7 +1094,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   >
                                     <div className="flex items-center justify-between select-none">
                                       <div className="flex items-center space-x-1.5 select-none">
-                                        <Terminal className="w-3.5 h-3.5 text-slate-700 stroke-[2.2] shrink-0" />
                                         <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                           {item.promptLabel || 'Install & Setup Command'}
                                         </span>
@@ -1127,9 +1121,9 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                       </button>
                                     </div>
                                     <div 
-                                      className="p-3 rounded-xl bg-white border border-slate-200/70 select-text cursor-text"
+                                      className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text cursor-text"
                                     >
-                                      <p className="text-slate-800 font-mono text-[12px] leading-relaxed whitespace-pre-line">
+                                      <p className="text-slate-800 text-[13px] sm:text-[13.5px] leading-relaxed whitespace-pre-line font-sans">
                                         {item.promptOrCommand}
                                       </p>
                                     </div>
