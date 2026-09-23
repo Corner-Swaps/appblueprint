@@ -157,7 +157,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'ai_models',
     title: 'Frontier AI Models & Coding Agents',
     badge: 'AI Models',
-    description: 'AI coding models can read your project files and write code for you directly in your terminal. They help build screens, fix tricky bugs, and connect phone features in minutes instead of weeks. Choose from Google Antigravity, Claude Code, Cursor, and Windsurf depending on your workflow.',
+    description: 'AI coding models can inspect your codebase and write code directly in your terminal. They generate screens, fix bugs, and connect device APIs in minutes. Choose from Google Antigravity, Claude Code, Cursor, and Windsurf.',
     iconBg: 'bg-purple-600',
     icon: <Brain className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -761,50 +761,70 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
             >
               {/* Section Header Card (The original pill) */}
               <div 
-                className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 ${
-                  !isSectionOpen ? 'flex flex-col justify-between min-h-[168px]' : ''
-                }`}
+                className="rounded-3xl border border-slate-200/90 bg-white shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5"
               >
                 {/* Section Header Block: clicking text minimizes/toggles section */}
                 <div 
                   onClick={() => handleToggleSection(sec.id)}
-                  className={`select-none cursor-pointer ${isSectionOpen ? 'space-y-2.5' : 'flex-1 flex flex-col justify-between'}`}
+                  className="space-y-2.5 select-none cursor-pointer"
                 >
-                  <div className="space-y-2 select-none">
-                    <div className="w-full flex items-center justify-between select-none">
-                      <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
-                        {/* Squircle Icon on the LEFT */}
-                        <div className={`w-12 h-12 rounded-2xl ${sec.iconBg} flex items-center justify-center shrink-0 shadow-xs relative text-white`}>
-                          {sec.icon}
+                  <div className="w-full flex items-center justify-between select-none">
+                    <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
+                      {/* Squircle Icon on the LEFT */}
+                      <div className={`w-12 h-12 rounded-2xl ${sec.iconBg} flex items-center justify-center shrink-0 shadow-xs relative text-white`}>
+                        {sec.icon}
+                      </div>
+
+                      {/* Title & Category Badge */}
+                      <div className="space-y-1 select-none flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
+                          <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${sec.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
+                            {sec.badge}
+                          </span>
+                          <span className="text-xs text-slate-400 select-none">•</span>
+                          <span className="text-xs font-bold text-slate-700 select-none">
+                            {secItems.length} Curated Tools
+                          </span>
                         </div>
 
-                        {/* Clean Title First: Prominent and bold with no subtext above */}
-                        <div className="select-none flex-1 min-w-0">
-                          <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
-                            {sec.title}
-                          </h2>
-                        </div>
+                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
+                          {sec.title}
+                        </h2>
                       </div>
                     </div>
-
-                    {/* Section Description: ALWAYS visible underneath the title! */}
-                    <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
-                      {sec.description}
-                    </p>
                   </div>
 
-                  {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), Light gray circle when pointing UP (open/expanded) */}
-                  <div className="flex justify-center pt-2 pb-0.5 select-none">
+                  {/* Section Description: ALWAYS visible underneath the title! */}
+                  <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
+                    {sec.description}
+                  </p>
+
+                  {/* Section Completion Bar: Matches GuardrailSection */}
+                  <div className="space-y-1 pt-1 select-none">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+                      <span>Section Completion</span>
+                      <span>100%</span>
+                    </div>
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
+                      <div 
+                        className={`h-full ${sec.iconBg} rounded-full transition-all duration-500 ease-out`}
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Drop-Down Arrow: Pure icon, NO background circle */}
+                  <div className="flex justify-center pt-0.5 pb-0 select-none">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleToggleSection(sec.id);
                       }}
-                      className={`apple-press transition-all duration-200 flex items-center justify-center ${
+                      className={`apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 ${
                         isSectionOpen 
-                          ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
-                          : 'w-7 h-7 text-slate-400 hover:text-slate-600'
+                          ? 'rounded-full bg-slate-100/90 text-slate-700 shadow-2xs' 
+                          : 'text-slate-400 hover:text-slate-700'
                       }`}
                       aria-label={isSectionOpen ? "Collapse section" : "Expand section"}
                       title={isSectionOpen ? "Collapse section" : "Expand section"}
@@ -812,7 +832,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                       <ChevronDown 
                         strokeWidth={2.5}
                         className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                          isSectionOpen ? 'rotate-180 text-slate-700' : 'text-slate-400'
+                          isSectionOpen ? 'rotate-180 text-slate-800' : 'text-slate-400'
                         }`} 
                       />
                     </button>
@@ -893,11 +913,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         <div 
                           id={item.id}
                           key={item.id}
-                          className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
-                            isItemOpen 
-                              ? 'p-5 sm:p-6 space-y-3' 
-                              : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2'
-                          }`}
+                          className="rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2"
                         >
                           {/* Item Header Block: clicking text minimizes/toggles item */}
                           <div 
@@ -940,7 +956,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                               {item.shortDescription}
                             </p>
 
-                            {/* Centered arrow: NO circle when pointing DOWN (closed), Light gray circle when pointing UP (open/expanded) */}
+                            {/* Centered arrow: Pure icon, NO background circle */}
                             <div className="flex justify-center pt-0.5 pb-0 select-none">
                               <button
                                 type="button"
@@ -948,18 +964,14 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   e.stopPropagation();
                                   handleToggleItem(item.id);
                                 }}
-                                className={`apple-press transition-all duration-200 flex items-center justify-center ${
-                                  isItemOpen 
-                                    ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
-                                    : 'w-7 h-7 text-slate-400 hover:text-slate-600'
-                                }`}
+                                className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-slate-400 hover:text-slate-700 shrink-0"
                                 title={isItemOpen ? 'Close information' : 'Expand information'}
                                 aria-label={isItemOpen ? 'Close information' : 'Expand information'}
                               >
                                 <ChevronDown 
                                   strokeWidth={2.5}
                                   className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                                    isItemOpen ? 'rotate-180 text-slate-700' : 'text-slate-400'
+                                    isItemOpen ? 'rotate-180 text-slate-800' : 'text-slate-400'
                                   }`} 
                                 />
                               </button>
@@ -978,8 +990,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 {/* Subsection 1: Why It Matters Pill */}
                                 {item.whyItMatters && (
                                   <div 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -995,8 +1006,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 {/* Subsection 2: Key Highlights Pill */}
                                 {item.keyFeatures && item.keyFeatures.length > 0 && (
                                   <div 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -1021,8 +1031,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 {/* Subsection 3: Best Used For Pill */}
                                 {item.bestUsedFor && (
                                   <div 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -1038,8 +1047,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 {/* Subsection 4: Free Access & Licensing Pill */}
                                 {item.freeTierInfo && (
                                   <div 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -1055,8 +1063,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 {/* Subsection 5: Quick Start & Integration Pill */}
                                 {item.quickStart && (
                                   <div 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -1072,8 +1079,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 {/* Subsection 6: Common Pitfalls & Review Traps Pill */}
                                 {item.reviewTraps && (
                                   <div 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">
                                       <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
@@ -1089,8 +1095,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 {/* Subsection 7: Setup Command / AI Prompt Pill */}
                                 {item.promptOrCommand && (
                                   <div 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5 shadow-2xs cursor-auto"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-2.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="flex items-center justify-between select-none">
                                       <div className="flex items-center space-x-1.5 select-none">
@@ -1121,7 +1126,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                       </button>
                                     </div>
                                     <div 
-                                      className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text cursor-text"
+                                      className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text"
                                     >
                                       <p className="text-slate-800 text-[13px] sm:text-[13.5px] leading-relaxed whitespace-pre-line font-sans">
                                         {item.promptOrCommand}
@@ -1157,13 +1162,13 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                       e.stopPropagation();
                                       setExpandedItemId(null);
                                     }}
-                                    className="apple-press w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                                    className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
                                     title="Close details"
                                     aria-label="Close details"
                                   >
                                     <ChevronUp 
                                       strokeWidth={2.5}
-                                      className="w-4 h-4 stroke-[2.5] text-slate-400" 
+                                      className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" 
                                     />
                                   </button>
                                 </div>
@@ -1174,6 +1179,22 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         </div>
                       );
                     })}
+
+                    {/* Bottom Category Collapse Trigger */}
+                    <div className="pt-2 pb-1 flex flex-col items-center select-none">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleSection(sec.id);
+                        }}
+                        className="apple-press px-4 py-2 rounded-full flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 border border-slate-200/80 bg-white shadow-2xs transition-colors cursor-pointer"
+                        title={`Collapse ${sec.title}`}
+                      >
+                        <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 text-slate-500" />
+                        <span>Collapse {sec.title}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

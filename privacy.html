@@ -100,12 +100,23 @@
       margin: 24px 0;
       font-size: 14px;
     }
+    .highlight-box strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
     a {
       color: var(--primary);
       text-decoration: none;
     }
     a:hover {
       text-decoration: underline;
+    }
+    .links-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 14px;
     }
     .footer {
       margin-top: 40px;
@@ -125,57 +136,88 @@
       h1 {
         font-size: 26px;
       }
+      .links-group {
+        flex-direction: column;
+        gap: 8px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <div style="margin-bottom: 18px;">
+      <a href="index.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--primary); text-decoration: none;">&larr; Back to App Blueprint Website</a>
+    </div>
     <div class="header">
-      <div class="badge">Legal & Privacy</div>
+      <div class="badge">Privacy Policy</div>
       <h1>Privacy Policy for App Blueprint</h1>
-      <p class="effective-date">Effective Date: September 22, 2026</p>
+      <p class="effective-date">Effective Date: September 23, 2026</p>
     </div>
 
     <div class="highlight-box">
-      <strong>Zero-Data Collection Guarantee:</strong> App Blueprint was built with a strict privacy-first architecture. All your checklist progress, custom projects, generated configurations, and notes remain 100% on your local device. We do not operate remote user tracking servers, do not sell your personal data, and do not include third-party ad networks.
+      <strong>Zero-Data Collection Guarantee</strong>
+      App Blueprint was engineered with a strict, privacy-by-design local architecture. We do not collect, track, log, transmit, or monetize your personal information. All your app concepts, checklist progress, notes, and generated configuration files remain 100% on your local device. We run zero analytics servers, zero telemetry SDKs, and zero tracking cookies.
     </div>
 
     <h2>1. Information We Do Not Collect</h2>
-    <p>App Blueprint does not collect, transmit, store, or share personally identifiable information. Specifically:</p>
+    <p>App Blueprint operates strictly as a local, client-side utility. Specifically:</p>
     <ul>
-      <li><strong>No Account Required:</strong> You do not need to register, provide an email address, or create a password to use App Blueprint.</li>
-      <li><strong>No Analytics or Tracking:</strong> We do not track your in-app actions, user behavior, or unique advertising identifiers (IDFA/GAID).</li>
-      <li><strong>No Cloud Storage of App Data:</strong> All checklists, notes, project records, and generator configurations are stored exclusively on your device using local sandboxed storage.</li>
+      <li><strong>No Accounts or Logins:</strong> You are not required to provide your name, email address, password, phone number, or any personal credentials to use App Blueprint.</li>
+      <li><strong>No Analytics or Telemetry:</strong> We do not integrate third-party analytics SDKs (such as Google Analytics, Firebase, Mixpanel, or Amplitude). We do not record screens, user taps, or session data.</li>
+      <li><strong>No Advertising Identifiers:</strong> We do not read or access your Apple Identifier for Advertisers (IDFA) or Google Advertising ID (GAID).</li>
+      <li><strong>No Remote Databases:</strong> We do not operate remote servers or cloud databases that ingest your proprietary app blueprints, notes, or checklist entries.</li>
     </ul>
 
-    <h2>2. Local On-Device Data Storage</h2>
-    <p>App Blueprint stores your custom settings, created projects, and checklist verification progress locally on your device using local storage and sandboxed application cache. This data never leaves your device unless you explicitly export or share it yourself using standard operating system share sheets.</p>
-
-    <h2>3. Third-Party Services & External Links</h2>
-    <p>The application contains helpful curated external hyperlinks to official developer documentation (such as Apple Developer Guidelines, Human Interface Guidelines, and Google Play Console policies). Tapping an external link opens that web page in your default browser, subject to the privacy policy and terms of that external destination.</p>
-
-    <h2>4. Children’s Privacy (COPPA & GDPR-K Compliance)</h2>
-    <p>App Blueprint does not knowingly collect or solicit any personal data from anyone under the age of 13. Since no personal data is collected or transmitted by the app, App Blueprint complies fully with COPPA and global child privacy regulations.</p>
-
-    <h2>5. Data Retention & Deletion</h2>
-    <p>Because all data is stored exclusively on your local device:</p>
+    <h2>2. Local Storage &amp; On-Device Data</h2>
+    <p>All application state is stored strictly in your device&rsquo;s isolated sandboxed storage (using standard WebKit/browser <code>localStorage</code> APIs). This includes:</p>
     <ul>
-      <li>You can reset or delete any individual project directly inside the app using the Project Management menu.</li>
-      <li>Uninstalling the App Blueprint application immediately and permanently removes all locally stored data, checklists, and project records from your device.</li>
+      <li>Your projects list, titles, descriptions, and custom color tags;</li>
+      <li>Your checklist completion states across the 7 architecture phases;</li>
+      <li>Custom checklist tasks you create;</li>
+      <li>Local user preference toggles and legal agreement acknowledgements.</li>
+    </ul>
+    <p>This data never leaves your device unless you explicitly choose to export or share it yourself using system share dialogs.</p>
+
+    <h2>3. Configuration Generators &amp; File Exports</h2>
+    <p>App Blueprint includes client-side generators for iOS Privacy Manifests (<code>PrivacyInfo.xcprivacy</code>), entitlements, and configuration templates. All file compilation and exports take place entirely in your local browser runtime via JavaScript Blobs. No files or configuration data are uploaded to or processed by any external server.</p>
+
+    <h2>4. Third-Party Links &amp; Documentation</h2>
+    <p>The App includes curated reference links to external developer documentation, such as Apple Developer documentation, Human Interface Guidelines (HIG), and official open-source specifications. Tapping an external link opens the destination in your default web browser, subject to the privacy policy of that third-party website.</p>
+
+    <h2>5. Children&rsquo;s Privacy (COPPA &amp; GDPR-K)</h2>
+    <p>App Blueprint does not knowingly collect, request, or retain personal information from anyone, including children under the age of 13 (or under 16 in the European Union). Because the App collects zero personal data, it complies fully with the Children&rsquo;s Online Privacy Protection Act (COPPA) and European General Data Protection Regulation requirements.</p>
+
+    <h2>6. Data Retention &amp; Permanent Deletion</h2>
+    <p>Because all data resides exclusively in your device&rsquo;s local sandbox:</p>
+    <ul>
+      <li>You can delete individual projects at any time using the in-app Project Management menu.</li>
+      <li>You can wipe all data by clearing website storage / app cache in your device settings.</li>
+      <li>Uninstalling the App Blueprint application from your device permanently and irrevocably deletes all locally stored data.</li>
     </ul>
 
-    <h2>6. Changes to This Privacy Policy</h2>
-    <p>We may periodically update our Privacy Policy to reflect future features or regulatory updates. Any changes will be posted on this page with an updated effective date.</p>
+    <h2>7. Compliance with App Store Review Guidelines</h2>
+    <p>This policy complies with Apple App Store Review Guideline 5.1.1 (Data Collection and Storage) and Guideline 5.1.2 (Data Use and Sharing). App Blueprint collects zero user data and requires zero tracking permissions.</p>
 
-    <h2>7. Contact Information</h2>
-    <p>If you have any questions, feedback, or inquiries regarding this Privacy Policy or the security of App Blueprint, please contact us at:</p>
+    <h2>8. Updates to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. Any changes will be published on this page with an updated effective date.</p>
+
+    <h2>9. Contact Information</h2>
+    <p>If you have any questions or feedback regarding our privacy practices or data handling, please contact:</p>
     <p>
-      <strong>Support & Privacy Team:</strong> <a href="mailto:support@appblueprint.app">support@appblueprint.app</a><br>
-      <strong>Website:</strong> <a href="https://appblueprint.app">https://appblueprint.app</a>
+      <strong>Slava Goloubov</strong><br>
+      <strong>Email:</strong> <a href="mailto:goloubov@gmail.com">goloubov@gmail.com</a><br>
+      <strong>Website:</strong> <a href="https://corner-swaps.github.io/appblueprint/">https://corner-swaps.github.io/appblueprint/</a><br>
+      <strong>Support &amp; FAQ:</strong> <a href="support.html">App Blueprint Support</a>
     </p>
 
+    <div class="links-group">
+      <a href="index.html">&larr; Back to Website</a>
+      <a href="terms.html">Terms of Service &amp; EULA</a>
+      <a href="support.html">Customer Support &amp; FAQ</a>
+    </div>
+
     <div class="footer">
-      &copy; 2026 App Blueprint. Built in strict compliance with Apple App Store Review Guideline 5.1.1.
+      &copy; 2026 App Blueprint. Slava Goloubov. Built in strict compliance with Apple App Store Review Guidelines.
     </div>
   </div>
 </body>

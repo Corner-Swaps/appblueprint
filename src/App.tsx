@@ -23,9 +23,13 @@ import {
   SlidersHorizontal, 
   RotateCcw,
   GraduationCap,
-  LayoutGrid,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
+  Check,
+  LayoutGrid
 } from 'lucide-react';
+import { Website } from './components/Website/Website';
+import { AppLauncherBar } from './components/Website/AppLauncherBar';
 
 const TAB_KEYS: Array<'checklist' | 'projects' | 'resources'> = ['checklist', 'projects', 'resources'];
 const TAB_INDEX_MAP: Record<'checklist' | 'projects' | 'resources', number> = {
@@ -110,11 +114,56 @@ export const App: React.FC = () => {
   const [previousTab, setPreviousTab] = useState<'checklist' | 'projects' | 'resources'>('checklist');
   const [isAllPhasesPageOpen, setIsAllPhasesPageOpen] = useState(false);
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
+  const [isRoadmapExpanded, setIsRoadmapExpanded] = useState(false);
   const [collapseSignal, setCollapseSignal] = useState(0);
   const [resourcesCollapseSignal, setResourcesCollapseSignal] = useState(0);
 
-  // Splash Loading Screen
-  const [showSplash, setShowSplash] = useState(true);
+  // Close roadmap drawer when collapseSignal fires or entering global edit mode
+  useEffect(() => {
+    if (collapseSignal) {
+      setIsRoadmapExpanded(false);
+    }
+  }, [collapseSignal]);
+
+  useEffect(() => {
+    if (isGlobalEditMode) {
+      setIsRoadmapExpanded(false);
+    }
+  }, [isGlobalEditMode]);
+
+
+  // View Mode: 'website' by default on web, 'app' if native platform or URL has #app or ?mode=app
+  const [viewMode, setViewMode] = useState<'website' | 'app'>(() => {
+    if (Capacitor.isNativePlatform()) return 'app';
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'app' || params.get('app') === 'true' || window.location.hash === '#app') {
+        return 'app';
+      }
+    } catch {
+      // fallback
+    }
+    return 'website';
+  });
+
+  // Hash change synchronization so back button works smoothly
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) return;
+    const handleHash = () => {
+      if (window.location.hash === '#app') {
+        setViewMode('app');
+      } else if (!window.location.hash.startsWith('#app')) {
+        if (window.location.hash === '' || window.location.hash === '#') {
+          setViewMode('website');
+        }
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  // Splash Loading Screen: Only show on native platform
+  const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
 
   // Legal Consent State
   const [showLegalModal, setShowLegalModal] = useState<boolean>(() => {
@@ -712,9 +761,33 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     onReorder: handleReorderPhases,
   });
 
+  // On web, if viewMode is 'website', render the product marketing website
+  if (viewMode === 'website' && !Capacitor.isNativePlatform()) {
+    return (
+      <Website 
+        onLaunchApp={() => {
+          setViewMode('app');
+          window.location.hash = '#app';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} 
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FAF8F6] text-[#1E2022] flex flex-col font-sans selection:bg-slate-900 selection:text-white overflow-x-hidden">
       
+      {/* Top Banner when running Interactive Suite on Web */}
+      {!Capacitor.isNativePlatform() && (
+        <AppLauncherBar 
+          onBackToWebsite={() => {
+            setViewMode('website');
+            window.location.hash = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }} 
+        />
+      )}
+
       {/* Launch Loading Animation Overlay */}
       {showSplash && (
         <SplashScreen onComplete={() => setShowSplash(false)} />
@@ -788,44 +861,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                 </div>
               )}
 
-              {/* Steps Roadmap Section Card: Positioned right after Set Up */}
-              {selectedPhaseId === 'all' && !isGlobalEditMode && (
-                <div className="py-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setIsAllPhasesPageOpen(true)}
-                    className="apple-press w-full p-4 rounded-3xl bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all flex items-center justify-between text-left group cursor-pointer"
-                    title="View All Steps Roadmap"
-                  >
-                    <div className="flex items-center space-x-3.5 min-w-0">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-xs shrink-0">
-                        <LayoutGrid className="w-6 h-6 stroke-[2.2]" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center space-x-2">
-                          <span className="h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-700 shadow-2xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none">
-                            Steps Roadmap
-                          </span>
-                          <span className="text-xs text-slate-300">•</span>
-                          <span className="text-xs font-bold text-slate-600">
-                            {visiblePhases.length + 1} Total Steps
-                          </span>
-                        </div>
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug font-google truncate mt-0.5">
-                          Project Roadmap &amp; All Steps
-                        </h3>
-                        <p className="text-xs text-slate-500 truncate">
-                          Overview, rearrange, and track multi-phase launch milestones
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-1.5 text-xs font-bold text-indigo-600 shrink-0 ml-2">
-                      <span className="hidden sm:inline">View</span>
-                      <ChevronRight className="w-4 h-4 text-indigo-500 group-hover:translate-x-0.5 transition-transform stroke-[2.5]" />
-                    </div>
-                  </button>
-                </div>
-              )}
+
 
               {visiblePhases.map((phase, phaseIdx) => (
                 <div 
