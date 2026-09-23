@@ -575,9 +575,11 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             {item.title}
                           </h3>
 
-                          <div className="flex items-center gap-1.5 flex-wrap select-none">
-                            <PlatformBadge platform={item.platform} />
-                          </div>
+                          {(item.platform === 'ios' || item.platform === 'android') && (
+                            <div className="flex items-center gap-1.5 flex-wrap select-none">
+                              <PlatformBadge platform={item.platform} />
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -670,19 +672,21 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     </div>
                   </div>
 
-                  {/* Expanded Guidance Drawer: Unified & Contained without bulky pills */}
+                  {/* Expanded Guidance Drawer: Distinct Pill Cards matching Academy */}
                   <div className={`apple-drawer-collapse ${!isEditing && isDetailOpen ? 'expanded' : ''}`}>
                     <div className="apple-drawer-content">
                       <div 
                         onClick={() => setExpandedItemId(null)}
-                        className="space-y-4 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
+                        className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
                         title="Click anywhere to minimize"
                       >
-                        {/* Subsection 1: Architecture & Review Impact */}
+                        {/* Subsection 1: Architecture & Review Impact Pill */}
                         {item.whyItMatters && (
-                          <div className="space-y-1.5">
-                            <div className="flex items-center space-x-1.5 select-none">
-                              <HelpCircle className="w-3.5 h-3.5 text-indigo-600 stroke-[2.2] shrink-0" />
+                          <div 
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                          >
+                            <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                 Architecture &amp; Review Impact
                               </span>
@@ -693,16 +697,16 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 2: Step-by-Step Implementation */}
+                        {/* Subsection 2: Step-by-Step Implementation Pill */}
                         {item.implementationSteps && item.implementationSteps.length > 0 && (
-                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
+                          <div 
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                          >
                             <div className="flex items-center justify-between select-none">
-                              <div className="flex items-center space-x-1.5 select-none">
-                                <Sparkles className="w-3.5 h-3.5 text-blue-600 stroke-[2.2] shrink-0" />
-                                <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                  Step-by-Step Implementation
-                                </span>
-                              </div>
+                              <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                                Step-by-Step Implementation
+                              </span>
                               <button
                                 type="button"
                                 onClick={(e) => {
@@ -712,13 +716,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                                     .join('\n');
                                   handleCopyText(`steps-all-${item.id}`, allStepsText);
                                 }}
-                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
+                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors cursor-pointer"
                                 title="Copy steps to clipboard"
                               >
                                 {copiedSnippetId === `steps-all-${item.id}` ? (
                                   <>
-                                    <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
-                                    <span className="text-emerald-700 font-bold">Copied</span>
+                                    <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
+                                    <span className="text-emerald-700 font-bold">Copied!</span>
                                   </>
                                 ) : (
                                   <>
@@ -744,11 +748,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 3: What Happens Once Completed */}
+                        {/* Subsection 3: What Happens Once Completed Pill */}
                         {item.whatHappensNext && (
-                          <div className="space-y-1.5 pt-1 border-t border-slate-100/80">
-                            <div className="flex items-center space-x-1.5 select-none">
-                              <Target className="w-3.5 h-3.5 text-purple-600 stroke-[2.2] shrink-0" />
+                          <div 
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 shadow-2xs cursor-auto"
+                          >
+                            <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                 What Happens Once Completed
                               </span>
@@ -759,29 +765,29 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 4: AI Coding & Agent Directive */}
+                        {/* Subsection 4: AI Coding & Agent Directive Pill */}
                         {item.agentPrompt && (
-                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
+                          <div 
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5 shadow-2xs cursor-auto"
+                          >
                             <div className="flex items-center justify-between select-none">
-                              <div className="flex items-center space-x-1.5 select-none">
-                                <Terminal className="w-3.5 h-3.5 text-slate-700 stroke-[2.2] shrink-0" />
-                                <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
-                                  AI Coding &amp; Agent Directive
-                                </span>
-                              </div>
+                              <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
+                                AI Coding &amp; Agent Directive
+                              </span>
                               <button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleCopyText(`prompt-${item.id}`, item.agentPrompt || '');
                                 }}
-                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
+                                className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors cursor-pointer"
                                 title="Copy prompt for AI coding agent"
                               >
                                 {copiedSnippetId === `prompt-${item.id}` ? (
                                   <>
-                                    <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
-                                    <span className="text-emerald-700 font-bold">Copied</span>
+                                    <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
+                                    <span className="text-emerald-700 font-bold">Copied!</span>
                                   </>
                                 ) : (
                                   <>
@@ -794,18 +800,20 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
                             <div 
                               onClick={(e) => e.stopPropagation()}
-                              className="cursor-auto select-text pt-1"
+                              className="p-3.5 rounded-xl bg-white border border-slate-200/80 select-text cursor-text"
                             >
                               {renderFormattedPrompt(item.agentPrompt)}
                             </div>
                           </div>
                         )}
 
-                        {/* Subsection 5: Store Review Traps to Avoid */}
+                        {/* Subsection 5: Store Review Traps to Avoid Pill */}
                         {item.commonRejectionTraps && item.commonRejectionTraps.length > 0 && (
-                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
-                            <div className="flex items-center space-x-1.5 select-none">
-                              <AlertTriangle className="w-3.5 h-3.5 text-rose-600 stroke-[2.2] shrink-0" />
+                          <div 
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                          >
+                            <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                 Store Review Traps to Avoid
                               </span>
@@ -825,11 +833,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Subsection 6: Verification Questions */}
+                        {/* Subsection 6: Verification Questions Pill */}
                         {item.verificationQuestions && item.verificationQuestions.length > 0 && (
-                          <div className="space-y-2 pt-1 border-t border-slate-100/80">
-                            <div className="flex items-center space-x-1.5 select-none">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 stroke-[2.2] shrink-0" />
+                          <div 
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-2xs cursor-auto"
+                          >
+                            <div className="select-none">
                               <span className="font-bold text-slate-900 uppercase text-[11px] tracking-wider block font-google">
                                 Verification Questions
                               </span>
