@@ -967,80 +967,74 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               );
             })}
 
-            {/* Separate Action Pills: Add, Edit, Collapse */}
+            {/* Unified Action Capsule: [ Add | Edit | Close ] */}
             <div 
-              className="py-3 px-4 flex items-center justify-center gap-2 select-none flex-wrap"
+              className="py-3 px-4 flex items-center justify-center select-none"
             >
-              {onAddItem && (
+              <div className="inline-flex items-center p-1 rounded-full bg-white border border-slate-200/90 shadow-2xs space-x-1">
+                {onAddItem && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsAddingItem(prev => !prev);
+                    }}
+                    className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 cursor-pointer ${
+                      isAddingItem
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60'
+                    }`}
+                    title={isAddingItem ? 'Done adding' : 'Add requirement'}
+                  >
+                    {isAddingItem ? (
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                    ) : (
+                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                    )}
+                    <span>{isAddingItem ? 'Done' : 'Add'}</span>
+                  </button>
+                )}
+
+                <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
+
+                {/* Single "Edit" Button */}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsAddingItem(prev => !prev);
+                    setIsEditMode(prev => !prev);
                   }}
-                  className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border ${
-                    isAddingItem
-                      ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                      : 'bg-white border-slate-200/90 hover:bg-slate-50 text-slate-700 hover:text-slate-900'
+                  className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 cursor-pointer ${
+                    isEditing
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60'
                   }`}
-                  title={isAddingItem ? 'Done adding' : 'Add requirement'}
+                  title={isEditing ? 'Done Editing' : 'Edit: Rearrange or delete requirements'}
                 >
-                  {isAddingItem ? (
+                  {isEditing ? (
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   ) : (
-                    <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <Pencil className="w-3.5 h-3.5 stroke-[2.2]" />
                   )}
-                  <span>{isAddingItem ? 'Done' : 'Add'}</span>
+                  <span>{isEditing ? 'Done' : 'Edit'}</span>
                 </button>
-              )}
 
-              {/* Single "Edit" Button: Shows arrows and garbage cans together */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEditMode(prev => !prev);
-                }}
-                className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border ${
-                  isEditing
-                    ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                    : 'bg-white border-slate-200/90 hover:bg-slate-50 text-slate-700 hover:text-slate-900'
-                }`}
-                title={isEditing ? 'Done Editing' : 'Edit: Rearrange or delete requirements'}
-              >
-                {isEditing ? (
-                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                ) : (
-                  <Pencil className="w-3.5 h-3.5 stroke-[2.2]" />
-                )}
-                <span>{isEditing ? 'Done' : 'Edit'}</span>
-              </button>
+                <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
 
-              {/* Collapse Section Pill */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCollapseSection();
-                }}
-                className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border bg-white border-slate-200/90 hover:bg-slate-50 text-slate-700 hover:text-slate-900 cursor-pointer"
-                title={
-                  isSetupPhase
-                    ? 'Collapse Set Up & Environment'
-                    : typeof phase.number === 'number' && phase.number > 0
-                    ? `Collapse Step ${phase.number}`
-                    : `Collapse ${phase.title}`
-                }
-              >
-                <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 text-slate-500" />
-                <span>
-                  {isSetupPhase
-                    ? 'Collapse Set Up & Environment'
-                    : typeof phase.number === 'number' && phase.number > 0
-                    ? `Collapse Step ${phase.number}`
-                    : `Collapse ${phase.title}`}
-                </span>
-              </button>
+                {/* Close Section Button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCollapseSection();
+                  }}
+                  className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60 cursor-pointer"
+                  title="Close section"
+                >
+                  <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Close</span>
+                </button>
+              </div>
             </div>
 
           {/* Inline Add Item Form */}
