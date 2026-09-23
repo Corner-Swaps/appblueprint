@@ -4,7 +4,6 @@ import {
   ResourceCategory, 
   ResourceItem 
 } from '../data/resources';
-import { PlatformBadge } from './PlatformBadge';
 import { 
   ChevronDown, 
   ChevronUp,
@@ -82,81 +81,11 @@ interface SectionConfig {
   icon: React.ReactNode;
 }
 
-export interface TypographyPairing {
-  id: string;
-  name: string;
-  style: string;
-  badge: string;
-  headingFont: string;
-  bodyFont: string;
-  headingSample: string;
-  bodySample: string;
-  prompt: string;
-}
-
-export const TYPOGRAPHY_PAIRINGS: TypographyPairing[] = [
-  {
-    id: 'pair-modern-minimalist',
-    name: 'Modern Minimalist',
-    style: 'Satoshi + General Sans (Fontshare)',
-    badge: '100% Free / Commercial',
-    headingFont: 'Satoshi Bold (Fontshare)',
-    bodyFont: 'General Sans Regular (Fontshare)',
-    headingSample: 'Launch With Precision',
-    bodySample: 'Clean geometric proportions and balanced open counter forms crafted for fluid mobile interfaces and modern dashboards.',
-    prompt: 'Configure our app typography using Satoshi for display headings and General Sans for body text from Fontshare. Set letter-spacing to -0.02em on headings and line-height to 1.6 on body paragraphs.'
-  },
-  {
-    id: 'pair-apple-native',
-    name: 'Apple Native HIG',
-    style: 'SF Pro Display + SF Pro Text (System)',
-    badge: 'Official Apple System',
-    headingFont: 'SF Pro Display (System)',
-    bodyFont: 'SF Pro Text (System)',
-    headingSample: 'Designed for iOS 18',
-    bodySample: 'Translucent Liquid Glass materials, specular refraction borders, and full Dynamic Type support for accessible text scaling.',
-    prompt: 'Configure our app to use Apple\'s native system font stack (-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text"). Apply optical letter tracking (-0.022em on 28px+ titles, +0.015em on 13px captions).'
-  },
-  {
-    id: 'pair-fintech-data',
-    name: 'FinTech & Analytics',
-    style: 'Geist + Geist Mono (Vercel)',
-    badge: 'Open Source',
-    headingFont: 'Geist Display (Vercel)',
-    bodyFont: 'Geist Mono (Tabular Numbers)',
-    headingSample: '$142,850.00 ▲ +18.4%',
-    bodySample: 'Tabular numeric alignment, zero layout jitter during counter animations, and Swiss geometric precision for high-density dashboards.',
-    prompt: 'Import Geist for titles and Geist Mono for numeric dashboard stats and metrics. Enable OpenType tabular figures (font-feature-settings: "tnum") so numbers never wobble during live animations.'
-  },
-  {
-    id: 'pair-friendly-open',
-    name: 'Friendly & Approachable',
-    style: 'Plus Jakarta Sans + Inter (Self-Hosted)',
-    badge: '100% Free Offline',
-    headingFont: 'Plus Jakarta Sans',
-    bodyFont: 'Inter (Self-Hosted)',
-    headingSample: 'Daily habits made effortless',
-    bodySample: 'Warm human geometry with supreme legibility across compact smartphone displays, widgets, and long-form reading screens.',
-    prompt: 'Bundle Plus Jakarta Sans and Inter locally in "public/fonts/" with zero CDN requests. Pair Plus Jakarta Sans for titles with Inter for long-form reading without any external network pings.'
-  },
-  {
-    id: 'pair-editorial-luxury',
-    name: 'Editorial Luxury',
-    style: 'Clash Display + Satoshi (Fontshare)',
-    badge: '100% Free Commercial',
-    headingFont: 'Clash Display (Fontshare)',
-    bodyFont: 'Satoshi (Fontshare)',
-    headingSample: 'The Curated Standard',
-    bodySample: 'Expressive editorial headline personality balanced by a crisp, ultra-readable geometric sans for navigation and body copy.',
-    prompt: 'Integrate Clash Display from Fontshare for hero splash titles and pair with Satoshi for body copy and navigation items. Ensure smooth responsive scaling on mobile displays.'
-  }
-];
-
 const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'ai_models',
     title: 'Frontier AI Models & Coding Agents',
-    badge: 'AI Models',
+    badge: 'Core Intelligence',
     description: 'AI coding models can inspect your codebase and write code directly in your terminal. They generate screens, fix bugs, and connect device APIs in minutes. Choose from Google Antigravity, Claude Code, Cursor, and Windsurf.',
     iconBg: 'bg-purple-600',
     icon: <Brain className="w-6 h-6 text-white stroke-[1.8]" />
@@ -164,7 +93,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'design',
     title: 'Design Systems & UI/UX Resources',
-    badge: 'Design & UX',
+    badge: 'Interface Systems',
     description: 'Great design makes your app feel natural and effortless to use from the very first tap. Learn proven layout structures from Apple and Google so your buttons are comfortable and your screens look clean. Study successful apps to gain design inspiration without copying copyrighted artwork or brand trademarks.',
     iconBg: 'bg-rose-500',
     icon: <Layout className="w-6 h-6 text-white stroke-[1.8]" />
@@ -172,15 +101,15 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'typography',
     title: 'Typography & Font Systems',
-    badge: 'Typography',
-    description: 'Typography controls how easy your app is to read and gives your product a distinct personality. Using system fonts or self-hosted font files keeps your app fast and protects user privacy from third-party tracking. Explore our 5 curated font pairing examples below with copy-ready prompts for your AI agents.',
+    badge: 'Curated Fonts',
+    description: 'Typography controls how easy your app is to read and gives your product a distinct personality. Using system fonts or self-hosted font files keeps your app fast and protects user privacy from third-party tracking. Explore curated font systems, pairing guides, and typography resources below with copy-ready prompts for your AI agents.',
     iconBg: 'bg-indigo-600',
     icon: <Type className="w-6 h-6 text-white stroke-[1.8]" />
   },
   {
     id: 'github_repos',
     title: 'Curated Open Source Frameworks & SDKs',
-    badge: 'Open Source',
+    badge: 'Verified SDKs',
     description: 'Open source libraries provide pre-built building blocks so you never have to reinvent the wheel. Add tactile vibrations, camera access, and offline data storage with battle-tested community code. These packages save hundreds of hours of manual work and work seamlessly across iOS and Android.',
     iconBg: 'bg-blue-600',
     icon: (
@@ -192,7 +121,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'backend',
     title: 'Backend, Database & Cloud Infrastructure',
-    badge: 'Cloud & DB',
+    badge: 'Serverless Cloud',
     description: 'A backend lets your users save accounts, store data in the cloud, and sync across multiple devices. Modern platforms like Supabase and Firebase handle the complex server work automatically. They offer generous free plans that can comfortably support your first thousands of active users without charge. You can always start for free and scale up smoothly as your app grows.',
     iconBg: 'bg-teal-600',
     icon: <Database className="w-6 h-6 text-white stroke-[1.6]" />
@@ -200,7 +129,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'security',
     title: 'Security, Cryptography & Keychain Auth',
-    badge: 'Security',
+    badge: 'Hardware Enclave',
     description: 'Security protects your users and keeps private login passwords safe on their physical phones. Using the iOS Keychain and Android Keystore hardware chips ensures sensitive data is never exposed. Following these essential guardrails prevents data leaks and helps you pass store security audits on your first try. All security patterns and system APIs shown here are built right into your phone for free.',
     iconBg: 'bg-emerald-600',
     icon: <Lock className="w-6 h-6 text-white stroke-[1.8]" />
@@ -208,7 +137,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'privacy',
     title: 'Privacy, Apple Manifests & Data Protection',
-    badge: 'Privacy',
+    badge: 'Store Compliance',
     description: 'User privacy is one of the most strictly enforced requirements in the Apple App Store and Google Play. You must inform users what data you collect and declare required privacy manifests before publishing. Bundling fonts locally and avoiding hidden ad trackers keeps you completely safe from legal fines. These free privacy templates and tools guarantee you satisfy Apple and Google rules.',
     iconBg: 'bg-indigo-600',
     icon: <EyeOff className="w-6 h-6 text-white stroke-[1.8]" />
@@ -216,7 +145,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'legal',
     title: 'Legal, Terms of Service & EULA Templates',
-    badge: 'Legal',
+    badge: 'Terms & Policies',
     description: 'Every published mobile app requires a publicly accessible Privacy Policy and Terms of Service before review. You can create and host these legal documents completely free using simple GitHub Pages. Having clear agreements also shields you from liability and protects your intellectual property. Use our copy-ready legal templates to get permanent HTTPS links in under 5 minutes.',
     iconBg: 'bg-amber-600',
     icon: <ScrollText className="w-6 h-6 text-white stroke-[1.8]" />
@@ -224,7 +153,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'launch',
     title: 'App Store Launch, ASO & Distribution',
-    badge: 'Launch & ASO',
+    badge: 'Store Publishing',
     description: 'Your store listing is the storefront window where people decide whether to download your application. Prepare eye-catching screenshot mockups and clear descriptions that explain your app\'s benefits simply. Avoid common rejection traps like broken demo accounts or prohibited pricing claims in your title. These free mockup tools and checklists guide you step-by-step through submission day.',
     iconBg: 'bg-cyan-600',
     icon: <Rocket className="w-6 h-6 text-white stroke-[1.6]" />
@@ -232,7 +161,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'analytics',
     title: 'Crash Reporting, Observability & Analytics',
-    badge: 'Observability',
+    badge: 'Telemetry & Health',
     description: 'Crash reporting helps you find and fix unexpected issues before frustrated users leave negative reviews. Privacy-friendly telemetry lets you see which features people enjoy without recording their personal identity. You can monitor performance speeds and battery health to keep your app running silky smooth. The observability tools featured here include robust free plans tailored for indie developers.',
     iconBg: 'bg-violet-600',
     icon: <BarChart2 className="w-6 h-6 text-white stroke-[1.8]" />
@@ -844,66 +773,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
               <div className={`apple-drawer-collapse ${isSectionOpen ? 'expanded' : ''}`}>
                 <div className="apple-drawer-content">
                   <div className="space-y-3 pt-1">
-                    {/* If Typography section, display curated font pairing preview cards */}
-                    {sec.id === 'typography' && (
-                      <div className="space-y-3 pb-1">
-                        <div className="flex items-center space-x-2 pt-0.5 pb-0.5">
-                          <span className="text-xs font-black uppercase tracking-wider text-slate-900 font-google">
-                            Curated Font Pairings &amp; Agent Prompts
-                          </span>
-                        </div>
-                        <div className="space-y-2.5">
-                          {TYPOGRAPHY_PAIRINGS.map(pair => (
-                            <div 
-                              key={pair.id}
-                              className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2.5 select-none"
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <div>
-                                  <span className="text-xs font-black text-slate-900 font-google block">
-                                    {pair.name}
-                                  </span>
-                                  <span className="text-[11px] font-medium text-slate-500 block pt-0.5">
-                                    {pair.style}
-                                  </span>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCopyPrompt(pair.id, pair.prompt);
-                                  }}
-                                  className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
-                                  title="Copy prompt for your AI coding agent"
-                                >
-                                  {copiedPromptId === pair.id ? (
-                                    <>
-                                      <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
-                                      <span className="text-emerald-700">Copied!</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Copy className="w-3 h-3 text-slate-500" />
-                                      <span>Copy Prompt</span>
-                                    </>
-                                  )}
-                                </button>
-                              </div>
-
-                              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                                <div className="text-sm font-bold text-slate-900 tracking-tight">
-                                  {pair.headingSample}
-                                </div>
-                                <div className="text-[12px] text-slate-600 leading-relaxed">
-                                  {pair.bodySample}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
                     {secItems.map((item, itemIdx) => {
                       const isItemOpen = expandedItemId === item.id;
                       const isApple = item.id.includes('apple') || item.id.includes('att') || item.id.includes('testflight') || item.id.includes('sf-pro');
@@ -930,11 +799,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
                                 {/* Title & Badges matching Main Application */}
                                 <div className="space-y-1 select-none flex-1 min-w-0">
-                                  {(item.platform === 'ios' || item.platform === 'android') && (
-                                    <div className="flex items-center gap-1.5 flex-wrap select-none mb-0.5">
-                                      <PlatformBadge platform={item.platform} />
-                                    </div>
-                                  )}
 
                                   <h3 
                                     className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none truncate ${
@@ -1109,18 +973,22 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                           e.stopPropagation();
                                           handleCopyPrompt(item.id, item.promptOrCommand || '');
                                         }}
-                                        className="apple-press px-2.5 py-1 rounded-full text-[11px] font-bold bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center space-x-1 shrink-0 shadow-2xs transition-colors"
-                                        title="Copy to clipboard"
+                                        className={`apple-press px-3 py-1.5 rounded-full text-[11px] font-bold flex items-center space-x-1.5 shrink-0 shadow-2xs transition-all duration-200 cursor-pointer ${
+                                          copiedPromptId === item.id
+                                            ? 'bg-emerald-600 border border-emerald-600 text-white'
+                                            : 'bg-slate-900 hover:bg-slate-800 active:bg-black border border-slate-900 text-white'
+                                        }`}
+                                        title="Copy prompt for your AI coding agent"
                                       >
                                         {copiedPromptId === item.id ? (
                                           <>
-                                            <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
-                                            <span className="text-emerald-700">Copied!</span>
+                                            <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                                            <span className="text-white font-bold">Copied!</span>
                                           </>
                                         ) : (
                                           <>
-                                            <Copy className="w-3 h-3 text-slate-500" />
-                                            <span>Copy</span>
+                                            <Copy className="w-3.5 h-3.5 text-white" />
+                                            <span className="text-white font-bold">Copy Prompt</span>
                                           </>
                                         )}
                                       </button>
