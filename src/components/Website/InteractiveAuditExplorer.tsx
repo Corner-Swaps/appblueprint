@@ -849,7 +849,8 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
       {/* ========================================================================= */}
       {inspectingItem && (
         <div 
-          className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 lg:p-8"
+          className="fixed inset-0 z-50 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 lg:p-8"
+          style={{ zIndex: 70 }}
           onClick={() => setInspectingItem(null)}
         >
           <div 

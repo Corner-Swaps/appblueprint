@@ -153,6 +153,14 @@ export const App: React.FC = () => {
   // Splash Loading Screen: Only shown on initial cold start on native mobile platforms
   const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
 
+  // Set body background to cream once splash is completed (or on web)
+  useEffect(() => {
+    if (!showSplash) {
+      document.documentElement.style.backgroundColor = '#FAF8F6';
+      document.body.style.backgroundColor = '#FAF8F6';
+    }
+  }, [showSplash]);
+
   // Legal Consent State (On native mobile; web visitors can explore immediately)
   const [showLegalModal, setShowLegalModal] = useState<boolean>(() => {
     if (!Capacitor.isNativePlatform()) return false;

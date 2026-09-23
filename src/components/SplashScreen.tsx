@@ -15,14 +15,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     setFadingOut(true);
     setTimeout(() => {
       onComplete();
-    }, 350);
+    }, 250);
   };
 
-  // Play animation (1.7 seconds) brisk and smooth
+  // Snappy, Apple-standard launch pacing (~750ms total)
   useEffect(() => {
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 1700);
+    }, 500);
 
     return () => {
       clearTimeout(dismissTimer);
@@ -46,104 +46,93 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         justifyContent: 'center',
         background: '#000000',
         opacity: fadingOut ? 0 : 1,
-        transform: fadingOut ? 'scale(1.1)' : 'scale(1)',
-        transition: 'opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1)',
+        transition: 'opacity 250ms cubic-bezier(0.2, 0.9, 0.3, 1)',
+        willChange: 'opacity',
         overflow: 'hidden',
       }}
       aria-label="App Blueprint Launch Screen"
     >
       <style>{`
-        @keyframes splashSlowZoom {
+        @keyframes splashTitleIntro {
           0% {
             opacity: 0;
-            transform: scale(0.92);
-          }
-          20% {
-            opacity: 1;
+            transform: translateY(8px) translateZ(0);
           }
           100% {
             opacity: 1;
-            transform: scale(1.03);
+            transform: translateY(0) translateZ(0);
           }
-        }
-
-        @keyframes splashTitleReveal {
-          0% {
-            opacity: 0;
-          }
-          100% {
-            opacity: 1;
-          }
-        }
-
-        .splash-logo-container {
-          animation: splashSlowZoom 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-          will-change: transform, opacity;
         }
 
         .splash-title-text {
-          animation: splashTitleReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
-          will-change: opacity;
+          animation: splashTitleIntro 280ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both;
+          will-change: transform, opacity;
+          -webkit-backface-visibility: hidden;
         }
       `}</style>
 
-      {/* 1. Centered Flat White Logo (Expanded by 15%, No Highlights) */}
+      {/* Content wrapper with clean 120fps opacity dissolve on exit */}
       <div
         style={{
-          position: 'relative',
-          marginTop: -48,
+          width: '100%',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
+          opacity: fadingOut ? 0 : 1,
+          transition: 'opacity 250ms ease-out',
+          willChange: 'opacity',
         }}
       >
+        {/* 1. Centered Flat White Logo (Exact geometric center matching native iOS LaunchScreen) */}
         <div
-          className="splash-logo-container"
           style={{
             position: 'relative',
-            width: 276,
-            height: 276,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            width: 280,
+            height: 280,
           }}
         >
           <AppLogo 
-            size={276} 
+            size={280} 
             color="#FFFFFF" 
             expanded15={true} 
             style={{ pointerEvents: 'none' }}
           />
         </div>
-      </div>
 
-      {/* 2. Simple Title Only Down Below (No Subtext) */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 56,
-          left: 0,
-          right: 0,
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <span
-          className="splash-title-text"
+        {/* 2. Title cleanly positioned down below */}
+        <div
           style={{
-            fontFamily: "'Google Sans', 'GoogleSans-Medium', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
-            fontSize: 34,
-            fontWeight: 700,
-            color: '#FFFFFF',
-            textShadow: '0 2px 14px rgba(0, 0, 0, 0.8)',
-            display: 'block',
+            position: 'absolute',
+            bottom: 'max(calc(env(safe-area-inset-bottom, 0px) + 32px), 48px)',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            pointerEvents: 'none',
           }}
         >
-          App Blueprint
-        </span>
+          <span
+            className="splash-title-text"
+            style={{
+              fontFamily: "'Google Sans', 'GoogleSans-Medium', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
+              fontSize: 34,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              letterSpacing: '-0.5px',
+              textShadow: '0 2px 14px rgba(0, 0, 0, 0.8)',
+              display: 'block',
+            }}
+          >
+            App Blueprint
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -96,7 +96,7 @@ export const Hero: React.FC<HeroProps> = ({
   };
 
   return (
-    <section id="overview" className="relative pt-24 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
+    <section id="overview" className="scroll-mt-20 relative pt-24 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
       
       {/* Subtle Mobbin Ambient Aura */}
       <div 
