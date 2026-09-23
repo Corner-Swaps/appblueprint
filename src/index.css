@@ -21,6 +21,10 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   html, body {
     background-color: #FAF8F6;
     color: #1E2022;
@@ -30,6 +34,21 @@
     user-select: none;
     -webkit-touch-callout: none;
     overscroll-behavior-y: none;
+  }
+
+  /* Website text selection enabled for readability */
+  .website-root, 
+  .website-root p, 
+  .website-root h1, 
+  .website-root h2, 
+  .website-root h3, 
+  .website-root h4, 
+  .website-root span:not(.select-none), 
+  .website-root li,
+  .website-root pre,
+  .website-root code {
+    -webkit-user-select: text !important;
+    user-select: text !important;
   }
 
   input, select, textarea {

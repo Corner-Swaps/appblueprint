@@ -14,9 +14,9 @@ const DIR_DOCS = path.join(__dirname, '../docs/screenshots');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-// Clean up old LaunchReady file names from 6.5 and 6.9 directories
+// Clean up any old or duplicate file names from 6.5 and 6.9 directories
 [DIR_6_5, DIR_6_9].forEach(dir => {
-  ['01_welcome.png', '03_interactive_roadmap.png', '05_production_playbook.png'].forEach(file => {
+  ['01_welcome.png', '02_production_checklist.png', '03_interactive_roadmap.png', '05_production_playbook.png'].forEach(file => {
     const fPath = path.join(dir, file);
     if (fs.existsSync(fPath)) fs.unlinkSync(fPath);
   });
@@ -57,8 +57,24 @@ function startServer(port = 3456) {
   });
 }
 
-async function injectIOSChrome(page, isDark = false) {
-  await page.evaluate((dark) => {
+// Read the curated list of 73 completed item IDs for 72% overall completion
+let completedList = [];
+try {
+  completedList = JSON.parse(fs.readFileSync(path.join(__dirname, 'completed_72_ids.json'), 'utf8'));
+} catch (e) {
+  // Fallback if file not read
+  completedList = [
+    'setup-model', 'setup-developer-accounts', 'setup-xcode-android-studio', 'setup-github-repo', 'setup-connect-phone', 'setup-typescript-swift', 'setup-agent-commands', 'setup-clear-caches',
+    'p1-problem-solution', 'p1-scope-pruning', 'p1-tech-stack', 'p1-developer-accounts', 'p1-monetization-model', 'p1-duns-organization', 'p1-bundle-id-naming',
+    'p2-screen-inventory', 'p2-screen-anatomy', 'p2-spatial-grid', 'p2-nav-hierarchy', 'p2-design-inspiration', 'p2-touch-targets', 'p2-safe-areas', 'p2-dynamic-type', 'p2-dark-mode', 'p2-app-icon', 'p2-launch-splash',
+    'p4-schema-models', 'p4-local-persistence', 'p4-state-restoration', 'p4-privacy-manifest', 'p4-keychain-keystore', 'p4-transit-security',
+    'p3-offline-sync', 'p3-network-resilience', 'p3-sign-in-apple', 'p3-haptic-feedback', 'p4-permissions-hygiene', 'p4-privacy-logging', 'p5-cold-start', 'p5-memory-leaks',
+    'p6-screenshots', 'p6-privacy-nutrition', 'p6-export-compliance', 'p7-testflight-internal'
+  ];
+}
+
+async function injectIOSChrome(page, isDark = false, isScrolled = false) {
+  await page.evaluate(({ dark, scrolled }) => {
     // Hide web launcher bar
     document.querySelectorAll('.bg-slate-900.text-white.text-xs, [aria-label="Back to Website"]').forEach(el => {
       const topBar = el.closest('div.sticky.top-0');
@@ -101,6 +117,7 @@ async function injectIOSChrome(page, isDark = false) {
       font-size: 15px;
       font-weight: 600;
       color: ${dark ? '#FFFFFF' : '#000000'};
+      ${scrolled ? 'background: rgba(250, 248, 246, 0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0, 0, 0, 0.05);' : ''}
     `;
 
     // Left: Time 9:41
@@ -166,7 +183,7 @@ async function injectIOSChrome(page, isDark = false) {
       `;
       document.body.appendChild(homeBar);
     }
-  }, isDark);
+  }, { dark: isDark, scrolled: isScrolled });
 }
 
 async function captureScreenSet(browser, config) {
@@ -184,28 +201,13 @@ async function captureScreenSet(browser, config) {
     hasTouch: true,
   });
 
-  // Inject initial pre-set storage
-  await page.evaluateOnNewDocument(() => {
+  // Inject initial pre-set storage with 72% overall completion
+  await page.evaluateOnNewDocument((completedItems) => {
     localStorage.clear();
     sessionStorage.clear();
     localStorage.setItem('appblueprint_legal_agreed_v1', 'true');
     localStorage.setItem('launchready_legal_agreed_v1', 'true');
     localStorage.setItem('appblueprint_visits_count', '5');
-
-    // Rich multi-project setup with 72% completion
-    const completedList = [
-      'setup-model', 'setup-developer-accounts', 'setup-xcode-studio', 'setup-github-repo', 'setup-device-pairing', 'setup-typescript-swift',
-      'p1-problem-solution', 'p1-scope-pruning', 'p1-tech-stack', 'p1-developer-accounts',
-      'p1-monetization-model', 'p1-duns-organization', 'p1-bundle-id-naming',
-      'p2-screen-inventory', 'p2-screen-anatomy', 'p2-spatial-grid', 'p2-nav-hierarchy',
-      'p2-design-inspiration', 'p2-liquid-glass', 'p2-touch-targets', 'p2-safe-areas',
-      'p2-dynamic-type', 'p2-dark-mode', 'p2-app-icon', 'p2-launch-splash',
-      'p4-schema-models', 'p4-local-persistence', 'p4-state-restoration',
-      'p4-privacy-manifest', 'p4-keychain-keystore', 'p4-transit-security',
-      'p3-offline-sync', 'p3-network-resilience', 'p3-sign-in-apple', 'p3-haptic-feedback',
-      'p4-permissions-hygiene', 'p4-privacy-logging', 'p5-cold-start', 'p5-memory-leaks',
-      'p6-screenshots', 'p6-privacy-nutrition', 'p6-export-compliance', 'p7-testflight-internal'
-    ];
 
     const projects = [
       {
@@ -213,27 +215,27 @@ async function captureScreenSet(browser, config) {
         name: 'App Blueprint v1.0',
         color: '#3B82F6',
         createdAt: new Date().toISOString(),
-        completedItemIds: completedList
+        completedItemIds: completedItems
       },
       {
         id: 'proj-2',
         name: 'Fitness Tracker Pro',
         color: '#8B5CF6',
         createdAt: new Date().toISOString(),
-        completedItemIds: ['p1-problem-solution', 'p2-liquid-glass', 'p2-haptics']
+        completedItemIds: ['p1-problem-solution', 'p2-liquid-glass', 'p2-touch-targets']
       },
       {
         id: 'proj-3',
         name: 'SaaS Mobile Companion',
         color: '#10B981',
         createdAt: new Date().toISOString(),
-        completedItemIds: ['p1-problem-solution', 'p3-state-architecture', 'p4-privacy-manifest']
+        completedItemIds: ['p1-problem-solution', 'p4-schema-models', 'p4-privacy-manifest']
       }
     ];
 
     localStorage.setItem('appblueprint_projects_v1', JSON.stringify(projects));
     localStorage.setItem('appblueprint_active_proj_id_v1', 'proj-1');
-  });
+  }, completedList);
 
   // Load app directly with #app
   await page.goto('http://localhost:3456/?mode=app#app', { waitUntil: 'networkidle0' });
@@ -242,44 +244,64 @@ async function captureScreenSet(browser, config) {
 
   // 1. Production Checklist (Main Home with 72% Readiness Dial)
   console.log(`[${name}] 1. Capturing 01_production_checklist...`);
-  await injectIOSChrome(page, false);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await injectIOSChrome(page, false, false);
   await sleep(500);
   const shot1 = path.join(outDir, '01_production_checklist.png');
   await page.screenshot({ path: shot1 });
   console.log(`Saved: ${shot1}`);
 
-  // 2. Architecture & HIG Audit (Expanded Liquid Glass Drawer)
+  // 2. Architecture & HIG Audit (Expanded Step 3 with Apple Liquid Glass Drawer)
   console.log(`[${name}] 2. Capturing 02_architecture_audit...`);
-  // Open Step 3: Visual Design System
-  const p3Btn = await page.$('#phase-2 > div > div:first-child');
-  if (p3Btn) {
-    await p3Btn.click();
-    await sleep(600);
-  }
-  // Expand Liquid Glass item
-  const liquidGlass = await page.$('#p2-liquid-glass .cursor-pointer');
-  if (liquidGlass) {
-    await liquidGlass.click();
-    await sleep(600);
-    // Scroll slightly down to center guidelines
-    await page.evaluate(() => window.scrollBy({ top: 180, behavior: 'instant' }));
-    await sleep(400);
-  }
-  await injectIOSChrome(page, false);
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    // Expand Step 3
+    const step3Header = document.querySelector('#phase-3 .cursor-pointer');
+    if (step3Header) step3Header.click();
+  });
+  await sleep(600);
+
+  await page.evaluate(() => {
+    // Hide preceding item so Liquid Glass is immediately below Step 3 header
+    const prevItem = document.getElementById('p2-design-inspiration');
+    if (prevItem) prevItem.style.display = 'none';
+
+    // Expand Liquid Glass requirement card
+    const lgHeader = document.querySelector('#p2-liquid-glass .cursor-pointer');
+    if (lgHeader) lgHeader.click();
+  });
+  await sleep(600);
+
+  // Scroll so Step 3 card sits cleanly below the status bar (y = 62px)
+  await page.evaluate(() => {
+    const el = document.getElementById('phase-3');
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      window.scrollTo({ top: scrollTop + rect.top - 62, behavior: 'instant' });
+    }
+  });
+  await injectIOSChrome(page, false, true);
   await sleep(400);
   const shot2 = path.join(outDir, '02_architecture_audit.png');
   await page.screenshot({ path: shot2 });
   console.log(`Saved: ${shot2}`);
 
+  // Restore hidden element for other operations
+  await page.evaluate(() => {
+    const prevItem = document.getElementById('p2-design-inspiration');
+    if (prevItem) prevItem.style.display = '';
+  });
+
   // 3. Multi-Project Manager
   console.log(`[${name}] 3. Capturing 03_projects_manager...`);
-  await page.evaluate(() => window.scrollTo(0, 0));
-  const projectsTab = await page.$('button[aria-label="Projects"]');
-  if (projectsTab) {
-    await projectsTab.click();
-    await sleep(700);
-  }
-  await injectIOSChrome(page, false);
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    const projectsTab = document.querySelector('button[aria-label="Projects"]');
+    if (projectsTab) projectsTab.click();
+  });
+  await sleep(700);
+  await injectIOSChrome(page, false, false);
   await sleep(400);
   const shot3 = path.join(outDir, '03_projects_manager.png');
   await page.screenshot({ path: shot3 });
@@ -287,28 +309,44 @@ async function captureScreenSet(browser, config) {
 
   // 4. App Launch Academy & Resources
   console.log(`[${name}] 4. Capturing 04_app_launch_academy...`);
-  const resourcesTab = await page.$('button[aria-label="Academy and Resources"]');
-  if (resourcesTab) {
-    await resourcesTab.click();
-    await sleep(700);
-  }
-  await injectIOSChrome(page, false);
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    const resourcesTab = document.querySelector('button[aria-label="Academy and Resources"]');
+    if (resourcesTab) resourcesTab.click();
+  });
+  await sleep(700);
+  await injectIOSChrome(page, false, false);
   await sleep(400);
   const shot4 = path.join(outDir, '04_app_launch_academy.png');
   await page.screenshot({ path: shot4 });
   console.log(`Saved: ${shot4}`);
 
-  // 5. Config Generators & Curated Prompts (Expanded Section in Resources)
+  // 5. Config Generators & Curated Prompts (Expanded Cursor AI in Resources)
   console.log(`[${name}] 5. Capturing 05_config_generators...`);
-  // Click on Frontier AI Models drawer pill
-  const aiModelsPill = await page.$('button ::-p-text(Frontier AI Models & Coding Agents)');
-  if (aiModelsPill) {
-    await aiModelsPill.click();
-    await sleep(600);
-    await page.evaluate(() => window.scrollBy({ top: 120, behavior: 'instant' }));
-    await sleep(300);
-  }
-  await injectIOSChrome(page, false);
+  await page.evaluate(() => {
+    // Open Frontier AI Models section
+    const aiSec = document.querySelector('#ai_models .cursor-pointer');
+    if (aiSec) aiSec.click();
+  });
+  await sleep(600);
+
+  await page.evaluate(() => {
+    // Open Cursor AI tool item
+    const cursorHeader = document.querySelector('#ai-cursor .cursor-pointer');
+    if (cursorHeader) cursorHeader.click();
+  });
+  await sleep(600);
+
+  // Scroll so Cursor AI card sits cleanly below status bar
+  await page.evaluate(() => {
+    const el = document.getElementById('ai-cursor');
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      window.scrollTo({ top: scrollTop + rect.top - 62, behavior: 'instant' });
+    }
+  });
+  await injectIOSChrome(page, false, true);
   await sleep(400);
   const shot5 = path.join(outDir, '05_config_generators.png');
   await page.screenshot({ path: shot5 });
