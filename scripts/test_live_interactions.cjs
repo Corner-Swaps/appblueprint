@@ -43,7 +43,7 @@ async function testLive() {
 
   // Scroll to traps
   await page.evaluate(() => {
-    const el = document.getElementById('traps');
+    const el = document.getElementById('why-apps-fail') || document.getElementById('traps');
     if (el) el.scrollIntoView();
   });
   await new Promise(r => setTimeout(r, 600));
