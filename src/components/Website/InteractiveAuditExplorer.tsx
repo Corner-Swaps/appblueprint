@@ -136,43 +136,50 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
     }, 2000);
   };
 
+  // Prevent background body scroll when inspector modal is open
+  useEffect(() => {
+    if (inspectingItem) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [inspectingItem]);
+
   // Keyboard navigation for Mobbin Inspect Modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!inspectingItem) return;
+      if (!inspectingItem || filteredItems.length === 0) return;
       if (e.key === 'Escape') {
         setInspectingItem(null);
       } else if (e.key === 'ArrowRight') {
         const currentIndex = filteredItems.findIndex(i => i.id === inspectingItem.id);
-        if (currentIndex < filteredItems.length - 1) {
-          setInspectingItem(filteredItems[currentIndex + 1]);
-        }
+        const nextIndex = (currentIndex + 1) % filteredItems.length;
+        setInspectingItem(filteredItems[nextIndex]);
       } else if (e.key === 'ArrowLeft') {
         const currentIndex = filteredItems.findIndex(i => i.id === inspectingItem.id);
-        if (currentIndex > 0) {
-          setInspectingItem(filteredItems[currentIndex - 1]);
-        }
+        const prevIndex = (currentIndex - 1 + filteredItems.length) % filteredItems.length;
+        setInspectingItem(filteredItems[prevIndex]);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [inspectingItem, filteredItems]);
 
-  // Navigate next/prev in modal
+  // Navigate next/prev in modal with continuous wrap-around
   const handleNextModal = () => {
-    if (!inspectingItem) return;
+    if (!inspectingItem || filteredItems.length <= 1) return;
     const currentIndex = filteredItems.findIndex(i => i.id === inspectingItem.id);
-    if (currentIndex < filteredItems.length - 1) {
-      setInspectingItem(filteredItems[currentIndex + 1]);
-    }
+    const nextIndex = (currentIndex + 1) % filteredItems.length;
+    setInspectingItem(filteredItems[nextIndex]);
   };
 
   const handlePrevModal = () => {
-    if (!inspectingItem) return;
+    if (!inspectingItem || filteredItems.length <= 1) return;
     const currentIndex = filteredItems.findIndex(i => i.id === inspectingItem.id);
-    if (currentIndex > 0) {
-      setInspectingItem(filteredItems[currentIndex - 1]);
-    }
+    const prevIndex = (currentIndex - 1 + filteredItems.length) % filteredItems.length;
+    setInspectingItem(filteredItems[prevIndex]);
   };
 
   // Map phase ID to clean title

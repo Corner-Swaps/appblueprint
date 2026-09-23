@@ -293,18 +293,31 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
           setExpandedSectionId(null);
           setTimeout(() => {
             isCollapsingCategoryRef.current = false;
-          }, 400);
+          }, 280);
           return;
         }
 
-        // Smoothly pull up the viewport to center first, then fold closed without glitching
-        fluidScrollTo(centeredY, {
-          onComplete: () => {
+        // Smoothly pull up the viewport and fold closed concurrently
+        let hasFolded = false;
+        const triggerFold = () => {
+          if (!hasFolded) {
+            hasFolded = true;
             setExpandedItemId(null);
             setExpandedSectionId(null);
+          }
+        };
+
+        // Start folding early into scroll motion (60ms) so category folds seamlessly as it centers
+        const foldTimer = setTimeout(triggerFold, 60);
+
+        fluidScrollTo(centeredY, {
+          duration: Math.min(260, Math.max(160, diff * 0.16)),
+          onComplete: () => {
+            clearTimeout(foldTimer);
+            triggerFold();
             setTimeout(() => {
               isCollapsingCategoryRef.current = false;
-            }, 400);
+            }, 150);
           },
         });
         return;
@@ -316,13 +329,24 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
       if (isScrolledPast) {
         isCollapsingCategoryRef.current = true;
-        fluidScrollTo(targetY, {
-          onComplete: () => {
+        let hasFolded = false;
+        const triggerFold = () => {
+          if (!hasFolded) {
+            hasFolded = true;
             setExpandedItemId(null);
             setExpandedSectionId(null);
+          }
+        };
+        const foldTimer = setTimeout(triggerFold, 60);
+
+        fluidScrollTo(targetY, {
+          duration: Math.min(260, Math.max(160, Math.abs(currentScroll - targetY) * 0.16)),
+          onComplete: () => {
+            clearTimeout(foldTimer);
+            triggerFold();
             setTimeout(() => {
               isCollapsingCategoryRef.current = false;
-            }, 400);
+            }, 150);
           },
         });
       } else {
