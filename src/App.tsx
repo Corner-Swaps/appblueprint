@@ -752,7 +752,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       <Website 
         onLaunchApp={() => {
           setViewMode('app');
-          setShowSplash(true);
+          setShowSplash(false);
           window.location.hash = '#app';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }} 
