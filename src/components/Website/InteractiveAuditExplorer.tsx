@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { PHASES_DATA } from '../../data/phases';
 import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
 import { ChecklistItem } from '../../types';
+import { copyToClipboard } from '../../utils/clipboard';
 import { 
   Search, 
   Filter, 
@@ -129,7 +130,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
   const copyPrompt = (item: ChecklistItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (!item.agentPrompt) return;
-    navigator.clipboard.writeText(item.agentPrompt);
+    copyToClipboard(item.agentPrompt);
     setCopiedItemId(item.id);
     setTimeout(() => {
       setCopiedItemId(null);

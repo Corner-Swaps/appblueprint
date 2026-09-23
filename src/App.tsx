@@ -857,7 +857,6 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
 
               {visiblePhases.map((phase, phaseIdx) => (
                 <div 
-                  id={phase.id} 
                   key={phase.id}
                   ref={bindPhaseRef(phaseIdx)}
                   style={getPhaseDragStyle(phaseIdx)}

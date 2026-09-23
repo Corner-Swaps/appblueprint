@@ -4,6 +4,7 @@ import {
   ResourceCategory, 
   ResourceItem 
 } from '../data/resources';
+import { copyToClipboard } from '../utils/clipboard';
 import { 
   ChevronDown, 
   ChevronUp,
@@ -201,25 +202,9 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
   }, []);
 
   const handleCopyPrompt = (id: string, text: string) => {
-    try {
-      if (navigator?.clipboard?.writeText) {
-        navigator.clipboard.writeText(text);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-      setCopiedPromptId(id);
-      setTimeout(() => setCopiedPromptId(null), 2000);
-    } catch {
-      // ignore
-    }
+    copyToClipboard(text);
+    setCopiedPromptId(id);
+    setTimeout(() => setCopiedPromptId(null), 2000);
   };
 
   const renderTierBadge = (badge?: string) => {
@@ -265,6 +250,18 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
   const isCollapsingCategoryRef = useRef(false);
 
+  // Blue pulse highlight around category pill when minimized
+  const [pulsingSectionId, setPulsingSectionId] = useState<string | null>(null);
+  const pulseCategoryTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerCategoryPulse = (secId: string) => {
+    if (pulseCategoryTimerRef.current) clearTimeout(pulseCategoryTimerRef.current);
+    setPulsingSectionId(secId);
+    pulseCategoryTimerRef.current = setTimeout(() => {
+      setPulsingSectionId(null);
+    }, 1200);
+  };
+
   const handleToggleSection = (secId: string, centerInViewport = false) => {
     if (isCollapsingCategoryRef.current) return;
 
@@ -274,6 +271,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
       if (!targetEl) {
         setExpandedItemId(null);
         setExpandedSectionId(null);
+        triggerCategoryPulse(secId);
         return;
       }
 
@@ -292,8 +290,9 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
           setExpandedItemId(null);
           setExpandedSectionId(null);
           setTimeout(() => {
+            triggerCategoryPulse(secId);
             isCollapsingCategoryRef.current = false;
-          }, 280);
+          }, 320);
           return;
         }
 
@@ -307,17 +306,18 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
           }
         };
 
-        // Start folding early into scroll motion (60ms) so category folds seamlessly as it centers
-        const foldTimer = setTimeout(triggerFold, 60);
+        // Start folding early into scroll motion (80ms) so category folds seamlessly as it centers
+        const foldTimer = setTimeout(triggerFold, 80);
 
         fluidScrollTo(centeredY, {
-          duration: Math.min(260, Math.max(160, diff * 0.16)),
+          duration: Math.min(340, Math.max(220, diff * 0.20)),
           onComplete: () => {
             clearTimeout(foldTimer);
             triggerFold();
             setTimeout(() => {
+              triggerCategoryPulse(secId);
               isCollapsingCategoryRef.current = false;
-            }, 150);
+            }, 160);
           },
         });
         return;
@@ -337,21 +337,25 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
             setExpandedSectionId(null);
           }
         };
-        const foldTimer = setTimeout(triggerFold, 60);
+        const foldTimer = setTimeout(triggerFold, 80);
 
         fluidScrollTo(targetY, {
-          duration: Math.min(260, Math.max(160, Math.abs(currentScroll - targetY) * 0.16)),
+          duration: Math.min(340, Math.max(220, Math.abs(currentScroll - targetY) * 0.20)),
           onComplete: () => {
             clearTimeout(foldTimer);
             triggerFold();
             setTimeout(() => {
+              triggerCategoryPulse(secId);
               isCollapsingCategoryRef.current = false;
-            }, 150);
+            }, 160);
           },
         });
       } else {
         setExpandedItemId(null);
         setExpandedSectionId(null);
+        setTimeout(() => {
+          triggerCategoryPulse(secId);
+        }, 320);
       }
       return;
     }
@@ -778,7 +782,9 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
               {/* Section Header Card (The original pill) */}
               <div 
                 id={sec.id}
-                className="rounded-3xl border border-slate-200/90 bg-white shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5"
+                className={`rounded-3xl border border-slate-200/90 bg-white shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 transition-all duration-200 ${
+                  pulsingSectionId === sec.id ? 'apple-section-pulse' : ''
+                }`}
               >
                 {/* Section Header Block: clicking text minimizes/toggles section */}
                 <div 

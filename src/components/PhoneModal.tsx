@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
+import { copyToClipboard } from '../utils/clipboard';
 import { 
   X, 
   Smartphone, 
@@ -26,6 +27,18 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({ isOpen, onClose, localIp
   // The local network URL that the phone on the same Wi-Fi can open
   const networkUrl = `http://${localIp}:3000`;
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     QRCode.toDataURL(networkUrl, {
       width: 260,
@@ -44,7 +57,7 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({ isOpen, onClose, localIp
   if (!isOpen) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(networkUrl);
+    copyToClipboard(networkUrl);
     setCopiedUrl(true);
     setTimeout(() => setCopiedUrl(false), 2000);
   };
