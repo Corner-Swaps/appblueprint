@@ -117,21 +117,23 @@
       border-radius: 10px;
       padding: 16px 20px;
       margin-bottom: 12px;
+      background: var(--card-bg);
     }
     .faq-question {
       font-weight: 600;
       font-size: 15px;
       margin-bottom: 6px;
+      color: var(--text-main);
     }
     .faq-answer {
       font-size: 14px;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.55;
     }
     .links-group {
       display: flex;
       gap: 16px;
-      margin-top: 24px;
+      margin-top: 32px;
       font-size: 14px;
     }
     a {
@@ -169,46 +171,62 @@
 <body>
   <div class="container">
     <div class="header">
-      <div class="badge">Help & Support</div>
+      <div class="badge">Help &amp; Customer Support</div>
       <h1>App Blueprint Support</h1>
-      <p class="subtitle">Have questions or need assistance with App Blueprint? We are here to help.</p>
+      <p class="subtitle">Official customer assistance, troubleshooting, and developer guidance for App Blueprint.</p>
     </div>
 
     <div class="contact-card">
       <h3>Need Direct Assistance?</h3>
-      <p>Send an email to our support team and we will respond within 24 hours.</p>
-      <a href="mailto:goloubov@gmail.com" class="btn">Email Support</a>
+      <p>Have an inquiry, feature suggestion, or experiencing a technical issue? Our engineering team responds within 24 to 48 business hours.</p>
+      <a href="mailto:goloubov@gmail.com?subject=App%20Blueprint%20Support%20Request" class="btn">Email Support (goloubov@gmail.com)</a>
     </div>
 
     <h2>Frequently Asked Questions</h2>
 
     <div class="faq-item">
-      <div class="faq-question">Where is my project data stored?</div>
-      <div class="faq-answer">All your projects, checklist states, and notes are stored strictly on your local device. App Blueprint does not sync or store your data on external cloud servers, guaranteeing complete privacy for your unpublished app concepts.</div>
+      <div class="faq-question">1. What is App Blueprint?</div>
+      <div class="faq-answer">App Blueprint is an architecture scaffolding, checklist verification, and store readiness platform built for iOS and cross-platform mobile developers. It organizes app development into 7 strategic phases—from initial scope and Apple Human Interface Guidelines (HIG) compliance through architecture, security, performance, and App Store submission.</div>
     </div>
 
     <div class="faq-item">
-      <div class="faq-question">How do I create and manage multiple apps?</div>
-      <div class="faq-answer">Tap the Folder icon in the navigation bar to open the Projects manager. From there, you can create new projects, assign color tags, switch active projects, or delete completed ones.</div>
+      <div class="faq-question">2. Where are my projects and checklists stored? Is my app idea private?</div>
+      <div class="faq-answer">Your data is 100% private and stored exclusively on your local device using isolated local sandbox storage (<code>localStorage</code>). App Blueprint does not operate remote databases or user-harvesting servers. Your proprietary app concepts and architecture notes never leave your device.</div>
     </div>
 
     <div class="faq-item">
-      <div class="faq-question">How do I export configuration files like Privacy manifests?</div>
-      <div class="faq-answer">Navigate to the Resources tab, choose Config Generators, fill in your app details, and tap 'Copy XML/JSON' or 'Download' to get instant, store-ready configuration files.</div>
+      <div class="faq-question">3. How is the Launch Readiness Score calculated?</div>
+      <div class="faq-answer">Your Launch Readiness Score reflects the percentage of essential architecture and store submission requirements completed across all 7 development phases. It accounts for both standard system checklist items and any custom tasks you add to your project.</div>
     </div>
 
     <div class="faq-item">
-      <div class="faq-question">How do I report a bug or request a guideline update?</div>
-      <div class="faq-answer">Email us at goloubov@gmail.com with the guideline name or description, and our engineering team will review it for the next release.</div>
+      <div class="faq-question">4. How do I generate and export Privacy Manifests (PrivacyInfo.xcprivacy)?</div>
+      <div class="faq-answer">Navigate to the <strong>Resources</strong> section and select <strong>Config Generators</strong>. Select your required API usage reasons and tracking declarations, then tap <strong>Copy XML</strong> or <strong>Download</strong>. The file is generated instantaneously on your device and is ready to be dropped into your Xcode project.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">5. Can I manage multiple mobile apps simultaneously?</div>
+      <div class="faq-answer">Yes. Tap the <strong>Folder</strong> icon in the navigation bar to open the Project Manager. You can create separate blueprints for different apps, customize color badges, switch between active projects with a tap, or remove archived apps.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">6. Does App Blueprint guarantee that Apple or Google will approve my app?</div>
+      <div class="faq-answer">No. App Blueprint provides educational guidelines, industry best practices, and organizational checklists to help you identify common traps. However, final app review decisions are determined solely by Apple Inc. and Google LLC at their own discretion. You are solely responsible for ensuring that your app complies with platform review policies.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">7. How do I report an issue or suggest new checklist items?</div>
+      <div class="faq-answer">Please email us directly at <a href="mailto:goloubov@gmail.com">goloubov@gmail.com</a> with details of the issue or feature recommendation. We regularly update the checklist to reflect Apple's latest WWDC and App Store Review guidelines.</div>
     </div>
 
     <div class="links-group">
-      <a href="privacy.html">&larr; Privacy Policy</a>
+      <a href="https://corner-swaps.github.io/appblueprint/">&larr; Web Application</a>
+      <a href="privacy.html">Privacy Policy</a>
       <a href="terms.html">Terms of Service &amp; EULA</a>
     </div>
 
     <div class="footer">
-      &copy; 2026 App Blueprint. Slava Goloubov. Dedicated to hassle-free App Store releases.
+      &copy; 2026 App Blueprint. Slava Goloubov. All rights reserved.
     </div>
   </div>
 </body>
