@@ -505,7 +505,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   handleToggleExpand();
                 }}
                 className={`apple-press transition-all duration-200 flex items-center justify-center ${
-                  !isExpanded 
+                  isExpanded 
                     ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
                     : 'w-7 h-7 text-slate-400 hover:text-slate-600'
                 }`}
@@ -653,7 +653,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           }
                         }}
                         className={`apple-press transition-all duration-200 flex items-center justify-center ${
-                          !isDetailOpen 
+                          isDetailOpen 
                             ? 'w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-slate-600 shadow-2xs' 
                             : 'w-7 h-7 text-slate-400 hover:text-slate-600'
                         }`}
