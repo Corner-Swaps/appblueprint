@@ -27,8 +27,9 @@ import {
   ChevronDown,
   Check
 } from 'lucide-react';
-import { Website } from './components/Website/Website';
-import { AppLauncherBar } from './components/Website/AppLauncherBar';
+import { UnifiedAppHeader } from './components/UnifiedAppHeader';
+import { PhaseRoadmapSidebar } from './components/PhaseRoadmapSidebar';
+import { PhoneModal } from './components/PhoneModal';
 
 const TAB_KEYS: Array<'checklist' | 'resources' | 'projects'> = ['checklist', 'resources', 'projects'];
 const TAB_INDEX_MAP: Record<'checklist' | 'resources' | 'projects', number> = {
@@ -117,38 +118,10 @@ export const App: React.FC = () => {
   const [resourcesCollapseSignal, setResourcesCollapseSignal] = useState(0);
 
 
-  // View Mode: 'website' by default on web, 'app' if native platform or URL has #app or ?mode=app
-  const [viewMode, setViewMode] = useState<'website' | 'app'>(() => {
-    if (Capacitor.isNativePlatform()) return 'app';
-    try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('mode') === 'app' || params.get('app') === 'true' || window.location.hash === '#app') {
-        return 'app';
-      }
-    } catch {
-      // fallback
-    }
-    return 'website';
-  });
-
-  // Hash and history navigation synchronization so back/forward buttons work smoothly
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) return;
-    const handleNavigation = () => {
-      if (window.location.hash === '#app') {
-        setViewMode('app');
-        setShowSplash(false);
-      } else {
-        setViewMode('website');
-      }
-    };
-    window.addEventListener('hashchange', handleNavigation);
-    window.addEventListener('popstate', handleNavigation);
-    return () => {
-      window.removeEventListener('hashchange', handleNavigation);
-      window.removeEventListener('popstate', handleNavigation);
-    };
-  }, []);
+  // Unified App Header & Platform Filter State
+  const [activePlatform, setActivePlatform] = useState<'all' | 'ios' | 'android'>('all');
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+  const [isAllExpanded, setIsAllExpanded] = useState(false);
 
   // Splash Loading Screen: Only shown on initial cold start on native mobile platforms
   const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
@@ -719,13 +692,56 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     wasOverall100Ref.current = overallPercent === 100 && totalAll > 0;
   }, [overallPercent, totalAll]);
 
-  // Filter items for each phase (all or completed)
+  // Filter items for each phase (all or completed, and platform)
   const getFilteredItemsForPhase = (items: ChecklistItem[]) => {
     return items.filter(item => {
+      // Platform filter
+      if (activePlatform === 'ios' && item.platform === 'android') return false;
+      if (activePlatform === 'android' && item.platform === 'ios') return false;
+
+      // Completion filter
       const isDone = completedItemIds.includes(item.id);
       if (filterMode === 'completed' && !isDone) return false;
       return true;
     });
+  };
+
+  const handleSelectPhaseFromSidebar = (phaseId: string) => {
+    setSelectedPhaseId('all');
+    setActiveTab('checklist');
+    setDisplayedTab('checklist');
+    window.dispatchEvent(new CustomEvent('expand-phase', { detail: phaseId }));
+    setTimeout(() => {
+      const el = document.getElementById(phaseId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 60);
+  };
+
+  const handleToggleExpandAll = () => {
+    if (isAllExpanded) {
+      window.dispatchEvent(new CustomEvent('collapse-all'));
+      setIsAllExpanded(false);
+    } else {
+      window.dispatchEvent(new CustomEvent('expand-phase', { detail: 'all' }));
+      setIsAllExpanded(true);
+    }
+  };
+
+  const handleResetAll = () => {
+    if (window.confirm('Reset all verified requirements for this project?')) {
+      setProjects(prevProjects =>
+        prevProjects.map(proj => {
+          if (proj.id === activeProject.id) {
+            return { ...proj, completedItemIds: [] };
+          }
+          return proj;
+        })
+      );
+    }
   };
 
   // Visible Phases based on selected filter
@@ -758,33 +774,21 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     onReorder: handleReorderPhases,
   });
 
-  // On web, if viewMode is 'website', render the product marketing website
-  if (viewMode === 'website' && !Capacitor.isNativePlatform()) {
-    return (
-      <Website 
-        onLaunchApp={() => {
-          setViewMode('app');
-          setShowSplash(false);
-          window.location.hash = '#app';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }} 
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#FAF8F6] text-[#1E2022] flex flex-col font-sans selection:bg-slate-900 selection:text-white overflow-x-hidden">
       
-      {/* Top Banner when running Interactive Suite on Web */}
-      {!Capacitor.isNativePlatform() && (
-        <AppLauncherBar 
-          onBackToWebsite={() => {
-            setViewMode('website');
-            history.pushState(null, '', window.location.pathname + window.location.search);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }} 
-        />
-      )}
+      {/* 1. Unified App Header at top explaining what it does, with platform filter & progress */}
+      <UnifiedAppHeader
+        overallPercent={overallPercent}
+        totalItems={allItems.length}
+        completedItems={completedItemIds.length}
+        activePlatform={activePlatform}
+        onSelectPlatform={setActivePlatform}
+        onOpenPhoneModal={() => setIsPhoneModalOpen(true)}
+        isAllExpanded={isAllExpanded}
+        onToggleExpandAll={handleToggleExpandAll}
+        onResetProgress={handleResetAll}
+      />
 
       {/* Launch Loading Animation Overlay for Native Mobile */}
       {showSplash && Capacitor.isNativePlatform() && (
@@ -806,275 +810,317 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         aria-hidden="true" 
       />
 
-      {/* 1. Main Content Container (Starts right below iOS safe area with safe bottom clearance for the bottom menu) */}
+      {/* 2. Main Content Container */}
       <main 
         onTouchStart={handlePageTouchStart}
         onTouchEnd={handlePageTouchEnd}
-        className="flex-1 w-full max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto px-4 md:px-6 pt-1 space-y-3 ios-safe-top overflow-x-hidden"
+        className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-32 lg:pb-20 overflow-x-hidden"
       >
-        <div className="relative w-full">
-          {/* 1. Checklist Tab */}
-          <div className={displayedTab === 'checklist' ? 'space-y-3.5 pb-4' : 'hidden'}>
-              {/* Project Header at the Top: Centered, tapping opens Projects Page */}
-              <div className="pt-2.5 pb-3 flex items-center justify-center w-full">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleSelectTab('projects');
-                  }}
-                  className="active:opacity-75 transition-opacity flex items-center justify-center space-x-1.5 px-3 py-1 rounded-2xl hover:bg-black/5 group max-w-full min-h-[42px]"
-                  title="Switch or manage projects"
-                >
-                  <h1 
-                    className="text-[28px] sm:text-[29px] font-medium tracking-normal text-center select-none text-black font-google leading-tight truncate"
-                  >
-                    {activeProject.name}
-                  </h1>
-                </button>
-              </div>
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-start">
+          {/* Left Column (Desktop lg+): 10 Phase Roadmap & Reference Directory */}
+          <div className="hidden lg:block lg:col-span-4 sticky top-6 self-start">
+            <PhaseRoadmapSidebar
+              phases={currentProjectPhases}
+              setupPhase={SETUP_STEPS_PHASE}
+              completedItemIds={completedItemIds}
+              activePhaseId={selectedPhaseId}
+              onSelectPhase={handleSelectPhaseFromSidebar}
+              onOpenManagePhases={() => setIsAllPhasesPageOpen(true)}
+            />
+          </div>
 
-            {/* Main Feed: All Project Phases */}
-            <div className="space-y-4 pt-1">
-              {/* Set Up Section (Foundational setup before Phase 1) */}
-              {(selectedPhaseId === 'all' || selectedPhaseId === SETUP_STEPS_PHASE.id) && (
-                <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
-                  <GuardrailSection
-                    phase={SETUP_STEPS_PHASE}
-                    phaseIndex={0}
-                    totalPhases={visiblePhases.length + 1}
-                    items={getFilteredItemsForPhase(
-                      activeProject.customItems?.[SETUP_STEPS_PHASE.id] || SETUP_STEPS_PHASE.items
-                    )}
-                    completedItemIds={completedItemIds}
-                    onToggleComplete={handleToggleComplete}
-                    defaultExpanded={false}
-                    onAddItem={handleAddItem}
-                    onReorderItems={handleReorderItems}
-                    onDeleteItem={handleDeleteItem}
-                    onMovePhase={handleMovePhase}
-                    onDeletePhase={handleDeletePhase}
-                    isGlobalEditMode={isGlobalEditMode}
-                    collapseSignal={collapseSignal}
-                    onDragStartPhase={handleDragStartPhase}
-                    onToggleGlobalEdit={handleToggleGlobalRearrange}
-                  />
-                </div>
-              )}
-
-
-
-              {visiblePhases.map((phase, phaseIdx) => (
-                <div 
-                  key={phase.id}
-                  ref={bindPhaseRef(phaseIdx)}
-                  style={getPhaseDragStyle(phaseIdx)}
-                >
-                  <GuardrailSection
-                    phase={phase}
-                    phaseIndex={phaseIdx}
-                    totalPhases={visiblePhases.length}
-                    items={getFilteredItemsForPhase(phase.items)}
-                    completedItemIds={completedItemIds}
-                    onToggleComplete={handleToggleComplete}
-                    defaultExpanded={false}
-                    onAddItem={handleAddItem}
-                    onReorderItems={handleReorderItems}
-                    onDeleteItem={handleDeleteItem}
-                    onMovePhase={handleMovePhase}
-                    onDeletePhase={handleDeletePhase}
-                    isGlobalEditMode={isGlobalEditMode}
-                    collapseSignal={collapseSignal}
-                    onDragStartPhase={handleDragStartPhase}
-                    onToggleGlobalEdit={handleToggleGlobalRearrange}
-                  />
-                </div>
-              ))}
-
-              {/* Empty State when no items match filter */}
-              {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
-                <div className="p-8 rounded-3xl bg-white border border-slate-200/90 text-center space-y-3 shadow-xs">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6 stroke-[2.2]" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-base font-bold text-slate-900 font-google">
-                      {filterMode === 'completed' ? 'No Completed Requirements Yet' : 'All Requirements Verified!'}
-                    </h3>
-                    <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                      {filterMode === 'completed'
-                        ? `You haven't marked any requirements as completed yet. Tap the circle checkmark on any requirement to mark it done!`
-                        : `Great job! All items in ${selectedPhaseId === 'all' ? 'the entire checklist' : 'this section'} are verified for ${activeProject.name}.`}
-                    </p>
-                  </div>
-                  {filterMode === 'completed' && (
+          {/* Right Column: The App housed in a big panel containing everything together */}
+          <div className="lg:col-span-8 w-full min-w-0">
+            {/* 1. Checklist Tab */}
+            <div className={displayedTab === 'checklist' ? 'space-y-4' : 'hidden'}>
+              {/* The Big Panel containing everything together */}
+              <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-black/8 shadow-xl p-4 sm:p-6 lg:p-7 space-y-4">
+                {/* Panel Top Header Bar: Active Project Pill + Filter Mode (All / Completed) */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-black/5">
+                  <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => setFilterMode('all')}
-                      className="apple-press px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs shadow-xs border border-slate-300"
+                      type="button"
+                      onClick={() => handleSelectTab('projects')}
+                      className="apple-press inline-flex items-center space-x-2 px-3 py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200/90 text-slate-800 text-xs font-bold transition-colors group"
+                      title="Switch active project"
                     >
-                      View All Requirements
+                      <Folder className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Project: <span className="font-black text-slate-900">{activeProject.name}</span></span>
+                      <ChevronRight className="w-3 h-3 text-slate-400 group-hover:text-slate-700" />
                     </button>
-                  )}
-                </div>
-              )}
-
-              {/* Deleted Sections Pill (Same style as phase cards with Restore capability) */}
-              {deletedPhases.length > 0 && (
-                <div className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 transition-colors duration-150 shadow-xs space-y-4">
-                  <div className="w-full flex items-start justify-between select-none">
-                    <div className="flex items-start space-x-3.5 pr-2 select-none flex-1">
-                      {/* Squircle Icon: Clean slate background with RotateCcw restore icon */}
-                      <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs text-slate-700">
-                        <RotateCcw className="w-6 h-6 stroke-[2.2]" />
-                      </div>
-
-                      {/* Title & Badge */}
-                      <div className="space-y-1 select-none flex-1">
-                        <div className="flex items-center space-x-2 select-none mt-0.5">
-                          <span className="h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200/80 shadow-xs select-none inline-flex items-center justify-center pt-[1.5px] leading-none">
-                            Deleted ({deletedPhases.length})
-                          </span>
-                          <span className="text-xs text-slate-400 select-none">•</span>
-                          <span className="text-xs font-bold text-slate-600 select-none">
-                            Tap Restore to Re-add
-                          </span>
-                        </div>
-
-                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
-                          Deleted Sections
-                        </h2>
-                      </div>
-                    </div>
-
-                    {deletedPhases.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={handleRestoreAllPhases}
-                        className="apple-press text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
-                        title="Restore All Deleted Sections"
-                      >
-                        Restore All
-                      </button>
+                    {activePlatform !== 'all' && (
+                      <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        {activePlatform === 'ios' ? 'iOS HIG Only' : 'Android Play Only'}
+                      </span>
                     )}
                   </div>
 
-                  {/* Description */}
-                  <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none">
-                    Sections you have removed are kept here so you can restore them at any time.
-                  </p>
+                  {/* Filter Mode Pills: All vs Completed */}
+                  <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/60 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setFilterMode('all')}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                        filterMode === 'all'
+                          ? 'bg-white text-slate-900 shadow-xs'
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    >
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterMode('completed')}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                        filterMode === 'completed'
+                          ? 'bg-white text-slate-900 shadow-xs'
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    >
+                      Completed ({completedItemIds.length})
+                    </button>
+                  </div>
+                </div>
 
-                  {/* List of Deleted Sections with Individual Restore Buttons */}
-                  <div className="space-y-2.5 pt-1">
-                    {deletedPhases.map((delPhase) => {
-                      const delTheme = getPhaseTheme(delPhase.number);
-                      return (
-                        <div 
-                          key={delPhase.id} 
-                          className="p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/70 flex items-center justify-between transition-colors duration-150"
+                {/* Main Feed: The Interactive Sections with Dropdown Accordions */}
+                <div className="space-y-4 pt-1">
+                  {/* Set Up Section (Foundational setup before Phase 1) */}
+                  {(selectedPhaseId === 'all' || selectedPhaseId === SETUP_STEPS_PHASE.id) && (
+                    <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
+                      <GuardrailSection
+                        phase={SETUP_STEPS_PHASE}
+                        phaseIndex={0}
+                        totalPhases={visiblePhases.length + 1}
+                        items={getFilteredItemsForPhase(
+                          activeProject.customItems?.[SETUP_STEPS_PHASE.id] || SETUP_STEPS_PHASE.items
+                        )}
+                        completedItemIds={completedItemIds}
+                        onToggleComplete={handleToggleComplete}
+                        defaultExpanded={false}
+                        onAddItem={handleAddItem}
+                        onReorderItems={handleReorderItems}
+                        onDeleteItem={handleDeleteItem}
+                        onMovePhase={handleMovePhase}
+                        onDeletePhase={handleDeletePhase}
+                        isGlobalEditMode={isGlobalEditMode}
+                        collapseSignal={collapseSignal}
+                        onDragStartPhase={handleDragStartPhase}
+                        onToggleGlobalEdit={handleToggleGlobalRearrange}
+                      />
+                    </div>
+                  )}
+
+                  {visiblePhases.map((phase, phaseIdx) => (
+                    <div 
+                      key={phase.id}
+                      ref={bindPhaseRef(phaseIdx)}
+                      style={getPhaseDragStyle(phaseIdx)}
+                    >
+                      <GuardrailSection
+                        phase={phase}
+                        phaseIndex={phaseIdx}
+                        totalPhases={visiblePhases.length}
+                        items={getFilteredItemsForPhase(phase.items)}
+                        completedItemIds={completedItemIds}
+                        onToggleComplete={handleToggleComplete}
+                        defaultExpanded={false}
+                        onAddItem={handleAddItem}
+                        onReorderItems={handleReorderItems}
+                        onDeleteItem={handleDeleteItem}
+                        onMovePhase={handleMovePhase}
+                        onDeletePhase={handleDeletePhase}
+                        isGlobalEditMode={isGlobalEditMode}
+                        collapseSignal={collapseSignal}
+                        onDragStartPhase={handleDragStartPhase}
+                        onToggleGlobalEdit={handleToggleGlobalRearrange}
+                      />
+                    </div>
+                  ))}
+
+                  {/* Empty State when no items match filter */}
+                  {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
+                    <div className="p-8 rounded-3xl bg-white border border-slate-200/90 text-center space-y-3 shadow-xs">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
+                        <CheckCircle2 className="w-6 h-6 stroke-[2.2]" />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-base font-bold text-slate-900 font-google">
+                          {filterMode === 'completed' ? 'No Completed Requirements Yet' : 'All Requirements Verified!'}
+                        </h3>
+                        <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                          {filterMode === 'completed'
+                            ? `You haven't marked any requirements as completed yet. Tap the circle checkmark on any requirement to mark it done!`
+                            : `Great job! All items in ${selectedPhaseId === 'all' ? 'the entire checklist' : 'this section'} are verified for ${activeProject.name}.`}
+                        </p>
+                      </div>
+                      {filterMode === 'completed' && (
+                        <button
+                          onClick={() => setFilterMode('all')}
+                          className="apple-press px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs shadow-xs border border-slate-300"
                         >
-                          <div className="flex items-center space-x-3 min-w-0 pr-2">
-                            <div className={`w-9 h-9 rounded-xl ${delTheme.iconBg} flex items-center justify-center text-white shrink-0 shadow-2xs`}>
-                              {renderPhaseIcon(delPhase.iconName, "w-4 h-4 text-white stroke-[2.2]")}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center space-x-1.5 mt-0.5">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                                  Step {delPhase.number}
-                                </span>
-                                <span className="text-xs text-slate-300">•</span>
-                                <span className="text-xs text-slate-500">
-                                  {delPhase.items.length} items
-                                </span>
-                              </div>
-                              <h3 className="text-sm font-bold text-slate-900 truncate font-google">
-                                {delPhase.title}
-                              </h3>
-                            </div>
+                          View All Requirements
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Deleted Sections Pill (Same style as phase cards with Restore capability) */}
+                  {deletedPhases.length > 0 && (
+                    <div className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 transition-colors duration-150 shadow-xs space-y-4">
+                      <div className="w-full flex items-start justify-between select-none">
+                        <div className="flex items-start space-x-3.5 pr-2 select-none flex-1">
+                          {/* Squircle Icon: Clean slate background with RotateCcw restore icon */}
+                          <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs text-slate-700">
+                            <RotateCcw className="w-6 h-6 stroke-[2.2]" />
                           </div>
 
+                          {/* Title & Badge */}
+                          <div className="space-y-1 select-none flex-1">
+                            <div className="flex items-center space-x-2 select-none mt-0.5">
+                              <span className="h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200/80 shadow-xs select-none inline-flex items-center justify-center pt-[1.5px] leading-none">
+                                Deleted ({deletedPhases.length})
+                              </span>
+                              <span className="text-xs text-slate-400 select-none">•</span>
+                              <span className="text-xs font-bold text-slate-600 select-none">
+                                Tap Restore to Re-add
+                              </span>
+                            </div>
+                            <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google">
+                              Deleted Sections
+                            </h2>
+                          </div>
+                        </div>
+
+                        {deletedPhases.length > 1 && (
                           <button
                             type="button"
-                            onClick={() => handleRestorePhase(delPhase.id)}
-                            className="apple-press px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center space-x-1.5 shadow-xs shrink-0 transition-colors"
-                            title={`Restore Step ${delPhase.number}`}
+                            onClick={handleRestoreAllPhases}
+                            className="apple-press text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
+                            title="Restore All Deleted Sections"
                           >
-                            <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
-                            <span>Restore</span>
+                            Restore All
                           </button>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        )}
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none">
+                        Sections you have removed are kept here so you can restore them at any time.
+                      </p>
+
+                      {/* List of Deleted Sections with Individual Restore Buttons */}
+                      <div className="space-y-2.5 pt-1">
+                        {deletedPhases.map((delPhase) => {
+                          const delTheme = getPhaseTheme(delPhase.number);
+                          return (
+                            <div 
+                              key={delPhase.id} 
+                              className="p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/70 flex items-center justify-between transition-colors duration-150"
+                            >
+                              <div className="flex items-center space-x-3 min-w-0 pr-2">
+                                <div className={`w-9 h-9 rounded-xl ${delTheme.iconBg} flex items-center justify-center text-white shrink-0 shadow-2xs`}>
+                                  {renderPhaseIcon(delPhase.iconName, "w-4 h-4 text-white stroke-[2.2]")}
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center space-x-1.5 mt-0.5">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                      Step {delPhase.number}
+                                    </span>
+                                    <span className="text-xs text-slate-300">•</span>
+                                    <span className="text-xs text-slate-500">
+                                      {delPhase.items.length} items
+                                    </span>
+                                  </div>
+                                  <h3 className="text-sm font-bold text-slate-900 truncate font-google">
+                                    {delPhase.title}
+                                  </h3>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRestorePhase(delPhase.id)}
+                                className="apple-press px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center space-x-1.5 shadow-xs shrink-0 transition-colors"
+                                title={`Restore Step ${delPhase.number}`}
+                              >
+                                <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
+                                <span>Restore</span>
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* Bottom Spacing clearance above the fixed bottom navigation dock */}
-            <div 
-              className="w-full pointer-events-none select-none transition-all duration-300"
-              style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 96px), 120px)' }}
-              aria-hidden="true" 
-            />
-          </div>
+            {/* 2. Projects Tab */}
+            <div className={displayedTab === 'projects' ? 'block' : 'hidden'}>
+              <ProjectsPage
+                projects={projects}
+                activeProjectId={activeProject.id}
+                totalRequirementsCount={allItems.length}
+                onSelectProject={(projId) => {
+                  setIsGlobalEditMode(false);
+                  setActiveProjectId(projId);
+                  setSelectedPhaseId('all');
+                  setFilterMode('all');
+                  handleSelectTab('checklist');
+                  window.dispatchEvent(new CustomEvent('collapse-all'));
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                }}
+                onRenameProject={(projId, newName) => {
+                  setProjects(prev => prev.map(p => p.id === projId ? { ...p, name: newName } : p));
+                }}
+                onDeleteProject={(projId) => {
+                  handleDeleteProject(projId);
+                }}
+                onCreateProject={(name, color) => {
+                  const newProj: Project = {
+                    id: `proj-${Date.now()}`,
+                    name: name,
+                    color: color,
+                    createdAt: new Date().toISOString(),
+                    completedItemIds: [],
+                    deletedPhaseIds: [],
+                    phaseOrder: undefined,
+                    customPhases: [],
+                    customItems: {},
+                  };
+                  setProjects(prev => [...prev, newProj]);
+                  setActiveProjectId(newProj.id);
+                  setSelectedPhaseId('all');
+                  setFilterMode('all');
+                  handleSelectTab('checklist');
+                  window.dispatchEvent(new CustomEvent('collapse-all'));
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                }}
+                onBackToChecklist={() => {
+                  handleSelectTab('checklist');
+                }}
+              />
+            </div>
 
-          {/* 2. Projects Tab */}
-          <div className={displayedTab === 'projects' ? 'block' : 'hidden'}>
-            <ProjectsPage
-              projects={projects}
-              activeProjectId={activeProject.id}
-              totalRequirementsCount={allItems.length}
-              onSelectProject={(projId) => {
-                setIsGlobalEditMode(false);
-                setActiveProjectId(projId);
-                setSelectedPhaseId('all');
-                setFilterMode('all');
-                handleSelectTab('checklist');
-                window.dispatchEvent(new CustomEvent('collapse-all'));
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }}
-              onRenameProject={(projId, newName) => {
-                setProjects(prev => prev.map(p => p.id === projId ? { ...p, name: newName } : p));
-              }}
-              onDeleteProject={(projId) => {
-                handleDeleteProject(projId);
-              }}
-              onCreateProject={(name, color) => {
-                const newProj: Project = {
-                  id: `proj-${Date.now()}`,
-                  name: name,
-                  color: color,
-                  createdAt: new Date().toISOString(),
-                  completedItemIds: [],
-                  deletedPhaseIds: [],
-                  phaseOrder: undefined,
-                  customPhases: [],
-                  customItems: {},
-                };
-                setProjects(prev => [...prev, newProj]);
-                setActiveProjectId(newProj.id);
-                setSelectedPhaseId('all');
-                setFilterMode('all');
-                handleSelectTab('checklist');
-                window.dispatchEvent(new CustomEvent('collapse-all'));
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }}
-              onBackToChecklist={() => {
-                handleSelectTab('checklist');
-              }}
-            />
-          </div>
-
-          {/* 3. Resources Tab */}
-          <div className={displayedTab === 'resources' ? 'block' : 'hidden'}>
-            <ResourcesPage 
-              collapseSignal={resourcesCollapseSignal}
-              onBackToChecklist={() => {
-                handleSelectTab('checklist');
-              }} 
-            />
+            {/* 3. Resources Tab */}
+            <div className={displayedTab === 'resources' ? 'block' : 'hidden'}>
+              <ResourcesPage 
+                collapseSignal={resourcesCollapseSignal}
+                onBackToChecklist={() => {
+                  handleSelectTab('checklist');
+                }} 
+              />
+            </div>
           </div>
         </div>
-
       </main>
+
+      {/* Phone QR Code Modal */}
+      <PhoneModal
+        isOpen={isPhoneModalOpen}
+        onClose={() => setIsPhoneModalOpen(false)}
+      />
 
       {/* 3. Floating Bottom Navigation Menu (iPhone Liquid Glass Interactive Dock) */}
       <div className="fixed ios-dock-bottom left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
