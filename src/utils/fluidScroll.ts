@@ -18,8 +18,8 @@ export const fluidScrollTo = (
     return;
   }
 
-  // Apple-tuned duration: swift & responsive, zero sluggishness
-  const duration = options?.duration ?? Math.min(260, Math.max(160, Math.abs(diff) * 0.16));
+  // Apple-tuned duration: smooth & gentle, neither sluggish nor rushed (220ms - 340ms)
+  const duration = options?.duration ?? Math.min(340, Math.max(220, Math.abs(diff) * 0.20));
   const startTime = performance.now();
 
   // Apple Quartic ease-out curve: swift initial response, critically damped settling
