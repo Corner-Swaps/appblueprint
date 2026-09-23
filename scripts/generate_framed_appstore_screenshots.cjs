@@ -7,7 +7,7 @@ const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrom
 const DOCS_DIR = path.join(__dirname, '../docs');
 const DIR_6_9 = path.join(__dirname, '../appstore_screenshots_6_9');
 const DIR_IPAD = path.join(__dirname, '../appstore_screenshots_ipad');
-const CACHE_DIR = path.join(__dirname, '.screenshot_cache');
+const CACHE_DIR = path.join(__dirname, '.raw_cache');
 
 [DIR_6_9, DIR_IPAD, CACHE_DIR].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -15,7 +15,7 @@ const CACHE_DIR = path.join(__dirname, '.screenshot_cache');
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
-function startServer(port = 3456) {
+function startServer(port = 3489) {
   const mimeTypes = {
     '.html': 'text/html',
     '.js': 'text/javascript',
@@ -48,7 +48,7 @@ function startServer(port = 3456) {
   });
 }
 
-// Read the curated list of completed item IDs for 72% overall completion
+// Read completed items list for 72% overall completion
 let completedList = [];
 try {
   completedList = JSON.parse(fs.readFileSync(path.join(__dirname, 'completed_72_ids.json'), 'utf8'));
@@ -170,7 +170,7 @@ async function injectIPhoneChrome(page, isScrolled = false) {
   }, { scrolled: isScrolled });
 }
 
-// Injects iPad status bar (no Dynamic Island, wide spacing, iPadOS 9:41)
+// Injects iPad status bar (iPadOS 9:41 AM, date, battery %)
 async function injectIPadChrome(page, isScrolled = false) {
   await page.evaluate(({ scrolled }) => {
     document.querySelectorAll('.bg-slate-900.text-white.text-xs, [aria-label="Back to Website"]').forEach(el => {
@@ -184,7 +184,7 @@ async function injectIPadChrome(page, isScrolled = false) {
       styleTag.id = 'ipad-safe-area-style';
       styleTag.innerHTML = `
         .min-h-screen {
-          padding-top: 44px !important;
+          padding-top: 48px !important;
           padding-bottom: 28px !important;
         }
       `;
@@ -201,7 +201,7 @@ async function injectIPadChrome(page, isScrolled = false) {
       top: 0;
       left: 0;
       right: 0;
-      height: 42px;
+      height: 44px;
       z-index: 99999;
       pointer-events: none;
       display: flex;
@@ -265,13 +265,13 @@ async function injectIPadChrome(page, isScrolled = false) {
   }, { scrolled: isScrolled });
 }
 
-// Screen titles and marketing subtitles
+// 5 Curated Screens
 const SCREENS = [
   {
     id: '01_production_checklist',
     badge: 'PRODUCTION READINESS',
     badgeColor: '#60A5FA', // Blue
-    accentGlow: 'rgba(59, 130, 246, 0.22)',
+    accentGlow: 'rgba(59, 130, 246, 0.24)',
     title: 'From Prototype to App Store',
     subtitle: 'Track 62+ Apple review guardrails, HIG compliance & submission steps'
   },
@@ -279,7 +279,7 @@ const SCREENS = [
     id: '02_architecture_audit',
     badge: 'APPLE HIG & LIQUID GLASS',
     badgeColor: '#818CF8', // Indigo
-    accentGlow: 'rgba(99, 102, 241, 0.24)',
+    accentGlow: 'rgba(99, 102, 241, 0.26)',
     title: 'Spatial Design & Fluid Physics',
     subtitle: 'Audit 44pt touch targets, spring mechanics & safe area clearances'
   },
@@ -287,7 +287,7 @@ const SCREENS = [
     id: '03_projects_manager',
     badge: 'MULTI-PROJECT WORKSPACE',
     badgeColor: '#34D399', // Emerald
-    accentGlow: 'rgba(16, 185, 129, 0.22)',
+    accentGlow: 'rgba(16, 185, 129, 0.24)',
     title: 'Manage All Your App Builds',
     subtitle: 'Seamlessly switch between iOS MVPs, companion apps & client releases'
   },
@@ -295,7 +295,7 @@ const SCREENS = [
     id: '04_app_launch_academy',
     badge: 'CURATED LAUNCH ACADEMY',
     badgeColor: '#C084FC', // Purple
-    accentGlow: 'rgba(168, 85, 247, 0.22)',
+    accentGlow: 'rgba(168, 85, 247, 0.24)',
     title: 'Avoid Costly App Rejections',
     subtitle: 'Battle-tested checklists, Apple guidelines & developer tools in one place'
   },
@@ -303,32 +303,34 @@ const SCREENS = [
     id: '05_config_generators',
     badge: 'AI AGENT DIRECTIVES',
     badgeColor: '#FBBF24', // Amber
-    accentGlow: 'rgba(245, 158, 11, 0.22)',
+    accentGlow: 'rgba(245, 158, 11, 0.24)',
     title: 'Supercharge AI Coding Agents',
     subtitle: 'One-tap directives for Google Antigravity, Claude Code & Cursor'
   }
 ];
 
-// Captures raw app screens for a device type
-async function captureRawScreens(browser, isIpad = false) {
-  const prefix = isIpad ? 'raw_ipad' : 'raw_iphone';
+// Capture raw screen and immediately composite to framed canvas
+async function processAllScreens(browser, isIpad = false) {
+  const prefix = isIpad ? 'ipad' : 'iphone';
+  const outDir = isIpad ? DIR_IPAD : DIR_6_9;
+  const canvasWidth = isIpad ? 2064 : 1320;
+  const canvasHeight = isIpad ? 2752 : 2868;
+
   console.log(`\n========================================`);
-  console.log(`Capturing Raw App Screens for ${isIpad ? 'iPad' : 'iPhone'}...`);
+  console.log(`Processing ${isIpad ? 'iPad Pro 13"' : 'iPhone 18 Pro'} Screens (${canvasWidth} x ${canvasHeight})...`);
   console.log(`========================================`);
 
   const page = await browser.newPage();
   
   if (isIpad) {
-    // iPad 13" aspect ratio: 960 x 1280 @ 2x
     await page.setViewport({
-      width: 960,
-      height: 1280,
+      width: 1024,
+      height: 1366,
       deviceScaleFactor: 2,
       isMobile: false,
       hasTouch: true,
     });
   } else {
-    // iPhone 6.9": 440 x 956 @ 3x
     await page.setViewport({
       width: 440,
       height: 956,
@@ -374,152 +376,118 @@ async function captureRawScreens(browser, isIpad = false) {
     localStorage.setItem('appblueprint_active_proj_id_v1', 'proj-1');
   }, completedList);
 
-  await page.goto('http://localhost:3456/?mode=app#app', { waitUntil: 'networkidle0' });
+  await page.goto('http://localhost:3489/?mode=app#app', { waitUntil: 'networkidle0' });
   await sleep(3500);
 
   const injectChrome = isIpad ? injectIPadChrome : injectIPhoneChrome;
 
-  // 1. Production Checklist
-  console.log(`[${prefix}] 1. Capturing 01_production_checklist...`);
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await injectChrome(page, false);
-  await sleep(500);
-  const raw1 = path.join(CACHE_DIR, `${prefix}_01.png`);
-  await page.screenshot({ path: raw1 });
+  for (let i = 0; i < SCREENS.length; i++) {
+    const screen = SCREENS[i];
+    console.log(`[${prefix}] Step ${i + 1}/5: ${screen.id}...`);
 
-  // 2. Architecture & HIG Audit
-  console.log(`[${prefix}] 2. Capturing 02_architecture_audit...`);
-  await page.evaluate(() => {
-    window.scrollTo(0, 0);
-    const step3Header = document.querySelector('#phase-3 .cursor-pointer');
-    if (step3Header) step3Header.click();
-  });
-  await sleep(600);
+    if (i === 0) {
+      // 1. Production Checklist
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await injectChrome(page, false);
+      await sleep(500);
+    } else if (i === 1) {
+      // 2. Architecture & HIG Audit
+      await page.evaluate(() => {
+        window.scrollTo(0, 0);
+        const step3Header = document.querySelector('#phase-3 .cursor-pointer');
+        if (step3Header) step3Header.click();
+      });
+      await sleep(600);
 
-  await page.evaluate(() => {
-    const prevItem = document.getElementById('p2-design-inspiration');
-    if (prevItem) prevItem.style.display = 'none';
+      await page.evaluate(() => {
+        const prevItem = document.getElementById('p2-design-inspiration');
+        if (prevItem) prevItem.style.display = 'none';
 
-    const lgHeader = document.querySelector('#p2-liquid-glass .cursor-pointer');
-    if (lgHeader) lgHeader.click();
-  });
-  await sleep(600);
+        const lgHeader = document.querySelector('#p2-liquid-glass .cursor-pointer');
+        if (lgHeader) lgHeader.click();
+      });
+      await sleep(600);
 
-  await page.evaluate(({ ipad }) => {
-    const el = document.getElementById('phase-3');
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const offset = ipad ? 50 : 62;
-      window.scrollTo({ top: scrollTop + rect.top - offset, behavior: 'instant' });
+      await page.evaluate(({ ipad }) => {
+        const el = document.getElementById('phase-3');
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const offset = ipad ? 50 : 62;
+          window.scrollTo({ top: scrollTop + rect.top - offset, behavior: 'instant' });
+        }
+      }, { ipad: isIpad });
+      await injectChrome(page, true);
+      await sleep(400);
+    } else if (i === 2) {
+      // 3. Multi-Project Manager
+      await page.evaluate(() => {
+        window.scrollTo(0, 0);
+        const projectsTab = document.querySelector('button[aria-label="Projects"]');
+        if (projectsTab) projectsTab.click();
+      });
+      await sleep(700);
+      await injectChrome(page, false);
+      await sleep(400);
+    } else if (i === 3) {
+      // 4. App Launch Academy & Resources
+      await page.evaluate(() => {
+        window.scrollTo(0, 0);
+        const resourcesTab = document.querySelector('button[aria-label="Academy and Resources"]');
+        if (resourcesTab) resourcesTab.click();
+      });
+      await sleep(700);
+      await injectChrome(page, false);
+      await sleep(400);
+    } else if (i === 4) {
+      // 5. Config Generators & Prompts
+      await page.evaluate(() => {
+        const aiSec = document.querySelector('#ai_models .cursor-pointer');
+        if (aiSec) aiSec.click();
+      });
+      await sleep(600);
+
+      await page.evaluate(() => {
+        const cursorHeader = document.querySelector('#ai-cursor .cursor-pointer');
+        if (cursorHeader) cursorHeader.click();
+      });
+      await sleep(600);
+
+      await page.evaluate(({ ipad }) => {
+        const el = document.getElementById('ai-cursor');
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const offset = ipad ? 50 : 62;
+          window.scrollTo({ top: scrollTop + rect.top - offset, behavior: 'instant' });
+        }
+      }, { ipad: isIpad });
+      await injectChrome(page, true);
+      await sleep(400);
     }
-  }, { ipad: isIpad });
-  await injectChrome(page, true);
-  await sleep(400);
-  const raw2 = path.join(CACHE_DIR, `${prefix}_02.png`);
-  await page.screenshot({ path: raw2 });
 
-  await page.evaluate(() => {
-    const prevItem = document.getElementById('p2-design-inspiration');
-    if (prevItem) prevItem.style.display = '';
-  });
+    // Capture screen to buffer
+    const screenshotBuffer = await page.screenshot({ type: 'png' });
+    const rawDataUrl = `data:image/png;base64,${screenshotBuffer.toString('base64')}`;
 
-  // 3. Multi-Project Manager
-  console.log(`[${prefix}] 3. Capturing 03_projects_manager...`);
-  await page.evaluate(() => {
-    window.scrollTo(0, 0);
-    const projectsTab = document.querySelector('button[aria-label="Projects"]');
-    if (projectsTab) projectsTab.click();
-  });
-  await sleep(700);
-  await injectChrome(page, false);
-  await sleep(400);
-  const raw3 = path.join(CACHE_DIR, `${prefix}_03.png`);
-  await page.screenshot({ path: raw3 });
-
-  // 4. App Launch Academy & Resources
-  console.log(`[${prefix}] 4. Capturing 04_app_launch_academy...`);
-  await page.evaluate(() => {
-    window.scrollTo(0, 0);
-    const resourcesTab = document.querySelector('button[aria-label="Academy and Resources"]');
-    if (resourcesTab) resourcesTab.click();
-  });
-  await sleep(700);
-  await injectChrome(page, false);
-  await sleep(400);
-  const raw4 = path.join(CACHE_DIR, `${prefix}_04.png`);
-  await page.screenshot({ path: raw4 });
-
-  // 5. Config Generators & Prompts
-  console.log(`[${prefix}] 5. Capturing 05_config_generators...`);
-  await page.evaluate(() => {
-    const aiSec = document.querySelector('#ai_models .cursor-pointer');
-    if (aiSec) aiSec.click();
-  });
-  await sleep(600);
-
-  await page.evaluate(() => {
-    const cursorHeader = document.querySelector('#ai-cursor .cursor-pointer');
-    if (cursorHeader) cursorHeader.click();
-  });
-  await sleep(600);
-
-  await page.evaluate(({ ipad }) => {
-    const el = document.getElementById('ai-cursor');
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const offset = ipad ? 50 : 62;
-      window.scrollTo({ top: scrollTop + rect.top - offset, behavior: 'instant' });
-    }
-  }, { ipad: isIpad });
-  await injectChrome(page, true);
-  await sleep(400);
-  const raw5 = path.join(CACHE_DIR, `${prefix}_05.png`);
-  await page.screenshot({ path: raw5 });
-
-  await page.close();
-}
-
-// Generate framed marketing screenshot using an HTML canvas template
-async function compositeFramedScreenshot(browser, config) {
-  const {
-    isIpad,
-    screen,
-    rawImagePath,
-    outPath
-  } = config;
-
-  const canvasWidth = isIpad ? 2064 : 1320;
-  const canvasHeight = isIpad ? 2752 : 2868;
-
-  // Read raw image as base64 data URL
-  const rawBase64 = fs.readFileSync(rawImagePath).toString('base64');
-  const rawDataUrl = `data:image/png;base64,${rawBase64}`;
-
-  // Build high-aesthetic Apple Marketing HTML
-  let html = '';
-
-  if (!isIpad) {
-    // iPhone 18 Framing: 1320 x 2868
-    html = `
+    // Build framed marketing HTML
+    let html = '';
+    if (!isIpad) {
+      // iPhone 18 Pro (1320 x 2868)
+      html = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       width: ${canvasWidth}px;
       height: ${canvasHeight}px;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Helvetica Neue", sans-serif;
       background: radial-gradient(110% 70% at 50% 12%, ${screen.accentGlow} 0%, rgba(13, 17, 23, 0) 70%),
-                  linear-gradient(180deg, #0A0D14 0%, #030508 100%);
+                  linear-gradient(180deg, #090C12 0%, #030508 100%);
       color: #FFFFFF;
       position: relative;
       display: flex;
@@ -527,11 +495,9 @@ async function compositeFramedScreenshot(browser, config) {
       align-items: center;
       -webkit-font-smoothing: antialiased;
     }
-
-    /* Ambient Subtle Grid / Mesh Texture */
     .ambient-glow {
       position: absolute;
-      top: -200px;
+      top: -180px;
       left: 50%;
       transform: translateX(-50%);
       width: 1200px;
@@ -541,25 +507,21 @@ async function compositeFramedScreenshot(browser, config) {
       pointer-events: none;
       z-index: 1;
     }
-
-    /* Top Marketing Typography Header */
     .header-container {
       position: relative;
       z-index: 10;
       width: 100%;
-      padding: 110px 80px 0 80px;
+      padding: 100px 70px 0 70px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
     }
-
-    /* Apple Glass Pill Badge */
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      height: 48px;
+      height: 46px;
       padding: 0 24px;
       border-radius: 9999px;
       background: rgba(255, 255, 255, 0.08);
@@ -573,7 +535,6 @@ async function compositeFramedScreenshot(browser, config) {
       text-transform: uppercase;
       color: ${screen.badgeColor};
     }
-
     .badge-dot {
       width: 8px;
       height: 8px;
@@ -581,41 +542,35 @@ async function compositeFramedScreenshot(browser, config) {
       background: ${screen.badgeColor};
       box-shadow: 0 0 10px ${screen.badgeColor};
     }
-
-    /* Headline Title */
     .title {
-      margin-top: 26px;
-      font-size: 70px;
+      margin-top: 24px;
+      font-size: 72px;
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.1;
       color: #FFFFFF;
       text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
-      max-width: 1160px;
+      max-width: 1180px;
     }
-
-    /* Subtitle */
     .subtitle {
-      margin-top: 18px;
-      font-size: 33px;
+      margin-top: 16px;
+      font-size: 34px;
       font-weight: 500;
       letter-spacing: -0.015em;
       line-height: 1.35;
       color: #94A3B8;
-      max-width: 1060px;
+      max-width: 1080px;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
-
-    /* iPhone 18 Titanium Device Frame */
     .device-wrapper {
       position: absolute;
-      top: 610px;
+      top: 590px;
       left: 50%;
       transform: translateX(-50%);
-      width: 1120px;
-      height: 2434px;
+      width: 1140px;
+      height: 2460px;
       z-index: 10;
-      border-radius: 70px;
+      border-radius: 68px;
       padding: 14px;
       background: linear-gradient(135deg, #44474B 0%, #1A1C1E 45%, #2B2E32 100%);
       box-shadow: 
@@ -627,18 +582,15 @@ async function compositeFramedScreenshot(browser, config) {
       display: flex;
       flex-direction: column;
     }
-
-    /* Inner Screen Mask */
     .screen-container {
       width: 100%;
       height: 100%;
-      border-radius: 56px;
+      border-radius: 54px;
       overflow: hidden;
       position: relative;
       background: #000000;
       box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.85);
     }
-
     .screen-img {
       width: 100%;
       height: 100%;
@@ -646,48 +598,10 @@ async function compositeFramedScreenshot(browser, config) {
       object-position: top center;
       display: block;
     }
-
-    /* Physical Dynamic Island cutout overlay */
-    .dynamic-island {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 322px;
-      height: 92px;
-      background: #000000;
-      border-radius: 9999px;
-      z-index: 30;
-      box-shadow: 0 0 2px rgba(255, 255, 255, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 24px;
-    }
-
-    .camera-lens {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #1C2333 0%, #060910 100%);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      position: relative;
-    }
-
-    .camera-reflection {
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.6);
-    }
   </style>
 </head>
 <body>
   <div class="ambient-glow"></div>
-
   <div class="header-container">
     <div class="badge">
       <span class="badge-dot"></span>
@@ -696,40 +610,30 @@ async function compositeFramedScreenshot(browser, config) {
     <h1 class="title">${screen.title}</h1>
     <p class="subtitle">${screen.subtitle}</p>
   </div>
-
   <div class="device-wrapper">
     <div class="screen-container">
-      <div class="dynamic-island">
-        <div class="camera-lens">
-          <div class="camera-reflection"></div>
-        </div>
-      </div>
       <img class="screen-img" src="${rawDataUrl}" alt="${screen.title}" />
     </div>
   </div>
 </body>
 </html>
-    `;
-  } else {
-    // iPad Pro 13" Framing: 2064 x 2752
-    html = `
+      `;
+    } else {
+      // iPad Pro 13" (2064 x 2752)
+      html = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       width: ${canvasWidth}px;
       height: ${canvasHeight}px;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Helvetica Neue", sans-serif;
       background: radial-gradient(110% 70% at 50% 10%, ${screen.accentGlow} 0%, rgba(13, 17, 23, 0) 70%),
-                  linear-gradient(180deg, #0A0D14 0%, #030508 100%);
+                  linear-gradient(180deg, #090C12 0%, #030508 100%);
       color: #FFFFFF;
       position: relative;
       display: flex;
@@ -737,10 +641,9 @@ async function compositeFramedScreenshot(browser, config) {
       align-items: center;
       -webkit-font-smoothing: antialiased;
     }
-
     .ambient-glow {
       position: absolute;
-      top: -240px;
+      top: -220px;
       left: 50%;
       transform: translateX(-50%);
       width: 1600px;
@@ -750,19 +653,16 @@ async function compositeFramedScreenshot(browser, config) {
       pointer-events: none;
       z-index: 1;
     }
-
-    /* Top Marketing Typography Header */
     .header-container {
       position: relative;
       z-index: 10;
       width: 100%;
-      padding: 100px 100px 0 100px;
+      padding: 95px 90px 0 90px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
     }
-
     .badge {
       display: inline-flex;
       align-items: center;
@@ -781,7 +681,6 @@ async function compositeFramedScreenshot(browser, config) {
       text-transform: uppercase;
       color: ${screen.badgeColor};
     }
-
     .badge-dot {
       width: 9px;
       height: 9px;
@@ -789,10 +688,9 @@ async function compositeFramedScreenshot(browser, config) {
       background: ${screen.badgeColor};
       box-shadow: 0 0 12px ${screen.badgeColor};
     }
-
     .title {
-      margin-top: 26px;
-      font-size: 80px;
+      margin-top: 24px;
+      font-size: 82px;
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.1;
@@ -800,9 +698,8 @@ async function compositeFramedScreenshot(browser, config) {
       text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
       max-width: 1750px;
     }
-
     .subtitle {
-      margin-top: 18px;
+      margin-top: 16px;
       font-size: 38px;
       font-weight: 500;
       letter-spacing: -0.015em;
@@ -811,11 +708,9 @@ async function compositeFramedScreenshot(browser, config) {
       max-width: 1600px;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
-
-    /* iPad Pro 13" Aluminum Bezel Frame */
     .device-wrapper {
       position: absolute;
-      top: 570px;
+      top: 560px;
       left: 50%;
       transform: translateX(-50%);
       width: 1820px;
@@ -823,7 +718,7 @@ async function compositeFramedScreenshot(browser, config) {
       z-index: 10;
       border-radius: 52px;
       padding: 22px;
-      background: linear-gradient(135deg, #33363B 0%, #151618 50%, #25272B 100%);
+      background: linear-gradient(135deg, #35383D 0%, #151618 50%, #26282C 100%);
       box-shadow: 
         0 65px 130px -25px rgba(0, 0, 0, 0.95),
         0 35px 70px -15px rgba(0, 0, 0, 0.8),
@@ -833,8 +728,6 @@ async function compositeFramedScreenshot(browser, config) {
       display: flex;
       flex-direction: column;
     }
-
-    /* iPad Front Camera in top bezel */
     .ipad-camera {
       position: absolute;
       top: 6px;
@@ -847,18 +740,15 @@ async function compositeFramedScreenshot(browser, config) {
       border: 1px solid rgba(255, 255, 255, 0.15);
       z-index: 20;
     }
-
-    /* Inner Screen Mask */
     .screen-container {
       width: 100%;
       height: 100%;
-      border-radius: 34px;
+      border-radius: 32px;
       overflow: hidden;
       position: relative;
-      background: #000000;
+      background: #FAF8F6;
       box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.85);
     }
-
     .screen-img {
       width: 100%;
       height: 100%;
@@ -870,7 +760,6 @@ async function compositeFramedScreenshot(browser, config) {
 </head>
 <body>
   <div class="ambient-glow"></div>
-
   <div class="header-container">
     <div class="badge">
       <span class="badge-dot"></span>
@@ -879,7 +768,6 @@ async function compositeFramedScreenshot(browser, config) {
     <h1 class="title">${screen.title}</h1>
     <p class="subtitle">${screen.subtitle}</p>
   </div>
-
   <div class="device-wrapper">
     <div class="ipad-camera"></div>
     <div class="screen-container">
@@ -888,29 +776,32 @@ async function compositeFramedScreenshot(browser, config) {
   </div>
 </body>
 </html>
-    `;
+      `;
+    }
+
+    // Render framed canvas in a separate page
+    const compositePage = await browser.newPage();
+    await compositePage.setViewport({
+      width: canvasWidth,
+      height: canvasHeight,
+      deviceScaleFactor: 1,
+    });
+    await compositePage.setContent(html, { waitUntil: 'networkidle0' });
+    await sleep(250);
+
+    const outPath = path.join(outDir, `${screen.id}.png`);
+    await compositePage.screenshot({ path: outPath });
+    console.log(`Saved framed: ${outPath} (${canvasWidth} x ${canvasHeight}, ${fs.statSync(outPath).size} bytes)`);
+
+    await compositePage.close();
   }
-
-  // Open page in puppeteer at 1:1 scale
-  const page = await browser.newPage();
-  await page.setViewport({
-    width: canvasWidth,
-    height: canvasHeight,
-    deviceScaleFactor: 1,
-  });
-
-  await page.setContent(html, { waitUntil: 'networkidle0' });
-  await sleep(300);
-
-  await page.screenshot({ path: outPath });
-  console.log(`Saved framed: ${outPath} (${canvasWidth} x ${canvasHeight})`);
 
   await page.close();
 }
 
 async function run() {
-  console.log('Starting local server on port 3456...');
-  const server = await startServer(3456);
+  console.log('Starting local server on port 3489...');
+  const server = await startServer(3489);
 
   console.log('Launching headless Chrome...');
   const browser = await puppeteer.launch({
@@ -919,48 +810,16 @@ async function run() {
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
   });
 
-  // Step 1: Capture Raw iPhone screens
-  await captureRawScreens(browser, false);
+  // 1. Process iPhone 18 Pro screens (1320 x 2868)
+  await processAllScreens(browser, false);
 
-  // Step 2: Capture Raw iPad screens
-  await captureRawScreens(browser, true);
-
-  // Step 3: Composite Framed iPhone 18 screenshots (1320 x 2868)
-  console.log(`\n========================================`);
-  console.log('Compositing Framed iPhone 18 Screenshots (1320 x 2868)...');
-  console.log(`========================================`);
-  for (let i = 0; i < SCREENS.length; i++) {
-    const screen = SCREENS[i];
-    const rawPath = path.join(CACHE_DIR, `raw_iphone_0${i + 1}.png`);
-    const outPath = path.join(DIR_6_9, `${screen.id}.png`);
-    await compositeFramedScreenshot(browser, {
-      isIpad: false,
-      screen,
-      rawImagePath: rawPath,
-      outPath
-    });
-  }
-
-  // Step 4: Composite Framed iPad Pro 13" screenshots (2064 x 2752)
-  console.log(`\n========================================`);
-  console.log('Compositing Framed iPad Pro 13" Screenshots (2064 x 2752)...');
-  console.log(`========================================`);
-  for (let i = 0; i < SCREENS.length; i++) {
-    const screen = SCREENS[i];
-    const rawPath = path.join(CACHE_DIR, `raw_ipad_0${i + 1}.png`);
-    const outPath = path.join(DIR_IPAD, `${screen.id}.png`);
-    await compositeFramedScreenshot(browser, {
-      isIpad: true,
-      screen,
-      rawImagePath: rawPath,
-      outPath
-    });
-  }
+  // 2. Process iPad Pro 13" screens (2064 x 2752)
+  await processAllScreens(browser, true);
 
   await browser.close();
   server.close();
 
-  console.log('\nAll iPhone 18 and iPad Pro screenshots successfully created!');
+  console.log('\nAll iPhone 18 and iPad Pro App Store screenshots generated and framed successfully!');
 }
 
 run().catch((err) => {
