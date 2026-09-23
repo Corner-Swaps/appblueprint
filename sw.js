@@ -1,5 +1,5 @@
-// Service Worker for LaunchReady OS PWA
-const CACHE_NAME = 'launchready-v1';
+// Service Worker for App Blueprint PWA
+const CACHE_NAME = 'appblueprint-v1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
