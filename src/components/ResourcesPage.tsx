@@ -684,12 +684,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
           return (
             <div 
-              id={sec.id}
               key={sec.id}
               className="space-y-3"
             >
               {/* Section Header Card (The original pill) */}
               <div 
+                id={sec.id}
                 className="rounded-3xl border border-slate-200/90 bg-white shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5"
               >
                 {/* Section Header Block: clicking text minimizes/toggles section */}

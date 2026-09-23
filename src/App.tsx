@@ -30,11 +30,11 @@ import {
 import { Website } from './components/Website/Website';
 import { AppLauncherBar } from './components/Website/AppLauncherBar';
 
-const TAB_KEYS: Array<'checklist' | 'projects' | 'resources'> = ['checklist', 'projects', 'resources'];
-const TAB_INDEX_MAP: Record<'checklist' | 'projects' | 'resources', number> = {
+const TAB_KEYS: Array<'checklist' | 'resources' | 'projects'> = ['checklist', 'resources', 'projects'];
+const TAB_INDEX_MAP: Record<'checklist' | 'resources' | 'projects', number> = {
   checklist: 0,
-  projects: 1,
-  resources: 2,
+  resources: 1,
+  projects: 2,
 };
 const DOCK_SLOT_DISTANCE = 68; // 56px slot + 12px gap
 const DOCK_PADDING = 8;
@@ -1137,24 +1137,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
               </span>
             </button>
 
-            {/* 2. Folder / Projects Icon Button */}
-            <button
-              type="button"
-              onClick={() => handleSelectTab('projects')}
-              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center shrink-0 cursor-pointer select-none"
-              title={`Switch Project (${activeProject.name})`}
-              aria-label="Projects"
-            >
-              <Folder 
-                className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
-                  activeTab === 'projects' 
-                    ? 'text-blue-600' 
-                    : 'text-slate-500'
-                }`} 
-              />
-            </button>
-
-            {/* 3. Graduation Cap / Developer Academy & Resources Button */}
+            {/* 2. Graduation Cap / Developer Academy & Resources Button */}
             <button
               type="button"
               onClick={() => handleSelectTab('resources')}
@@ -1166,6 +1149,23 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                 className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
                   activeTab === 'resources' 
                     ? 'text-purple-600' 
+                    : 'text-slate-500'
+                }`} 
+              />
+            </button>
+
+            {/* 3. Folder / Projects Icon Button */}
+            <button
+              type="button"
+              onClick={() => handleSelectTab('projects')}
+              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center shrink-0 cursor-pointer select-none"
+              title={`Switch Project (${activeProject.name})`}
+              aria-label="Projects"
+            >
+              <Folder 
+                className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
+                  activeTab === 'projects' 
+                    ? 'text-blue-600' 
                     : 'text-slate-500'
                 }`} 
               />
