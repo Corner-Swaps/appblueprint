@@ -32,3 +32,12 @@ yarn-debug.log*
 .env
 .env.*
 !.env.example
+
+# Temporary Audits
+screenshots/audit/
+
+# Xcode Device Builds & Scratch
+build_device/
+scratch/
+
+
