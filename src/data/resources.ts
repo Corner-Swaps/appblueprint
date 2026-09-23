@@ -48,8 +48,32 @@ export const RESOURCE_CATEGORIES: { id: ResourceCategory | 'all'; label: string 
 export const RESOURCES_DATA: ResourceItem[] = [
 
   // ==========================================
-  // TYPOGRAPHY & FONT SYSTEMS (6 FREE RESOURCES)
+  // TYPOGRAPHY & FONT SYSTEMS (7 FREE RESOURCES)
   // ==========================================
+  {
+    id: 'type-typewolf',
+    title: 'Typewolf (Curated Typography & Font Pairing Guides)',
+    category: 'typography',
+    categoryLabel: 'Curated Typography Guide',
+    badge: 'Free',
+    badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
+    platform: 'both',
+    shortDescription: 'The web\'s most influential typography guide featuring curated font pairings, trending mobile app typefaces, lookbooks, and free font alternatives.',
+    whyItMatters: 'Choosing font pairings from scratch can feel overwhelming. Typewolf provides proven, designer-tested font pairings and free Google/Fontshare alternatives to expensive commercial typefaces.',
+    keyFeatures: [
+      'Comprehensive curated font pairing guides with real-world mobile app screenshots.',
+      'Definitive lists of the 10 best modern sans-serif, geometric, and display fonts.',
+      'Free font lookalikes and pairing cheatsheets for popular luxury typefaces.'
+    ],
+    bestUsedFor: 'Discovering typography inspiration, finding beautiful font pairing combinations, and testing heading styles before coding.',
+    freeTierInfo: '100% free web resource, articles, lookbooks, and font pairing recommendations.',
+    quickStart: 'Browse Typewolf pairing lookbooks, pick a proven heading + body combination (e.g., Satoshi + General Sans, or Inter + Plus Jakarta Sans), and download the free files locally.',
+    reviewTraps: 'Avoid using more than two font families in a single app. Mixing too many typefaces causes visual clutter and increases download bundle sizes.',
+    url: 'https://www.typewolf.com/',
+    iconName: 'Sparkles',
+    promptOrCommand: 'Recommend two complementary font pairings for our mobile application following Typewolf best practices. Provide one modern clean sans pairing and one distinctive display pairing with exact CSS letter-spacing and font-weights.',
+    promptLabel: 'AI Prompt for Typography Pairing'
+  },
   {
     id: 'type-fontshare',
     title: 'Fontshare (Indian Type Foundry)',
