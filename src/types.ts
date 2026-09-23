@@ -47,6 +47,15 @@ export interface ChecklistItem {
   codeSnippet?: CodeSnippet;
   commonRejectionTraps: string[];
   verificationQuestions: string[];
+  videoUrl?: {
+    title: string;
+    url: string;
+  };
+  whatHappensNext?: string;
+  directLink?: {
+    label: string;
+    url: string;
+  };
 }
 
 export interface Phase {

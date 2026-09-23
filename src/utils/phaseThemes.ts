@@ -10,6 +10,16 @@ export interface PhaseTheme {
 }
 
 export const PHASE_THEMES: Record<number, PhaseTheme> = {
+  0: {
+    number: 0,
+    color: '#8B5CF6',
+    iconBg: 'bg-[#8B5CF6]',
+    iconColor: 'text-white',
+    pillBg: 'bg-[#8B5CF6]',
+    pillText: 'text-white',
+    pillBorder: 'border-transparent',
+    progressBg: 'bg-[#8B5CF6]',
+  },
   1: {
     number: 1,
     color: '#0284C7',

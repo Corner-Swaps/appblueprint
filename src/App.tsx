@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { PHASES_DATA } from './data/phases';
+import { SETUP_STEPS_PHASE } from './data/setupSteps';
 import { ChecklistItem, Phase, Project } from './types';
 import { GuardrailSection } from './components/GuardrailSection';
 import { AllPhasesPage } from './components/AllPhasesPage';
 import { ProjectsPage } from './components/ProjectsPage';
 import { ResourcesPage } from './components/ResourcesPage';
 import { SplashScreen } from './components/SplashScreen';
+import { LegalConsentModal } from './components/LegalConsentModal';
+import { NativeReviewPromptModal } from './components/NativeReviewPromptModal';
 import { useFluidDragReorder } from './hooks/useFluidDragReorder';
 import { renderPhaseIcon } from './utils/renderPhaseIcon';
 import { getPhaseTheme } from './utils/phaseThemes';
-import { triggerAllCompleteConfetti } from './utils/confetti';
+import { triggerAllCompleteConfetti, triggerPhaseCompleteConfetti } from './utils/confetti';
 import { triggerHaptic } from './utils/haptics';
 import { ImpactStyle } from '@capacitor/haptics';
 import { 
@@ -76,8 +79,8 @@ export const App: React.FC = () => {
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map((p: Project) => ({
             ...p,
-            phaseOrder: undefined, // Fresh restart: reset custom phase ordering so Idea & Audience is first
-            deletedPhaseIds: [],   // Fresh restart: restore all phases
+            phaseOrder: p.phaseOrder,
+            deletedPhaseIds: p.deletedPhaseIds || [],
             completedItemIds: (p.completedItemIds || []).map(id => id === 'p4-keychain' ? 'p4-keychain-keystore' : id)
           }));
         }
@@ -106,6 +109,73 @@ export const App: React.FC = () => {
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
   const [collapseSignal, setCollapseSignal] = useState(0);
 
+  // Legal Consent & Store Review State
+  const [showLegalModal, setShowLegalModal] = useState<boolean>(() => {
+    try {
+      return !localStorage.getItem('launchready_legal_agreed_v1');
+    } catch {
+      return false;
+    }
+  });
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+  // Track session visit count for native review prompt (at 15 and 30 visits, never > 30)
+  useEffect(() => {
+    try {
+      const sessionCounted = sessionStorage.getItem('launchready_session_counted');
+      let currentVisits = parseInt(localStorage.getItem('launchready_visits_count') || '0', 10);
+
+      if (!sessionCounted) {
+        currentVisits += 1;
+        localStorage.setItem('launchready_visits_count', currentVisits.toString());
+        sessionStorage.setItem('launchready_session_counted', 'true');
+      }
+
+      const hasReviewed15 = localStorage.getItem('launchready_review_prompted_15');
+      const hasReviewed30 = localStorage.getItem('launchready_review_prompted_30');
+
+      if (currentVisits === 15 && !hasReviewed15) {
+        const timer = setTimeout(() => setShowReviewModal(true), 1200);
+        return () => clearTimeout(timer);
+      } else if (currentVisits === 30 && !hasReviewed30) {
+        const timer = setTimeout(() => setShowReviewModal(true), 1200);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      console.warn('Failed to compute visit count', e);
+    }
+  }, []);
+
+  const handleAcceptLegal = () => {
+    try {
+      localStorage.setItem('launchready_legal_agreed_v1', 'true');
+    } catch (e) {
+      console.warn('Failed to save legal agreement', e);
+    }
+    setShowLegalModal(false);
+  };
+
+  const handleCloseReview = () => {
+    try {
+      const visits = parseInt(localStorage.getItem('launchready_visits_count') || '0', 10);
+      if (visits <= 15) {
+        localStorage.setItem('launchready_review_prompted_15', 'true');
+      } else {
+        localStorage.setItem('launchready_review_prompted_30', 'true');
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+    setShowReviewModal(false);
+  };
+
+  const handleSubmitReview = (rating: number) => {
+    handleCloseReview();
+    if (rating >= 4) {
+      triggerPhaseCompleteConfetti();
+    }
+  };
+
   // Page Horizontal Swipe Tracking
   const pageTouchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 
@@ -114,6 +184,7 @@ export const App: React.FC = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
+    window.dispatchEvent(new CustomEvent('collapse-subsections'));
     setIsGlobalEditMode(false);
     setIsAllPhasesPageOpen(false);
     setPreviousTab(activeTab);
@@ -213,8 +284,15 @@ export const App: React.FC = () => {
     return phasesWithCustomItems.map((p, idx) => ({ ...p, number: idx + 1 }));
   }, [activeProject]);
 
-  // Flattened Checklist Items across all current project phases
-  const allItems = useMemo(() => currentProjectPhases.flatMap(p => p.items), [currentProjectPhases]);
+  // Flattened Checklist Items across Set Up Steps and all current project phases
+  const allItems = useMemo(() => {
+    const customSetupItems = activeProject.customItems?.[SETUP_STEPS_PHASE.id];
+    const setupItems = customSetupItems || SETUP_STEPS_PHASE.items;
+    return [
+      ...setupItems,
+      ...currentProjectPhases.flatMap(p => p.items)
+    ];
+  }, [activeProject.customItems, currentProjectPhases]);
 
   const validItemIdsSet = useMemo(() => new Set(allItems.map(i => i.id)), [allItems]);
 
@@ -651,62 +729,34 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                 </button>
               </div>
 
-              {/* Action Bar at the Top of the Phases: 4-circle rearrange handle & Fresh Restart */}
-              <div className="flex items-center justify-between px-1 py-0.5">
-                <div className="flex items-center space-x-1.5 select-none">
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    {visiblePhases.length} Phases • {completedItemIds.length} of {totalAll} Verified
-                  </span>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  {/* Fresh Restart button: Restores Phase 1 Idea & Audience first and the rest in canonical order */}
-                  <button
-                    type="button"
-                    onClick={handleFreshRestartPhases}
-                    className="apple-press px-2.5 py-1 rounded-full text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 flex items-center space-x-1 shadow-2xs transition-colors"
-                    title="Fresh Restart: Reset phases to default order (Idea & Audience first)"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5 stroke-[2.2]" />
-                    <span className="hidden sm:inline">Fresh Restart</span>
-                  </button>
-
-                  {/* 4-Circle Icon Button at the Top of the Phases */}
-                  <button
-                    type="button"
-                    onClick={handleToggleGlobalRearrange}
-                    className={`apple-press px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border ${
-                      isGlobalEditMode
-                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                        : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900'
-                    }`}
-                    title={isGlobalEditMode ? "Done Rearranging" : "Click to minimize drop-downs and rearrange phases"}
-                  >
-                    <GripFour className={`w-3.5 h-3.5 ${isGlobalEditMode ? 'text-white' : 'text-slate-600'}`} />
-                    <span>{isGlobalEditMode ? 'Done' : 'Rearrange'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Active Rearrange Banner */}
-              {isGlobalEditMode && (
-                <div className="p-3 bg-slate-900 text-white rounded-2xl flex items-center justify-between text-xs shadow-xs animate-fade-in select-none">
-                  <div className="flex items-center space-x-2 min-w-0">
-                    <GripFour className="w-4 h-4 text-slate-300 shrink-0" />
-                    <span className="truncate">Hold &amp; drag the 4-circle handle on any phase to move and reorder.</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsGlobalEditMode(false)}
-                    className="apple-press px-3 py-1 rounded-full bg-white text-slate-900 font-bold text-xs shrink-0 ml-2"
-                  >
-                    Done
-                  </button>
+            {/* Main Feed: All Project Phases */}
+            <div className="space-y-4 pt-1">
+              {/* Set Up Steps Section (Foundational steps before Phase 1) */}
+              {(selectedPhaseId === 'all' || selectedPhaseId === SETUP_STEPS_PHASE.id) && (
+                <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
+                  <GuardrailSection
+                    phase={SETUP_STEPS_PHASE}
+                    phaseIndex={0}
+                    totalPhases={visiblePhases.length + 1}
+                    items={getFilteredItemsForPhase(
+                      activeProject.customItems?.[SETUP_STEPS_PHASE.id] || SETUP_STEPS_PHASE.items
+                    )}
+                    completedItemIds={completedItemIds}
+                    onToggleComplete={handleToggleComplete}
+                    defaultExpanded={false}
+                    onAddItem={handleAddItem}
+                    onReorderItems={handleReorderItems}
+                    onDeleteItem={handleDeleteItem}
+                    onMovePhase={handleMovePhase}
+                    onDeletePhase={handleDeletePhase}
+                    isGlobalEditMode={isGlobalEditMode}
+                    collapseSignal={collapseSignal}
+                    onDragStartPhase={handleDragStartPhase}
+                    onToggleGlobalEdit={handleToggleGlobalRearrange}
+                  />
                 </div>
               )}
 
-            {/* Main Feed: All Project Phases */}
-            <div className="space-y-4 pt-1">
               {visiblePhases.map((phase, phaseIdx) => (
                 <div 
                   id={phase.id} 
@@ -849,31 +899,6 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                       );
                     })}
                   </div>
-                </div>
-              )}
-
-              {/* Empty State when no items match filter */}
-              {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
-                <div className="p-8 rounded-3xl bg-white border border-slate-200/90 text-center space-y-3 shadow-xs">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6 stroke-[2.2]" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-base font-bold text-slate-900 font-google">No requirements found</h3>
-                    <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                      There are no requirements matching the current filter.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setFilterMode('all');
-                      setSelectedPhaseId('all');
-                    }}
-                    className="apple-press inline-flex items-center space-x-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-2xs"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reset Filters</span>
-                  </button>
                 </div>
               )}
             </div>
@@ -1057,7 +1082,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
           setIsGlobalEditMode(false);
           setIsAllPhasesPageOpen(false);
         }}
-        phases={currentProjectPhases}
+        phases={[SETUP_STEPS_PHASE, ...currentProjectPhases]}
         completedItemIds={completedItemIds}
         onSelectPhase={(phaseId) => {
           setIsGlobalEditMode(false);
@@ -1075,9 +1100,22 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
             }
           }, 80);
         }}
-        onReorderPhases={handleReorderPhases}
+        onReorderPhases={(newPhases) => handleReorderPhases(newPhases.filter(p => p.id !== SETUP_STEPS_PHASE.id))}
         onAddPhase={handleAddPhase}
         onDeletePhase={handleDeletePhase}
+      />
+
+      {/* Mandatory First-Launch Terms of Service & Legal Disclaimer Modal */}
+      <LegalConsentModal
+        isOpen={showLegalModal}
+        onAccept={handleAcceptLegal}
+      />
+
+      {/* Native Store Review Prompt (Shown at visit 15 and 30, never > 30) */}
+      <NativeReviewPromptModal
+        isOpen={showReviewModal}
+        onClose={handleCloseReview}
+        onSubmit={handleSubmitReview}
       />
 
     </div>
