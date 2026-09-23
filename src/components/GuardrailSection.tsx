@@ -305,6 +305,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         id={phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`}
         ref={sectionRef}
         className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
+          isJustMinimized ? 'apple-section-pulse' : ''
+        } ${
         isGlobalEditMode 
           ? 'p-3.5 sm:p-4' 
           : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5'
