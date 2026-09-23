@@ -116,10 +116,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onLaunchApp }) => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:text-slate-950 hover:bg-black/5"
+              className="apple-press w-10 h-10 rounded-xl text-slate-700 hover:text-slate-950 hover:bg-black/5 flex items-center justify-center transition-colors"
               aria-label="Toggle Menu"
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5 stroke-[2.2]" /> : <Menu className="w-5 h-5 stroke-[2.2]" />}
             </button>
           </div>
 
