@@ -23,7 +23,8 @@ import {
   SlidersHorizontal, 
   RotateCcw,
   GraduationCap,
-  LayoutGrid
+  LayoutGrid,
+  ChevronRight
 } from 'lucide-react';
 
 const TAB_KEYS: Array<'checklist' | 'projects' | 'resources'> = ['checklist', 'projects', 'resources'];
@@ -742,7 +743,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
           {/* 1. Checklist Tab */}
           <div className={displayedTab === 'checklist' ? 'space-y-3.5 pb-4' : 'hidden'}>
               {/* Project Header at the Top: Centered, tapping opens Projects Page */}
-              <div className="pt-2 pb-1 flex flex-col items-center justify-center w-full space-y-1.5">
+              <div className="pt-2 pb-1 flex flex-col items-center justify-center w-full">
                 <button
                   type="button"
                   onClick={() => {
@@ -757,24 +758,11 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                     {activeProject.name}
                   </h1>
                 </button>
-
-                {/* All Steps Roadmap Pill */}
-                <button
-                  type="button"
-                  onClick={() => setIsAllPhasesPageOpen(true)}
-                  className="apple-press inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-white/90 border border-slate-200/90 text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50 transition-colors"
-                  title="View All Steps Roadmap"
-                >
-                  <LayoutGrid className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
-                  <span>All Steps Roadmap</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-slate-500 font-semibold">{visiblePhases.length + 1} Steps</span>
-                </button>
               </div>
 
             {/* Main Feed: All Project Phases */}
             <div className="space-y-4 pt-1">
-              {/* Set Up Steps Section (Foundational steps before Phase 1) */}
+              {/* Set Up Section (Foundational setup before Phase 1) */}
               {(selectedPhaseId === 'all' || selectedPhaseId === SETUP_STEPS_PHASE.id) && (
                 <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
                   <GuardrailSection
@@ -797,6 +785,45 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                     onDragStartPhase={handleDragStartPhase}
                     onToggleGlobalEdit={handleToggleGlobalRearrange}
                   />
+                </div>
+              )}
+
+              {/* Steps Roadmap Section Card: Positioned right after Set Up */}
+              {selectedPhaseId === 'all' && !isGlobalEditMode && (
+                <div className="py-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setIsAllPhasesPageOpen(true)}
+                    className="apple-press w-full p-4 rounded-3xl bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all flex items-center justify-between text-left group cursor-pointer"
+                    title="View All Steps Roadmap"
+                  >
+                    <div className="flex items-center space-x-3.5 min-w-0">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-xs shrink-0">
+                        <LayoutGrid className="w-6 h-6 stroke-[2.2]" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <span className="h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-700 shadow-2xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none">
+                            Steps Roadmap
+                          </span>
+                          <span className="text-xs text-slate-300">•</span>
+                          <span className="text-xs font-bold text-slate-600">
+                            {visiblePhases.length + 1} Total Steps
+                          </span>
+                        </div>
+                        <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug font-google truncate mt-0.5">
+                          Project Roadmap &amp; All Steps
+                        </h3>
+                        <p className="text-xs text-slate-500 truncate">
+                          Overview, rearrange, and track multi-phase launch milestones
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-1.5 text-xs font-bold text-indigo-600 shrink-0 ml-2">
+                      <span className="hidden sm:inline">View</span>
+                      <ChevronRight className="w-4 h-4 text-indigo-500 group-hover:translate-x-0.5 transition-transform stroke-[2.5]" />
+                    </div>
+                  </button>
                 </div>
               )}
 

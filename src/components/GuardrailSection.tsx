@@ -163,11 +163,17 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   };
 
   const handleToggleExpand = () => {
-    setIsExpanded(prev => !prev);
+    setIsExpanded(prev => {
+      if (prev) {
+        setExpandedItemId(null);
+      }
+      return !prev;
+    });
   };
 
   const handleCollapseSection = () => {
     setIsExpanded(false);
+    setExpandedItemId(null);
   };
 
   // Fluid drag-and-drop reordering for requirement items
@@ -330,7 +336,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
             </div>
             <div className="space-y-0.5 select-none flex-1 min-w-0">
               <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
-                {phase.number === 0 ? 'Set Up Steps' : `Step ${phase.number}`}
+                {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
               </span>
               <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-snug select-none font-google truncate">
                 {phase.title}
@@ -404,7 +410,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <div className="space-y-1 select-none flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
                     <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
-                      {phase.number === 0 ? 'Set Up Steps' : `Step ${phase.number}`}
+                      {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
                     </span>
                     <span className="text-xs text-slate-400 select-none">•</span>
                     <span className="text-xs font-bold text-slate-700 select-none">
@@ -917,7 +923,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             />
                           </button>
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -1012,7 +1017,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 animate-in fade-in duration-200 mt-2"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 font-google">Add Requirement to {isSetupPhase ? 'Set Up Steps' : `Step ${phase.number}`}</span>
+                <span className="text-xs font-bold text-slate-800 font-google">Add Requirement to {isSetupPhase ? 'Set Up' : `Step ${phase.number}`}</span>
                 <button
                   type="button"
                   onClick={() => {

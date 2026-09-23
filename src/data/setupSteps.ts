@@ -3,8 +3,8 @@ import { Phase } from '../types';
 export const SETUP_STEPS_PHASE: Phase = {
   id: 'phase-setup',
   number: 0,
-  title: 'Step 0: Set Up & Development Environment',
-  shortTitle: 'Set Up Steps',
+  title: 'Set Up & Development Environment',
+  shortTitle: 'Set Up',
   description: 'Complete these essential setup steps before diving into the project steps. Choose your AI model, register developer accounts, install Xcode and Android Studio, configure GitHub, and connect your phone to run tests.',
   iconName: 'Laptop',
   items: [
