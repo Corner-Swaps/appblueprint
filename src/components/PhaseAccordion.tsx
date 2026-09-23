@@ -131,13 +131,18 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
             </div>
           </div>
 
-          {/* Expand / Collapse Chevron */}
+          {/* Expand / Collapse Chevron: Pure icon, NO background circle */}
           <button 
             type="button"
-            className="apple-press p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 shrink-0"
+            className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-white/80 hover:text-white shrink-0"
             aria-label={isExpanded ? "Collapse phase" : "Expand phase"}
           >
-            {isExpanded ? <ChevronUp strokeWidth={2.5} className="w-4 h-4 stroke-white stroke-[2.5]" /> : <ChevronDown strokeWidth={2.5} className="w-4 h-4 stroke-white stroke-[2.5]" />}
+            <ChevronDown 
+              strokeWidth={2.5} 
+              className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                isExpanded ? 'rotate-180 text-white' : 'text-white/80'
+              }`} 
+            />
           </button>
         </div>
 
