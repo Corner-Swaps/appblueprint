@@ -112,7 +112,7 @@ export const ScreenshotGallery: React.FC = () => {
                     src={s.src}
                     alt={s.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
+                    loading="eager"
                   />
                   <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-white text-[9px] font-bold uppercase tracking-wider">
                     {s.tag}
