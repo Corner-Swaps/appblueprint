@@ -84,7 +84,7 @@ interface SectionConfig {
 const SECTION_CONFIGS: SectionConfig[] = [
   {
     id: 'ai_models',
-    title: 'Frontier AI Models & Coding Agents',
+    title: 'AI Models & Coding Agents',
     badge: 'Core Intelligence',
     description: 'AI coding models can inspect your codebase and write code directly in your terminal. They generate screens, fix bugs, and connect device APIs in minutes. Choose from Google Antigravity, Claude Code, Cursor, and Windsurf.',
     iconBg: 'bg-purple-600',
@@ -92,7 +92,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'design',
-    title: 'Design Systems & UI/UX Resources',
+    title: 'Design Systems & UI/UX',
     badge: 'Interface Systems',
     description: 'Great design makes your app feel natural and effortless to use from the very first tap. Learn proven layout structures from Apple and Google so your buttons are comfortable and your screens look clean. Study successful apps to gain design inspiration without copying copyrighted artwork or brand trademarks.',
     iconBg: 'bg-rose-500',
@@ -108,7 +108,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'github_repos',
-    title: 'Curated Open Source Frameworks & SDKs',
+    title: 'Open Source Frameworks & SDKs',
     badge: 'Verified SDKs',
     description: 'Open source libraries provide pre-built building blocks so you never have to reinvent the wheel. Add tactile vibrations, camera access, and offline data storage with battle-tested community code. These packages save hundreds of hours of manual work and work seamlessly across iOS and Android.',
     iconBg: 'bg-blue-600',
@@ -120,7 +120,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'backend',
-    title: 'Backend, Database & Cloud Infrastructure',
+    title: 'Backend, Database & Cloud',
     badge: 'Serverless Cloud',
     description: 'A backend lets your users save accounts, store data in the cloud, and sync across multiple devices. Modern platforms like Supabase and Firebase handle the complex server work automatically. They offer generous free plans that can comfortably support your first thousands of active users without charge. You can always start for free and scale up smoothly as your app grows.',
     iconBg: 'bg-teal-600',
@@ -128,7 +128,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'security',
-    title: 'Security, Cryptography & Keychain Auth',
+    title: 'Security & Keychain Auth',
     badge: 'Hardware Enclave',
     description: 'Security protects your users and keeps private login passwords safe on their physical phones. Using the iOS Keychain and Android Keystore hardware chips ensures sensitive data is never exposed. Following these essential guardrails prevents data leaks and helps you pass store security audits on your first try. All security patterns and system APIs shown here are built right into your phone for free.',
     iconBg: 'bg-emerald-600',
@@ -136,7 +136,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'privacy',
-    title: 'Privacy, Apple Manifests & Data Protection',
+    title: 'Privacy & Store Compliance',
     badge: 'Store Compliance',
     description: 'User privacy is one of the most strictly enforced requirements in the Apple App Store and Google Play. You must inform users what data you collect and declare required privacy manifests before publishing. Bundling fonts locally and avoiding hidden ad trackers keeps you completely safe from legal fines. These free privacy templates and tools guarantee you satisfy Apple and Google rules.',
     iconBg: 'bg-indigo-600',
@@ -144,7 +144,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'legal',
-    title: 'Legal, Terms of Service & EULA Templates',
+    title: 'Legal & Privacy Templates',
     badge: 'Terms & Policies',
     description: 'Every published mobile app requires a publicly accessible Privacy Policy and Terms of Service before review. You can create and host these legal documents completely free using simple GitHub Pages. Having clear agreements also shields you from liability and protects your intellectual property. Use our copy-ready legal templates to get permanent HTTPS links in under 5 minutes.',
     iconBg: 'bg-amber-600',
@@ -152,7 +152,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'launch',
-    title: 'App Store Launch, ASO & Distribution',
+    title: 'App Store Launch & Release',
     badge: 'Store Publishing',
     description: 'Your store listing is the storefront window where people decide whether to download your application. Prepare eye-catching screenshot mockups and clear descriptions that explain your app\'s benefits simply. Avoid common rejection traps like broken demo accounts or prohibited pricing claims in your title. These free mockup tools and checklists guide you step-by-step through submission day.',
     iconBg: 'bg-cyan-600',
@@ -160,7 +160,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
   },
   {
     id: 'analytics',
-    title: 'Crash Reporting, Observability & Analytics',
+    title: 'Crash Reporting & Diagnostics',
     badge: 'Telemetry & Health',
     description: 'Crash reporting helps you find and fix unexpected issues before frustrated users leave negative reviews. Privacy-friendly telemetry lets you see which features people enjoy without recording their personal identity. You can monitor performance speeds and battery health to keep your app running silky smooth. The observability tools featured here include robust free plans tailored for indie developers.',
     iconBg: 'bg-violet-600',
@@ -727,21 +727,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                   <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
                     {sec.description}
                   </p>
-
-                  {/* Section Completion Bar: Matches GuardrailSection */}
-                  <div className="space-y-1 pt-1 select-none">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
-                      <span>Section Completion</span>
-                      <span>100%</span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
-                      <div 
-                        className={`h-full ${sec.iconBg} rounded-full transition-all duration-500 ease-out`}
-                        style={{ width: '100%' }}
-                      />
-                    </div>
-                  </div>
-
                   {/* Drop-Down Arrow: Pure icon, NO background circle */}
                   <div className="flex justify-center pt-0.5 pb-0 select-none">
                     <button
@@ -801,7 +786,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                 <div className="space-y-1 select-none flex-1 min-w-0">
 
                                   <h3 
-                                    className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none truncate ${
+                                    className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none break-words ${
                                       isApple 
                                         ? 'text-[#1D1D1F] font-sans' 
                                         : isGooglePlay 

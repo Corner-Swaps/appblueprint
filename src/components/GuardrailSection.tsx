@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { PlatformBadge } from './PlatformBadge';
 import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
+import { VideoPlayerModal } from './VideoPlayerModal';
 
 const renderChecklistItemIcon = (item: ChecklistItem) => {
   const id = item.id.toLowerCase();
@@ -146,6 +147,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState('');
   const [newItemDesc, setNewItemDesc] = useState('');
+  const [activeVideoModal, setActiveVideoModal] = useState<{ title: string; url: string } | null>(null);
   const isSetupPhase = phase.number === 0 || phase.id === 'phase-setup';
 
   // Section reference for smooth scroll to top when collapsing
@@ -338,7 +340,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
                 {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
               </span>
-              <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-snug select-none font-google truncate">
+              <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
                 {phase.title}
               </h2>
             </div>
@@ -579,7 +581,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             </div>
                           )}
 
-                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none font-google ${
+                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none font-google break-words ${
                             isDone ? 'text-slate-500' : 'text-slate-900'
                           }`}>
                             {item.title}
@@ -589,7 +591,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
                       {/* Action Controls: Edit handles or Checkmark Toggle vertically centered on the right side */}
                       {isEditing ? (
-                        <div className="flex flex-col items-center justify-center space-y-1.5 shrink-0 -mr-1 w-10 sm:w-12 pt-0.5" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end space-x-1.5 shrink-0 -mr-1 h-12" onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"
                             onPointerDown={(e) => {
@@ -878,19 +880,20 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
                             {/* Red Button for Relevant Video Guide */}
                             {item.videoUrl && (
-                              <a
-                                href={item.videoUrl.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              <button
+                                type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  try { window.open(item.videoUrl!.url, '_blank'); } catch {}
+                                  setActiveVideoModal({
+                                    title: item.videoUrl!.title,
+                                    url: item.videoUrl!.url
+                                  });
                                 }}
-                                className="apple-press w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
+                                className="apple-press w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors text-left"
                               >
-                                <Play className="w-3.5 h-3.5 fill-white text-white" />
-                                <span className="truncate">Watch Video: {item.videoUrl.title}</span>
-                              </a>
+                                <Play className="w-3.5 h-3.5 fill-white text-white shrink-0" />
+                                <span className="truncate">{item.videoUrl.title}</span>
+                              </button>
                             )}
 
                             {/* Dark Button for Official Store Guideline */}
@@ -906,7 +909,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                                 className="apple-press w-full py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 active:bg-black text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
                               >
                                 <span className="truncate">Official Store Guideline: {item.storeGuideline.name}</span>
-                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90" />
+                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90 shrink-0" />
                               </a>
                             )}
                           </div>
@@ -940,26 +943,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
             {/* Separate Action Pills: Add, Edit */}
             <div 
-              onClick={() => {
-                // Minimize whole section when clicking outside buttons at the bottom
-                handleCollapseSection();
-              }}
-              className="py-3 px-4 flex flex-wrap items-center justify-center gap-2 select-none cursor-pointer"
-              title="Click outside buttons to minimize section"
+              className="py-3 px-4 flex items-center justify-center gap-2 select-none"
             >
               {onAddItem && (
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (isAddingItem) {
-                      setIsAddingItem(false);
-                      setNewItemTitle('');
-                      setNewItemDesc('');
-                    } else {
-                      setIsAddingItem(true);
-                      setIsEditMode(false);
-                    }
+                    setIsAddingItem(prev => !prev);
                   }}
                   className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border ${
                     isAddingItem
@@ -982,14 +973,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsEditMode(prev => {
-                    const next = !prev;
-                    if (next) {
-                      setExpandedItemId(null);
-                      setIsAddingItem(false);
-                    }
-                    return next;
-                  });
+                  setIsEditMode(prev => !prev);
                 }}
                 className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-2xs border ${
                   isEditing
@@ -1079,6 +1063,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
           </div>
         </div>
       )}
+
+      {/* In-App Video Modal Player */}
+      <VideoPlayerModal
+        isOpen={!!activeVideoModal}
+        onClose={() => setActiveVideoModal(null)}
+        video={activeVideoModal}
+      />
     </>
   );
 };

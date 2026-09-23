@@ -88,8 +88,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your project compiles cleanly into native iOS and Android packages with complete terminal debugging tools and fast live-reloading.",
         "videoUrl": {
-          "title": "How to Build and Run Capacitor Mobile Apps with Xcode and Android Studio",
-          "url": "https://www.youtube.com/results?search_query=capacitor+ios+android+setup+tutorial"
+          "title": "Capacitor Mobile Setup",
+          "url": "https://www.youtube.com/watch?v=SSv--IrWH3c"
         }
       },
       {
@@ -119,8 +119,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "You receive authorized developer access to App Store Connect, Google Play Console, and direct hardware testing on your physical phone.",
         "videoUrl": {
-          "title": "Apple Developer Program & Google Play Console Setup",
-          "url": "https://www.youtube.com/results?search_query=apple+developer+account+and+google+play+console+setup"
+          "title": "Developer Accounts",
+          "url": "https://www.youtube.com/watch?v=YpQWcGC6uoE"
         }
       },
       {
@@ -201,8 +201,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your app secures a permanent, conflict-free package identifier and store name that prevents trademark infringement disputes.",
         "videoUrl": {
-          "title": "How to Configure App Bundle Identifier & Package Name",
-          "url": "https://www.youtube.com/results?search_query=how+to+configure+bundle+id+xcode+android+studio"
+          "title": "Bundle ID & Package",
+          "url": "https://www.youtube.com/watch?v=cXxh5HHtflw"
         }
       }
     ]
@@ -230,8 +230,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/navigation"
         },
         "videoUrl": {
-          "title": "Mobile App Information Architecture & Wireframing",
-          "url": "https://www.youtube.com/results?search_query=mobile+app+information+architecture+wireframing"
+          "title": "UX Wireframing Guide",
+          "url": "https://www.youtube.com/watch?v=aoFMyMYhKCM"
         },
         "implementationSteps": [
           "List all primary screens (Splash, Onboarding/Auth, Main Feed/Dashboard, Detail Views, Settings/Profile).",
@@ -265,8 +265,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/layout"
         },
         "videoUrl": {
-          "title": "Mobile Screen Anatomy & Safe Area Layout Principles",
-          "url": "https://www.youtube.com/results?search_query=mobile+screen+anatomy+safe+area+layout"
+          "title": "Screen Anatomy & Insets",
+          "url": "https://www.youtube.com/watch?v=fHmTuoZRUzU"
         },
         "implementationSteps": [
           "Zone 1 (Top Header): Pinned with env(safe-area-inset-top) containing screen title, contextual back/close buttons, and secondary action icons.",
@@ -300,8 +300,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://spec.fm/specifics/8-pt-grid"
         },
         "videoUrl": {
-          "title": "How to Use the 8pt Grid in Mobile App UI Design",
-          "url": "https://www.youtube.com/results?search_query=8pt+grid+system+mobile+app+design"
+          "title": "8pt Spatial Grid",
+          "url": "https://www.youtube.com/watch?v=ohF93_k3IMk"
         },
         "implementationSteps": [
           "Set standard mobile screen outer margins to 16px (or 20px on larger displays) so content never touches phone edges.",
@@ -335,8 +335,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/modality"
         },
         "videoUrl": {
-          "title": "Mobile App Navigation Patterns - Tabs vs Stacks vs Sheets",
-          "url": "https://www.youtube.com/results?search_query=mobile+navigation+patterns+tabs+sheets+stacks"
+          "title": "Navigation Patterns",
+          "url": "https://www.youtube.com/watch?v=wLJ40GV2XEc"
         },
         "implementationSteps": [
           "Limit bottom tab bar to 3 to 5 premier, mutually exclusive top-level destinations.",
@@ -370,8 +370,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.smashingmagazine.com/2016/09/the-thumb-zone-designing-for-mobile-users/"
         },
         "videoUrl": {
-          "title": "How to Design for One-Handed Mobile Use (Thumb Zone)",
-          "url": "https://www.youtube.com/results?search_query=thumb+zone+mobile+ux+design"
+          "title": "Thumb Zone UX",
+          "url": "https://www.youtube.com/watch?v=6UO0Wakyges"
         },
         "implementationSteps": [
           "Position primary call-to-action buttons (Save, Send, Next, Create) in the lower third Natural Thumb Zone.",
@@ -405,8 +405,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/text-fields"
         },
         "videoUrl": {
-          "title": "Mobile Form Design Best Practices",
-          "url": "https://www.youtube.com/results?search_query=mobile+form+design+best+practices+ui+ux"
+          "title": "Mobile Form Design",
+          "url": "https://www.youtube.com/watch?v=1bzWw2uZZuA"
         },
         "implementationSteps": [
           "Group inputs logically into separate card blocks (e.g. Basic Info, Preferences, Account Details) with clear subsection headers.",
@@ -450,8 +450,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://mobbin.com/"
         },
         "videoUrl": {
-          "title": "How Top Designers Benchmark Mobile UI Patterns Ethically",
-          "url": "https://www.youtube.com/results?search_query=how+to+benchmark+mobile+app+ui+design+mobbin"
+          "title": "Benchmark Mobile UI",
+          "url": "https://www.youtube.com/watch?v=Gfsd8NNuD9g"
         },
         "implementationSteps": [
           "Take screenshots of 3 to 5 premier apps in your category to analyze their onboarding flow, tab layout, and spacing hierarchy.",
@@ -486,8 +486,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/materials"
         },
         "videoUrl": {
-          "title": "Designing Fluid Interfaces - Apple WWDC Masterclass",
-          "url": "https://www.youtube.com/results?search_query=designing+fluid+interfaces+apple+wwdc"
+          "title": "Fluid Interfaces WWDC",
+          "url": "https://www.youtube.com/watch?v=gttSJA-kDmQ"
         },
         "implementationSteps": [
           "Implement layered translucency using CSS `backdrop-filter: blur(20px)` and subtle translucent background fills (e.g. `rgba(255, 255, 255, 0.8)`).",
@@ -537,8 +537,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "All buttons and controls feel effortless to tap on real touchscreens, eliminating user frustration and passing Apple HIG human testing.",
         "videoUrl": {
-          "title": "Apple HIG Touch Targets & Accessibility Sizing Guide",
-          "url": "https://www.youtube.com/results?search_query=apple+hig+touch+targets+accessibility"
+          "title": "Touch Targets & HIG",
+          "url": "https://www.youtube.com/watch?v=jQbyRE18SMk"
         }
       },
       {
@@ -567,8 +567,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Content flows cleanly beneath modern phone hardware, keeping buttons and headers clear of the Dynamic Island, notch, and home indicator.",
         "videoUrl": {
-          "title": "How to Fix Safe Area Notch & Home Bar Insets in Mobile Apps",
-          "url": "https://www.youtube.com/results?search_query=safe+area+inset+notch+home+bar+mobile"
+          "title": "Safe Area Inset Fixes",
+          "url": "https://www.youtube.com/watch?v=bvYO9ZZRzjs"
         }
       },
       {
@@ -623,8 +623,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your interface looks polished and native in both Light and Dark mode with guaranteed high-contrast legibility that passes WCAG AA standards.",
         "videoUrl": {
-          "title": "Implementing High-Contrast Light and Dark Themes in Mobile Apps",
-          "url": "https://www.youtube.com/results?search_query=implement+dark+mode+mobile+app+tailwind"
+          "title": "Dark Mode Setup",
+          "url": "https://www.youtube.com/watch?v=APzFWqwK01c"
         }
       },
       {
@@ -657,8 +657,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://iconkitchen.com/"
         },
         "videoUrl": {
-          "title": "How to Create App Icons for iOS Xcode and Google Play",
-          "url": "https://www.youtube.com/results?search_query=create+app+icons+ios+xcode+google+play"
+          "title": "App Icons & Assets",
+          "url": "https://www.youtube.com/watch?v=lCORScZTIAg"
         }
       },
       {
@@ -764,8 +764,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.typescriptlang.org/docs/handbook/2/objects.html"
         },
         "videoUrl": {
-          "title": "TypeScript Data Modeling & Runtime Schema Validation",
-          "url": "https://www.youtube.com/results?search_query=typescript+data+modeling+schema+validation+zod"
+          "title": "Zod Data Modeling",
+          "url": "https://www.youtube.com/watch?v=7WiSBNxhriQ"
         },
         "implementationSteps": [
           "Create formal TypeScript interfaces for all domain entities with mandatory vs optional properties clearly marked.",
@@ -799,8 +799,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://capacitorjs.com/docs/apis/preferences"
         },
         "videoUrl": {
-          "title": "Local-First Architecture & Auto-Save in Mobile Apps",
-          "url": "https://www.youtube.com/results?search_query=local+first+auto+save+mobile+app+architecture"
+          "title": "Local-First Auto-Save",
+          "url": "https://www.youtube.com/watch?v=kjOx-Le5gB8"
         },
         "implementationSteps": [
           "Implement automatic debounced persistence (300ms-500ms debounce) for all draft forms and user modifications.",
@@ -834,8 +834,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/launching"
         },
         "videoUrl": {
-          "title": "Handling App Lifecycle & State Restoration in Mobile Apps",
-          "url": "https://www.youtube.com/results?search_query=app+lifecycle+state+restoration+mobile"
+          "title": "App Lifecycle State",
+          "url": "https://www.youtube.com/watch?v=SJw3Nu_h8kk"
         },
         "implementationSteps": [
           "Listen for app lifecycle events (App.addListener('appStateChange')) to record active route when going to the background.",
@@ -869,8 +869,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#versioning"
         },
         "videoUrl": {
-          "title": "How to Handle Database Migrations in Mobile Apps",
-          "url": "https://www.youtube.com/results?search_query=mobile+app+database+migration+schema+versioning"
+          "title": "Database Migrations",
+          "url": "https://www.youtube.com/watch?v=cw5K2O4AHJc"
         },
         "implementationSteps": [
           "Attach a schemaVersion: number tag to every stored database record or serialized project snapshot.",
@@ -951,8 +951,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your app remains responsive and usable on airplanes or in poor service, queuing offline edits and syncing automatically upon reconnection.",
         "videoUrl": {
-          "title": "Building Offline-First Mobile Apps with Local Cache",
-          "url": "https://www.youtube.com/results?search_query=offline+first+mobile+app+sqlite+tanstack"
+          "title": "Offline-First Sync",
+          "url": "https://www.youtube.com/watch?v=kjOx-Le5gB8"
         }
       },
       {
@@ -984,7 +984,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p3-sign-in-apple",
         "phaseId": "phase-3",
-        "title": "Add \"Sign in with Apple\" If Offering Google or Social Login",
+        "title": "Sign in with Apple",
         "shortDescription": "Apple requires their sign-in button if you provide any other third-party social logins.",
         "category": "legal",
         "platform": "ios",
@@ -1011,14 +1011,14 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your app satisfies mandatory App Store Guideline 4.8, giving privacy-conscious iOS users a one-tap sign-in experience.",
         "videoUrl": {
-          "title": "How to Implement Sign in with Apple in Mobile Apps",
-          "url": "https://www.youtube.com/results?search_query=sign+in+with+apple+capacitor+tutorial"
+          "title": "Sign in with Apple",
+          "url": "https://www.youtube.com/watch?v=nlk54-QkGk4"
         }
       },
       {
         "id": "p3-account-deletion",
         "phaseId": "phase-3",
-        "title": "Include an In-App \"Delete Account\" Button",
+        "title": "In-App Account Deletion",
         "shortDescription": "Let users delete their account and personal data directly inside the app.",
         "category": "legal",
         "platform": "both",
@@ -1048,14 +1048,14 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Users can delete their account and associated data directly within the app, fulfilling Apple Guideline 5.1.1(v) without manual support emails.",
         "videoUrl": {
-          "title": "Apple Guideline 5.1.1 Account Deletion Requirement Guide",
-          "url": "https://www.youtube.com/results?search_query=apple+account+deletion+guideline+5.1.1"
+          "title": "Account Deletion Flow",
+          "url": "https://www.youtube.com/watch?v=GoVJDqIqAPg"
         }
       },
       {
         "id": "p3-in-app-purchases",
         "phaseId": "phase-3",
-        "title": "Set Up Subscriptions with a Clear \"Restore Purchases\" Button",
+        "title": "In-App Purchases & Restore",
         "shortDescription": "Show transparent pricing, subscription terms, and an easy restore button on paywalls.",
         "category": "store",
         "platform": "both",
@@ -1085,8 +1085,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Digital purchases unlock instantly and survive device restores via StoreKit 2 and Google Play Billing, protecting customer entitlements.",
         "videoUrl": {
-          "title": "How to Set Up In-App Purchases & Subscriptions with RevenueCat",
-          "url": "https://www.youtube.com/results?search_query=revenuecat+in+app+purchases+subscriptions+tutorial"
+          "title": "RevenueCat Subs",
+          "url": "https://www.youtube.com/watch?v=-QcZOwsHvBI"
         }
       },
       {
@@ -1115,8 +1115,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Timely, relevant push notifications reach opted-in users without triggering prompt fatigue or premature permission denials.",
         "videoUrl": {
-          "title": "How to Set Up Push Notifications for iOS and Android",
-          "url": "https://www.youtube.com/results?search_query=push+notifications+ios+apns+android+fcm"
+          "title": "Push Notifications",
+          "url": "https://www.youtube.com/watch?v=WmKRWoqdC_Y"
         }
       },
       {
@@ -1145,8 +1145,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Marketing emails, shared links, and web banners route directly to the intended in-app screen via Universal Links and Android App Links.",
         "videoUrl": {
-          "title": "How to Set Up Universal Links & Android App Links",
-          "url": "https://www.youtube.com/results?search_query=universal+links+ios+android+app+links+setup"
+          "title": "Universal & App Links",
+          "url": "https://www.youtube.com/watch?v=kNbEEYlFIPs"
         }
       },
       {
@@ -1175,8 +1175,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Key user interactions trigger subtle, tactile physical feedback that makes your digital interface feel tangible and responsive.",
         "videoUrl": {
-          "title": "Adding Tactile Haptic Feedback to Mobile Applications",
-          "url": "https://www.youtube.com/results?search_query=mobile+haptic+feedback+taptic+engine+capacitor"
+          "title": "Haptic Feedback Guide",
+          "url": "https://www.youtube.com/watch?v=8gs3Q1yoerY"
         }
       },
       {
@@ -1245,8 +1245,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your iOS build includes complete API declarations and tracking domains in PrivacyInfo.xcprivacy, guaranteeing clean App Store ingestion.",
         "videoUrl": {
-          "title": "Apple Privacy Manifests (PrivacyInfo.xcprivacy) Complete Guide",
-          "url": "https://www.youtube.com/results?search_query=apple+privacy+manifest+privacyinfo.xcprivacy"
+          "title": "Privacy Manifest Xcode",
+          "url": "https://www.youtube.com/watch?v=lg2Ijfkiu1M"
         }
       },
       {
@@ -1279,8 +1279,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your Google Play Console Data Safety form accurately matches codebase behavior, preventing policy warnings and app suspension.",
         "videoUrl": {
-          "title": "How to Complete Google Play Data Safety Section Step by Step",
-          "url": "https://www.youtube.com/results?search_query=google+play+data+safety+form+step+by+step"
+          "title": "Play Data Safety Form",
+          "url": "https://www.youtube.com/watch?v=SkYmI4KJVCU"
         }
       },
       {
@@ -1311,8 +1311,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "User auth tokens and secrets reside inside hardware-backed secure enclaves, protecting accounts even if an unauthorized backup is extracted.",
         "videoUrl": {
-          "title": "Secure Storage with iOS Keychain and Android Keystore",
-          "url": "https://www.youtube.com/results?search_query=secure+storage+ios+keychain+android+keystore"
+          "title": "Keychain & Keystore",
+          "url": "https://www.youtube.com/watch?v=ada9vgB70fw"
         }
       },
       {
@@ -1367,8 +1367,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Production Android binaries are shrunk and obfuscated via R8, preventing reverse engineering while maintaining model serialization.",
         "videoUrl": {
-          "title": "Android R8 & ProGuard Code Shrinking and Obfuscation",
-          "url": "https://www.youtube.com/results?search_query=android+r8+proguard+obfuscation+rules"
+          "title": "R8 & ProGuard Rules",
+          "url": "https://www.youtube.com/watch?v=bgpyuuzMlo0"
         }
       },
       {
@@ -1561,8 +1561,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "You have a public, legally sound Privacy Policy URL hosted on HTTPS that satisfies mandatory store review requirements.",
         "videoUrl": {
-          "title": "How to Create and Host a Free Privacy Policy for App Store",
-          "url": "https://www.youtube.com/results?search_query=how+to+create+privacy+policy+app+store+github+pages"
+          "title": "Host Privacy Policy",
+          "url": "https://www.youtube.com/watch?v=vZJiiLonUqo"
         }
       },
       {
@@ -1596,8 +1596,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your social features include immediate user reporting, blocking, and content moderation that fulfill Apple Guideline 1.2.",
         "videoUrl": {
-          "title": "User Generated Content Moderation Rules for Apple App Store",
-          "url": "https://www.youtube.com/results?search_query=apple+guideline+1.2+user+generated+content"
+          "title": "UGC Moderation Rules",
+          "url": "https://www.youtube.com/watch?v=IGCWyVGStvg"
         }
       },
       {
@@ -1626,8 +1626,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "European and international users receive transparent data consent controls that protect your company from regulatory privacy fines.",
         "videoUrl": {
-          "title": "GDPR Consent & Google User Messaging Platform (UMP) Guide",
-          "url": "https://www.youtube.com/results?search_query=google+ump+consent+gdpr+mobile+app"
+          "title": "Google UMP Consent",
+          "url": "https://www.youtube.com/watch?v=SysASyh9XKo"
         }
       },
       {
@@ -1685,8 +1685,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your app declares standard encryption exemptions in Info.plist, eliminating French export control delays in App Store Connect.",
         "videoUrl": {
-          "title": "Fix Apple Export Compliance & ITSAppUsesNonExemptEncryption",
-          "url": "https://www.youtube.com/results?search_query=apple+export+compliance+itsappusesnonexemptencryption"
+          "title": "Apple Export Encryption",
+          "url": "https://www.youtube.com/watch?v=wonSw458f8k"
         }
       },
       {
@@ -1860,8 +1860,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://pages.github.com/"
         },
         "videoUrl": {
-          "title": "How to Host a Free Privacy Policy on GitHub Pages",
-          "url": "https://www.youtube.com/results?search_query=host+free+privacy+policy+github+pages+app+store"
+          "title": "Free Privacy Policy",
+          "url": "https://www.youtube.com/watch?v=vZJiiLonUqo"
         },
         "implementationSteps": [
           "Create a clean HTML file named `privacy.html` in your `public/` directory disclosing what data your app collects (or confirming zero personal data collected).",
@@ -1896,8 +1896,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://fonts.bunny.net/"
         },
         "videoUrl": {
-          "title": "Why You Must Self-Host Fonts for GDPR Compliance",
-          "url": "https://www.youtube.com/results?search_query=self+host+fonts+gdpr+compliance+google+fonts"
+          "title": "Self-Host Fonts GDPR",
+          "url": "https://www.youtube.com/watch?v=Db8hUzO9Xv0"
         },
         "implementationSteps": [
           "Download your desired font files (.woff2, .ttf, or .otf) directly to your project (e.g. `public/fonts/` or `src/assets/fonts/`).",
@@ -2009,8 +2009,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your Android metrics stay well below Google's 1.09% crash rate and 0.47% ANR thresholds, maximizing search visibility.",
         "videoUrl": {
-          "title": "Understanding Google Play Android Vitals & ANR Fixes",
-          "url": "https://www.youtube.com/results?search_query=google+play+android+vitals+crash+rate+anr"
+          "title": "Android Vitals & ANR",
+          "url": "https://www.youtube.com/watch?v=vj3Y8L5HLdg"
         }
       },
       {
@@ -2039,8 +2039,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your app loads and becomes fully interactive in under 2 seconds, delighting impatient users on both new and older phones.",
         "videoUrl": {
-          "title": "How to Optimize Mobile App Cold Start & Launch Speed",
-          "url": "https://www.youtube.com/results?search_query=optimize+mobile+app+cold+launch+time"
+          "title": "Cold Launch Speed",
+          "url": "https://www.youtube.com/watch?v=EzAufbXzYOY"
         }
       },
       {
@@ -2069,8 +2069,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Real-time crash alerts and symbolicated stack traces in Sentry or Crashlytics let you diagnose and patch production bugs within minutes.",
         "videoUrl": {
-          "title": "Setting Up Sentry Crash Reporting and Error Tracking",
-          "url": "https://www.youtube.com/results?search_query=sentry+mobile+app+crash+reporting+tutorial"
+          "title": "Sentry Crash Tracking",
+          "url": "https://www.youtube.com/watch?v=boGqm64gFYw"
         }
       },
       {
@@ -2166,8 +2166,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your store listing features crisp high-resolution screenshots, persuasive copy, and clear descriptions that convert store visitors.",
         "videoUrl": {
-          "title": "How to Design High-Converting App Store Screenshots",
-          "url": "https://www.youtube.com/results?search_query=app+store+screenshot+design+tutorial"
+          "title": "App Store Screenshots",
+          "url": "https://www.youtube.com/watch?v=-7YHPpqaVFY"
         }
       },
       {
@@ -2200,8 +2200,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://shots.so/"
         },
         "videoUrl": {
-          "title": "How to Create App Store Screenshots Fast (Free Tools)",
-          "url": "https://www.youtube.com/results?search_query=create+app+store+screenshots+fast+free+tools"
+          "title": "Fast Screenshot Tools",
+          "url": "https://www.youtube.com/watch?v=-7YHPpqaVFY"
         }
       },
       {
@@ -2234,8 +2234,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "App Store and Google Play reviewers log straight into a pre-populated demo account, accelerating review approval.",
         "videoUrl": {
-          "title": "How to Provide Demo Credentials for App Store Review",
-          "url": "https://www.youtube.com/results?search_query=app+store+connect+demo+account+review+notes"
+          "title": "Review Demo Account",
+          "url": "https://www.youtube.com/watch?v=85c2oFcWdq0"
         }
       },
       {
@@ -2263,8 +2263,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your age rating matches store questionnaires accurately, preventing store removal for unrated mature or interactive content.",
         "videoUrl": {
-          "title": "How to Complete App Store and Google Play Age Rating Questionnaire",
-          "url": "https://www.youtube.com/results?search_query=app+store+age+rating+questionnaire"
+          "title": "Store Age Ratings",
+          "url": "https://www.youtube.com/watch?v=1vuIVAwE5fA"
         }
       },
       {
@@ -2356,8 +2356,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Xcode signs release builds with valid Apple Distribution Certificates and Provisioning Profiles, enabling TestFlight and store submission.",
         "videoUrl": {
-          "title": "iOS Code Signing, Certificates & Provisioning Profiles Explained",
-          "url": "https://www.youtube.com/results?search_query=ios+code+signing+certificates+provisioning+profiles"
+          "title": "iOS Code Signing",
+          "url": "https://www.youtube.com/watch?v=Ys2p5bFhgjI"
         }
       },
       {
@@ -2386,8 +2386,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "A secure release keystore digitally signs production Android App Bundles (AABs) with permanent automated backup.",
         "videoUrl": {
-          "title": "How to Generate Android Release Keystore & Sign AAB",
-          "url": "https://www.youtube.com/results?search_query=generate+release+keystore+sign+aab+android+studio"
+          "title": "Android Keystore Sign",
+          "url": "https://www.youtube.com/watch?v=s7_oD4SkzU0"
         }
       },
       {
@@ -2421,8 +2421,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your 20 closed beta testers remain engaged for 14 continuous days, unlocking production release permissions in Google Play Console.",
         "videoUrl": {
-          "title": "Google Play 20 Testers for 14 Days Requirement Walkthrough",
-          "url": "https://www.youtube.com/results?search_query=google+play+20+testers+14+days+requirement"
+          "title": "Play 20 Testers Guide",
+          "url": "https://www.youtube.com/watch?v=LugLyL1vmkw"
         }
       },
       {
@@ -2450,8 +2450,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Beta testers install new iterations via TestFlight, providing real-world feedback and crash telemetry before public launch.",
         "videoUrl": {
-          "title": "How to Use Apple TestFlight to Distribute Beta Builds",
-          "url": "https://www.youtube.com/results?search_query=how+to+use+apple+testflight+beta+distribution"
+          "title": "TestFlight Beta Guide",
+          "url": "https://www.youtube.com/watch?v=x0d8Jx3HvdI"
         }
       },
       {
@@ -2480,8 +2480,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Single-command or CI/CD pipelines automate testing, building, and uploading release binaries directly to Apple and Google.",
         "videoUrl": {
-          "title": "Automate iOS & Android Deployment with Fastlane",
-          "url": "https://www.youtube.com/results?search_query=fastlane+ios+android+deployment+automation"
+          "title": "Fastlane CI/CD Setup",
+          "url": "https://www.youtube.com/watch?v=NCmkL__Mq-I"
         }
       },
       {
@@ -2577,8 +2577,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your release build clears Apple's most frequent rejection traps (Guideline 2.1, 4.0, 5.1), setting up a first-pass review approval.",
         "videoUrl": {
-          "title": "Top 10 Reasons Apple Rejects Apps & How to Fix Them",
-          "url": "https://www.youtube.com/results?search_query=top+reasons+apple+rejects+apps+app+store+review"
+          "title": "App Rejection Fixes",
+          "url": "https://www.youtube.com/watch?v=3fycHeOFx_w"
         }
       },
       {
@@ -2663,8 +2663,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "You have structured, professional response templates ready if reviewers request clarifications in the App Store Resolution Center.",
         "videoUrl": {
-          "title": "How to Appeal an App Store Rejection in Resolution Center",
-          "url": "https://www.youtube.com/results?search_query=how+to+appeal+app+store+rejection+resolution+center"
+          "title": "Appeal Store Rejection",
+          "url": "https://www.youtube.com/watch?v=rxfAwIEzxMQ"
         }
       },
       {
@@ -2693,8 +2693,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Reviewers quickly understand complex features or hardware integrations through an attached video demonstration link.",
         "videoUrl": {
-          "title": "How to Record an App Demo Video for Apple Reviewers",
-          "url": "https://www.youtube.com/results?search_query=app+demo+video+apple+review+notes"
+          "title": "Review Demo Video",
+          "url": "https://www.youtube.com/watch?v=IjGMEdy1rkc"
         }
       },
       {
@@ -2759,8 +2759,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Production issues are diagnosed rapidly using symbolicated crash reports and breadcrumbs, minimizing downtime for users.",
         "videoUrl": {
-          "title": "How to Symbolicate iOS Crash Logs in Xcode Organizer",
-          "url": "https://www.youtube.com/results?search_query=symbolicate+ios+crash+logs+xcode+organizer"
+          "title": "Crash Symbolication",
+          "url": "https://www.youtube.com/watch?v=gJDvtL2SXuY"
         }
       },
       {
@@ -2867,8 +2867,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Updates roll out gradually to 1%, 5%, and 20% of users first, catching unexpected server spikes before they affect everyone.",
         "videoUrl": {
-          "title": "Phased Release on App Store & Google Play Staged Rollouts",
-          "url": "https://www.youtube.com/results?search_query=phased+release+app+store+staged+rollout+google+play"
+          "title": "Phased App Rollouts",
+          "url": "https://www.youtube.com/watch?v=JmfbD6RmZn0"
         }
       },
       {
@@ -2923,8 +2923,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Critical updates can be mandated remotely, preventing legacy app versions from communicating with updated backend APIs.",
         "videoUrl": {
-          "title": "How to Implement Force Update in Mobile Apps",
-          "url": "https://www.youtube.com/results?search_query=how+to+implement+force+update+mobile+app"
+          "title": "Force Update Guide",
+          "url": "https://www.youtube.com/watch?v=Z5VjmLhnoJU"
         }
       },
       {
@@ -2942,8 +2942,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews"
         },
         "videoUrl": {
-          "title": "How to Implement Native In-App Ratings on iOS & Android",
-          "url": "https://www.youtube.com/results?search_query=implement+native+in-app+ratings+skstorereviewcontroller+capacitor"
+          "title": "Native Review Prompts",
+          "url": "https://www.youtube.com/watch?v=krp3yDDVa70"
         },
         "implementationSteps": [
           "Track app session visit count in local storage (`appblueprint_visits_count`).",
