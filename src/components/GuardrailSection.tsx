@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Phase, ChecklistItem } from '../types';
 import { renderPhaseIcon } from '../utils/renderPhaseIcon';
-import { getPhaseTheme } from '../utils/phaseThemes';
+import { getPhaseTheme, hexToRgb } from '../utils/phaseThemes';
 import { triggerPhaseCompleteConfetti } from '../utils/confetti';
 import { useFluidDragReorder } from '../hooks/useFluidDragReorder';
 import { 
@@ -111,7 +111,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const [newItemDesc, setNewItemDesc] = useState('');
   const isSetupPhase = phase.number === 0 || phase.id === 'phase-setup';
 
-  // Blue pulse highlight around section pill when minimized
+  // Theme-colored pulse highlight around section pill when minimized
   const [isJustMinimized, setIsJustMinimized] = useState(false);
   const pulseTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -120,7 +120,59 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     setIsJustMinimized(true);
     pulseTimeoutRef.current = setTimeout(() => {
       setIsJustMinimized(false);
-    }, 1550);
+    }, 1850);
+  };
+
+  // Theme-colored pulse highlight around subsection pill when minimized
+  const [pulsingItemId, setPulsingItemId] = useState<string | null>(null);
+  const pulseItemTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleCollapseSubsection = (itemId: string) => {
+    const el = document.getElementById(`item-${itemId}`);
+    if (!el) {
+      setExpandedItemId(null);
+      return;
+    }
+
+    const rect = el.getBoundingClientRect();
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const itemDocTop = currentScroll + rect.top;
+    const viewportHeight = window.innerHeight;
+    const collapsedHeight = 110;
+    const centeredY = Math.max(0, itemDocTop - (viewportHeight - collapsedHeight) / 2);
+    const diff = Math.abs(currentScroll - centeredY);
+
+    if (diff < 20) {
+      setExpandedItemId(null);
+      if (pulseItemTimeoutRef.current) clearTimeout(pulseItemTimeoutRef.current);
+      setPulsingItemId(itemId);
+      pulseItemTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 1850);
+      return;
+    }
+
+    const scrollDuration = Math.min(520, Math.max(380, Math.round(diff * 0.28 + 260)));
+    fluidScrollTo(centeredY, {
+      duration: scrollDuration,
+      onComplete: () => {
+        setExpandedItemId(null);
+        setTimeout(() => {
+          if (pulseItemTimeoutRef.current) clearTimeout(pulseItemTimeoutRef.current);
+          setPulsingItemId(itemId);
+          pulseItemTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 1850);
+        }, 300);
+      },
+    });
+  };
+
+  const centerSubsection = (itemId: string) => {
+    const el = document.getElementById(`item-${itemId}`);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const itemDocTop = currentScroll + rect.top;
+    const viewportHeight = window.innerHeight;
+    const targetY = Math.max(0, itemDocTop - (viewportHeight - Math.min(rect.height, 220)) / 2);
+    fluidScrollTo(targetY, { duration: 380 });
   };
 
   // Section reference for smooth scroll to top when collapsing
@@ -374,8 +426,13 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
       <div 
         id={phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`}
         ref={sectionRef}
-        className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
+        style={{
+          '--glow-rgb': hexToRgb(theme.color)
+        } as React.CSSProperties}
+        className={`rounded-3xl border transition-all duration-200 shadow-xs ${
           isJustMinimized ? 'apple-section-pulse' : ''
+        } ${
+          isEditing ? 'apple-edit-glow bg-white' : 'border-slate-200/90 bg-white'
         } ${
         isGlobalEditMode 
           ? 'p-3.5 sm:p-4' 
@@ -407,41 +464,34 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
               </div>
             )}
-            {onDeletePhase && !isSetupPhase && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
-                    onDeletePhase(phase.id);
-                  }
-                }}
-                className="apple-press w-9 h-9 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
-                title="Delete Section"
-                aria-label="Delete Section"
-              >
-                <Trash2 className="w-4 h-4 stroke-[2.2]" />
-              </button>
-            )}
+            {/* Reorder drag handle on the LEFT */}
             {onDragStartPhase && typeof phaseIndex === 'number' && !isSetupPhase && (
               <button
                 type="button"
                 onPointerDown={(e) => {
                   e.stopPropagation();
-                  if (isExpanded) {
-                    setIsExpanded(false);
-                  }
                   onDragStartPhase(phaseIndex, e);
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsExpanded(false);
                 }}
                 className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
                 title="Hold and drag to rearrange section"
                 aria-label="Hold and drag to rearrange section"
               >
                 <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
+              </button>
+            )}
+            {/* Trash delete on the RIGHT */}
+            {onDeletePhase && !isSetupPhase && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeletePhase(phase.id);
+                }}
+                className="apple-press w-9 h-9 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
+                title="Delete Section"
+                aria-label="Delete Section"
+              >
+                <Trash2 className="w-4 h-4 stroke-[2.2]" />
               </button>
             )}
           </div>
@@ -487,10 +537,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 </div>
               </div>
 
-              {/* Right Controls: Only show when Edit mode is active, or 100% completion circle on top right */}
+              {/* Right Controls: In Edit mode, arrow on the LEFT and garbage can on the RIGHT horizontally */}
               {isEditing && !isSetupPhase ? (
                 <div 
-                  className="flex flex-col items-center space-y-1.5 shrink-0 self-center"
+                  className="flex items-center space-x-2 shrink-0 self-center"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {onDragStartPhase && typeof phaseIndex === 'number' && (
@@ -498,17 +548,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       type="button"
                       onPointerDown={(e) => {
                         e.stopPropagation();
-                        if (isExpanded) {
-                          setIsExpanded(false);
-                        }
                         onDragStartPhase(phaseIndex, e);
                       }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsExpanded(false);
-                      }}
                       className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
-                      title="Hold and drag to rearrange phase, or click to minimize drop-down"
+                      title="Hold and drag to rearrange phase"
                       aria-label="Move & rearrange phase"
                     >
                       <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
@@ -519,9 +562,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
-                          onDeletePhase(phase.id);
-                        }
+                        onDeletePhase(phase.id);
                       }}
                       className="apple-press w-8 h-8 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
                       title="Delete Section"
@@ -603,11 +644,16 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
               return (
                 <div
-                  id={item.id}
+                  id={`item-${item.id}`}
                   key={item.id}
                   ref={bindItemRef(idx)}
-                  style={getItemDragStyle(idx)}
+                  style={{
+                    ...getItemDragStyle(idx),
+                    '--glow-rgb': hexToRgb(theme.color)
+                  } as React.CSSProperties}
                   className={`rounded-3xl border transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2 ${
+                    pulsingItemId === item.id ? 'apple-section-pulse' : ''
+                  } ${
                     isDetailOpen 
                       ? 'bg-white border-slate-300' 
                       : isDone
@@ -619,7 +665,11 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   <div 
                     onClick={() => {
                       if (!isEditing && !isDeleting) {
-                        setExpandedItemId(isDetailOpen ? null : item.id);
+                        if (isDetailOpen) {
+                          handleCollapseSubsection(item.id);
+                        } else {
+                          setExpandedItemId(item.id);
+                        }
                       }
                     }}
                     className="space-y-2 select-none cursor-pointer"
@@ -710,7 +760,11 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!isEditing) {
-                            setExpandedItemId(isDetailOpen ? null : item.id);
+                            if (isDetailOpen) {
+                              handleCollapseSubsection(item.id);
+                            } else {
+                              setExpandedItemId(item.id);
+                            }
                           }
                         }}
                         className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-slate-400 hover:text-slate-700 shrink-0"
@@ -731,9 +785,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   <div className={`apple-drawer-collapse ${!isEditing && isDetailOpen ? 'expanded' : ''}`}>
                     <div className="apple-drawer-content">
                       <div 
-                        onClick={() => setExpandedItemId(null)}
+                        onClick={() => centerSubsection(item.id)}
                         className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
-                        title="Click anywhere to minimize"
+                        title="Click to center this subsection"
                       >
                         {/* Subsection 1: Architecture & Review Impact Pill */}
                         {item.whyItMatters && (
@@ -955,22 +1009,23 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Bottom Close Button */}
+                        {/* Standardized Bottom Close Button */}
                         <div className="pt-2 border-t border-slate-100/80 flex justify-center">
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setExpandedItemId(null);
+                              handleCollapseSubsection(item.id);
                             }}
-                            className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
-                            title="Close guidance"
-                            aria-label="Close guidance"
+                            className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 text-slate-700 hover:text-slate-900 bg-white border border-slate-200/90 hover:bg-slate-100/80 active:bg-slate-200/60 shadow-2xs cursor-pointer"
+                            title="Close"
+                            aria-label="Close"
                           >
                             <ChevronUp 
                               strokeWidth={2.5}
-                              className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" 
+                              className="w-3.5 h-3.5 text-slate-500" 
                             />
+                            <span>Close</span>
                           </button>
                         </div>
                       </div>

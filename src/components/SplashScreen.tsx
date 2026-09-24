@@ -53,20 +53,24 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       aria-label="App Blueprint Launch Screen"
     >
       <style>{`
-        @keyframes splashTitleIntro {
+        @keyframes splashSmoothFadeIn {
           0% {
             opacity: 0;
-            transform: translateY(8px) translateZ(0);
           }
           100% {
             opacity: 1;
-            transform: translateY(0) translateZ(0);
           }
         }
 
+        .splash-logo-container {
+          animation: splashSmoothFadeIn 350ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+          will-change: opacity;
+          -webkit-backface-visibility: hidden;
+        }
+
         .splash-title-text {
-          animation: splashTitleIntro 280ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both;
-          will-change: transform, opacity;
+          animation: splashSmoothFadeIn 380ms cubic-bezier(0.2, 0.9, 0.3, 1) 40ms both;
+          will-change: opacity;
           -webkit-backface-visibility: hidden;
         }
       `}</style>
@@ -87,6 +91,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       >
         {/* 1. Centered Flat White Logo (Exact geometric center matching native iOS LaunchScreen) */}
         <div
+          className="splash-logo-container"
           style={{
             position: 'relative',
             display: 'flex',

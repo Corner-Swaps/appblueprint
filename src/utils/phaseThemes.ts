@@ -154,3 +154,30 @@ export const getPhaseTheme = (phaseNumber: number): PhaseTheme => {
     progressBg: 'bg-[#6366F1]',
   };
 };
+
+export const hexToRgb = (hex: string): string => {
+  const clean = hex.replace('#', '');
+  if (clean.length === 3) {
+    const r = parseInt(clean[0] + clean[0], 16) || 0;
+    const g = parseInt(clean[1] + clean[1], 16) || 0;
+    const b = parseInt(clean[2] + clean[2], 16) || 0;
+    return `${r}, ${g}, ${b}`;
+  }
+  const r = parseInt(clean.substring(0, 2), 16) || 0;
+  const g = parseInt(clean.substring(2, 4), 16) || 0;
+  const b = parseInt(clean.substring(4, 6), 16) || 0;
+  return `${r}, ${g}, ${b}`;
+};
+
+export const getCategoryGlowRgb = (iconBgClass: string): string => {
+  if (iconBgClass.includes('purple')) return '168, 85, 247';
+  if (iconBgClass.includes('rose')) return '244, 63, 94';
+  if (iconBgClass.includes('indigo')) return '99, 102, 241';
+  if (iconBgClass.includes('blue')) return '59, 130, 246';
+  if (iconBgClass.includes('teal')) return '20, 184, 166';
+  if (iconBgClass.includes('emerald')) return '16, 185, 129';
+  if (iconBgClass.includes('amber')) return '245, 158, 11';
+  if (iconBgClass.includes('cyan')) return '6, 182, 212';
+  if (iconBgClass.includes('violet')) return '139, 92, 246';
+  return '59, 130, 246';
+};

@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   RESOURCES_DATA, 
   ResourceCategory, 
   ResourceItem 
 } from '../data/resources';
 import { copyToClipboard } from '../utils/clipboard';
+import { fluidScrollTo } from '../utils/fluidScroll';
+import { getCategoryGlowRgb } from '../utils/phaseThemes';
+import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
 import { 
   ChevronDown, 
   ChevronUp,
@@ -142,6 +145,8 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
   const selectedCategoryId = controlledCategoryId || internalCategoryId;
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null);
+  const [pulsingItemId, setPulsingItemId] = useState<string | null>(null);
+  const pulseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Close when collapse signal fires
   useEffect(() => {
@@ -165,8 +170,49 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
     setTimeout(() => setCopiedPromptId(null), 2000);
   };
 
+  const handleCollapseItem = (itemId: string) => {
+    const el = document.getElementById(itemId);
+    if (!el) {
+      setExpandedItemId(null);
+      return;
+    }
+
+    const rect = el.getBoundingClientRect();
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const itemDocTop = currentScroll + rect.top;
+    const viewportHeight = window.innerHeight;
+    const collapsedHeight = 110;
+    const centeredY = Math.max(0, itemDocTop - (viewportHeight - collapsedHeight) / 2);
+    const diff = Math.abs(currentScroll - centeredY);
+
+    if (diff < 20) {
+      setExpandedItemId(null);
+      if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current);
+      setPulsingItemId(itemId);
+      pulseTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 1850);
+      return;
+    }
+
+    const scrollDuration = Math.min(520, Math.max(380, Math.round(diff * 0.28 + 260)));
+    fluidScrollTo(centeredY, {
+      duration: scrollDuration,
+      onComplete: () => {
+        setExpandedItemId(null);
+        setTimeout(() => {
+          if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current);
+          setPulsingItemId(itemId);
+          pulseTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 1850);
+        }, 300);
+      },
+    });
+  };
+
   const handleToggleItem = (itemId: string) => {
-    setExpandedItemId(prev => (prev === itemId ? null : itemId));
+    if (expandedItemId === itemId) {
+      handleCollapseItem(itemId);
+    } else {
+      setExpandedItemId(itemId);
+    }
   };
 
   const activeConfig = SECTION_CONFIGS.find(s => s.id === selectedCategoryId) || SECTION_CONFIGS[0];
@@ -335,7 +381,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
                 </span>
                 <span className="text-xs text-slate-400">•</span>
                 <span className="text-xs font-bold text-slate-700">
-                  {secItems.length} Curated Tools
+                  {secItems.length} Tools
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug font-google">
@@ -359,7 +405,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
               <div 
                 id={item.id}
                 key={item.id}
-                className="rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2"
+                className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2 ${
+                  pulsingItemId === item.id ? 'apple-section-pulse' : ''
+                }`}
+                style={{
+                  '--glow-rgb': getCategoryGlowRgb(activeConfig.iconBg)
+                } as React.CSSProperties}
               >
                 {/* Item Header Block: clicking text minimizes/toggles item */}
                 <div 
@@ -544,9 +595,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
                             </button>
                           </div>
                           <div className="pt-0.5 select-text font-google">
-                            <p className="text-slate-700 leading-relaxed text-[13.5px] sm:text-sm whitespace-pre-line font-google">
-                              {item.promptOrCommand}
-                            </p>
+                            {renderFormattedPrompt(item.promptOrCommand)}
                           </div>
                         </div>
                       )}
@@ -570,22 +619,23 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
                         </a>
                       </div>
 
-                      {/* Close details button at bottom */}
+                      {/* Standardized Close Details Button at bottom */}
                       <div className="pt-1 flex flex-col items-center select-none">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setExpandedItemId(null);
+                            handleCollapseItem(item.id);
                           }}
-                          className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
-                          title="Close details"
-                          aria-label="Close details"
+                          className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 text-slate-700 hover:text-slate-900 bg-white border border-slate-200/90 hover:bg-slate-100/80 active:bg-slate-200/60 shadow-2xs cursor-pointer"
+                          title="Close"
+                          aria-label="Close"
                         >
                           <ChevronUp 
                             strokeWidth={2.5}
-                            className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" 
+                            className="w-3.5 h-3.5 text-slate-500" 
                           />
+                          <span>Close</span>
                         </button>
                       </div>
                     </div>

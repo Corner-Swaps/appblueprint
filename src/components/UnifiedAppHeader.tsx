@@ -33,7 +33,7 @@ export const UnifiedAppHeader: React.FC<UnifiedAppHeaderProps> = ({
             <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-2xl bg-purple-50/90 border border-purple-200/80 text-purple-700 shadow-xs">
               <GraduationCap className="w-4.5 h-4.5 text-purple-600 stroke-[2.2]" />
               <span className="text-xs sm:text-sm font-bold font-google">
-                Academy &amp; Curated Production Resources
+                Academy &amp; Production Resources
               </span>
               <span className="text-xs text-purple-400">•</span>
               <span className="text-xs font-semibold text-purple-600">

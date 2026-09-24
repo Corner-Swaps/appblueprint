@@ -21,12 +21,20 @@
     <meta name="twitter:description" content="Ship your iOS & Android mobile apps without rejections. 10 structured phases, 101 audit-proof requirements, battle-tested store guardrails, and 1-click AI prompts." />
     <meta name="twitter:image" content="https://corner-swaps.github.io/appblueprint/icon-512.png" />
     <link rel="manifest" href="./manifest.json" />
-    <style>
-      /* Light cream theme background matching website theme */
+    <style id="app-launch-bg">
+      /* Black background matching native iOS LaunchScreen during initial boot */
       html, body {
-        background-color: #FAF8F6;
+        background-color: #000000;
       }
     </style>
+    <script>
+      // For web browsers where splash screen is bypassed, immediately switch to cream #FAF8F6
+      try {
+        if (!window.Capacitor || (typeof window.Capacitor.isNativePlatform === 'function' && !window.Capacitor.isNativePlatform())) {
+          document.getElementById('app-launch-bg').innerHTML = 'html, body { background-color: #FAF8F6; }';
+        }
+      } catch (e) {}
+    </script>
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <title>App Blueprint — Mobile Production OS</title>
   </head>
