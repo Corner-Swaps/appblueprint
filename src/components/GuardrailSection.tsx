@@ -111,24 +111,26 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const [newItemDesc, setNewItemDesc] = useState('');
   const isSetupPhase = phase.number === 0 || phase.id === 'phase-setup';
 
-  // Theme-colored pulse highlight around section pill when minimized
+  // Dynamic theme-colored pulse highlight around section pill when minimized
   const [isJustMinimized, setIsJustMinimized] = useState(false);
   const pulseTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [pulsingItemId, setPulsingItemId] = useState<string | null>(null);
+  const itemPulseTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const triggerPillPulse = () => {
-    if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current);
-    setIsJustMinimized(true);
-    pulseTimeoutRef.current = setTimeout(() => {
-      setIsJustMinimized(false);
-    }, 1850);
+  const centerSubsection = (itemId: string) => {
+    const el = document.getElementById(itemId) || document.getElementById(`item-${itemId}`);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const itemDocTop = currentScroll + rect.top;
+    const viewportHeight = window.innerHeight;
+    const itemHeight = rect.height || 100;
+    const centeredY = Math.max(0, itemDocTop - (viewportHeight - itemHeight) / 2);
+    fluidScrollTo(centeredY, { duration: 380 });
   };
 
-  // Theme-colored pulse highlight around subsection pill when minimized
-  const [pulsingItemId, setPulsingItemId] = useState<string | null>(null);
-  const pulseItemTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
   const handleCollapseSubsection = (itemId: string) => {
-    const el = document.getElementById(`item-${itemId}`);
+    const el = document.getElementById(itemId) || document.getElementById(`item-${itemId}`);
     if (!el) {
       setExpandedItemId(null);
       return;
@@ -144,9 +146,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
     if (diff < 20) {
       setExpandedItemId(null);
-      if (pulseItemTimeoutRef.current) clearTimeout(pulseItemTimeoutRef.current);
+      if (itemPulseTimeoutRef.current) clearTimeout(itemPulseTimeoutRef.current);
       setPulsingItemId(itemId);
-      pulseItemTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 1850);
+      itemPulseTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 2050);
       return;
     }
 
@@ -156,23 +158,20 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
       onComplete: () => {
         setExpandedItemId(null);
         setTimeout(() => {
-          if (pulseItemTimeoutRef.current) clearTimeout(pulseItemTimeoutRef.current);
+          if (itemPulseTimeoutRef.current) clearTimeout(itemPulseTimeoutRef.current);
           setPulsingItemId(itemId);
-          pulseItemTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 1850);
+          itemPulseTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 2050);
         }, 300);
       },
     });
   };
 
-  const centerSubsection = (itemId: string) => {
-    const el = document.getElementById(`item-${itemId}`);
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    const itemDocTop = currentScroll + rect.top;
-    const viewportHeight = window.innerHeight;
-    const targetY = Math.max(0, itemDocTop - (viewportHeight - Math.min(rect.height, 220)) / 2);
-    fluidScrollTo(targetY, { duration: 380 });
+  const triggerPillPulse = () => {
+    if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current);
+    setIsJustMinimized(true);
+    pulseTimeoutRef.current = setTimeout(() => {
+      setIsJustMinimized(false);
+    }, 2050);
   };
 
   // Section reference for smooth scroll to top when collapsing
@@ -429,10 +428,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         style={{
           '--glow-rgb': hexToRgb(theme.color)
         } as React.CSSProperties}
-        className={`rounded-3xl border transition-all duration-200 shadow-xs ${
+        className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
           isJustMinimized ? 'apple-section-pulse' : ''
         } ${
-          isEditing ? 'apple-edit-glow bg-white' : 'border-slate-200/90 bg-white'
+          isEditing ? 'apple-edit-glow' : ''
         } ${
         isGlobalEditMode 
           ? 'p-3.5 sm:p-4' 
@@ -464,34 +463,41 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
               </div>
             )}
-            {/* Reorder drag handle on the LEFT */}
-            {onDragStartPhase && typeof phaseIndex === 'number' && !isSetupPhase && (
-              <button
-                type="button"
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  onDragStartPhase(phaseIndex, e);
-                }}
-                className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
-                title="Hold and drag to rearrange section"
-                aria-label="Hold and drag to rearrange section"
-              >
-                <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
-              </button>
-            )}
-            {/* Trash delete on the RIGHT */}
             {onDeletePhase && !isSetupPhase && (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDeletePhase(phase.id);
+                  if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
+                    onDeletePhase(phase.id);
+                  }
                 }}
                 className="apple-press w-9 h-9 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
                 title="Delete Section"
                 aria-label="Delete Section"
               >
                 <Trash2 className="w-4 h-4 stroke-[2.2]" />
+              </button>
+            )}
+            {onDragStartPhase && typeof phaseIndex === 'number' && !isSetupPhase && (
+              <button
+                type="button"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  if (isExpanded) {
+                    setIsExpanded(false);
+                  }
+                  onDragStartPhase(phaseIndex, e);
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(false);
+                }}
+                className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
+                title="Hold and drag to rearrange section"
+                aria-label="Hold and drag to rearrange section"
+              >
+                <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
               </button>
             )}
           </div>
@@ -537,10 +543,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 </div>
               </div>
 
-              {/* Right Controls: In Edit mode, arrow on the LEFT and garbage can on the RIGHT horizontally */}
+              {/* Right Controls: In Edit mode, arrow on the LEFT and garbage can on the RIGHT horizontally at top right */}
               {isEditing && !isSetupPhase ? (
                 <div 
-                  className="flex items-center space-x-2 shrink-0 self-center"
+                  className="flex items-center space-x-2 shrink-0 self-start mt-0.5"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {onDragStartPhase && typeof phaseIndex === 'number' && (
@@ -548,10 +554,17 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       type="button"
                       onPointerDown={(e) => {
                         e.stopPropagation();
+                        if (isExpanded) {
+                          setIsExpanded(false);
+                        }
                         onDragStartPhase(phaseIndex, e);
                       }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsExpanded(false);
+                      }}
                       className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
-                      title="Hold and drag to rearrange phase"
+                      title="Hold and drag to rearrange phase, or click to minimize drop-down"
                       aria-label="Move & rearrange phase"
                     >
                       <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
@@ -562,7 +575,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onDeletePhase(phase.id);
+                        if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
+                          onDeletePhase(phase.id);
+                        }
                       }}
                       className="apple-press w-8 h-8 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
                       title="Delete Section"
@@ -644,7 +659,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
               return (
                 <div
-                  id={`item-${item.id}`}
+                  id={item.id}
                   key={item.id}
                   ref={bindItemRef(idx)}
                   style={{
@@ -1009,7 +1024,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Standardized Bottom Close Button */}
+                        {/* Bottom Close Button */}
                         <div className="pt-2 border-t border-slate-100/80 flex justify-center">
                           <button
                             type="button"
@@ -1017,15 +1032,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                               e.stopPropagation();
                               handleCollapseSubsection(item.id);
                             }}
-                            className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 text-slate-700 hover:text-slate-900 bg-white border border-slate-200/90 hover:bg-slate-100/80 active:bg-slate-200/60 shadow-2xs cursor-pointer"
-                            title="Close"
-                            aria-label="Close"
+                            className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+                            title="Close guidance"
+                            aria-label="Close guidance"
                           >
                             <ChevronUp 
                               strokeWidth={2.5}
-                              className="w-3.5 h-3.5 text-slate-500" 
+                              className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" 
                             />
-                            <span>Close</span>
                           </button>
                         </div>
                       </div>
@@ -1090,18 +1104,18 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
                 <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
 
-                {/* Close Section Button */}
+                {/* Close Section Button (Pure arrow, no text, no circle) */}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleCollapseSection();
                   }}
-                  className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60 cursor-pointer"
+                  className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
                   title="Close section"
+                  aria-label="Close section"
                 >
-                  <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Close</span>
+                  <ChevronUp strokeWidth={2.5} className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" />
                 </button>
               </div>
             </div>

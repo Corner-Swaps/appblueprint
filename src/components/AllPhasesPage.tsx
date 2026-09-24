@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Phase } from '../types';
 import { renderPhaseIcon } from '../utils/renderPhaseIcon';
-import { getPhaseTheme } from '../utils/phaseThemes';
+import { getPhaseTheme, hexToRgb } from '../utils/phaseThemes';
 import { useFluidDragReorder } from '../hooks/useFluidDragReorder';
 import { 
   ChevronLeft, 
@@ -270,17 +270,20 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
               <div
                 key={phase.id}
                 ref={bindItemRef(idx)}
-                style={getItemStyle(idx)}
+                style={{
+                  ...getItemStyle(idx),
+                  '--glow-rgb': hexToRgb(theme.color)
+                } as React.CSSProperties}
                 onClick={handleSelect}
                 onPointerDown={(e) => {
                   if (isRearranging) {
                     handleDragStart(idx, e);
                   }
                 }}
-                className={`p-4 rounded-3xl bg-white border border-slate-200/90 shadow-xs transition-colors duration-150 space-y-3 ${
+                className={`p-4 rounded-3xl bg-white border border-slate-200/90 shadow-xs transition-all duration-150 space-y-3 ${
                   !isRearranging 
                     ? 'cursor-pointer select-none hover:border-slate-300' 
-                    : 'cursor-grab active:cursor-grabbing touch-none select-none'
+                    : 'cursor-grab active:cursor-grabbing touch-none select-none apple-edit-glow'
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -312,10 +315,10 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                     </div>
                   </div>
 
-                  {/* Right: Controls (Drag handle on top, trashcan underneath in Rearrange mode, or Chevron in normal mode) */}
+                  {/* Right: Controls: In Rearrange mode, Arrow on LEFT, Trash on RIGHT in top-right corner */}
                   {isRearranging ? (
                     <div 
-                      className="flex flex-col items-center space-y-1.5 shrink-0 self-center"
+                      className="flex items-center space-x-2 shrink-0 self-start mt-0.5"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {!isSetup && (
@@ -325,9 +328,9 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                             e.stopPropagation();
                             handleDragStart(idx, e);
                           }}
-                          className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
-                          title="Drag to rearrange step"
-                          aria-label="Drag to rearrange step"
+                          className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
+                          title="Hold and drag to rearrange step"
+                          aria-label="Hold and drag to rearrange step"
                         >
                           <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
                         </button>
@@ -337,9 +340,11 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onDeletePhase(phase.id);
+                            if (window.confirm(`Delete step section "${phase.title}"?`)) {
+                              onDeletePhase(phase.id);
+                            }
                           }}
-                          className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
+                          className="apple-press w-8 h-8 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
                           title="Delete Step"
                           aria-label="Delete Step"
                         >

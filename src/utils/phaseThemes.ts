@@ -181,3 +181,4 @@ export const getCategoryGlowRgb = (iconBgClass: string): string => {
   if (iconBgClass.includes('violet')) return '139, 92, 246';
   return '59, 130, 246';
 };
+
