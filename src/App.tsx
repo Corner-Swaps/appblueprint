@@ -86,7 +86,9 @@ export const App: React.FC = () => {
           return parsed.map((p: Project) => ({
             ...p,
             phaseOrder: p.phaseOrder,
-            deletedPhaseIds: p.deletedPhaseIds || [],
+            deletedPhaseIds: (p.deletedPhaseIds || []).filter(
+              id => id !== SETUP_STEPS_PHASE.id && id !== 'phase-setup' && id !== 'phase-0' && id !== 'setup'
+            ),
             completedItemIds: (p.completedItemIds || []).map(id => id === 'p4-keychain' ? 'p4-keychain-keystore' : id)
           }));
         }
@@ -363,7 +365,7 @@ export const App: React.FC = () => {
   // Flattened Checklist Items across Set Up Steps and all current project phases
   const allItems = useMemo(() => {
     const customSetupItems = activeProject.customItems?.[SETUP_STEPS_PHASE.id];
-    const setupItems = customSetupItems || SETUP_STEPS_PHASE.items;
+    const setupItems = (customSetupItems && customSetupItems.length > 0) ? customSetupItems : SETUP_STEPS_PHASE.items;
     return [
       ...setupItems,
       ...currentProjectPhases.flatMap(p => p.items)
@@ -628,6 +630,9 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
 
   // Delete a Phase Section (Custom or Built-in)
   const handleDeletePhase = (phaseId: string) => {
+    if (phaseId === SETUP_STEPS_PHASE.id || phaseId === 'phase-setup') {
+      return;
+    }
     const targetPhase = currentProjectPhases.find(p => p.id === phaseId);
     const title = targetPhase ? `"${targetPhase.title}"` : 'this section';
     if (!window.confirm(`Delete step section ${title}? You can restore it later from the bottom of the page.`)) {
@@ -842,31 +847,31 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
 
             {/* Main Feed: All Project Phases */}
             <div className="space-y-4 pt-1">
-              {/* Set Up Section (Foundational setup before Phase 1) */}
-              {(selectedPhaseId === 'all' || selectedPhaseId === SETUP_STEPS_PHASE.id) && (
-                <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
-                  <GuardrailSection
-                    phase={SETUP_STEPS_PHASE}
-                    phaseIndex={0}
-                    totalPhases={visiblePhases.length + 1}
-                    items={getFilteredItemsForPhase(
-                      activeProject.customItems?.[SETUP_STEPS_PHASE.id] || SETUP_STEPS_PHASE.items
-                    )}
-                    completedItemIds={completedItemIds}
-                    onToggleComplete={handleToggleComplete}
-                    defaultExpanded={false}
-                    onAddItem={handleAddItem}
-                    onReorderItems={handleReorderItems}
-                    onDeleteItem={handleDeleteItem}
-                    onMovePhase={handleMovePhase}
-                    onDeletePhase={handleDeletePhase}
-                    isGlobalEditMode={isGlobalEditMode}
-                    collapseSignal={collapseSignal}
-                    onDragStartPhase={handleDragStartPhase}
-                    onToggleGlobalEdit={handleToggleGlobalRearrange}
-                  />
-                </div>
-              )}
+              {/* Set Up Section (Foundational setup before Phase 1) - ALWAYS rendered as the First Pill */}
+              <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
+                <GuardrailSection
+                  phase={SETUP_STEPS_PHASE}
+                  phaseIndex={0}
+                  totalPhases={visiblePhases.length + 1}
+                  items={getFilteredItemsForPhase(
+                    (activeProject.customItems?.[SETUP_STEPS_PHASE.id] && activeProject.customItems[SETUP_STEPS_PHASE.id].length > 0)
+                      ? activeProject.customItems[SETUP_STEPS_PHASE.id]
+                      : SETUP_STEPS_PHASE.items
+                  )}
+                  completedItemIds={completedItemIds}
+                  onToggleComplete={handleToggleComplete}
+                  defaultExpanded={false}
+                  onAddItem={handleAddItem}
+                  onReorderItems={handleReorderItems}
+                  onDeleteItem={handleDeleteItem}
+                  onMovePhase={handleMovePhase}
+                  onDeletePhase={handleDeletePhase}
+                  isGlobalEditMode={isGlobalEditMode}
+                  collapseSignal={collapseSignal}
+                  onDragStartPhase={handleDragStartPhase}
+                  onToggleGlobalEdit={handleToggleGlobalRearrange}
+                />
+              </div>
 
 
 

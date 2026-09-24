@@ -417,8 +417,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     wasCompleteRef.current = isAllComplete;
   }, [isAllComplete, totalCount]);
 
-  // Only hide if filtering by completed items and this phase has items but none completed
-  if (items.length === 0 && phase.items.length > 0 && !isAddingItem) return null;
+  // Only hide if filtering by completed items and this phase has items but none completed (never hide setup phase)
+  if (items.length === 0 && phase.items.length > 0 && !isAddingItem && !isSetupPhase) return null;
 
   return (
     <>
@@ -601,21 +601,19 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               {phase.description}
             </p>
 
-            {/* Section Progress Bar: Only for steps 1-12, matching Academy on Setup pill */}
-            {!isSetupPhase && (
-              <div className="space-y-1 pt-1 select-none">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
-                  <span>Section Completion</span>
-                  <span>{percent}%</span>
-                </div>
-                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
-                  <div 
-                    className={`h-full ${theme.progressBg} rounded-full transition-all duration-500 ease-out`}
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
+            {/* Section Progress Bar */}
+            <div className="space-y-1 pt-1 select-none">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+                <span>Section Completion</span>
+                <span>{percent}%</span>
               </div>
-            )}
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
+                <div 
+                  className={`h-full ${theme.progressBg} rounded-full transition-all duration-500 ease-out`}
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+            </div>
 
             {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), translucent gray circle when pointing UP (open/expanded) */}
             <div className="flex justify-center pt-0.5 pb-0 select-none">
