@@ -7,8 +7,16 @@ import {
   X, 
   Pencil, 
   Trash2, 
-  Folder
+  Folder,
+  Lock,
+  ChevronRight,
+  ChevronDown,
+  Sparkles,
+  Info,
+  Layers
 } from 'lucide-react';
+import { canCreateNewProject, isUnlimitedUnlocked, PRO_PRICE_DISPLAY } from '../utils/paywall';
+import { triggerHaptic, ImpactStyle } from '../utils/haptics';
 
 interface ProjectsPageProps {
   projects: Project[];
@@ -19,6 +27,8 @@ interface ProjectsPageProps {
   onCreateProject: (name: string, color: string) => void;
   totalRequirementsCount?: number;
   onBackToChecklist?: () => void;
+  isPro?: boolean;
+  onOpenPaywall?: () => void;
 }
 
 export const ProjectsPage: React.FC<ProjectsPageProps> = ({
@@ -30,7 +40,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
   onCreateProject,
   totalRequirementsCount = 62,
   onBackToChecklist,
+  isPro = false,
+  onOpenPaywall,
 }) => {
+  const isUnlocked = isPro || isUnlimitedUnlocked() || canCreateNewProject(projects.length);
+  const isLocked = !isUnlocked;
+
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [selectedColor, setSelectedColor] = useState(PROJECT_COLORS[0]);
@@ -58,6 +73,11 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
     e.preventDefault();
     const trimmed = newProjectName.trim();
     if (!trimmed) return;
+    if (isLocked) {
+      setIsAddingProject(false);
+      onOpenPaywall?.();
+      return;
+    }
     onCreateProject(trimmed, selectedColor);
     setNewProjectName('');
     setIsAddingProject(false);
@@ -74,6 +94,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
         }
         const trimmed = newProjectName.trim();
         if (trimmed) {
+          if (isLocked) {
+            setIsAddingProject(false);
+            setNewProjectName('');
+            onOpenPaywall?.();
+            return;
+          }
           onCreateProject(trimmed, selectedColor);
           setNewProjectName('');
           setIsAddingProject(false);
@@ -88,7 +114,19 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
     return () => {
       document.removeEventListener('pointerdown', handlePointerDownOutside);
     };
-  }, [isAddingProject, newProjectName, selectedColor, onCreateProject]);
+  }, [isAddingProject, newProjectName, selectedColor, onCreateProject, isLocked, onOpenPaywall]);
+
+  // Seamlessly transition into project creation when Pro is activated
+  useEffect(() => {
+    const handleProStatus = (e: any) => {
+      if (e?.detail?.isPro || isUnlimitedUnlocked()) {
+        setIsAddingProject(true);
+        setSelectedColor(PROJECT_COLORS[projects.length % PROJECT_COLORS.length]);
+      }
+    };
+    window.addEventListener('appblueprint-pro-status-changed' as any, handleProStatus);
+    return () => window.removeEventListener('appblueprint-pro-status-changed' as any, handleProStatus);
+  }, [projects.length]);
 
   return (
     <div className="space-y-3.5 pb-4">
@@ -137,12 +175,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                 onBackToChecklist?.();
               }}
               style={isActive ? { borderColor: projColor } : undefined}
-              className={`rounded-3xl border bg-white p-5 sm:p-6 transition-all duration-150 shadow-xs space-y-4 select-none cursor-pointer ${
+              className={`rounded-3xl border bg-white p-5 sm:p-6 transition-all duration-150 shadow-xs space-y-3 select-none cursor-pointer ${
                 isActive ? 'border-2 ring-1 ring-black/5' : 'border-slate-200/90 hover:border-slate-300'
               }`}
             >
-              <div className="flex items-start justify-between gap-3 select-none">
-                <div className="flex items-start space-x-3.5 pr-2 select-none flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-3 select-none">
+                <div className="flex items-center space-x-3.5 select-none flex-1 min-w-0">
                   <div 
                     className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs text-white"
                     style={{ backgroundColor: projColor }}
@@ -150,7 +188,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                     <Folder className="w-6 h-6 stroke-[2.2]" />
                   </div>
 
-                  <div className="space-y-1 select-none flex-1 min-w-0 min-h-[48px] flex flex-col justify-center">
+                  <div className="select-none flex-1 min-w-0">
                     {isEditingThisProj ? (
                       <div 
                         data-rename-controls
@@ -206,98 +244,118 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between gap-2">
-                        <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words flex-1 min-w-0">
-                          {proj.name}
-                        </h2>
-
-                        <div className="flex items-center space-x-1 shrink-0 -my-1">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingProjectId(proj.id);
-                              setEditingProjectName(proj.name);
-                            }}
-                            className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 apple-press transition-colors"
-                            title="Rename Project"
-                            aria-label="Rename Project"
-                          >
-                            <Pencil className="w-[18px] h-[18px] stroke-[2.2]" />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDeleteProject(proj.id);
-                            }}
-                            className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 apple-press transition-colors"
-                            title="Delete Project"
-                            aria-label="Delete Project"
-                          >
-                            <Trash2 className="w-[18px] h-[18px] stroke-[2.2]" />
-                          </button>
-                        </div>
-                      </div>
+                      <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
+                        {proj.name}
+                      </h2>
                     )}
                   </div>
                 </div>
+
+                {!isEditingThisProj && (
+                  <div className="flex items-center space-x-1.5 shrink-0 -mr-1 self-center">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingProjectId(proj.id);
+                        setEditingProjectName(proj.name);
+                      }}
+                      className="p-1 bg-transparent border-0 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                      title="Rename Project"
+                      aria-label="Rename Project"
+                    >
+                      <Pencil className="w-[18px] h-[18px] stroke-[2.2]" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteProject(proj.id);
+                      }}
+                      className="p-1 bg-transparent border-0 text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
+                      title="Delete Project"
+                      aria-label="Delete Project"
+                    >
+                      <Trash2 className="w-[18px] h-[18px] stroke-[2.2]" />
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
-                <div
-                  className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{ 
-                    width: `${percent}%`,
-                    backgroundColor: projColor
-                  }}
-                />
+              {/* Progress Bar with Labels (matching other sections) */}
+              <div className="space-y-1 pt-1 select-none">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+                  <span>Project Completion</span>
+                  <span>{percent}%</span>
+                </div>
+                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{ 
+                      width: `${percent}%`,
+                      backgroundColor: projColor
+                    }}
+                  />
+                </div>
               </div>
             </div>
           );
         })}
 
-        {/* + New Project Card */}
+        {/* + Add a New Project Card: Clean layout without PRO badge, subtext, or sideways arrow */}
         {!isAddingProject ? (
           <div
             onClick={() => {
               if (editingProjectId) {
                 handleSaveRename(editingProjectId);
               }
+              if (isLocked) {
+                triggerHaptic(ImpactStyle.Light);
+                onOpenPaywall?.();
+                return;
+              }
               setIsAddingProject(true);
               setSelectedColor(PROJECT_COLORS[projects.length % PROJECT_COLORS.length]);
             }}
-            className="rounded-3xl border border-dashed border-slate-300 hover:border-slate-400 bg-white/80 hover:bg-white p-5 sm:p-6 transition-colors duration-150 shadow-xs space-y-4 select-none cursor-pointer"
-            title="Create New Project"
+            className={`rounded-3xl border transition-all duration-200 shadow-xs select-none cursor-pointer ${
+              isLocked
+                ? 'border-slate-200/90 bg-white hover:border-slate-300'
+                : 'border-dashed border-slate-300 hover:border-slate-400 bg-white/90 hover:bg-white'
+            } p-5 sm:p-6`}
+            title={isLocked ? "Unlock with Pro" : "Create New Project"}
             role="button"
             tabIndex={0}
           >
-            <div className="flex items-center justify-between gap-3 select-none">
+            <div className="w-full flex items-center justify-between select-none">
               <div className="flex items-center space-x-3.5 select-none flex-1 min-w-0">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200/90 flex items-center justify-center shrink-0 shadow-xs text-slate-700">
-                  <Plus className="w-6 h-6 stroke-[2.4]" />
+                {/* Squircle Icon: Clean slate-900 background with white icon */}
+                <div className="w-12 h-12 rounded-2xl bg-slate-900 flex items-center justify-center shrink-0 shadow-xs relative text-white">
+                  {isLocked ? (
+                    <Lock className="w-6 h-6 stroke-[2.2] text-white" />
+                  ) : (
+                    <Plus className="w-6 h-6 stroke-[2.4] text-white" />
+                  )}
                 </div>
 
-                <div className="space-y-0.5 select-none flex-1 min-w-0">
-                  <h2 className="text-base sm:text-lg font-black text-slate-800 tracking-tight leading-snug select-none font-google">
-                    New Project
+                {/* Clean Title & Subtitle */}
+                <div className="select-none flex-1 min-w-0">
+                  <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
+                    Add a New Project
                   </h2>
-                  <p className="text-xs text-slate-400 font-semibold truncate select-none">
-                    Tap to add another app checklist
+                  <p className="text-xs text-slate-500 font-medium leading-normal mt-0.5 select-none">
+                    {isLocked ? 'Unlock another project blueprint or go unlimited' : 'Create a new app blueprint with developer guidance'}
                   </p>
                 </div>
               </div>
             </div>
-
-            <div className="w-full h-2 bg-slate-100/70 rounded-full border border-black/5 select-none" />
           </div>
         ) : (
           <form
             ref={createFormRef}
             onSubmit={handleCreateSubmit}
             onClick={(e) => e.stopPropagation()}
-            className="rounded-3xl border border-slate-300 bg-white p-5 sm:p-6 transition-colors duration-150 shadow-xs space-y-4 select-none animate-in fade-in duration-150"
+            className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 transition-colors duration-150 shadow-xs space-y-4 select-none animate-in fade-in duration-150"
           >
             <div className="flex items-center justify-between gap-3 select-none">
               <div className="flex items-center space-x-3.5 select-none flex-1 min-w-0">

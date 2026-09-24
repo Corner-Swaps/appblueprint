@@ -142,17 +142,19 @@ export const PHASE_THEMES: Record<number, PhaseTheme> = {
   }
 };
 
+export const CUSTOM_PHASE_THEME: PhaseTheme = {
+  number: 999,
+  color: '#475569',
+  iconBg: 'bg-slate-700',
+  iconColor: 'text-white',
+  pillBg: 'bg-slate-700',
+  pillText: 'text-white',
+  pillBorder: 'border-transparent',
+  progressBg: 'bg-slate-700',
+};
+
 export const getPhaseTheme = (phaseNumber: number): PhaseTheme => {
-  return PHASE_THEMES[phaseNumber] || {
-    number: phaseNumber,
-    color: '#6366F1',
-    iconBg: 'bg-[#6366F1]',
-    iconColor: 'text-white',
-    pillBg: 'bg-[#6366F1]',
-    pillText: 'text-white',
-    pillBorder: 'border-transparent',
-    progressBg: 'bg-[#6366F1]',
-  };
+  return PHASE_THEMES[phaseNumber] || CUSTOM_PHASE_THEME;
 };
 
 export const hexToRgb = (hex: string): string => {

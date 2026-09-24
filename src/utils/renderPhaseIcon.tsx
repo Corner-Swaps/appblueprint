@@ -50,6 +50,6 @@ export const renderPhaseIcon = (name: string, className = "w-5 h-5 text-slate-80
     case 'Compass': return <Compass {...props} />;
     case 'Sliders': return <Sliders {...props} />;
     case 'Code': return <Code {...props} />;
-    default: return <ShieldCheck {...props} />;
+    default: return <Info {...props} strokeWidth={2.5} />;
   }
 };

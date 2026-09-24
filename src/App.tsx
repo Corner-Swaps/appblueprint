@@ -9,7 +9,9 @@ import { ResourcesPage } from './components/ResourcesPage';
 import { SplashScreen } from './components/SplashScreen';
 import { LegalConsentModal } from './components/LegalConsentModal';
 import { NativeReviewPromptModal } from './components/NativeReviewPromptModal';
+import { PaywallModal } from './components/PaywallModal';
 import { requestNativeStoreReview } from './utils/nativeReview';
+import { isProUnlocked, canCreateNewProject, markFreeQuotaClaimed, recordProjectCreated } from './utils/paywall';
 import { Capacitor } from '@capacitor/core';
 import { useFluidDragReorder } from './hooks/useFluidDragReorder';
 import { renderPhaseIcon } from './utils/renderPhaseIcon';
@@ -25,7 +27,9 @@ import {
   GraduationCap,
   ChevronRight,
   ChevronDown,
-  Check
+  Check,
+  Plus,
+  X
 } from 'lucide-react';
 import { Website } from './components/Website/Website';
 import { AppLauncherBar } from './components/Website/AppLauncherBar';
@@ -65,13 +69,6 @@ const DEFAULT_PROJECTS: Project[] = [
     color: '#3B82F6',
     createdAt: new Date().toISOString(),
     completedItemIds: ['p1-problem-solution', 'p1-scope-pruning', 'p4-keychain-keystore'],
-  },
-  {
-    id: 'proj-2',
-    name: 'Fitness Tracker v1',
-    color: '#8B5CF6',
-    createdAt: new Date().toISOString(),
-    completedItemIds: [],
   }
 ];
 
@@ -117,7 +114,54 @@ export const App: React.FC = () => {
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
   const [collapseSignal, setCollapseSignal] = useState(0);
   const [resourcesCollapseSignal, setResourcesCollapseSignal] = useState(0);
+  const [isAddingCustomPhase, setIsAddingCustomPhase] = useState(false);
+  const [customPhaseTitle, setCustomPhaseTitle] = useState('');
+  const [customPhaseDesc, setCustomPhaseDesc] = useState('');
 
+  // Pro Creator Pass & Paywall
+  const [isPro, setIsPro] = useState<boolean>(() => isProUnlocked());
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+
+  // Fresh brand new user reset: ensure Pro / Unlimited pass is revoked and user has 1 project
+  useEffect(() => {
+    const FRESH_USER_KEY = 'appblueprint_fresh_brand_new_user_v7';
+    if (!localStorage.getItem(FRESH_USER_KEY)) {
+      localStorage.removeItem('appblueprint_unlimited_unlocked_v2');
+      localStorage.removeItem('appblueprint_pro_unlocked_v1');
+      localStorage.removeItem('appblueprint_purchased_slots_v2');
+      localStorage.removeItem('appblueprint_creator_profile_v1');
+      
+      // Set to 1 creation used (the 1 free project)
+      localStorage.setItem('appblueprint_creations_ever_v2', '1');
+      localStorage.setItem('appblueprint_free_project_claimed_v1', 'true');
+      
+      // Reset projects list to 1 default project
+      const initialProjects: Project[] = [
+        {
+          id: 'proj-1',
+          name: 'My Mobile App',
+          color: '#3B82F6',
+          createdAt: new Date().toISOString(),
+          completedItemIds: ['p1-problem-solution', 'p1-scope-pruning', 'p4-keychain-keystore'],
+        }
+      ];
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(initialProjects));
+      setProjects(initialProjects);
+      setActiveProjectId('proj-1');
+
+      localStorage.setItem(FRESH_USER_KEY, 'true');
+      setIsPro(false);
+      window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed', { detail: { isPro: false } }));
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleProChange = (e: any) => {
+      setIsPro(e.detail?.isPro ?? isProUnlocked());
+    };
+    window.addEventListener('appblueprint-pro-status-changed', handleProChange);
+    return () => window.removeEventListener('appblueprint-pro-status-changed', handleProChange);
+  }, []);
 
   // View Mode: 'website' by default on web, 'app' if native platform or URL has #app or ?mode=app
   const [viewMode, setViewMode] = useState<'website' | 'app'>(() => {
@@ -334,7 +378,7 @@ export const App: React.FC = () => {
   const currentProjectPhases = useMemo<Phase[]>(() => {
     const allAvailablePhases: Phase[] = [
       ...PHASES_DATA,
-      ...(activeProject.customPhases || [])
+      ...(activeProject.customPhases || []).map(p => ({ ...p, iconName: 'Info' }))
     ].filter(p => !(activeProject.deletedPhaseIds || []).includes(p.id));
 
     const phasesWithCustomItems = allAvailablePhases.map(phase => {
@@ -356,10 +400,10 @@ export const App: React.FC = () => {
         }
       });
       phaseMap.forEach(p => ordered.push(p));
-      return ordered.map((p, idx) => ({ ...p, number: idx + 1 }));
+      return ordered;
     }
 
-    return phasesWithCustomItems.map((p, idx) => ({ ...p, number: idx + 1 }));
+    return phasesWithCustomItems;
   }, [activeProject]);
 
   // Flattened Checklist Items across Set Up Steps and all current project phases
@@ -411,7 +455,7 @@ export const App: React.FC = () => {
 
   // Prevent background scroll when full modal pages are open
   useEffect(() => {
-    if (isAllPhasesPageOpen) {
+    if (isAllPhasesPageOpen || isPaywallOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -419,7 +463,7 @@ export const App: React.FC = () => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isAllPhasesPageOpen]);
+  }, [isAllPhasesPageOpen, isPaywallOpen]);
 
   // Toggle Item Completion ("The Little Click") for active project
   const handleToggleComplete = (itemId: string) => {
@@ -562,13 +606,34 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       })
     );
 
-    // Smoothly scroll and center the new phase pill if on screen
-    setTimeout(() => {
+    // Blur active input to trigger keyboard dismissal on mobile
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    const centerTarget = () => {
       const el = document.getElementById(newPhaseId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 250);
+      if (!el) return false;
+      const rect = el.getBoundingClientRect();
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const docTop = currentScroll + rect.top;
+      const viewportHeight = window.innerHeight;
+      const pillHeight = rect.height || 100;
+      const targetY = Math.max(0, docTop - (viewportHeight - pillHeight) / 2);
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      return true;
+    };
+
+    // Staged scroll ensures that even after iOS virtual keyboard collapse finishes (~350ms),
+    // the newly created section is locked directly in the middle of the screen
+    setTimeout(() => {
+      centerTarget();
+      window.dispatchEvent(new CustomEvent('pulse-phase', { detail: newPhaseId }));
+    }, 120);
+
+    setTimeout(() => {
+      centerTarget();
+    }, 420);
   };
 
   // Reorder Phases
@@ -619,13 +684,32 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     });
   };
 
-  // Move Phase Up or Down
+  // Move Phase Up or Down with silky smooth viewport stabilization (zero jump or off-screen scroll)
   const handleMovePhase = (fromIdx: number, toIdx: number) => {
     if (toIdx < 0 || toIdx >= currentProjectPhases.length) return;
+    const movedPhase = currentProjectPhases[fromIdx];
+    if (!movedPhase) return;
+
+    // Capture element's current position relative to viewport before DOM update
+    const el = document.getElementById(movedPhase.id);
+    const beforeTop = el ? el.getBoundingClientRect().top : null;
+
     const reordered = [...currentProjectPhases];
     const [moved] = reordered.splice(fromIdx, 1);
     reordered.splice(toIdx, 0, moved);
     handleReorderPhases(reordered);
+
+    // After state updates and DOM paints, preserve the header position relative to viewport
+    requestAnimationFrame(() => {
+      const updatedEl = document.getElementById(moved.id);
+      if (updatedEl && beforeTop !== null) {
+        const afterTop = updatedEl.getBoundingClientRect().top;
+        const diff = afterTop - beforeTop;
+        if (Math.abs(diff) > 2) {
+          window.scrollBy({ top: diff, behavior: 'instant' });
+        }
+      }
+    });
   };
 
   // Delete a Phase Section (Custom or Built-in)
@@ -671,7 +755,8 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     const projToDelete = projects.find(p => p.id === projId);
     const projName = projToDelete ? `"${projToDelete.name}"` : 'this project';
 
-    if (window.confirm(`Are you sure you want to delete ${projName}?`)) {
+    if (window.confirm(`Are you sure you want to delete ${projName}? Note: Deleting a project does not reset your 1 free project allowance.`)) {
+      markFreeQuotaClaimed();
       const remaining = projects.filter(p => p.id !== projId);
       setProjects(remaining);
       if (activeProjectId === projId) {
@@ -848,7 +933,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
             {/* Main Feed: All Project Phases */}
             <div className="space-y-4 pt-1">
               {/* Set Up Section (Foundational setup before Phase 1) - ALWAYS rendered as the First Pill */}
-              <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
+              <div key={SETUP_STEPS_PHASE.id}>
                 <GuardrailSection
                   phase={SETUP_STEPS_PHASE}
                   phaseIndex={0}
@@ -901,6 +986,94 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                   />
                 </div>
               ))}
+
+              {/* Add Custom Section Action Button & Inline Form */}
+              <div className="pt-2 pb-1 flex flex-col items-center">
+                {isAddingCustomPhase ? (
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!customPhaseTitle.trim()) return;
+                      handleAddPhase(customPhaseTitle.trim(), customPhaseTitle.trim(), customPhaseDesc.trim());
+                      setCustomPhaseTitle('');
+                      setCustomPhaseDesc('');
+                      setIsAddingCustomPhase(false);
+                    }}
+                    className="w-full p-4 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 animate-in fade-in duration-200"
+                  >
+                    <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+                      <span className="text-xs font-bold text-slate-800 font-google">New Custom Section</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCustomPhaseTitle('');
+                          setCustomPhaseDesc('');
+                          setIsAddingCustomPhase(false);
+                        }}
+                        className="apple-press p-1 rounded-full text-slate-400 hover:text-slate-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                        Section Title
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. In-App Purchases, Apple Watch, Notifications"
+                        value={customPhaseTitle}
+                        onChange={(e) => setCustomPhaseTitle(e.target.value)}
+                        className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 bg-white"
+                        autoFocus
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                        Description (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Brief summary of requirements in this section"
+                        value={customPhaseDesc}
+                        onChange={(e) => setCustomPhaseDesc(e.target.value)}
+                        className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 bg-white"
+                      />
+                    </div>
+                    <div className="flex items-center justify-end space-x-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCustomPhaseTitle('');
+                          setCustomPhaseDesc('');
+                          setIsAddingCustomPhase(false);
+                        }}
+                        className="apple-press px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!customPhaseTitle.trim()}
+                        className="apple-press px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white disabled:opacity-50 shadow-xs"
+                      >
+                        Create Section
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingCustomPhase(true)}
+                    className="apple-press inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 text-slate-700 hover:text-slate-900 font-bold text-xs cursor-pointer transition-all"
+                    title="Add a custom section"
+                  >
+                    <Plus className="w-3.5 h-3.5 stroke-[2.5] text-slate-500" />
+                    <span>Add Section</span>
+                  </button>
+                )}
+              </div>
 
               {/* Empty State when no items match filter */}
               {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
@@ -1049,7 +1222,14 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
               onDeleteProject={(projId) => {
                 handleDeleteProject(projId);
               }}
+              isPro={isPro}
+              onOpenPaywall={() => setIsPaywallOpen(true)}
               onCreateProject={(name, color) => {
+                if (!canCreateNewProject(projects.length)) {
+                  setIsPaywallOpen(true);
+                  return;
+                }
+                recordProjectCreated();
                 const newProj: Project = {
                   id: `proj-${Date.now()}`,
                   name: name,
@@ -1218,11 +1398,9 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
           setTimeout(() => {
             const el = document.getElementById(phaseId);
             if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-          }, 80);
+          }, 100);
         }}
         onReorderPhases={(newPhases) => handleReorderPhases(newPhases.filter(p => p.id !== SETUP_STEPS_PHASE.id))}
         onAddPhase={handleAddPhase}
@@ -1245,6 +1423,15 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
           onSubmit={handleSubmitReview}
         />
       )}
+
+      {/* Pro Creator Pass Modal */}
+      <PaywallModal
+        isOpen={isPaywallOpen}
+        onClose={() => setIsPaywallOpen(false)}
+        onUnlocked={() => {
+          setIsPro(true);
+        }}
+      />
     </div>
   );
 };

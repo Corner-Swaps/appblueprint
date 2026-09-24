@@ -194,6 +194,9 @@ export function useFluidDragReorder<T>({
       } catch {}
     }
 
+    document.body.style.touchAction = '';
+    document.body.style.userSelect = '';
+
     dragStateRef.current = null;
     setDraggingIndex(null);
     setOverIndex(null);
@@ -203,6 +206,8 @@ export function useFluidDragReorder<T>({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      document.body.style.touchAction = '';
+      document.body.style.userSelect = '';
       if (autoScrollAnimRef.current) {
         cancelAnimationFrame(autoScrollAnimRef.current);
       }
@@ -247,6 +252,9 @@ export function useFluidDragReorder<T>({
     try {
       if (navigator?.vibrate) navigator.vibrate(12);
     } catch {}
+
+    document.body.style.touchAction = 'none';
+    document.body.style.userSelect = 'none';
 
     window.addEventListener('pointermove', handleWindowPointerMove, { passive: false });
     window.addEventListener('pointerup', handleWindowPointerUp);

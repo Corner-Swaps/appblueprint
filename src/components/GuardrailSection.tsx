@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Phase, ChecklistItem } from '../types';
 import { renderPhaseIcon } from '../utils/renderPhaseIcon';
-import { getPhaseTheme, hexToRgb } from '../utils/phaseThemes';
+import { getPhaseTheme, CUSTOM_PHASE_THEME, hexToRgb } from '../utils/phaseThemes';
 import { triggerPhaseCompleteConfetti } from '../utils/confetti';
 import { useFluidDragReorder } from '../hooks/useFluidDragReorder';
 import { 
@@ -21,6 +21,8 @@ import {
   X, 
   Terminal, 
   ArrowUpDown, 
+  ArrowUp,
+  ArrowDown,
   Play,
   Shield,
   Scale,
@@ -32,6 +34,8 @@ import {
   HelpCircle,
   Target
 } from 'lucide-react';
+import { triggerHaptic } from '../utils/haptics';
+import { ImpactStyle } from '@capacitor/haptics';
 import { PlatformBadge } from './PlatformBadge';
 import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
 import { renderChecklistItemIcon } from '../utils/renderChecklistItemIcon';
@@ -129,41 +133,89 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     fluidScrollTo(centeredY, { duration: 380 });
   };
 
+  const getCollapsedPillHeight = (el: HTMLElement, defaultHeight: number): number => {
+    try {
+      const headerEl = el.firstElementChild as HTMLElement;
+      if (headerEl && headerEl.offsetHeight > 40) {
+        const computed = window.getComputedStyle(el);
+        const pt = parseFloat(computed.paddingTop) || 20;
+        const pb = parseFloat(computed.paddingBottom) || 12;
+        const bt = parseFloat(computed.borderTopWidth) || 1;
+        const bb = parseFloat(computed.borderBottomWidth) || 1;
+        return headerEl.offsetHeight + pt + pb + bt + bb;
+      }
+    } catch {
+      // fallback
+    }
+    return defaultHeight;
+  };
+
+  const triggerItemPulse = (itemId: string) => {
+    if (itemPulseTimeoutRef.current) clearTimeout(itemPulseTimeoutRef.current);
+    setPulsingItemId(itemId);
+    itemPulseTimeoutRef.current = setTimeout(() => {
+      setPulsingItemId(null);
+    }, 2050);
+  };
+
+  const isCollapsingSubRef = React.useRef<string | null>(null);
+
   const handleCollapseSubsection = (itemId: string) => {
+    if (isCollapsingSubRef.current) return;
+    isCollapsingSubRef.current = itemId;
+
     const el = document.getElementById(itemId) || document.getElementById(`item-${itemId}`);
     if (!el) {
       setExpandedItemId(null);
+      isCollapsingSubRef.current = null;
       return;
     }
 
     const rect = el.getBoundingClientRect();
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    const itemDocTop = currentScroll + rect.top;
+    const elDocTop = currentScroll + rect.top;
     const viewportHeight = window.innerHeight;
-    const collapsedHeight = 110;
-    const centeredY = Math.max(0, itemDocTop - (viewportHeight - collapsedHeight) / 2);
-    const diff = Math.abs(currentScroll - centeredY);
+    const collapsedHeight = getCollapsedPillHeight(el, 182);
+    // Calculate exact scroll target to position the collapsed sub pill in the vertical center of the viewport
+    const centeredTargetY = Math.max(0, elDocTop - (viewportHeight - collapsedHeight) / 2);
+    const diff = Math.abs(currentScroll - centeredTargetY);
 
-    if (diff < 20) {
-      setExpandedItemId(null);
-      if (itemPulseTimeoutRef.current) clearTimeout(itemPulseTimeoutRef.current);
-      setPulsingItemId(itemId);
-      itemPulseTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 2050);
-      return;
+    // 1. Immediately fold the subcategory drawer UPWARDS into the sub pill
+    setExpandedItemId(null);
+
+    // 2. Smoothly glide to the center of the viewport
+    if (diff > 8) {
+      fluidScrollTo(centeredTargetY, {
+        duration: 320,
+      });
     }
 
-    const scrollDuration = Math.min(520, Math.max(380, Math.round(diff * 0.28 + 260)));
-    fluidScrollTo(centeredY, {
-      duration: scrollDuration,
-      onComplete: () => {
-        setExpandedItemId(null);
-        setTimeout(() => {
-          if (itemPulseTimeoutRef.current) clearTimeout(itemPulseTimeoutRef.current);
-          setPulsingItemId(itemId);
-          itemPulseTimeoutRef.current = setTimeout(() => setPulsingItemId(null), 2050);
-        }, 300);
-      },
-    });
+    // 3. Guaranteed pulse trigger: wait until drawer fold (320ms) has 100% completed
+    // so the pill is completely static and settled, exactly like the main pill!
+    setTimeout(() => {
+      triggerItemPulse(itemId);
+      isCollapsingSubRef.current = null;
+    }, 360);
+  };
+
+  const handleDrawerTextClick = (e: React.MouseEvent, itemId: string) => {
+    e.stopPropagation();
+    // If text was actively selected by user, don't collapse
+    if (window.getSelection && (window.getSelection()?.toString().length || 0) > 0) {
+      return;
+    }
+    const target = e.target as HTMLElement;
+    if (
+      target.closest('button') || 
+      target.closest('a') || 
+      target.closest('input') || 
+      target.closest('textarea') ||
+      target.closest('[role="button"]') ||
+      target.closest('.apple-press')
+    ) {
+      return;
+    }
+    handleCollapseSubsection(itemId);
   };
 
   const triggerPillPulse = () => {
@@ -174,17 +226,27 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     }, 2050);
   };
 
+  React.useEffect(() => {
+    const handlePulsePhase = (e: any) => {
+      if (e?.detail === phase.id) {
+        triggerPillPulse();
+      }
+    };
+    window.addEventListener('pulse-phase' as any, handlePulsePhase);
+    return () => window.removeEventListener('pulse-phase' as any, handlePulsePhase);
+  }, [phase.id]);
+
   // Section reference for smooth scroll to top when collapsing
   const sectionRef = React.useRef<HTMLDivElement>(null);
   const isCollapsingRef = React.useRef(false);
 
-  const collapseSectionSmoothly = (centerInViewport = false) => {
+  const collapseSectionSmoothly = () => {
     if (isCollapsingRef.current) return;
 
     setIsEditMode(false);
     setIsAddingItem(false);
 
-    const targetEl = sectionRef.current || document.getElementById(phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`);
+    const targetEl = sectionRef.current || document.getElementById(phase.id);
     if (!targetEl) {
       setIsExpanded(false);
       setExpandedItemId(null);
@@ -194,89 +256,41 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
     const rect = targetEl.getBoundingClientRect();
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    const sectionDocTop = currentScroll + rect.top;
+    const elDocTop = currentScroll + rect.top;
     const viewportHeight = window.innerHeight;
+    const collapsedHeight = getCollapsedPillHeight(targetEl, 242);
+    // Calculate exact scroll target to position the collapsed main pill in the vertical center of the viewport
+    const centeredTargetY = Math.max(0, elDocTop - (viewportHeight - collapsedHeight) / 2);
+    const diff = Math.abs(currentScroll - centeredTargetY);
 
-    if (centerInViewport) {
-      isCollapsingRef.current = true;
-      // Vertically center the collapsed pill (~100px tall) in the viewport
-      const collapsedPillHeight = 100;
-      const centeredY = Math.max(0, sectionDocTop - (viewportHeight - collapsedPillHeight) / 2);
-      const diff = Math.abs(currentScroll - centeredY);
+    // 1. Immediately fold the section drawer UPWARDS into the main pill
+    setIsExpanded(false);
+    setExpandedItemId(null);
+    isCollapsingRef.current = true;
 
-      if (diff < 20) {
-        // Already centered in viewport, fold closed directly
-        setIsExpanded(false);
-        setExpandedItemId(null);
-        setTimeout(() => {
-          triggerPillPulse();
-          isCollapsingRef.current = false;
-        }, 320);
-        return;
-      }
-
-      // Step 1: Smoothly scroll up FIRST while keeping drawer open (zero jumping/glitching)
-      // Step 2: Once scroll is back at top/centered, fold the drawer closed
-      // Step 3: Once folded, do the gentle ambient glow!
-      const scrollDuration = Math.min(520, Math.max(400, Math.round(diff * 0.28 + 260)));
-
-      fluidScrollTo(centeredY, {
-        duration: scrollDuration,
-        onComplete: () => {
-          // Viewport is now smoothly centered on the section header.
-          // Now fold closed with scroll stationary:
-          setIsExpanded(false);
-          setExpandedItemId(null);
-
-          // Once drawer has finished folding up into the pill, trigger the gentle glow!
-          setTimeout(() => {
-            triggerPillPulse();
-            isCollapsingRef.current = false;
-          }, 320);
-        },
+    // 2. Smoothly glide to the center of the viewport
+    if (diff > 8) {
+      fluidScrollTo(centeredTargetY, {
+        duration: 320,
       });
-      return;
     }
 
-    // Default header toggle collapse: glide up if scrolled past, then fold closed
-    const targetY = Math.max(0, currentScroll + rect.top - 72);
-    const isScrolledPast = rect.top < 60;
-
-    if (isScrolledPast) {
-      isCollapsingRef.current = true;
-      const diff = Math.abs(currentScroll - targetY);
-      const scrollDuration = Math.min(520, Math.max(400, Math.round(diff * 0.28 + 260)));
-
-      fluidScrollTo(targetY, {
-        duration: scrollDuration,
-        onComplete: () => {
-          setIsExpanded(false);
-          setExpandedItemId(null);
-          setTimeout(() => {
-            triggerPillPulse();
-            isCollapsingRef.current = false;
-          }, 320);
-        },
-      });
-    } else {
-      setIsExpanded(false);
-      setExpandedItemId(null);
-      setTimeout(() => {
-        triggerPillPulse();
-      }, 320);
-    }
+    setTimeout(() => {
+      triggerPillPulse();
+      isCollapsingRef.current = false;
+    }, 360);
   };
 
   const handleToggleExpand = () => {
     if (isExpanded) {
-      collapseSectionSmoothly(false);
+      collapseSectionSmoothly();
     } else {
       setIsExpanded(true);
     }
   };
 
   const handleCollapseSection = () => {
-    collapseSectionSmoothly(true);
+    collapseSectionSmoothly();
   };
 
   // Fluid drag-and-drop reordering for requirement items
@@ -294,15 +308,32 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     },
   });
 
-  // Reorder items in current phase
+  // Reorder items in current phase with silky smooth viewport stabilization
   const handleMoveItem = (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= items.length) return;
+    const movedItem = items[fromIndex];
+    const el = movedItem ? (document.getElementById(movedItem.id) || document.getElementById(`item-${movedItem.id}`)) : null;
+    const beforeTop = el ? el.getBoundingClientRect().top : null;
+
     const newItems = [...items];
     const [moved] = newItems.splice(fromIndex, 1);
     newItems.splice(toIndex, 0, moved);
     if (onReorderItems) {
       onReorderItems(phase.id, newItems);
     }
+
+    requestAnimationFrame(() => {
+      if (movedItem) {
+        const updatedEl = document.getElementById(movedItem.id) || document.getElementById(`item-${movedItem.id}`);
+        if (updatedEl && beforeTop !== null) {
+          const afterTop = updatedEl.getBoundingClientRect().top;
+          const diff = afterTop - beforeTop;
+          if (Math.abs(diff) > 2) {
+            window.scrollBy({ top: diff, behavior: 'instant' });
+          }
+        }
+      }
+    });
   };
 
   // Close when global collapse signal fires
@@ -395,7 +426,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     }
   };
 
-  const theme = getPhaseTheme(phase.number);
+  const isCustomPhase = phase.id.startsWith('custom-');
+  const theme = isCustomPhase ? CUSTOM_PHASE_THEME : getPhaseTheme(phase.number);
   const totalCount = phase.items.length;
   const completedCount = phase.items.filter(i => completedItemIds.includes(i.id)).length;
   const isAllComplete = totalCount > 0 && completedCount === totalCount;
@@ -423,7 +455,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   return (
     <>
       <div 
-        id={phase.number === 0 ? 'phase-setup' : `phase-${phase.number}`}
+        id={phase.id}
         ref={sectionRef}
         style={{
           '--glow-rgb': hexToRgb(theme.color)
@@ -442,11 +474,11 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         <div className="w-full flex items-center justify-between select-none">
           <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
             <div className={`w-11 h-11 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-xs relative`}>
-              {renderPhaseIcon(phase.iconName, "w-5.5 h-5.5 text-white stroke-[2.2]")}
+              {renderPhaseIcon(isCustomPhase ? 'Info' : phase.iconName, "w-5.5 h-5.5 text-white stroke-[2.2]")}
             </div>
             <div className="space-y-0.5 select-none flex-1 min-w-0">
               <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
-                {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
+                {isSetupPhase ? 'Set Up' : isCustomPhase ? 'Custom' : `Step ${phase.number}`}
               </span>
               <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
                 {phase.title}
@@ -463,12 +495,45 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
               </div>
             )}
+            {/* Move Up */}
+            {onMovePhase && typeof phaseIndex === 'number' && phaseIndex > 0 && !isSetupPhase && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  triggerHaptic(ImpactStyle.Light);
+                  onMovePhase(phaseIndex, phaseIndex - 1);
+                }}
+                className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                title="Move section up"
+                aria-label="Move section up"
+              >
+                <ArrowUp className="w-4 h-4 stroke-[2.2]" />
+              </button>
+            )}
+            {/* Move Down */}
+            {onMovePhase && typeof phaseIndex === 'number' && typeof totalPhases === 'number' && phaseIndex < totalPhases - 1 && !isSetupPhase && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  triggerHaptic(ImpactStyle.Light);
+                  onMovePhase(phaseIndex, phaseIndex + 1);
+                }}
+                className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                title="Move section down"
+                aria-label="Move section down"
+              >
+                <ArrowDown className="w-4 h-4 stroke-[2.2]" />
+              </button>
+            )}
             {onDeletePhase && !isSetupPhase && (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
+                    triggerHaptic(ImpactStyle.Medium);
                     onDeletePhase(phase.id);
                   }
                 }}
@@ -484,14 +549,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 type="button"
                 onPointerDown={(e) => {
                   e.stopPropagation();
-                  if (isExpanded) {
-                    setIsExpanded(false);
-                  }
                   onDragStartPhase(phaseIndex, e);
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsExpanded(false);
                 }}
                 className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
                 title="Hold and drag to rearrange section"
@@ -522,14 +580,14 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
                 {/* Squircle Icon: White icon, phase color background behind it on the LEFT */}
                 <div className={`w-12 h-12 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-xs relative text-white`}>
-                  {renderPhaseIcon(phase.iconName, "w-6 h-6 text-white stroke-[2.2]")}
+                  {renderPhaseIcon(isCustomPhase ? 'Info' : phase.iconName, "w-6 h-6 text-white stroke-[2.2]")}
                 </div>
 
                 {/* Title & Phase Badge */}
                 <div className="space-y-1 select-none flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
                     <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
-                      {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
+                      {isSetupPhase ? 'Set Up' : isCustomPhase ? 'Custom' : `Step ${phase.number}`}
                     </span>
                     <span className="text-xs text-slate-400 select-none">•</span>
                     <span className="text-xs font-bold text-slate-700 select-none">
@@ -543,39 +601,70 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 </div>
               </div>
 
-              {/* Right Controls: In Edit mode, arrow on the LEFT and garbage can on the RIGHT horizontally at top right */}
+              {/* Right Controls: In Edit mode, Move Up, Move Down, Drag and Delete buttons */}
               {isEditing && !isSetupPhase ? (
                 <div 
-                  className="flex items-center space-x-2 shrink-0 self-start mt-0.5"
+                  className="flex items-center space-x-1.5 shrink-0 self-start mt-0.5"
                   onClick={(e) => e.stopPropagation()}
                 >
+                  {/* Move Section Up */}
+                  {onMovePhase && typeof phaseIndex === 'number' && phaseIndex > 0 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerHaptic(ImpactStyle.Light);
+                        onMovePhase(phaseIndex, phaseIndex - 1);
+                      }}
+                      className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                      title="Move section up"
+                      aria-label="Move section up"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
+                    </button>
+                  )}
+
+                  {/* Move Section Down */}
+                  {onMovePhase && typeof phaseIndex === 'number' && typeof totalPhases === 'number' && phaseIndex < totalPhases - 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerHaptic(ImpactStyle.Light);
+                        onMovePhase(phaseIndex, phaseIndex + 1);
+                      }}
+                      className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                      title="Move section down"
+                      aria-label="Move section down"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5 stroke-[2.2]" />
+                    </button>
+                  )}
+
+                  {/* Drag Handle */}
                   {onDragStartPhase && typeof phaseIndex === 'number' && (
                     <button
                       type="button"
                       onPointerDown={(e) => {
                         e.stopPropagation();
-                        if (isExpanded) {
-                          setIsExpanded(false);
-                        }
                         onDragStartPhase(phaseIndex, e);
                       }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsExpanded(false);
-                      }}
                       className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
-                      title="Hold and drag to rearrange phase, or click to minimize drop-down"
+                      title="Hold and drag to rearrange phase"
                       aria-label="Move & rearrange phase"
                     >
                       <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
                     </button>
                   )}
+
+                  {/* Delete Section */}
                   {onDeletePhase && (
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         if (window.confirm(`Delete section "${phase.title}" and all its requirements?`)) {
+                          triggerHaptic(ImpactStyle.Medium);
                           onDeletePhase(phase.id);
                         }
                       }}
@@ -597,7 +686,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
             </div>
 
             {/* Subtext: ALWAYS visible underneath the title! */}
-            <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
+            <p className="text-sm sm:text-sm text-slate-600 leading-[22px] select-none pt-0.5">
               {phase.description}
             </p>
 
@@ -644,7 +733,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     {!isGlobalEditMode && (
       <div className={`apple-drawer-collapse ${isExpanded ? 'expanded' : ''}`}>
             <div className="apple-drawer-content">
-              <div className="space-y-3 pt-3">
+              <div className="space-y-3 pt-3 pb-3.5">
             {items.length === 0 && (
               <div className="py-6 px-4 text-center rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 select-none">
                 <p className="text-xs font-bold text-slate-700 font-google">No requirements added yet</p>
@@ -664,28 +753,26 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     ...getItemDragStyle(idx),
                     '--glow-rgb': hexToRgb(theme.color)
                   } as React.CSSProperties}
-                  className={`rounded-3xl border transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2 ${
+                  className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 ${
                     pulsingItemId === item.id ? 'apple-section-pulse' : ''
-                  } ${
-                    isDetailOpen 
-                      ? 'bg-white border-slate-300' 
-                      : isDone
-                        ? 'bg-white/95 border-slate-200/90 hover:border-slate-300'
-                        : 'bg-white border-slate-200/90 hover:border-slate-300'
                   }`}
                 >
                   {/* Item Header Block: clicking text minimizes/toggles item */}
                   <div 
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       if (!isEditing && !isDeleting) {
                         if (isDetailOpen) {
                           handleCollapseSubsection(item.id);
                         } else {
+                          if (expandedItemId && expandedItemId !== item.id) {
+                            triggerItemPulse(expandedItemId);
+                          }
                           setExpandedItemId(item.id);
                         }
                       }
                     }}
-                    className="space-y-2 select-none cursor-pointer"
+                    className="space-y-2.5 select-none cursor-pointer"
                   >
                     <div className="w-full flex items-center justify-between select-none">
                       <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
@@ -708,6 +795,41 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       {/* Action Controls: Edit handles or Checkmark Toggle vertically centered on the right side */}
                       {isEditing ? (
                         <div className="flex items-center justify-end space-x-1.5 shrink-0 -mr-1 h-12" onClick={(e) => e.stopPropagation()}>
+                          {/* Move Item Up */}
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                triggerHaptic(ImpactStyle.Light);
+                                handleMoveItem(idx, idx - 1);
+                              }}
+                              className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                              title="Move requirement up"
+                              aria-label="Move requirement up"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
+                            </button>
+                          )}
+
+                          {/* Move Item Down */}
+                          {idx < items.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                triggerHaptic(ImpactStyle.Light);
+                                handleMoveItem(idx, idx + 1);
+                              }}
+                              className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                              title="Move requirement down"
+                              aria-label="Move requirement down"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5 stroke-[2.2]" />
+                            </button>
+                          )}
+
+                          {/* Drag Handle */}
                           <button
                             type="button"
                             onPointerDown={(e) => {
@@ -720,12 +842,15 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           >
                             <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
                           </button>
+
+                          {/* Delete Item */}
                           {onDeleteItem && (
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (window.confirm(`Delete requirement "${item.title}"?`)) {
+                                  triggerHaptic(ImpactStyle.Medium);
                                   onDeleteItem(phase.id, item.id);
                                 }
                               }}
@@ -762,7 +887,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     </div>
 
                     {/* Short Description matching Academy subtext */}
-                    <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
+                    <p className="text-sm sm:text-sm text-slate-600 leading-[22px] select-none pt-0.5">
                       {item.shortDescription}
                     </p>
 
@@ -776,6 +901,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             if (isDetailOpen) {
                               handleCollapseSubsection(item.id);
                             } else {
+                              if (expandedItemId && expandedItemId !== item.id) {
+                                triggerItemPulse(expandedItemId);
+                              }
                               setExpandedItemId(item.id);
                             }
                           }
@@ -795,12 +923,12 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   </div>
 
                   {/* Expanded Guidance Drawer: Distinct Pill Cards matching Academy */}
-                  <div className={`apple-drawer-collapse ${!isEditing && isDetailOpen ? 'expanded' : ''}`}>
+                  <div className={`apple-drawer-collapse ${!isEditing && isDetailOpen ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
                     <div className="apple-drawer-content">
                       <div 
-                        onClick={() => centerSubsection(item.id)}
+                        onClick={(e) => handleDrawerTextClick(e, item.id)}
                         className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
-                        title="Click to center this subsection"
+                        title="Click to minimize requirement"
                       >
                         {/* Subsection 1: Architecture & Review Impact Pill */}
                         {item.whyItMatters && (
@@ -1030,14 +1158,15 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                               e.stopPropagation();
                               handleCollapseSubsection(item.id);
                             }}
-                            className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
-                            title="Close guidance"
-                            aria-label="Close guidance"
+                            className="apple-press py-1 px-3 rounded-full flex items-center space-x-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100/70 transition-colors text-xs font-bold cursor-pointer"
+                            title="Close requirement"
+                            aria-label="Close requirement"
                           >
                             <ChevronUp 
                               strokeWidth={2.5}
-                              className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" 
+                              className="w-3.5 h-3.5 stroke-[2.5] text-slate-500 hover:text-slate-800" 
                             />
+                            <span>Close</span>
                           </button>
                         </div>
                       </div>
@@ -1102,18 +1231,19 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
                 <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
 
-                {/* Close Section Button (Pure arrow, no text, no circle) */}
+                {/* Close Section Button */}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleCollapseSection();
                   }}
-                  className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+                  className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60 transition-all duration-200 flex items-center space-x-1.5 cursor-pointer"
                   title="Close section"
                   aria-label="Close section"
                 >
-                  <ChevronUp strokeWidth={2.5} className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" />
+                  <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 stroke-[2.5] text-slate-500 hover:text-slate-700" />
+                  <span>Close</span>
                 </button>
               </div>
             </div>
@@ -1135,7 +1265,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 animate-in fade-in duration-200 mt-2"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 font-google">Add Requirement to {isSetupPhase ? 'Set Up' : `Step ${phase.number}`}</span>
+                <span className="text-xs font-bold text-slate-800 font-google">Add Requirement to {isSetupPhase ? 'Set Up' : isCustomPhase ? phase.title : `Step ${phase.number}`}</span>
                 <button
                   type="button"
                   onClick={() => {

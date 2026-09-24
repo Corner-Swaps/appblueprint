@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Phase } from '../types';
 import { renderPhaseIcon } from '../utils/renderPhaseIcon';
-import { getPhaseTheme, hexToRgb } from '../utils/phaseThemes';
+import { getPhaseTheme, CUSTOM_PHASE_THEME, hexToRgb } from '../utils/phaseThemes';
 import { useFluidDragReorder } from '../hooks/useFluidDragReorder';
 import { 
   ChevronLeft, 
@@ -12,7 +12,9 @@ import {
   X,
   CheckCircle2,
   Check,
-  ArrowUpDown
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 
 interface AllPhasesPageProps {
@@ -75,15 +77,39 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
 
   const handleMovePhase = (fromIdx: number, toIdx: number) => {
     if (toIdx < 0 || toIdx >= phases.length) return;
+    const movedPhase = phases[fromIdx];
+    const el = movedPhase ? document.getElementById(movedPhase.id) : null;
+    const beforeTop = el ? el.getBoundingClientRect().top : null;
+
     const reordered = [...phases];
     const [moved] = reordered.splice(fromIdx, 1);
     reordered.splice(toIdx, 0, moved);
     onReorderPhases(reordered);
+
+    requestAnimationFrame(() => {
+      if (movedPhase) {
+        const updatedEl = document.getElementById(movedPhase.id);
+        if (updatedEl && beforeTop !== null) {
+          const afterTop = updatedEl.getBoundingClientRect().top;
+          const diff = afterTop - beforeTop;
+          if (Math.abs(diff) > 2) {
+            if (scrollContainerRef.current) {
+              scrollContainerRef.current.scrollTop += diff;
+            } else {
+              window.scrollBy({ top: diff, behavior: 'instant' });
+            }
+          }
+        }
+      }
+    });
   };
 
   const handleCreatePhase = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     onAddPhase(
       newTitle.trim(),
       newShortTitle.trim() || newTitle.trim(),
@@ -93,6 +119,7 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
     setNewShortTitle('');
     setNewDesc('');
     setIsAddingPhase(false);
+    onClose();
   };
 
   return (
@@ -102,12 +129,11 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
       <header className="ios-safe-top bg-[#FAF8F6]/95 backdrop-blur-xl border-b border-slate-200/90 px-4 pb-2.5 pt-1 shrink-0">
         <div className="max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto flex items-center justify-between">
           
-          {/* Back Button (Grown by 10%, Scroll all the way to top) */}
+          {/* Back Button */}
           <button
             type="button"
             onClick={() => {
               onClose();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="apple-press flex items-center space-x-1 px-3.5 py-2 rounded-full bg-[#FAF8F6] border border-slate-300/80 text-slate-800 text-xs font-bold shadow-xs hover:bg-slate-200/60 shrink-0"
             aria-label="Back to main view"
@@ -255,15 +281,12 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
             const isAllDone = phaseTotal > 0 && phaseDone === phaseTotal;
             const isCustom = phase.id.startsWith('custom-');
             const isSetup = phase.id === 'phase-setup' || phase.number === 0;
-            const theme = getPhaseTheme(phase.number);
+            const theme = isCustom ? CUSTOM_PHASE_THEME : getPhaseTheme(phase.number);
 
             const handleSelect = () => {
               if (isRearranging) return;
               onSelectPhase(phase.id);
               onClose();
-              setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }, 40);
             };
 
             return (
@@ -291,13 +314,13 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                   {/* Left: Squircle & Info */}
                   <div className="flex items-start space-x-3 flex-1 min-w-0 pr-2">
                     <div className={`w-12 h-12 rounded-2xl ${theme.iconBg} flex items-center justify-center shrink-0 shadow-xs relative`}>
-                      {renderPhaseIcon(phase.iconName, "w-6 h-6 text-white stroke-[2.2]")}
+                      {renderPhaseIcon(isCustom ? 'Info' : phase.iconName, "w-6 h-6 text-white stroke-[2.2]")}
                     </div>
 
                     <div className="space-y-1 flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
                         <span className={`h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1.5px] leading-none`}>
-                          {phase.number === 0 ? 'Set Up' : `Step ${phase.number}`}
+                          {isSetup ? 'Set Up' : isCustom ? 'Custom' : `Step ${phase.number}`}
                         </span>
                         <span className="text-xs text-slate-400">•</span>
                         <span className="text-xs font-bold text-slate-700">
@@ -322,18 +345,48 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                       onClick={(e) => e.stopPropagation()}
                     >
                       {!isSetup && (
-                        <button
-                          type="button"
-                          onPointerDown={(e) => {
-                            e.stopPropagation();
-                            handleDragStart(idx, e);
-                          }}
-                          className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
-                          title="Hold and drag to rearrange step"
-                          aria-label="Hold and drag to rearrange step"
-                        >
-                          <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
-                        </button>
+                        <>
+                          {idx > 0 && phases[idx - 1]?.id !== 'phase-setup' && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMovePhase(idx, idx - 1);
+                              }}
+                              className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                              title="Move step up"
+                              aria-label="Move step up"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
+                            </button>
+                          )}
+                          {idx < phases.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMovePhase(idx, idx + 1);
+                              }}
+                              className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                              title="Move step down"
+                              aria-label="Move step down"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5 stroke-[2.2]" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onPointerDown={(e) => {
+                              e.stopPropagation();
+                              handleDragStart(idx, e);
+                            }}
+                            className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
+                            title="Hold and drag to rearrange step"
+                            aria-label="Hold and drag to rearrange step"
+                          >
+                            <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
+                          </button>
+                        </>
                       )}
                       {isCustom && onDeletePhase && (
                         <button

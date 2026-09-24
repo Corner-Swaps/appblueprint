@@ -1,5 +1,7 @@
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
+export { ImpactStyle };
+
 /**
  * Trigger subtle Apple Taptic Engine feedback for fluid gestures
  */
