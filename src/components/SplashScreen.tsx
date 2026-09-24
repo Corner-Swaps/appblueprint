@@ -15,14 +15,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     setFadingOut(true);
     setTimeout(() => {
       onComplete();
-    }, 250);
+    }, 310);
   };
 
-  // Snappy, Apple-standard launch pacing (~750ms total)
+  // Snappy, Apple-standard launch pacing (~850ms hold + 300ms fade-out)
   useEffect(() => {
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 500);
+    }, 850);
 
     return () => {
       clearTimeout(dismissTimer);
@@ -46,7 +46,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         justifyContent: 'center',
         background: '#000000',
         opacity: fadingOut ? 0 : 1,
-        transition: 'opacity 250ms cubic-bezier(0.2, 0.9, 0.3, 1)',
+        transition: 'opacity 300ms cubic-bezier(0.16, 1, 0.3, 1)',
         willChange: 'opacity',
         overflow: 'hidden',
       }}
@@ -63,15 +63,17 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         }
 
         .splash-logo-container {
-          animation: splashSmoothFadeIn 350ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+          animation: splashSmoothFadeIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
           will-change: opacity;
           -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
         }
 
         .splash-title-text {
-          animation: splashSmoothFadeIn 380ms cubic-bezier(0.2, 0.9, 0.3, 1) 40ms both;
+          animation: splashSmoothFadeIn 420ms cubic-bezier(0.16, 1, 0.3, 1) 50ms both;
           will-change: opacity;
           -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
         }
       `}</style>
 
@@ -85,11 +87,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           alignItems: 'center',
           justifyContent: 'center',
           opacity: fadingOut ? 0 : 1,
-          transition: 'opacity 250ms ease-out',
+          transition: 'opacity 300ms cubic-bezier(0.16, 1, 0.3, 1)',
           willChange: 'opacity',
         }}
       >
-        {/* 1. Centered Flat White Logo (Exact geometric center matching native iOS LaunchScreen) */}
+        {/* 1. Centered Flat White Logo */}
         <div
           className="splash-logo-container"
           style={{
@@ -109,11 +111,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           />
         </div>
 
-        {/* 2. Title cleanly positioned down below */}
+        {/* 2. Title cleanly positioned with fixed offset (never shifts or jumps on safe-area resolution) */}
         <div
           style={{
             position: 'absolute',
-            bottom: 'max(calc(env(safe-area-inset-bottom, 0px) + 32px), 48px)',
+            bottom: 56,
             left: 0,
             right: 0,
             textAlign: 'center',

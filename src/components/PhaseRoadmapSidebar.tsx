@@ -1,7 +1,7 @@
 import React from 'react';
 import { Phase } from '../types';
 import { renderPhaseIcon } from '../utils/renderPhaseIcon';
-import { getPhaseTheme } from '../utils/phaseThemes';
+import { getPhaseTheme, CUSTOM_PHASE_THEME } from '../utils/phaseThemes';
 import { 
   CheckCircle2, 
   ChevronRight, 
@@ -141,7 +141,8 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
         <div className="space-y-2 pt-1">
           {allPhasesWithSetup.map((phase) => {
             const isSetup = phase.id === setupPhase.id;
-            const theme = getPhaseTheme(phase.number);
+            const isCustom = phase.id.startsWith('custom-');
+            const theme = isCustom ? CUSTOM_PHASE_THEME : getPhaseTheme(phase.number);
             const totalItems = phase.items.length;
             const completedCount = phase.items.filter(item => completedItemIds.includes(item.id)).length;
             const isAllCompleted = totalItems > 0 && completedCount === totalItems;
@@ -160,12 +161,12 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
               >
                 <div className="flex items-center space-x-3 min-w-0 pr-2">
                   <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl ${theme.iconBg} flex items-center justify-center text-white shrink-0 shadow-xs`}>
-                    {renderPhaseIcon(phase.iconName, "w-4.5 h-4.5 text-white stroke-[2.2]")}
+                    {renderPhaseIcon(isCustom ? 'Info' : phase.iconName, "w-4.5 h-4.5 text-white stroke-[2.2]")}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center space-x-1.5 mb-0.5">
                       <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        {isSetup ? 'Setup' : `Phase ${phase.number}`}
+                        {isSetup ? 'Setup' : isCustom ? 'Custom' : `Phase ${phase.number}`}
                       </span>
                     </div>
                     <p className={`text-sm sm:text-base font-bold font-google leading-snug break-words transition-colors ${

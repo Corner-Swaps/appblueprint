@@ -38,6 +38,7 @@ import {
   Sparkles,
   Lock,
   Search,
+  Server,
   TrendingUp,
   Code,
   Layout,
@@ -63,9 +64,17 @@ import {
   Gauge,
   PieChart,
   Copy,
-  HelpCircle,
   Target,
+  Plus,
+  Pencil,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+  X,
 } from 'lucide-react';
+import { triggerHaptic } from '../utils/haptics';
+import { ImpactStyle } from '@capacitor/haptics';
 import { fluidScrollTo } from '../utils/fluidScroll';
 import { getCategoryGlowRgb } from '../utils/phaseThemes';
 
@@ -88,7 +97,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'ai_models',
     title: 'AI Models & Coding Agents',
     badge: 'Core Intelligence',
-    description: 'AI coding models can inspect your codebase and write code directly in your terminal. They generate screens, fix bugs, and connect device APIs in minutes. Choose from Google Antigravity, Claude Code, Cursor, and Windsurf.',
+    description: 'AI coding models inspect your codebase and write code in your terminal. They build screens, fix bugs, and connect device APIs in minutes. Choose from Antigravity, Claude, and Cursor.',
     iconBg: 'bg-purple-600',
     icon: <Brain className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -126,7 +135,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     badge: 'Serverless Cloud',
     description: 'A backend lets your users save accounts, store data in the cloud, and sync across multiple devices. Modern platforms like Supabase and Firebase handle the complex server work automatically. They offer generous free plans that can comfortably support your first thousands of active users without charge. You can always start for free and scale up smoothly as your app grows.',
     iconBg: 'bg-teal-600',
-    icon: <Database className="w-6 h-6 text-white stroke-[1.6]" />
+    icon: <Server className="w-6 h-6 text-white stroke-[1.8]" />
   },
   {
     id: 'security',
@@ -250,8 +259,138 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
   };
 
   const isCollapsingCategoryRef = useRef(false);
+  const isCollapsingItemRef = useRef<string | null>(null);
 
-  // Dynamic theme-colored pulse highlight around category pill when minimized
+  // Curated Resources State (persisted to localStorage)
+  const [resourceItems, setResourceItems] = useState<ResourceItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('appblueprint_resources_items_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to load saved resource items', e);
+    }
+    return RESOURCES_DATA;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('appblueprint_resources_items_v1', JSON.stringify(resourceItems));
+    } catch (e) {
+      console.warn('Failed to save resource items', e);
+    }
+  }, [resourceItems]);
+
+  // Category Ordering State (persisted to localStorage)
+  const [sectionOrder, setSectionOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('appblueprint_resources_order_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to load saved category order', e);
+    }
+    return SECTION_CONFIGS.map(s => s.id);
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('appblueprint_resources_order_v1', JSON.stringify(sectionOrder));
+    } catch (e) {
+      console.warn('Failed to save category order', e);
+    }
+  }, [sectionOrder]);
+
+  // Edit and Add Mode States
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [addingToCategoryId, setAddingToCategoryId] = useState<string | null>(null);
+  const [newToolTitle, setNewToolTitle] = useState('');
+  const [newToolDesc, setNewToolDesc] = useState('');
+  const [newToolUrl, setNewToolUrl] = useState('');
+  const [newToolPrompt, setNewToolPrompt] = useState('');
+
+  const handleMoveCategory = (fromIdx: number, toIdx: number) => {
+    if (toIdx < 0 || toIdx >= sectionOrder.length) return;
+    const newOrder = [...sectionOrder];
+    const [moved] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, moved);
+    setSectionOrder(newOrder);
+    triggerHaptic(ImpactStyle.Light);
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    const cat = SECTION_CONFIGS.find(s => s.id === categoryId);
+    const title = cat ? `"${cat.title}"` : 'this category';
+    if (!window.confirm(`Delete category ${title} and all its tools?`)) return;
+    setSectionOrder(prev => prev.filter(id => id !== categoryId));
+    setResourceItems(prev => prev.filter(item => item.category !== categoryId));
+    if (expandedSectionId === categoryId) {
+      setExpandedSectionId(null);
+    }
+    triggerHaptic(ImpactStyle.Medium);
+  };
+
+  const handleMoveTool = (categoryId: string, fromCatIdx: number, toCatIdx: number) => {
+    const catTools = resourceItems.filter(r => r.category === categoryId);
+    if (toCatIdx < 0 || toCatIdx >= catTools.length) return;
+
+    const fromTool = catTools[fromCatIdx];
+    const toTool = catTools[toCatIdx];
+
+    setResourceItems(prev => {
+      const list = [...prev];
+      const globalFromIdx = list.findIndex(r => r.id === fromTool.id);
+      const globalToIdx = list.findIndex(r => r.id === toTool.id);
+      if (globalFromIdx === -1 || globalToIdx === -1) return prev;
+
+      const [moved] = list.splice(globalFromIdx, 1);
+      list.splice(globalToIdx, 0, moved);
+      return list;
+    });
+    triggerHaptic(ImpactStyle.Light);
+  };
+
+  const handleDeleteTool = (toolId: string) => {
+    const tool = resourceItems.find(r => r.id === toolId);
+    const title = tool ? `"${tool.title}"` : 'this tool';
+    if (!window.confirm(`Delete tool ${title}?`)) return;
+    setResourceItems(prev => prev.filter(r => r.id !== toolId));
+    triggerHaptic(ImpactStyle.Medium);
+  };
+
+  const handleCreateTool = (categoryId: string) => {
+    if (!newToolTitle.trim()) return;
+    const catConfig = SECTION_CONFIGS.find(s => s.id === categoryId);
+    const newTool: ResourceItem = {
+      id: `tool-${Date.now()}`,
+      category: categoryId as ResourceCategory,
+      categoryLabel: catConfig?.title || 'Curated Resource',
+      title: newToolTitle.trim(),
+      shortDescription: newToolDesc.trim() || 'Curated development tool',
+      whyItMatters: newToolDesc.trim() || 'Accelerates your mobile app development workflow.',
+      keyFeatures: ['Official tool support', 'Easy integration', 'Beginner friendly'],
+      bestUsedFor: 'Building and enhancing mobile features quickly',
+      freeTierInfo: 'Check provider website for current pricing',
+      badge: 'Official',
+      badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
+      url: newToolUrl.trim() || 'https://google.com',
+      iconName: 'Sparkles',
+      promptOrCommand: newToolPrompt.trim() || undefined,
+    };
+    setResourceItems(prev => [newTool, ...prev]);
+    setNewToolTitle('');
+    setNewToolDesc('');
+    setNewToolUrl('');
+    setNewToolPrompt('');
+    setAddingToCategoryId(null);
+    triggerHaptic(ImpactStyle.Light);
+  };
+
+  // Dynamic theme-colored pulse highlight around category pill when minimized (3200ms duration)
   const [pulsingSectionId, setPulsingSectionId] = useState<string | null>(null);
   const pulseCategoryTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [pulsingItemId, setPulsingItemId] = useState<string | null>(null);
@@ -265,7 +404,32 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     }, 2050);
   };
 
-  const handleToggleSection = (secId: string, centerInViewport = false) => {
+  const getCollapsedPillHeight = (el: HTMLElement, defaultHeight: number): number => {
+    try {
+      const headerEl = el.firstElementChild as HTMLElement;
+      if (headerEl && headerEl.offsetHeight > 40) {
+        const computed = window.getComputedStyle(el);
+        const pt = parseFloat(computed.paddingTop) || 20;
+        const pb = parseFloat(computed.paddingBottom) || 12;
+        const bt = parseFloat(computed.borderTopWidth) || 1;
+        const bb = parseFloat(computed.borderBottomWidth) || 1;
+        return headerEl.offsetHeight + pt + pb + bt + bb;
+      }
+    } catch {
+      // fallback
+    }
+    return defaultHeight;
+  };
+
+  const triggerItemPulse = (itemId: string) => {
+    if (pulseItemTimerRef.current) clearTimeout(pulseItemTimerRef.current);
+    setPulsingItemId(itemId);
+    pulseItemTimerRef.current = setTimeout(() => {
+      setPulsingItemId(null);
+    }, 2050);
+  };
+
+  const handleToggleSection = (secId: string, _centerInViewport = false) => {
     if (isCollapsingCategoryRef.current) return;
 
     if (expandedSectionId === secId) {
@@ -280,74 +444,29 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
       const rect = targetEl.getBoundingClientRect();
       const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-      const sectionDocTop = currentScroll + rect.top;
+      const elDocTop = currentScroll + rect.top;
       const viewportHeight = window.innerHeight;
+      const collapsedHeight = getCollapsedPillHeight(targetEl, 264);
+      // Calculate exact scroll target to position the collapsed category pill in the vertical center of the viewport
+      const centeredTargetY = Math.max(0, elDocTop - (viewportHeight - collapsedHeight) / 2);
+      const diff = Math.abs(currentScroll - centeredTargetY);
 
-      if (centerInViewport) {
-        isCollapsingCategoryRef.current = true;
-        const collapsedPillHeight = 100;
-        const centeredY = Math.max(0, sectionDocTop - (viewportHeight - collapsedPillHeight) / 2);
-        const diff = Math.abs(currentScroll - centeredY);
-
-        if (diff < 20) {
-          // Already centered in viewport, fold closed directly
-          setExpandedItemId(null);
-          setExpandedSectionId(null);
-          setTimeout(() => {
-            triggerCategoryPulse(secId);
-            isCollapsingCategoryRef.current = false;
-          }, 320);
-          return;
-        }
-
-        // Step 1: Smoothly scroll up FIRST while keeping drawer open (zero jumping/glitching)
-        // Step 2: Once scroll is centered at top, fold the drawer closed
-        // Step 3: Once folded, trigger the gentle ambient glow!
-        const scrollDuration = Math.min(520, Math.max(400, Math.round(diff * 0.28 + 260)));
-
-        fluidScrollTo(centeredY, {
-          duration: scrollDuration,
-          onComplete: () => {
-            // Viewport is now smoothly centered on the category header
-            setExpandedItemId(null);
-            setExpandedSectionId(null);
-
-            // Once drawer has finished folding up into the pill, trigger the gentle glow
-            setTimeout(() => {
-              triggerCategoryPulse(secId);
-              isCollapsingCategoryRef.current = false;
-            }, 320);
-          },
-        });
-        return;
-      }
-
-      // Default header arrow collapse: glide up if scrolled past, then fold closed
-      const targetY = Math.max(0, currentScroll + rect.top - 72);
-      const isScrolledPast = rect.top < 60;
-
-      if (isScrolledPast) {
-        isCollapsingCategoryRef.current = true;
-        fluidScrollTo(targetY, {
-          duration: 380,
-          onComplete: () => {
-            setExpandedItemId(null);
-            setExpandedSectionId(null);
-            setTimeout(() => {
-              triggerCategoryPulse(secId);
-              isCollapsingCategoryRef.current = false;
-            }, 320);
-          },
-        });
-        return;
-      }
-
-      // Already in comfortable view, fold closed directly
+      // 1. Immediately fold the category drawer UPWARDS into the pill header
       setExpandedItemId(null);
       setExpandedSectionId(null);
+      isCollapsingCategoryRef.current = true;
+
+      // 2. Smoothly glide to the center of the viewport
+      if (diff > 8) {
+        fluidScrollTo(centeredTargetY, {
+          duration: 320,
+        });
+      }
+
       setTimeout(() => {
         triggerCategoryPulse(secId);
-      }, 320);
+        isCollapsingCategoryRef.current = false;
+      }, 360);
       return;
     }
 
@@ -357,7 +476,14 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
   };
 
   const handleToggleItem = (itemId: string) => {
-    setExpandedItemId(prev => (prev === itemId ? null : itemId));
+    if (expandedItemId === itemId) {
+      handleCollapseItem(itemId);
+    } else {
+      if (expandedItemId && expandedItemId !== itemId) {
+        triggerItemPulse(expandedItemId);
+      }
+      setExpandedItemId(itemId);
+    }
   };
 
   const centerSubsection = (itemId: string) => {
@@ -373,54 +499,61 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
   };
 
   const handleCollapseItem = (itemId: string) => {
+    if (isCollapsingItemRef.current) return;
+    isCollapsingItemRef.current = itemId;
+
     const el = document.getElementById(itemId);
     if (!el) {
       setExpandedItemId(null);
+      isCollapsingItemRef.current = null;
       return;
     }
 
     const rect = el.getBoundingClientRect();
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    const itemDocTop = currentScroll + rect.top;
+    const elDocTop = currentScroll + rect.top;
     const viewportHeight = window.innerHeight;
-    const collapsedHeight = 110;
-    const centeredY = Math.max(0, itemDocTop - (viewportHeight - collapsedHeight) / 2);
-    const diff = Math.abs(currentScroll - centeredY);
+    const collapsedHeight = getCollapsedPillHeight(el, 204);
+    // Calculate exact scroll target to position the collapsed tool pill in the vertical center of the viewport
+    const centeredTargetY = Math.max(0, elDocTop - (viewportHeight - collapsedHeight) / 2);
+    const diff = Math.abs(currentScroll - centeredTargetY);
 
-    if (diff < 20) {
-      setExpandedItemId(null);
-      if (pulseItemTimerRef.current) clearTimeout(pulseItemTimerRef.current);
-      setPulsingItemId(itemId);
-      pulseItemTimerRef.current = setTimeout(() => setPulsingItemId(null), 2050);
-      return;
+    // 1. Immediately fold the tool drawer UPWARDS into the sub pill
+    setExpandedItemId(null);
+
+    // 2. Smoothly glide to the center of the viewport
+    if (diff > 8) {
+      fluidScrollTo(centeredTargetY, {
+        duration: 320,
+      });
     }
 
-    const scrollDuration = Math.min(520, Math.max(380, Math.round(diff * 0.28 + 260)));
-    fluidScrollTo(centeredY, {
-      duration: scrollDuration,
-      onComplete: () => {
-        setExpandedItemId(null);
-        setTimeout(() => {
-          if (pulseItemTimerRef.current) clearTimeout(pulseItemTimerRef.current);
-          setPulsingItemId(itemId);
-          pulseItemTimerRef.current = setTimeout(() => setPulsingItemId(null), 2050);
-        }, 300);
-      },
-    });
+    // 3. Guaranteed pulse trigger: wait until drawer fold (320ms) has 100% completed
+    // so the pill is completely static and settled, exactly like the category pill!
+    setTimeout(() => {
+      triggerItemPulse(itemId);
+      isCollapsingItemRef.current = null;
+    }, 360);
   };
 
   const handleDrawerTextClick = (e: React.MouseEvent, itemId: string) => {
+    e.stopPropagation();
+    // If text was actively selected by user, don't collapse
+    if (window.getSelection && (window.getSelection()?.toString().length || 0) > 0) {
+      return;
+    }
     const target = e.target as HTMLElement;
     if (
       target.closest('button') || 
       target.closest('a') || 
       target.closest('input') || 
+      target.closest('textarea') ||
       target.closest('[role="button"]') ||
       target.closest('.apple-press')
     ) {
       return;
     }
-    centerSubsection(itemId);
+    handleCollapseItem(itemId);
   };
 
   // Authentic Brand Color SVG Icon Renderer for each website/tool
@@ -824,9 +957,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
       {/* 2. Section Cards */}
       <div className="space-y-4 pt-1">
-        {SECTION_CONFIGS.map(sec => {
-          const secItems = RESOURCES_DATA.filter(r => r.category === sec.id);
+        {sectionOrder.map((secId, secIdx) => {
+          const sec = SECTION_CONFIGS.find(s => s.id === secId);
+          if (!sec) return null;
+          const secItems = resourceItems.filter(r => r.category === sec.id);
           const isSectionOpen = expandedSectionId === sec.id;
+          const isCategoryEditing = editingCategoryId === sec.id;
 
           return (
             <div 
@@ -870,12 +1006,77 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         </h2>
                       </div>
                     </div>
+
+                    {/* Category Right Controls in Edit mode: Move Up, Move Down, Delete */}
+                    {isCategoryEditing && (
+                      <div className="flex items-center space-x-1.5 shrink-0 self-start mt-0.5" onClick={(e) => e.stopPropagation()}>
+                        {secIdx > 0 && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              triggerHaptic(ImpactStyle.Light);
+                              handleMoveCategory(secIdx, secIdx - 1);
+                            }}
+                            className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                            title="Move category up"
+                            aria-label="Move category up"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
+                          </button>
+                        )}
+
+                        {secIdx < sectionOrder.length - 1 && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              triggerHaptic(ImpactStyle.Light);
+                              handleMoveCategory(secIdx, secIdx + 1);
+                            }}
+                            className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                            title="Move category down"
+                            aria-label="Move category down"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5 stroke-[2.2]" />
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteCategory(sec.id);
+                          }}
+                          className="apple-press w-8 h-8 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
+                          title="Delete Category"
+                          aria-label="Delete Category"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Section Description: ALWAYS visible underneath the title! */}
-                  <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
+                  <p className="text-sm sm:text-sm text-slate-600 leading-[22px] select-none pt-0.5">
                     {sec.description}
                   </p>
+
+                  {/* Category Progress Bar: Matches GuardrailSection for exact pill height parity */}
+                  <div className="space-y-1 pt-1 select-none">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+                      <span>Curated Tools</span>
+                      <span>{secItems.length} Available</span>
+                    </div>
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
+                      <div 
+                        className={`h-full ${sec.iconBg} rounded-full transition-all duration-500 ease-out`}
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  </div>
+
                   {/* Drop-Down Arrow: Pure icon, NO background circle */}
                   <div className="flex justify-center pt-0.5 pb-0 select-none">
                     <button
@@ -902,7 +1103,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
               {/* Collapsed/Expanded Resource Items OUTSIDE the original Category Pill */}
               <div className={`apple-drawer-collapse ${isSectionOpen ? 'expanded' : ''}`}>
                 <div className="apple-drawer-content">
-                  <div className="space-y-3 pt-3">
+                  <div className="space-y-3 pt-3 pb-3.5">
                     {secItems.map((item, itemIdx) => {
                       const isItemOpen = expandedItemId === item.id;
                       const isApple = item.id.includes('apple') || item.id.includes('att') || item.id.includes('testflight') || item.id.includes('sf-pro');
@@ -913,14 +1114,17 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                           id={item.id}
                           key={item.id}
                           style={{ '--glow-rgb': getCategoryGlowRgb(sec.iconBg) } as React.CSSProperties}
-                          className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2 ${
+                          className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 ${
                             pulsingItemId === item.id ? 'apple-section-pulse' : ''
                           }`}
                         >
                           {/* Item Header Block: clicking text minimizes/toggles item */}
                           <div 
-                            onClick={() => handleToggleItem(item.id)}
-                            className="space-y-2 select-none cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleItem(item.id);
+                            }}
+                            className="space-y-2.5 select-none cursor-pointer"
                           >
                             <div className="w-full flex items-center justify-between select-none">
                               <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
@@ -946,10 +1150,60 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </h3>
                                 </div>
                               </div>
+
+                              {/* Right Controls: In Edit mode, Move Up, Move Down, Delete */}
+                              {isCategoryEditing && (
+                                <div className="flex items-center justify-end space-x-1.5 shrink-0 -mr-1 h-12" onClick={(e) => e.stopPropagation()}>
+                                  {itemIdx > 0 && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        triggerHaptic(ImpactStyle.Light);
+                                        handleMoveTool(sec.id, itemIdx, itemIdx - 1);
+                                      }}
+                                      className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                                      title="Move tool up"
+                                      aria-label="Move tool up"
+                                    >
+                                      <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
+                                    </button>
+                                  )}
+
+                                  {itemIdx < secItems.length - 1 && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        triggerHaptic(ImpactStyle.Light);
+                                        handleMoveTool(sec.id, itemIdx, itemIdx + 1);
+                                      }}
+                                      className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
+                                      title="Move tool down"
+                                      aria-label="Move tool down"
+                                    >
+                                      <ArrowDown className="w-3.5 h-3.5 stroke-[2.2]" />
+                                    </button>
+                                  )}
+
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteTool(item.id);
+                                    }}
+                                    className="apple-press w-8 h-8 rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shadow-2xs transition-colors"
+                                    title="Delete tool"
+                                    aria-label="Delete tool"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                                  </button>
+                                </div>
+                              )}
                             </div>
 
                             {/* Subsection: Description directly underneath the title */}
-                            <p className="text-[13.5px] sm:text-sm text-slate-600 leading-relaxed select-none pt-0.5">
+                            <p className="text-sm sm:text-sm text-slate-600 leading-[22px] select-none pt-0.5">
                               {item.shortDescription}
                             </p>
 
@@ -976,7 +1230,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                           </div>
 
                           {/* Expanded Guidance Drawer with Subsections in their own pills */}
-                          <div className={`apple-drawer-collapse ${isItemOpen ? 'expanded' : ''}`}>
+                          <div className={`apple-drawer-collapse ${isItemOpen ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
                             <div className="apple-drawer-content">
                               <div 
                                 onClick={(e) => handleDrawerTextClick(e, item.id)}
@@ -1157,14 +1411,15 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                       e.stopPropagation();
                                       handleCollapseItem(item.id);
                                     }}
-                                    className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+                                    className="apple-press py-1 px-3 rounded-full flex items-center space-x-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100/70 transition-colors text-xs font-bold cursor-pointer"
                                     title="Close details"
                                     aria-label="Close details"
                                   >
                                     <ChevronUp 
                                       strokeWidth={2.5}
-                                      className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" 
+                                      className="w-3.5 h-3.5 stroke-[2.5] text-slate-500 hover:text-slate-800" 
                                     />
+                                    <span>Close</span>
                                   </button>
                                 </div>
                               </div>
@@ -1175,21 +1430,161 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                       );
                     })}
 
-                    {/* Bottom Category Collapse Trigger: Pure arrow, NO Close text, NO circular/pill background */}
-                    <div className="pt-2 pb-1 flex flex-col items-center select-none">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleSection(sec.id, true);
-                        }}
-                        className="apple-press w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
-                        title="Close section"
-                        aria-label="Close section"
-                      >
-                        <ChevronUp strokeWidth={2.5} className="w-4 h-4 stroke-[2.5] text-slate-500 hover:text-slate-700" />
-                      </button>
+                    {/* Unified Action Capsule: [ Add | Edit | Close ] */}
+                    <div className="py-3 px-4 flex items-center justify-center select-none">
+                      <div className="inline-flex items-center p-1 rounded-full bg-white border border-slate-200/90 shadow-2xs space-x-1">
+                        {/* Add Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerHaptic(ImpactStyle.Light);
+                            setAddingToCategoryId(prev => prev === sec.id ? null : sec.id);
+                            if (editingCategoryId === sec.id) setEditingCategoryId(null);
+                          }}
+                          className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 cursor-pointer ${
+                            addingToCategoryId === sec.id
+                              ? 'bg-slate-900 text-white shadow-xs'
+                              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60'
+                          }`}
+                          title={addingToCategoryId === sec.id ? 'Done adding' : 'Add curated tool'}
+                        >
+                          {addingToCategoryId === sec.id ? (
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                          )}
+                          <span>{addingToCategoryId === sec.id ? 'Done' : 'Add'}</span>
+                        </button>
+
+                        <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
+
+                        {/* Edit Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerHaptic(ImpactStyle.Light);
+                            setEditingCategoryId(prev => prev === sec.id ? null : sec.id);
+                            if (addingToCategoryId === sec.id) setAddingToCategoryId(null);
+                          }}
+                          className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 cursor-pointer ${
+                            editingCategoryId === sec.id
+                              ? 'bg-slate-900 text-white shadow-xs'
+                              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60'
+                          }`}
+                          title={editingCategoryId === sec.id ? 'Done editing' : 'Edit: Rearrange or delete tools'}
+                        >
+                          {editingCategoryId === sec.id ? (
+                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                          ) : (
+                            <Pencil className="w-3.5 h-3.5 stroke-[2.2]" />
+                          )}
+                          <span>{editingCategoryId === sec.id ? 'Done' : 'Edit'}</span>
+                        </button>
+
+                        <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
+
+                        {/* Close Section Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingCategoryId(null);
+                            setAddingToCategoryId(null);
+                            handleToggleSection(sec.id, true);
+                          }}
+                          className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60 transition-all duration-200 flex items-center space-x-1.5 cursor-pointer"
+                          title="Close section"
+                          aria-label="Close section"
+                        >
+                          <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 stroke-[2.5] text-slate-500 hover:text-slate-700" />
+                          <span>Close</span>
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Inline Add Tool Form */}
+                    {addingToCategoryId === sec.id && (
+                      <form
+                        onClick={(e) => e.stopPropagation()}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleCreateTool(sec.id);
+                        }}
+                        className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 animate-in fade-in duration-200 mt-2 select-none"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-slate-800 font-google">
+                            Add Curated Tool to {sec.title}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewToolTitle('');
+                              setNewToolDesc('');
+                              setNewToolUrl('');
+                              setNewToolPrompt('');
+                              setAddingToCategoryId(null);
+                            }}
+                            className="apple-press p-1 rounded-full text-slate-400 hover:text-slate-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          value={newToolTitle}
+                          onChange={(e) => setNewToolTitle(e.target.value)}
+                          placeholder="Tool Name (e.g. Supabase, RevenueCat)"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                          autoFocus
+                        />
+                        <input
+                          type="text"
+                          value={newToolDesc}
+                          onChange={(e) => setNewToolDesc(e.target.value)}
+                          placeholder="Short description of this tool"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                        />
+                        <input
+                          type="url"
+                          value={newToolUrl}
+                          onChange={(e) => setNewToolUrl(e.target.value)}
+                          placeholder="Website URL (e.g. https://...)"
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                        />
+                        <textarea
+                          value={newToolPrompt}
+                          onChange={(e) => setNewToolPrompt(e.target.value)}
+                          placeholder="Recommended AI Prompt (Optional)"
+                          rows={2}
+                          className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none font-mono"
+                        />
+                        <div className="flex justify-end space-x-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewToolTitle('');
+                              setNewToolDesc('');
+                              setNewToolUrl('');
+                              setNewToolPrompt('');
+                              setAddingToCategoryId(null);
+                            }}
+                            className="apple-press px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 font-medium"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={!newToolTitle.trim()}
+                            className="apple-press px-4 py-1.5 text-xs bg-slate-900 text-white font-bold rounded-full disabled:opacity-40"
+                          >
+                            Add Tool
+                          </button>
+                        </div>
+                      </form>
+                    )}
                   </div>
                 </div>
               </div>

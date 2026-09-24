@@ -38,6 +38,10 @@ class PortraitBridgeViewController: CAPBridgeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        overrideUserInterfaceStyle = .dark
+        view.backgroundColor = .black
+        webView?.backgroundColor = .black
+        webView?.isOpaque = false
         webView?.scrollView.bounces = false
         webView?.scrollView.alwaysBounceVertical = false
     }
@@ -50,7 +54,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         window = UIWindow(windowScene: windowScene)
-        window?.overrideUserInterfaceStyle = .light
+        window?.overrideUserInterfaceStyle = .dark
+        window?.backgroundColor = .black
         window?.rootViewController = PortraitBridgeViewController()
         window?.makeKeyAndVisible()
 

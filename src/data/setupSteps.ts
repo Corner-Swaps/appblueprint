@@ -5,7 +5,7 @@ export const SETUP_STEPS_PHASE: Phase = {
   number: 0,
   title: 'Set Up & Environment',
   shortTitle: 'Set Up',
-  description: 'Complete these 11 foundational steps before diving into your project checklist. Configure your Mac, choose your AI assistant, register official developer accounts, install Xcode and Android Studio, configure GitHub, and connect your physical phone.',
+  description: 'Complete these 11 foundational steps before diving into your project checklist. Configure your Mac, select your AI assistant, register developer accounts, install Xcode, and connect your phone.',
   iconName: 'Laptop',
   items: [
     {
