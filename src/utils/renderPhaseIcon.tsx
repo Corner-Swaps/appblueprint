@@ -20,12 +20,15 @@ import {
   Sliders,
   Code,
   LayoutGrid,
-  Database
+  Database,
+  Info
 } from 'lucide-react';
 
 export const renderPhaseIcon = (name: string, className = "w-5 h-5 text-slate-800 stroke-[2.2]") => {
   const props = { className };
   switch (name) {
+    case 'Info':
+    case 'info': return <Info {...props} strokeWidth={2.5} />;
     case 'Lightbulb': return <Lightbulb {...props} />;
     case 'LayoutGrid': return <LayoutGrid {...props} />;
     case 'Palette': return <Palette {...props} />;

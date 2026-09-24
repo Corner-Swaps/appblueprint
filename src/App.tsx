@@ -507,7 +507,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
       title,
       shortTitle: shortTitle || title,
       description: description || 'Custom checklist phase section',
-      iconName: 'ShieldCheck',
+      iconName: 'Info',
       items: []
     };
 
@@ -525,6 +525,14 @@ EXECUTION PROTOCOL FOR THE AGENT:
         return proj;
       })
     );
+
+    // Smoothly scroll the newly added section into the vertical center of the screen
+    setTimeout(() => {
+      const el = document.getElementById(newPhaseId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
   };
 
   // Reorder Phases
@@ -565,6 +573,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
 
   // Toggle Global Rearrange
   const handleToggleGlobalRearrange = () => {
+    // Always reset filter to 'all' so every section is visible when rearranging/editing
+    setSelectedPhaseId('all');
     setCollapseSignal(prev => prev + 1);
     setIsGlobalEditMode(prev => {
       const next = !prev;
@@ -586,7 +596,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
   const handleDeletePhase = (phaseId: string) => {
     const targetPhase = currentProjectPhases.find(p => p.id === phaseId);
     const title = targetPhase ? `"${targetPhase.title}"` : 'this section';
-    if (!window.confirm(`Delete step section ${title}? You can restore it later from the bottom of the page.`)) {
+    if (!window.confirm(`Delete section ${title}? You can restore it later from the bottom of the page.`)) {
       return;
     }
     setProjects(prevProjects =>
@@ -594,10 +604,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
         if (proj.id === activeProject.id) {
           const currentDeleted = proj.deletedPhaseIds || [];
           const updatedDeleted = currentDeleted.includes(phaseId) ? currentDeleted : [...currentDeleted, phaseId];
+          const updatedPhaseOrder = proj.phaseOrder ? proj.phaseOrder.filter(id => id !== phaseId) : undefined;
           return {
             ...proj,
-            customPhases: (proj.customPhases || []).filter(p => p.id !== phaseId),
-            phaseOrder: (proj.phaseOrder || []).filter(id => id !== phaseId),
+            phaseOrder: updatedPhaseOrder,
             deletedPhaseIds: updatedDeleted
           };
         }
@@ -808,18 +818,21 @@ EXECUTION PROTOCOL FOR THE AGENT:
                 <button
                   type="button"
                   onClick={() => handleSelectTab('projects')}
-                  className="w-full apple-press flex items-center justify-between p-3 rounded-2xl bg-white/95 border border-black/8 shadow-xs"
+                  className="w-full apple-press flex items-center justify-between p-4 rounded-3xl bg-white/95 hover:bg-white border border-black/8 shadow-xs min-h-[64px] transition-all group"
+                  title="Manage Projects"
                 >
-                  <div className="flex items-center space-x-2.5 min-w-0">
-                    <div className="w-7 h-7 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0">
-                      <Folder className="w-3.5 h-3.5" />
+                  <div className="flex items-center space-x-3.5 min-w-0">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shrink-0 shadow-2xs">
+                      <Folder className="w-5 h-5" />
                     </div>
                     <div className="text-left min-w-0">
                       <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Active Project</div>
-                      <div className="text-xs font-black text-slate-900 truncate font-google">{activeProject.name}</div>
+                      <div className="text-sm sm:text-base font-black text-slate-900 truncate font-google group-hover:text-blue-600 transition-colors">
+                        {activeProject.name}
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                  <ChevronRight className="w-4.5 h-4.5 text-slate-400 group-hover:text-slate-700 transition-colors shrink-0" />
                 </button>
                 <div className="bg-white/95 rounded-2xl border border-black/8 shadow-xs p-1 flex items-center justify-between gap-1 select-none">
                   <button
