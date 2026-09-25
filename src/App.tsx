@@ -279,8 +279,8 @@ export const App: React.FC = () => {
   const currentSlotIndex = TAB_INDEX_MAP[activeTab];
   const targetLensX = currentSlotIndex * DOCK_SLOT_DISTANCE;
 
-  // Filter State
-  const [selectedPhaseId, setSelectedPhaseId] = useState<string>('all');
+  // Filter State - One Phase at a time (defaults to Setup)
+  const [selectedPhaseId, setSelectedPhaseId] = useState<string>(SETUP_STEPS_PHASE.id);
   const [filterMode, setFilterMode] = useState<'all' | 'completed'>('all');
 
   // Active Project Reference
@@ -559,7 +559,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
     );
     setIsGlobalEditMode(false);
     setCollapseSignal(prev => prev + 1);
-    setSelectedPhaseId('all');
+    setSelectedPhaseId(SETUP_STEPS_PHASE.id);
+    setOpenPhaseId(SETUP_STEPS_PHASE.id);
     triggerHaptic(ImpactStyle.Medium);
   };
 
@@ -605,7 +606,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
       })
     );
     if (selectedPhaseId === phaseId) {
-      setSelectedPhaseId('all');
+      setSelectedPhaseId(SETUP_STEPS_PHASE.id);
+      setOpenPhaseId(SETUP_STEPS_PHASE.id);
     }
   };
 
@@ -701,7 +703,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
   };
 
   const handleSelectPhaseFromSidebar = (phaseId: string) => {
-    setSelectedPhaseId('all');
+    setSelectedPhaseId(phaseId);
     setActiveTab('checklist');
     setDisplayedTab('checklist');
     setOpenPhaseId(phaseId);
@@ -715,13 +717,21 @@ EXECUTION PROTOCOL FOR THE AGENT:
     }, 60);
   };
 
-  // Visible Phases based on selected filter
+  // Visible Phases based on selected filter: Shows ONLY the selected phase (one thing at a time)
   const visiblePhases = useMemo(() => {
-    if (selectedPhaseId === 'all') {
-      return currentProjectPhases;
-    }
     return currentProjectPhases.filter(p => p.id === selectedPhaseId);
   }, [selectedPhaseId, currentProjectPhases]);
+
+  // Active Phase Filtered Items (for checking empty states cleanly)
+  const activePhaseFilteredItems = useMemo(() => {
+    if (selectedPhaseId === SETUP_STEPS_PHASE.id) {
+      return getFilteredItemsForPhase(
+        activeProject.customItems?.[SETUP_STEPS_PHASE.id] || SETUP_STEPS_PHASE.items
+      );
+    }
+    const currentPhase = currentProjectPhases.find(p => p.id === selectedPhaseId);
+    return currentPhase ? getFilteredItemsForPhase(currentPhase.items) : [];
+  }, [selectedPhaseId, activeProject.customItems, currentProjectPhases, filterMode, activePlatform, completedItemIds]);
 
   // Fluid drag-and-drop reordering for phases in main feed
   const {
@@ -730,7 +740,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     bindItemRef: bindPhaseRef,
   } = useFluidDragReorder({
     items: visiblePhases,
-    enabled: selectedPhaseId === 'all',
+    enabled: isGlobalEditMode,
     onReorder: handleReorderPhases,
   });
 
@@ -774,14 +784,14 @@ EXECUTION PROTOCOL FOR THE AGENT:
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-start">
           {/* Left Column (Desktop lg+): col-span-5 moved to the right for wider titles without ellipsis */}
           {displayedTab === 'checklist' && (
-            <div className="hidden lg:block lg:col-span-5 sticky top-6 self-start">
+            <div className="hidden lg:block lg:col-span-5 self-start">
               <PhaseRoadmapSidebar
                 activeProjectName={activeProject.name}
                 onSelectProject={() => handleSelectTab('projects')}
                 phases={currentProjectPhases}
                 setupPhase={SETUP_STEPS_PHASE}
                 completedItemIds={completedItemIds}
-                activePhaseId={openPhaseId}
+                activePhaseId={selectedPhaseId}
                 activePlatform={activePlatform}
                 onSelectPlatform={setActivePlatform}
                 onSelectPhase={handleSelectPhaseFromSidebar}
@@ -791,7 +801,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
           )}
 
           {displayedTab === 'resources' && (
-            <div className="hidden lg:block lg:col-span-5 sticky top-6 self-start">
+            <div className="hidden lg:block lg:col-span-5 self-start">
               <ResourcesSidebar
                 activeCategoryId={activeResourceCategoryId}
                 onSelectCategory={setActiveResourceCategoryId}
@@ -802,9 +812,9 @@ EXECUTION PROTOCOL FOR THE AGENT:
           {/* Right Column: The App housed in the big panel containing everything together (col-span-7) */}
           <div className={`${displayedTab === 'projects' ? 'lg:col-span-12' : 'lg:col-span-7'} w-full min-w-0`}>
             {/* 1. Checklist Tab */}
-            <div className={displayedTab === 'checklist' ? 'space-y-4' : 'hidden'}>
+            <div className={displayedTab === 'checklist' ? '' : 'hidden'}>
               {/* Mobile Project & Platform Controls (< lg) */}
-              <div className="lg:hidden space-y-2.5 pb-1">
+              <div className="lg:hidden space-y-2.5 pb-1 mb-4">
                 <button
                   type="button"
                   onClick={() => handleSelectTab('projects')}
@@ -850,10 +860,42 @@ EXECUTION PROTOCOL FOR THE AGENT:
                     <span>Android</span>
                   </button>
                 </div>
+
+                {/* Mobile Phase Switcher Pills (< lg): Smooth horizontal scroll */}
+                <div className="-mx-4 px-4 overflow-x-auto no-scrollbar flex items-center space-x-2 select-none pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectPhaseFromSidebar(SETUP_STEPS_PHASE.id)}
+                    className={`apple-press px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap shrink-0 flex items-center space-x-1.5 transition-all border ${
+                      selectedPhaseId === SETUP_STEPS_PHASE.id
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                        : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200/80 shadow-2xs'
+                    }`}
+                  >
+                    <span>Set Up</span>
+                  </button>
+                  {currentProjectPhases.map(phase => {
+                    const isActive = selectedPhaseId === phase.id;
+                    return (
+                      <button
+                        key={phase.id}
+                        type="button"
+                        onClick={() => handleSelectPhaseFromSidebar(phase.id)}
+                        className={`apple-press px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap shrink-0 flex items-center space-x-1.5 transition-all border ${
+                          isActive
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                            : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200/80 shadow-2xs'
+                        }`}
+                      >
+                        <span>Phase {phase.number}: {phase.shortTitle || phase.title}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* The Big Panel containing everything together */}
-              <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-black/8 shadow-xl p-4 sm:p-6 lg:p-7 space-y-4">
+              <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-black/8 shadow-xl p-4 sm:p-6 lg:p-7 space-y-4 lg:mt-0">
                 {/* Panel Top Header Bar: Clean Filter Mode (All / Completed), NO 'iOS HIG Only' badge, NO duplicate project button */}
                 <div className="flex items-center justify-between gap-3 pb-3 border-b border-black/5">
                   <div className="flex items-center space-x-2">
@@ -896,12 +938,12 @@ EXECUTION PROTOCOL FOR THE AGENT:
                 {/* Main Feed: The Interactive Sections with Single-Accordion Mode */}
                 <div className="space-y-4 pt-1">
                   {/* Set Up Section (Foundational setup before Phase 1) */}
-                  {(selectedPhaseId === 'all' || selectedPhaseId === SETUP_STEPS_PHASE.id) && (
+                  {selectedPhaseId === SETUP_STEPS_PHASE.id && (
                     <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
                       <GuardrailSection
                         phase={SETUP_STEPS_PHASE}
                         phaseIndex={0}
-                        totalPhases={visiblePhases.length + 1}
+                        totalPhases={currentProjectPhases.length + 1}
                         items={getFilteredItemsForPhase(
                           activeProject.customItems?.[SETUP_STEPS_PHASE.id] || SETUP_STEPS_PHASE.items
                         )}
@@ -922,17 +964,15 @@ EXECUTION PROTOCOL FOR THE AGENT:
                     </div>
                   )}
 
-                  {visiblePhases.map((phase, phaseIdx) => (
+                  {visiblePhases.map((phase) => (
                     <div 
                       key={phase.id}
                       id={phase.id}
-                      ref={bindPhaseRef(phaseIdx)}
-                      style={getPhaseDragStyle(phaseIdx)}
                     >
                       <GuardrailSection
                         phase={phase}
-                        phaseIndex={phaseIdx}
-                        totalPhases={visiblePhases.length}
+                        phaseIndex={currentProjectPhases.findIndex(p => p.id === phase.id)}
+                        totalPhases={currentProjectPhases.length}
                         items={getFilteredItemsForPhase(phase.items)}
                         completedItemIds={completedItemIds}
                         onToggleComplete={handleToggleComplete}
@@ -951,8 +991,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
                     </div>
                   ))}
 
-                  {/* Empty State when no items match filter */}
-                  {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
+                  {/* Empty State when no items match filter in this section */}
+                  {activePhaseFilteredItems.length === 0 && (
                     <div className="p-8 rounded-3xl bg-white border border-slate-200/90 text-center space-y-3 shadow-xs">
                       <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
                         <CheckCircle2 className="w-6 h-6 stroke-[2.2]" />
@@ -963,8 +1003,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
                         </h3>
                         <p className="text-xs text-slate-500 max-w-xs mx-auto">
                           {filterMode === 'completed'
-                            ? `You haven't marked any requirements as completed yet. Tap the circle checkmark on any requirement to mark it done!`
-                            : `Great job! All items in ${selectedPhaseId === 'all' ? 'the entire checklist' : 'this section'} are verified for ${activeProject.name}.`}
+                            ? `You haven't marked any requirements as completed yet in this section. Tap the circle checkmark on any requirement to mark it done!`
+                            : `Great job! All items in this section are verified for ${activeProject.name}.`}
                         </p>
                       </div>
                       {filterMode === 'completed' && (

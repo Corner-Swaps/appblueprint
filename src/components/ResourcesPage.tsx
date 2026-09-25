@@ -295,9 +295,9 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="pb-4">
       {/* Mobile Category Switcher Bar (< lg): Horizontal scrolling pills */}
-      <div className="lg:hidden -mx-4 px-4 overflow-x-auto no-scrollbar flex items-center space-x-2 select-none pb-1">
+      <div className="lg:hidden -mx-4 px-4 overflow-x-auto no-scrollbar flex items-center space-x-2 select-none pb-1 mb-4">
         {SECTION_CONFIGS.map(cat => {
           const isActive = selectedCategoryId === cat.id;
           return (
@@ -321,7 +321,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({
       </div>
 
       {/* The Big Panel containing the active resource category */}
-      <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-black/8 shadow-xl p-4 sm:p-6 lg:p-7 space-y-4">
+      <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-black/8 shadow-xl p-4 sm:p-6 lg:p-7 space-y-4 lg:mt-0">
         {/* Active Category Header */}
         <div className="space-y-2.5 pb-3 border-b border-black/5">
           <div className="flex items-center space-x-3.5">
