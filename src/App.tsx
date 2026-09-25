@@ -304,9 +304,10 @@ export const App: React.FC = () => {
     return allAvailablePhases.filter(p => deletedIds.includes(p.id));
   }, [activeProject.deletedPhaseIds, activeProject.customPhases]);
 
-  // Dynamic Phases for the Active Project
+  // Dynamic Phases for the Active Project (Includes Set Up as foundational step)
   const currentProjectPhases = useMemo<Phase[]>(() => {
     const allAvailablePhases: Phase[] = [
+      SETUP_STEPS_PHASE,
       ...PHASES_DATA,
       ...(activeProject.customPhases || [])
     ].filter(p => !(activeProject.deletedPhaseIds || []).includes(p.id));
@@ -322,6 +323,16 @@ export const App: React.FC = () => {
     if (activeProject.phaseOrder && activeProject.phaseOrder.length > 0) {
       const phaseMap = new Map(phasesWithCustomItems.map(p => [p.id, p]));
       const ordered: Phase[] = [];
+
+      // If legacy phaseOrder didn't include phase-setup, ensure phase-setup stays at the beginning
+      if (!activeProject.phaseOrder.includes(SETUP_STEPS_PHASE.id)) {
+        const setupP = phaseMap.get(SETUP_STEPS_PHASE.id);
+        if (setupP) {
+          ordered.push(setupP);
+          phaseMap.delete(SETUP_STEPS_PHASE.id);
+        }
+      }
+
       activeProject.phaseOrder.forEach(id => {
         const p = phaseMap.get(id);
         if (p) {
@@ -330,21 +341,22 @@ export const App: React.FC = () => {
         }
       });
       phaseMap.forEach(p => ordered.push(p));
-      return ordered.map((p, idx) => ({ ...p, number: idx + 1 }));
+      return ordered.map((p, idx) => ({
+        ...p,
+        number: p.id === SETUP_STEPS_PHASE.id ? 0 : (p.number || idx + 1)
+      }));
     }
 
-    return phasesWithCustomItems.map((p, idx) => ({ ...p, number: idx + 1 }));
+    return phasesWithCustomItems.map((p, idx) => ({
+      ...p,
+      number: p.id === SETUP_STEPS_PHASE.id ? 0 : (p.number || idx + 1)
+    }));
   }, [activeProject]);
 
-  // Flattened Checklist Items across Set Up Steps and all current project phases
+  // Flattened Checklist Items across all current project phases (including Set Up)
   const allItems = useMemo(() => {
-    const customSetupItems = activeProject.customItems?.[SETUP_STEPS_PHASE.id];
-    const setupItems = customSetupItems || SETUP_STEPS_PHASE.items;
-    return [
-      ...setupItems,
-      ...currentProjectPhases.flatMap(p => p.items)
-    ];
-  }, [activeProject.customItems, currentProjectPhases]);
+    return currentProjectPhases.flatMap(p => p.items);
+  }, [currentProjectPhases]);
 
   const validItemIdsSet = useMemo(() => new Set(allItems.map(i => i.id)), [allItems]);
 
@@ -796,6 +808,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
                 onSelectPlatform={setActivePlatform}
                 onSelectPhase={handleSelectPhaseFromSidebar}
                 onOpenManagePhases={() => setIsAllPhasesPageOpen(true)}
+                onMovePhase={handleMovePhase}
               />
             </div>
           )}
@@ -863,19 +876,9 @@ EXECUTION PROTOCOL FOR THE AGENT:
 
                 {/* Mobile Phase Switcher Pills (< lg): Smooth horizontal scroll */}
                 <div className="-mx-4 px-4 overflow-x-auto no-scrollbar flex items-center space-x-2 select-none pt-1">
-                  <button
-                    type="button"
-                    onClick={() => handleSelectPhaseFromSidebar(SETUP_STEPS_PHASE.id)}
-                    className={`apple-press px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap shrink-0 flex items-center space-x-1.5 transition-all border ${
-                      selectedPhaseId === SETUP_STEPS_PHASE.id
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                        : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200/80 shadow-2xs'
-                    }`}
-                  >
-                    <span>Set Up</span>
-                  </button>
                   {currentProjectPhases.map(phase => {
                     const isActive = selectedPhaseId === phase.id;
+                    const isSetup = phase.id === SETUP_STEPS_PHASE.id || phase.number === 0;
                     return (
                       <button
                         key={phase.id}
@@ -887,7 +890,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
                             : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200/80 shadow-2xs'
                         }`}
                       >
-                        <span>Phase {phase.number}: {phase.shortTitle || phase.title}</span>
+                        <span>{isSetup ? 'Set Up' : `Phase ${phase.number}: ${phase.shortTitle || phase.title}`}</span>
                       </button>
                     );
                   })}
@@ -937,33 +940,6 @@ EXECUTION PROTOCOL FOR THE AGENT:
 
                 {/* Main Feed: The Interactive Sections with Single-Accordion Mode */}
                 <div className="space-y-4 pt-1">
-                  {/* Set Up Section (Foundational setup before Phase 1) */}
-                  {selectedPhaseId === SETUP_STEPS_PHASE.id && (
-                    <div id={SETUP_STEPS_PHASE.id} key={SETUP_STEPS_PHASE.id}>
-                      <GuardrailSection
-                        phase={SETUP_STEPS_PHASE}
-                        phaseIndex={0}
-                        totalPhases={currentProjectPhases.length + 1}
-                        items={getFilteredItemsForPhase(
-                          activeProject.customItems?.[SETUP_STEPS_PHASE.id] || SETUP_STEPS_PHASE.items
-                        )}
-                        completedItemIds={completedItemIds}
-                        onToggleComplete={handleToggleComplete}
-                        isExpanded={openPhaseId === SETUP_STEPS_PHASE.id}
-                        onToggleExpandSection={handleTogglePhase}
-                        onAddItem={handleAddItem}
-                        onReorderItems={handleReorderItems}
-                        onDeleteItem={handleDeleteItem}
-                        onMovePhase={handleMovePhase}
-                        onDeletePhase={handleDeletePhase}
-                        isGlobalEditMode={isGlobalEditMode}
-                        collapseSignal={collapseSignal}
-                        onDragStartPhase={handleDragStartPhase}
-                        onToggleGlobalEdit={handleToggleGlobalRearrange}
-                      />
-                    </div>
-                  )}
-
                   {visiblePhases.map((phase) => (
                     <div 
                       key={phase.id}
@@ -1287,7 +1263,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
           setIsGlobalEditMode(false);
           setIsAllPhasesPageOpen(false);
         }}
-        phases={[SETUP_STEPS_PHASE, ...currentProjectPhases]}
+        phases={currentProjectPhases}
         completedItemIds={completedItemIds}
         onSelectPhase={(phaseId) => {
           setIsGlobalEditMode(false);
@@ -1305,7 +1281,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
             }
           }, 80);
         }}
-        onReorderPhases={(newPhases) => handleReorderPhases(newPhases.filter(p => p.id !== SETUP_STEPS_PHASE.id))}
+        onReorderPhases={handleReorderPhases}
         onAddPhase={handleAddPhase}
         onDeletePhase={handleDeletePhase}
       />
