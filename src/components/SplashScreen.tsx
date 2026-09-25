@@ -18,11 +18,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     }, 250);
   };
 
-  // Snappy, Apple-standard launch pacing (~750ms total)
+  // Launch pacing: 1.5s forward-fuzzing animation hold + smooth fade-out
   useEffect(() => {
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 500);
+    }, 1550);
 
     return () => {
       clearTimeout(dismissTimer);
@@ -46,27 +46,65 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         justifyContent: 'center',
         background: '#000000',
         opacity: fadingOut ? 0 : 1,
-        transition: 'opacity 250ms cubic-bezier(0.2, 0.9, 0.3, 1)',
+        transition: 'opacity 320ms cubic-bezier(0.16, 1, 0.3, 1)',
         willChange: 'opacity',
         overflow: 'hidden',
       }}
       aria-label="App Blueprint Launch Screen"
     >
       <style>{`
-        @keyframes splashTitleIntro {
+        @keyframes splashLogoFuzzForward {
           0% {
             opacity: 0;
-            transform: translateY(8px) translateZ(0);
+            transform: scale(0.68);
+            filter: blur(24px) drop-shadow(0 0 35px rgba(255, 255, 255, 0.95));
+          }
+          30% {
+            opacity: 0.85;
+            transform: scale(0.84);
+            filter: blur(12px) drop-shadow(0 0 25px rgba(255, 255, 255, 0.7));
+          }
+          65% {
+            opacity: 0.98;
+            transform: scale(0.96);
+            filter: blur(4px) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+          }
+          85% {
+            opacity: 1;
+            transform: scale(1.02);
+            filter: blur(1px) drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
           }
           100% {
             opacity: 1;
-            transform: translateY(0) translateZ(0);
+            transform: scale(1.05);
+            filter: blur(0px) drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+          }
+        }
+
+        .splash-logo-container {
+          animation: splashLogoFuzzForward 1500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+          will-change: transform, opacity, filter;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+          transform-origin: center center;
+        }
+
+        @keyframes splashTitleIntro {
+          0% {
+            opacity: 0;
+            transform: translateY(12px);
+            filter: blur(6px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
           }
         }
 
         .splash-title-text {
-          animation: splashTitleIntro 280ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both;
-          will-change: transform, opacity;
+          animation: splashTitleIntro 800ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both;
+          will-change: transform, opacity, filter;
           -webkit-backface-visibility: hidden;
         }
       `}</style>
