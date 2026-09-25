@@ -25,19 +25,22 @@ import {
   GraduationCap,
   ChevronRight,
   ChevronDown,
-  Check
+  Check,
+  User
 } from 'lucide-react';
 import { UnifiedAppHeader } from './components/UnifiedAppHeader';
 import { PhaseRoadmapSidebar } from './components/PhaseRoadmapSidebar';
 import { ResourcesSidebar } from './components/ResourcesSidebar';
 import { ResourceCategory } from './data/resources';
 import { PhoneModal } from './components/PhoneModal';
+import { PaywallModal } from './components/PaywallModal';
 
-const TAB_KEYS: Array<'checklist' | 'resources' | 'projects'> = ['checklist', 'resources', 'projects'];
-const TAB_INDEX_MAP: Record<'checklist' | 'resources' | 'projects', number> = {
+const TAB_KEYS: Array<'checklist' | 'resources' | 'projects' | 'profile'> = ['checklist', 'resources', 'projects', 'profile'];
+const TAB_INDEX_MAP: Record<'checklist' | 'resources' | 'projects' | 'profile', number> = {
   checklist: 0,
   resources: 1,
   projects: 2,
+  profile: 3,
 };
 const DOCK_SLOT_DISTANCE = 68; // 56px slot + 12px gap
 const DOCK_PADDING = 8;
@@ -118,6 +121,7 @@ export const App: React.FC = () => {
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
   const [collapseSignal, setCollapseSignal] = useState(0);
   const [resourcesCollapseSignal, setResourcesCollapseSignal] = useState(0);
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
 
   // Single-Accordion Mode: Only ONE phase is open at a time (defaults to Set Up)
   const [openPhaseId, setOpenPhaseId] = useState<string | null>(SETUP_STEPS_PHASE.id);
@@ -267,16 +271,17 @@ export const App: React.FC = () => {
     pageTouchStartRef.current = null;
 
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.8 && dt < 600) {
+      const MAIN_TABS: Array<'checklist' | 'resources' | 'projects'> = ['checklist', 'resources', 'projects'];
       const currentIdx = TAB_INDEX_MAP[activeTab];
       if (dx < 0 && currentIdx < 2) {
-        handleSelectTab(TAB_KEYS[currentIdx + 1]);
+        handleSelectTab(MAIN_TABS[currentIdx + 1]);
       } else if (dx > 0 && currentIdx > 0) {
-        handleSelectTab(TAB_KEYS[currentIdx - 1]);
+        handleSelectTab(MAIN_TABS[currentIdx - 1]);
       }
     }
   };
 
-  const currentSlotIndex = TAB_INDEX_MAP[activeTab];
+  const currentSlotIndex = isPaywallOpen ? 3 : TAB_INDEX_MAP[activeTab];
   const targetLensX = currentSlotIndex * DOCK_SLOT_DISTANCE;
 
   // Filter State - One Phase at a time (defaults to Setup)
@@ -911,29 +916,54 @@ EXECUTION PROTOCOL FOR THE AGENT:
                     </span>
                   </div>
 
-                  {/* Filter Mode Pills: All vs Completed */}
-                  <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/60 text-xs select-none">
+                  {/* Filter Mode Pills: All vs Completed & Edit Mode Toggle */}
+                  <div className="flex items-center space-x-2">
+                    <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/60 text-xs select-none">
+                      <button
+                        type="button"
+                        onClick={() => setFilterMode('all')}
+                        className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                          filterMode === 'all'
+                            ? 'bg-white text-slate-900 shadow-xs'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        All
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFilterMode('completed')}
+                        className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                          filterMode === 'completed'
+                            ? 'bg-white text-slate-900 shadow-xs'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        Completed ({completedItemIds.length})
+                      </button>
+                    </div>
+
                     <button
                       type="button"
-                      onClick={() => setFilterMode('all')}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                        filterMode === 'all'
-                          ? 'bg-white text-slate-900 shadow-xs'
-                          : 'text-slate-500 hover:text-slate-800'
+                      onClick={() => setIsGlobalEditMode(!isGlobalEditMode)}
+                      className={`apple-press inline-flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all ${
+                        isGlobalEditMode
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200/60'
                       }`}
+                      title={isGlobalEditMode ? "Done editing" : "Edit and reorder"}
                     >
-                      All
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFilterMode('completed')}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                        filterMode === 'completed'
-                          ? 'bg-white text-slate-900 shadow-xs'
-                          : 'text-slate-500 hover:text-slate-800'
-                      }`}
-                    >
-                      Completed ({completedItemIds.length})
+                      {isGlobalEditMode ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Done</span>
+                        </>
+                      ) : (
+                        <>
+                          <SlidersHorizontal className="w-3.5 h-3.5 stroke-[2.2]" />
+                          <span>Edit</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -1246,9 +1276,29 @@ EXECUTION PROTOCOL FOR THE AGENT:
             >
               <Folder 
                 className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
-                  activeTab === 'projects' 
+                  activeTab === 'projects' && !isPaywallOpen
                     ? 'text-blue-600' 
                     : 'text-slate-500'
+                }`} 
+              />
+            </button>
+
+            {/* 4. User / Account & Pro Paywall Icon Button */}
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic(ImpactStyle.Light);
+                setIsPaywallOpen(true);
+              }}
+              className="apple-press w-[56px] h-[56px] rounded-full bg-transparent flex items-center justify-center shrink-0 cursor-pointer select-none"
+              title="Account & Pro Membership"
+              aria-label="Account & Pro Membership"
+            >
+              <User 
+                className={`w-[24px] h-[24px] stroke-[2.2] transition-colors duration-200 ${
+                  isPaywallOpen 
+                    ? 'text-purple-600' 
+                    : 'text-slate-500 hover:text-purple-600'
                 }`} 
               />
             </button>
@@ -1308,6 +1358,17 @@ EXECUTION PROTOCOL FOR THE AGENT:
           onSubmit={handleSubmitReview}
         />
       )}
+
+      {/* Website Stripe Paywall Modal */}
+      <PaywallModal
+        isOpen={isPaywallOpen}
+        onClose={() => setIsPaywallOpen(false)}
+        onUnlocked={() => {
+          setIsPaywallOpen(false);
+        }}
+        targetProjectId={activeProject.id}
+        targetProjectName={activeProject.name}
+      />
     </div>
   );
 };

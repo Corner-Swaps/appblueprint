@@ -275,8 +275,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           >
             <div className="flex items-center justify-between gap-3 select-none">
               <div className="flex items-center space-x-3.5 select-none flex-1 min-w-0">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200/90 flex items-center justify-center shrink-0 shadow-xs text-slate-700">
-                  <Plus className="w-6 h-6 stroke-[2.4]" />
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs relative text-white bg-purple-600 shadow-purple-500/25">
+                  <Plus className="w-6 h-6 stroke-[2.4] text-white" />
                 </div>
 
                 <div className="space-y-0.5 select-none flex-1 min-w-0">
