@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { AppLogo } from './AppLogo';
 
 interface SplashScreenProps {
@@ -6,6 +7,11 @@ interface SplashScreenProps {
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+  // If running natively in Capacitor on iOS, native SwiftUI BlueprintSplashIntroView handles the intro seamlessly!
+  if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
+    return null;
+  }
+
   const [visible, setVisible] = useState(true);
   const [animating, setAnimating] = useState(false);
   const [fadingOut, setFadingOut] = useState(false);
