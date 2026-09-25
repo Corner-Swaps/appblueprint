@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Phase } from '../types';
 import { renderPhaseIcon } from '../utils/renderPhaseIcon';
 import { getPhaseTheme } from '../utils/phaseThemes';
@@ -11,7 +11,8 @@ import {
   ExternalLink, 
   Layers, 
   BookOpen,
-  Folder
+  Folder,
+  Check
 } from 'lucide-react';
 
 interface PhaseRoadmapSidebarProps {
@@ -42,6 +43,7 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
   onMovePhase,
 }) => {
   const allPhasesWithSetup = phases.some(p => p.id === setupPhase.id) ? phases : [setupPhase, ...phases];
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <aside className="space-y-3.5">
@@ -128,12 +130,25 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
           </div>
           <button
             type="button"
-            onClick={onOpenManagePhases}
-            className="apple-press inline-flex items-center space-x-1 text-slate-500 hover:text-slate-900 text-[11px] font-bold px-2 py-1 rounded-lg hover:bg-black/5 transition-colors"
-            title="Reorder and customize phases"
+            onClick={() => setIsEditing(!isEditing)}
+            className={`apple-press inline-flex items-center space-x-1.5 text-[11px] font-bold px-2.5 py-1 rounded-xl transition-all ${
+              isEditing 
+                ? 'bg-blue-600 text-white shadow-xs' 
+                : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
+            }`}
+            title={isEditing ? "Done editing" : "Edit and reorder phases"}
           >
-            <SlidersHorizontal className="w-3 h-3 stroke-[2.2]" />
-            <span>Customize</span>
+            {isEditing ? (
+              <>
+                <Check className="w-3 h-3 stroke-[2.5]" />
+                <span>Done</span>
+              </>
+            ) : (
+              <>
+                <SlidersHorizontal className="w-3 h-3 stroke-[2.2]" />
+                <span>Edit</span>
+              </>
+            )}
           </button>
         </div>
 
@@ -182,8 +197,8 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
 
                 {/* Status Badges & Reorder Controls */}
                 <div className="flex items-center space-x-2 shrink-0">
-                  {/* Up / Down Reorder Arrows: Top pill only has Down, middle pills have Up & Down, bottom pill only has Up */}
-                  {onMovePhase && allPhasesWithSetup.length > 1 && (
+                  {/* Up / Down Reorder Arrows: ONLY visible when isEditing is true! */}
+                  {isEditing && onMovePhase && allPhasesWithSetup.length > 1 && (
                     <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
                       {idx > 0 && (
                         <button
