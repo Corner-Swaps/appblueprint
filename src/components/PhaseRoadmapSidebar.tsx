@@ -5,6 +5,8 @@ import { getPhaseTheme } from '../utils/phaseThemes';
 import { 
   CheckCircle2, 
   ChevronRight, 
+  ChevronDown,
+  ChevronUp,
   SlidersHorizontal, 
   ExternalLink, 
   Layers, 
@@ -23,6 +25,7 @@ interface PhaseRoadmapSidebarProps {
   onSelectPlatform: (platform: 'all' | 'ios' | 'android') => void;
   onSelectPhase: (phaseId: string) => void;
   onOpenManagePhases: () => void;
+  onMovePhase?: (fromIdx: number, toIdx: number) => void;
 }
 
 export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
@@ -36,8 +39,9 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
   onSelectPlatform,
   onSelectPhase,
   onOpenManagePhases,
+  onMovePhase,
 }) => {
-  const allPhasesWithSetup = [setupPhase, ...phases];
+  const allPhasesWithSetup = phases.some(p => p.id === setupPhase.id) ? phases : [setupPhase, ...phases];
 
   return (
     <aside className="space-y-3.5">
@@ -139,7 +143,7 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
 
         {/* Phase List with larger pills & cards without truncation */}
         <div className="space-y-2 pt-1">
-          {allPhasesWithSetup.map((phase) => {
+          {allPhasesWithSetup.map((phase, idx) => {
             const isSetup = phase.id === setupPhase.id;
             const theme = getPhaseTheme(phase.number);
             const totalItems = phase.items.length;
@@ -176,8 +180,42 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
                   </div>
                 </div>
 
-                {/* Status Badges */}
+                {/* Status Badges & Reorder Controls */}
                 <div className="flex items-center space-x-2 shrink-0">
+                  {/* Up / Down Reorder Arrows: Top pill only has Down, middle pills have Up & Down, bottom pill only has Up */}
+                  {onMovePhase && allPhasesWithSetup.length > 1 && (
+                    <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
+                      {idx > 0 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onMovePhase(idx, idx - 1);
+                          }}
+                          className="apple-press w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all border border-slate-200/80 shadow-2xs"
+                          title="Move step up"
+                          aria-label="Move step up"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </button>
+                      )}
+                      {idx < allPhasesWithSetup.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onMovePhase(idx, idx + 1);
+                          }}
+                          className="apple-press w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all border border-slate-200/80 shadow-2xs"
+                          title="Move step down"
+                          aria-label="Move step down"
+                        >
+                          <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {isAllCompleted ? (
                     <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-2xs">
                       <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />

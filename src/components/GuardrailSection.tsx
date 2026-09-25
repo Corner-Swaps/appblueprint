@@ -246,11 +246,20 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   // Reorder items in current phase
   const handleMoveItem = (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= items.length) return;
-    const newItems = [...items];
-    const [moved] = newItems.splice(fromIndex, 1);
-    newItems.splice(toIndex, 0, moved);
+    const movedItem = items[fromIndex];
+    const targetItem = items[toIndex];
+    if (!movedItem || !targetItem) return;
+
+    const phaseItems = [...phase.items];
+    const actualFromIdx = phaseItems.findIndex(i => i.id === movedItem.id);
+    const actualToIdx = phaseItems.findIndex(i => i.id === targetItem.id);
+    if (actualFromIdx === -1 || actualToIdx === -1) return;
+
+    const [moved] = phaseItems.splice(actualFromIdx, 1);
+    phaseItems.splice(actualToIdx, 0, moved);
+
     if (onReorderItems) {
-      onReorderItems(phase.id, newItems);
+      onReorderItems(phase.id, phaseItems);
     }
   };
 
@@ -531,13 +540,49 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     </button>
                   )}
                 </div>
-              ) : isAllComplete ? (
-                <div className="shrink-0 self-center pl-2 -mr-1">
-                  <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
-                    <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
-                  </div>
+              ) : (
+                <div className="flex items-center space-x-1.5 shrink-0 self-center pl-2 -mr-1" onClick={(e) => e.stopPropagation()}>
+                  {/* Up / Down Reorder Arrows for the Main Phase Card */}
+                  {onMovePhase && typeof phaseIndex === 'number' && typeof totalPhases === 'number' && totalPhases > 1 && (
+                    <div className="flex items-center space-x-1">
+                      {phaseIndex > 0 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onMovePhase(phaseIndex, phaseIndex - 1);
+                          }}
+                          className="apple-press w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all border border-slate-200/80 shadow-2xs"
+                          title="Move phase up"
+                          aria-label="Move phase up"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </button>
+                      )}
+                      {phaseIndex < totalPhases - 1 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onMovePhase(phaseIndex, phaseIndex + 1);
+                          }}
+                          className="apple-press w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all border border-slate-200/80 shadow-2xs"
+                          title="Move phase down"
+                          aria-label="Move phase down"
+                        >
+                          <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {isAllComplete && (
+                    <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
+                      <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
+                    </div>
+                  )}
                 </div>
-              ) : null}
+              )}
             </div>
 
             {/* Subtext: ALWAYS visible underneath the title! */}
@@ -675,26 +720,62 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           )}
                         </div>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            try {
-                              if (navigator?.vibrate) navigator.vibrate(10);
-                            } catch {}
-                            onToggleComplete(item.id);
-                          }}
-                          className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity self-center"
-                          aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
-                        >
-                          {isDone ? (
-                            <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
-                              <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
+                        <div className="flex items-center space-x-1.5 shrink-0 self-center pl-2 -mr-1" onClick={(e) => e.stopPropagation()}>
+                          {/* Up / Down Reorder Arrows for Sub Pill: Top sub pill only has Down, middle have Up & Down, bottom has only Up */}
+                          {items.length > 1 && (
+                            <div className="flex items-center space-x-1">
+                              {idx > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMoveItem(idx, idx - 1);
+                                  }}
+                                  className="apple-press w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all border border-slate-200/80 shadow-2xs"
+                                  title="Move requirement up"
+                                  aria-label="Move requirement up"
+                                >
+                                  <ChevronUp className="w-3.5 h-3.5 stroke-[2.5]" />
+                                </button>
+                              )}
+                              {idx < items.length - 1 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMoveItem(idx, idx + 1);
+                                  }}
+                                  className="apple-press w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all border border-slate-200/80 shadow-2xs"
+                                  title="Move requirement down"
+                                  aria-label="Move requirement down"
+                                >
+                                  <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                                </button>
+                              )}
                             </div>
-                          ) : (
-                            <div className="w-8 h-8 rounded-full border-2 border-slate-300 hover:border-slate-400 transition-colors bg-white" />
                           )}
-                        </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              try {
+                                if (navigator?.vibrate) navigator.vibrate(10);
+                              } catch {}
+                              onToggleComplete(item.id);
+                            }}
+                            className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity self-center"
+                            aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
+                          >
+                            {isDone ? (
+                              <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
+                                <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
+                              </div>
+                            ) : (
+                              <div className="w-8 h-8 rounded-full border-2 border-slate-300 hover:border-slate-400 transition-colors bg-white" />
+                            )}
+                          </button>
+                        </div>
                       )}
                     </div>
 
