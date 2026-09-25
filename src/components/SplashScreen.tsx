@@ -6,6 +6,8 @@ interface SplashScreenProps {
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+  const [visible, setVisible] = useState(true);
+  const [animating, setAnimating] = useState(false);
   const [fadingOut, setFadingOut] = useState(false);
   const hasDismissedRef = useRef(false);
 
@@ -14,17 +16,24 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     hasDismissedRef.current = true;
     setFadingOut(true);
     setTimeout(() => {
-      onComplete();
-    }, 250);
+      setVisible(false);
+      onComplete?.();
+    }, 350);
   };
 
-  // Launch pacing: 1.5s forward-fuzzing animation hold + smooth fade-out
   useEffect(() => {
+    // 0.08s initial delay before expansion starts (matching Essential Timer exact timing)
+    const animTimer = setTimeout(() => {
+      setAnimating(true);
+    }, 80);
+
+    // 2.18s total time (0.08s delay + 1.55s ease curve + 0.55s hold breath)
     const dismissTimer = setTimeout(() => {
       dismiss();
-    }, 1550);
+    }, 2180);
 
     return () => {
+      clearTimeout(animTimer);
       clearTimeout(dismissTimer);
     };
   }, []);
@@ -35,142 +44,84 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 99999,
+        zIndex: 999999,
         cursor: 'pointer',
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        pointerEvents: fadingOut ? 'none' : 'auto',
-        display: 'flex',
+        pointerEvents: (!visible || fadingOut) ? 'none' : 'auto',
+        display: visible ? 'flex' : 'none',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         background: '#000000',
         opacity: fadingOut ? 0 : 1,
-        transition: 'opacity 320ms cubic-bezier(0.16, 1, 0.3, 1)',
-        willChange: 'opacity',
+        transition: 'opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)',
         overflow: 'hidden',
       }}
       aria-label="App Blueprint Launch Screen"
     >
-      <style>{`
-        @keyframes splashLogoFuzzForward {
-          0% {
-            opacity: 0;
-            transform: scale(0.68);
-            filter: blur(24px) drop-shadow(0 0 35px rgba(255, 255, 255, 0.95));
-          }
-          30% {
-            opacity: 0.85;
-            transform: scale(0.84);
-            filter: blur(12px) drop-shadow(0 0 25px rgba(255, 255, 255, 0.7));
-          }
-          65% {
-            opacity: 0.98;
-            transform: scale(0.96);
-            filter: blur(4px) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
-          }
-          85% {
-            opacity: 1;
-            transform: scale(1.02);
-            filter: blur(1px) drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1.05);
-            filter: blur(0px) drop-shadow(0 0 0px rgba(255, 255, 255, 0));
-          }
-        }
-
-        .splash-logo-container {
-          animation: splashLogoFuzzForward 1500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-          will-change: transform, opacity, filter;
-          -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-          transform-origin: center center;
-        }
-
-        @keyframes splashTitleIntro {
-          0% {
-            opacity: 0;
-            transform: translateY(12px);
-            filter: blur(6px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-            filter: blur(0px);
-          }
-        }
-
-        .splash-title-text {
-          animation: splashTitleIntro 800ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both;
-          will-change: transform, opacity, filter;
-          -webkit-backface-visibility: hidden;
-        }
-      `}</style>
-
-      {/* Content wrapper with clean 120fps opacity dissolve on exit */}
+      {/* Soft central ambient glow */}
       <div
         style={{
-          width: '100%',
-          height: '100%',
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 20px, transparent 280px)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* 1. Centered White Logo (201x201) with marginTop: -48 (Matching Essential Timer exact optical centering) */}
+      <div
+        style={{
+          position: 'relative',
+          width: 201,
+          height: 201,
+          marginTop: -48,
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          opacity: fadingOut ? 0 : 1,
-          transition: 'opacity 250ms ease-out',
-          willChange: 'opacity',
+          transform: animating ? 'scale(1)' : 'scale(0.92)',
+          filter: animating ? 'blur(0px)' : 'blur(5px)',
+          opacity: animating ? 1 : 0,
+          transition: 'transform 1550ms cubic-bezier(0.20, 0.0, 0.15, 1.0), filter 1550ms cubic-bezier(0.20, 0.0, 0.15, 1.0), opacity 1550ms cubic-bezier(0.20, 0.0, 0.15, 1.0)',
+          willChange: 'transform, filter, opacity',
         }}
       >
-        {/* 1. Centered Flat White Logo (Exact geometric center matching native iOS LaunchScreen) */}
-        <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 280,
-            height: 280,
-          }}
-        >
-          <AppLogo 
-            size={280} 
-            color="#FFFFFF" 
-            expanded15={true} 
-            style={{ pointerEvents: 'none' }}
-          />
-        </div>
+        <AppLogo 
+          size={201} 
+          color="#FFFFFF" 
+          expanded15={true} 
+          style={{ pointerEvents: 'none' }}
+        />
+      </div>
 
-        {/* 2. Title cleanly positioned down below */}
-        <div
+      {/* 2. Title Positioned Lower at the Bottom (Matching Essential Timer exact bottom placement & typography) */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 50,
+          left: 0,
+          right: 0,
+          textAlign: 'center',
+          transform: animating ? 'scale(1)' : 'scale(0.94)',
+          filter: animating ? 'blur(0px)' : 'blur(5px)',
+          opacity: animating ? 1 : 0,
+          transition: 'transform 1550ms cubic-bezier(0.20, 0.0, 0.15, 1.0), filter 1550ms cubic-bezier(0.20, 0.0, 0.15, 1.0), opacity 1550ms cubic-bezier(0.20, 0.0, 0.15, 1.0)',
+          willChange: 'transform, filter, opacity',
+        }}
+      >
+        <span
           style={{
-            position: 'absolute',
-            bottom: 'max(calc(env(safe-area-inset-bottom, 0px) + 32px), 48px)',
-            left: 0,
-            right: 0,
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            pointerEvents: 'none',
+            fontFamily: "'Google Sans', 'GoogleSans-Medium', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
+            fontSize: 34,
+            fontWeight: 500,
+            color: '#FFFFFF',
+            letterSpacing: '-0.3px',
+            textShadow: '0 2px 8px rgba(0, 0, 0, 0.40)',
           }}
         >
-          <span
-            className="splash-title-text"
-            style={{
-              fontFamily: "'Google Sans', 'GoogleSans-Medium', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif",
-              fontSize: 34,
-              fontWeight: 700,
-              color: '#FFFFFF',
-              letterSpacing: '-0.5px',
-              textShadow: '0 2px 14px rgba(0, 0, 0, 0.8)',
-              display: 'block',
-            }}
-          >
-            App Blueprint
-          </span>
-        </div>
+          App Blueprint
+        </span>
       </div>
     </div>
   );
