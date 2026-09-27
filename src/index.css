@@ -177,3 +177,43 @@
   max-width: 100%;
   overflow: hidden;
 }
+
+/* Unified Single-Pill Connected Drawer (Zero extra margin inside outer pill) */
+.apple-drawer-collapse.apple-unified-drawer.expanded {
+  margin-top: 0 !important;
+}
+
+/* Apple Sub-Item Glow: subtle soft row highlight on collapse */
+@keyframes apple-subitem-glow {
+  0% {
+    background-color: transparent;
+  }
+  20%, 80% {
+    background-color: rgba(var(--glow-rgb, 59, 130, 246), 0.10);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.apple-subitem-pulse {
+  animation: apple-subitem-glow 1800ms ease-in-out forwards !important;
+}
+
+/* Playful Animated Wiggle Scratch Strikethrough */
+@keyframes draw-scratch {
+  0% {
+    stroke-dashoffset: 130;
+    opacity: 0.3;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.apple-wiggle-scratch {
+  stroke-dasharray: 130;
+  stroke-dashoffset: 0;
+  animation: draw-scratch 280ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}

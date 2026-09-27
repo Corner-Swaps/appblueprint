@@ -39,4 +39,5 @@ screenshots/audit/
 # Xcode Device Builds & Scratch
 build_device/
 scratch/
+website-build/
 

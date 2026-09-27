@@ -1,55 +1,86 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, 
-  FolderPlus,
-  Infinity as InfinityIcon,
-  CheckCircle2
+  Check, 
+  Unlock,
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { 
   NEXT_PROJECT_PRICE_DISPLAY, 
   UNLIMITED_PRICE_DISPLAY, 
-  unlockNextProjectSlot,
-  unlockUnlimited 
+  PRODUCT_ID_NEXT_PROJECT,
+  PRODUCT_ID_UNLIMITED_PROJECTS,
+  unlockUnlimited,
+  unlockSingleProject
 } from '../utils/paywall';
+import { purchaseWithStoreKit, restoreWithStoreKit } from '../utils/nativeStoreKit';
 import { triggerHaptic, ImpactStyle } from '../utils/haptics';
 
 interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUnlocked: () => void;
+  targetProjectId?: string;
+  targetProjectName?: string;
+  canDismiss?: boolean;
 }
 
 export const PaywallModal: React.FC<PaywallModalProps> = ({
   isOpen,
   onClose,
-  onUnlocked
+  onUnlocked,
+  targetProjectId,
+  targetProjectName,
+  canDismiss = true,
 }) => {
-  // ALL hooks must be declared at the top level to strictly follow the Rules of Hooks
-  const [selectedTier, setSelectedTier] = useState<'next' | 'unlimited'>('unlimited');
   const [showStoreKitSheet, setShowStoreKitSheet] = useState(false);
   const [storeKitState, setStoreKitState] = useState<'idle' | 'processing' | 'done'>('idle');
+  const [purchaseTier, setPurchaseTier] = useState<'single' | 'unlimited'>('unlimited');
+  const [isNativeProcessing, setIsNativeProcessing] = useState(false);
+  const [nativeMessage, setNativeMessage] = useState<string | null>(null);
 
-  // Prevent background scrolling while modal is open
+  // Reset StoreKit state when modal closes and ensure body is never scroll-locked
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+    document.body.style.overflow = '';
+    if (!isOpen) {
       setShowStoreKitSheet(false);
       setStoreKitState('idle');
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const currentPrice = selectedTier === 'unlimited' ? UNLIMITED_PRICE_DISPLAY : NEXT_PROJECT_PRICE_DISPLAY;
-  const currentTitle = selectedTier === 'unlimited' ? 'Unlimited Projects' : 'Next Project';
+  const currentPrice = purchaseTier === 'unlimited' ? UNLIMITED_PRICE_DISPLAY : NEXT_PROJECT_PRICE_DISPLAY;
+  const currentTitle = purchaseTier === 'unlimited' ? 'Unlimited Projects' : 'Project Blueprint';
 
-  const handleStartPurchase = () => {
+  const handleStartPurchase = async (tier: 'single' | 'unlimited') => {
     triggerHaptic(ImpactStyle.Medium);
+    setPurchaseTier(tier);
+
+    const productId = tier === 'unlimited' ? PRODUCT_ID_UNLIMITED_PROJECTS : PRODUCT_ID_NEXT_PROJECT;
+
+    if (Capacitor.isNativePlatform()) {
+      setIsNativeProcessing(true);
+      setNativeMessage(null);
+      const res = await purchaseWithStoreKit(productId, targetProjectId);
+      setIsNativeProcessing(false);
+
+      if (res.success) {
+        triggerHaptic(ImpactStyle.Heavy);
+        onUnlocked();
+        onClose();
+      } else if (res.userCancelled) {
+        // Apple HIG: silently cancel
+      } else if (res.pending) {
+        alert('Your purchase is pending approval (such as Ask to Buy). Access will activate once approved.');
+      } else if (res.error) {
+        alert(res.error);
+      }
+      return;
+    }
+
     setStoreKitState('idle');
     setShowStoreKitSheet(true);
   };
@@ -62,10 +93,10 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
       // Simulate authentic Apple StoreKit 2 transaction verification
       await new Promise(resolve => setTimeout(resolve, 1100));
       
-      if (selectedTier === 'unlimited') {
+      if (purchaseTier === 'unlimited') {
         unlockUnlimited();
       } else {
-        unlockNextProjectSlot();
+        unlockSingleProject(targetProjectId);
       }
 
       setStoreKitState('done');
@@ -76,193 +107,181 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
         setStoreKitState('idle');
         onUnlocked();
         onClose();
-      }, 950);
+      }, 900);
     } catch {
       setStoreKitState('idle');
       setShowStoreKitSheet(false);
     }
   };
 
+  const handleRestore = async () => {
+    triggerHaptic(ImpactStyle.Light);
+    setIsNativeProcessing(true);
+    setNativeMessage('Restoring purchases with Apple ID...');
+    const res = await restoreWithStoreKit();
+    setIsNativeProcessing(false);
+    setNativeMessage(null);
+
+    if (res.isUnlimited || res.restoredCount > 0) {
+      triggerHaptic(ImpactStyle.Heavy);
+      alert('Purchases restored successfully!');
+      onUnlocked();
+      onClose();
+    } else if (res.error) {
+      alert(res.error);
+    } else {
+      alert('No active purchases found for this Apple ID.');
+    }
+  };
+
   return (
     <>
-      {/* 1. Main Paywall Selection Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-5 select-none overflow-y-auto">
-        {/* Dedicated full-screen Backdrop that captures clicks anywhere outside for instant 1-tap dismiss */}
+      {/* 1. Single Unified Smaller Paywall Pop-Up */}
+      <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in select-none pointer-events-auto">
+        {/* Subtle backdrop overlay */}
         <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200 cursor-pointer"
+          className="fixed inset-0 cursor-pointer"
           aria-hidden="true"
           onClick={() => {
-            if (!showStoreKitSheet && storeKitState !== 'processing') {
+            if (canDismiss && !showStoreKitSheet && storeKitState !== 'processing') {
               onClose();
             }
           }}
         />
 
+        {/* The Card - Exact same size, border, shadow, and rounded-3xl styling as Terms & Safety modal */}
         <div 
-          className="relative z-10 w-full max-w-lg bg-white rounded-[32px] border border-slate-200/90 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
-          onClick={(e) => e.stopPropagation()}
+          className="relative z-10 w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden h-[680px] max-h-[90vh] transform transition-all duration-300"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="paywall-title"
+          onClick={(e) => e.stopPropagation()}
         >
-          {/* Header with Close Button */}
-          <div className="pt-5 px-6 pb-2 flex items-center justify-between shrink-0">
-            <h2 id="paywall-title" className="text-xl sm:text-[22px] font-black text-slate-900 tracking-tight font-google">
-              Upgrade Projects
-            </h2>
-
+          {/* Close button if opened manually during the 7-day trial */}
+          {canDismiss && (
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+              className="absolute top-3.5 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer z-20"
               title="Close"
-              aria-label="Close modal"
+              aria-label="Close"
             >
-              <X className="w-4 h-4 stroke-[2.5]" />
+              <X className="w-3.5 h-3.5 stroke-[2.5]" />
             </button>
+          )}
+
+          {/* Modal Header: Clean, centered title matching Terms & Safety modal */}
+          <div className="py-4 px-12 border-b border-slate-100 bg-white text-center shrink-0">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight font-google">
+              Unlock Full Access
+            </h2>
+            <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
+              One-time unlock &amp; all blueprints
+            </p>
           </div>
 
-          {/* Plan Options (Step 1 / Step 2 clean aesthetic with colored squircle icons and pure white glyphs) */}
-          <div className="px-6 py-2 overflow-y-auto min-h-0 flex-1 space-y-3">
-            {/* Coffee Price Guarantee Bubble (styled just like Fair Use Policy) */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1">
-              <span className="text-[11px] font-bold text-slate-800 uppercase tracking-wider block font-google">
-                Coffee Price Guarantee
-              </span>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                For less than what you would pay for a cup of coffee, you get full access to production checklists, architecture guidance, and step by step developer blueprints.
+          {/* Scrollable Features Content with Intro Text, 5 Distinct Colored Dots, Numbered Titles, and Matched Descriptions */}
+          <div className="flex-1 px-5 py-3.5 overflow-y-auto space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100">
+            <div>
+              <p className="font-medium text-slate-700">
+                App Blueprint takes you all the way from day zero idea to a published App Store release with production tools:
               </p>
             </div>
 
-            {/* Option 1: Next Project */}
-            <div
-              onClick={() => {
-                triggerHaptic(ImpactStyle.Light);
-                setSelectedTier('next');
-              }}
-              className={`p-4 sm:p-4.5 rounded-3xl border transition-colors duration-150 cursor-pointer shadow-xs ${
-                selectedTier === 'next'
-                  ? 'border-2 border-blue-600 bg-blue-50/50 ring-2 ring-blue-500/20'
-                  : 'border-slate-200/90 bg-white hover:border-slate-300'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center space-x-3.5 min-w-0">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs bg-blue-600 text-white">
-                    <FolderPlus className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] text-white" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900 font-google">
-                      Next Project
-                    </h3>
-                    <p className="text-xs text-slate-500 font-medium">
-                      1 additional project blueprint
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right shrink-0 pt-0.5">
-                  <div className="text-base sm:text-lg font-black text-slate-900 font-google leading-tight">
-                    {NEXT_PROJECT_PRICE_DISPLAY}
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-semibold block uppercase">
-                    one-time
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-2.5 pt-2.5 border-t border-slate-100 text-xs text-slate-600 leading-relaxed font-normal">
-                Skip one coffee to unlock a complete project blueprint for your next app. You get full developer checklists, architecture guidance, and permanent lifetime access.
-              </div>
+            <div className="pt-2.5 space-y-1">
+              <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-600 inline-block shrink-0" />
+                <span>1. Full App Launch Blueprint</span>
+              </h3>
+              <p className="text-slate-600 text-xs leading-normal">
+                Step-by-step guidance from day zero through release with production-ready architecture and native standards.
+              </p>
             </div>
 
-            {/* Option 2: Unlimited Projects */}
-            <div
-              onClick={() => {
-                triggerHaptic(ImpactStyle.Light);
-                setSelectedTier('unlimited');
-              }}
-              className={`p-4 sm:p-4.5 rounded-3xl border transition-colors duration-150 cursor-pointer shadow-xs ${
-                selectedTier === 'unlimited'
-                  ? 'border-2 border-purple-600 bg-purple-50/50 ring-2 ring-purple-500/20'
-                  : 'border-slate-200/90 bg-white hover:border-slate-300'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center space-x-3.5 min-w-0">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs bg-purple-600 text-white">
-                    <InfinityIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] text-white" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900 font-google">
-                      Unlimited Projects
-                    </h3>
-                    <p className="text-xs text-slate-500 font-medium">
-                      Endless project blueprints forever
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right shrink-0 pt-0.5">
-                  <div className="text-base sm:text-lg font-black text-slate-900 font-google leading-tight">
-                    {UNLIMITED_PRICE_DISPLAY}
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-semibold block uppercase">
-                    lifetime
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-2.5 pt-2.5 border-t border-slate-100 text-xs text-slate-600 leading-relaxed font-normal">
-                For the price of a couple cups of coffee, you can build as many apps as you can dream up. Enjoy endless project blueprints, lifetime updates, and complete freedom with zero subscriptions.
-              </div>
+            <div className="pt-2.5 space-y-1">
+              <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block shrink-0" />
+                <span>2. Integrated AI Prompts</span>
+              </h3>
+              <p className="text-slate-600 text-xs leading-normal">
+                Curated AI prompts ready to copy and paste directly into your workflow for instant project scaffolding.
+              </p>
             </div>
 
-            {/* Fair Use Policy (Clean neutral tone matching Step 1/Step 2 - NO yellow) */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1">
-              <span className="text-[11px] font-bold text-slate-800 uppercase tracking-wider block font-google">
-                Fair Use Policy
-              </span>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                Every creator starts with one full project free. When you are ready to expand your workspace, unlock your next project or go unlimited with a simple one-time payment.
+            <div className="pt-2.5 space-y-1">
+              <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-600 inline-block shrink-0" />
+                <span>3. Store Rejection Prevention</span>
+              </h3>
+              <p className="text-slate-600 text-xs leading-normal">
+                Pre-submission audit checks aligned with Apple Review and Google guidelines to guarantee smooth approval.
+              </p>
+            </div>
+
+            <div className="pt-2.5 space-y-1">
+              <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block shrink-0" />
+                <span>4. Native Production Templates</span>
+              </h3>
+              <p className="text-slate-600 text-xs leading-normal">
+                Battle-tested setups for StoreKit 2 in-app purchases, push notifications, and biometric security.
+              </p>
+            </div>
+
+            <div className="pt-2.5 space-y-1">
+              <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-600 inline-block shrink-0" />
+                <span>5. Curated Developer Tools</span>
+              </h3>
+              <p className="text-slate-600 text-xs leading-normal">
+                Hand-picked libraries, verified official SDKs, and typography tools tested thoroughly for high performance.
               </p>
             </div>
           </div>
 
-          {/* Action Footer */}
-          <div className="p-6 pt-3 shrink-0">
+          {/* Modal Footer / Action Buttons - positioned closer to the bottom */}
+          <div className="px-4 sm:px-5 pt-3 pb-3 sm:pb-3.5 border-t border-slate-100 bg-slate-50/60 flex flex-col space-y-2 shrink-0">
             <button
               type="button"
-              onClick={handleStartPurchase}
-              className={`apple-press w-full py-3.5 px-5 rounded-2xl font-bold text-sm text-white shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer ${
-                selectedTier === 'unlimited'
-                  ? 'bg-purple-600 hover:bg-purple-700 active:bg-purple-800 shadow-purple-500/25'
-                  : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 shadow-blue-500/25'
-              }`}
+              disabled={isNativeProcessing}
+              onClick={() => handleStartPurchase('single')}
+              className="apple-press w-full py-3.5 px-5 rounded-2xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 disabled:opacity-60 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
-              <span>
-                {selectedTier === 'unlimited'
-                  ? `Unlock Unlimited • ${UNLIMITED_PRICE_DISPLAY}`
-                  : `Unlock Next Project • ${NEXT_PROJECT_PRICE_DISPLAY}`}
-              </span>
+              {isNativeProcessing && purchaseTier === 'single' ? (
+                <Loader2 className="w-4.5 h-4.5 animate-spin text-white" />
+              ) : (
+                <span>Keep This Project • $4.99</span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              disabled={isNativeProcessing}
+              onClick={() => handleStartPurchase('unlimited')}
+              className="apple-press w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 disabled:opacity-60 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+            >
+              {isNativeProcessing && purchaseTier === 'unlimited' ? (
+                <Loader2 className="w-4.5 h-4.5 animate-spin text-white" />
+              ) : (
+                <span>Unlock for Life • $12.99</span>
+              )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* 2. Authentic Apple StoreKit In-App Purchase Modal Sheet */}
+      {/* 2. Authentic Apple StoreKit Payment Sheet (The "Apple Pop-Up" at z-[70] above all navigation) */}
       {showStoreKitSheet && (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center select-none overflow-y-auto">
-          {/* Full-screen Backdrop overlay for StoreKit */}
+        <div id="storekit-sheet-container" className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-5 select-none pointer-events-auto">
+          {/* Glass Scrim Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 cursor-pointer"
-            aria-hidden="true"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={() => {
               if (storeKitState !== 'processing') {
                 setShowStoreKitSheet(false);
               }
             }}
           />
+
           <div 
             className="relative z-10 w-full max-w-lg bg-white rounded-t-[32px] sm:rounded-[32px] border-t sm:border border-slate-200/90 shadow-2xl p-6 space-y-5 animate-in slide-in-from-bottom duration-250 mb-0 sm:my-auto"
             onClick={(e) => e.stopPropagation()}
@@ -353,7 +372,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
             </div>
 
             <div className="text-center text-[10px] text-slate-400 font-medium">
-              Simulated Apple StoreKit 2 Transaction Environment
+              Apple StoreKit 2 Transaction
             </div>
           </div>
         </div>

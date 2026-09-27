@@ -20,7 +20,6 @@ import {
   Sparkles, 
   X, 
   Terminal, 
-  ArrowUpDown, 
   ArrowUp,
   ArrowDown,
   Play,
@@ -32,7 +31,8 @@ import {
   CheckSquare,
   Rocket,
   HelpCircle,
-  Target
+  Target,
+  RotateCcw
 } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -40,6 +40,76 @@ import { PlatformBadge } from './PlatformBadge';
 import { renderFormattedPrompt } from '../utils/formatAgentPrompt';
 import { renderChecklistItemIcon } from '../utils/renderChecklistItemIcon';
 import { fluidScrollTo } from '../utils/fluidScroll';
+
+const formatGuidelineButtonLabel = (rawName?: string): string => {
+  if (!rawName) return 'Store Guidelines';
+  const trimmed = rawName.trim();
+  
+  if (/privacy/i.test(trimmed) && (/app store/i.test(trimmed) || /play policy/i.test(trimmed))) {
+    return 'App Store Privacy Policy';
+  }
+  if (/sign in with apple/i.test(trimmed)) {
+    return 'Sign in with Apple';
+  }
+  if (/account deletion/i.test(trimmed) || /user data policy/i.test(trimmed)) {
+    return 'Account Deletion Policy Guidelines';
+  }
+  if (/in-app purchase/i.test(trimmed) || /subscriptions/i.test(trimmed)) {
+    return 'In-App Purchase Guidelines';
+  }
+  if (/user-generated content/i.test(trimmed)) {
+    return 'User-Generated Content Guidelines';
+  }
+  if (/families policy/i.test(trimmed) || /child/i.test(trimmed)) {
+    return 'Children & Families Policy';
+  }
+  if (/eula/i.test(trimmed)) {
+    return 'EULA & Terms Guidelines';
+  }
+  if (/data use/i.test(trimmed) || /tracking/i.test(trimmed)) {
+    return 'Data Use & Tracking';
+  }
+  if (/intellectual property/i.test(trimmed)) {
+    return 'Intellectual Property Policy Guidelines';
+  }
+  if (/digital services act/i.test(trimmed)) {
+    return 'EU Digital Services Act';
+  }
+  if (/health/i.test(trimmed) || /medical/i.test(trimmed)) {
+    return 'Health & Medical Policy';
+  }
+  if (/core vitals/i.test(trimmed)) {
+    return 'Google Play Core Vitals';
+  }
+  if (/listing/i.test(trimmed) || /metadata/i.test(trimmed)) {
+    return 'Store Listing Metadata Policy';
+  }
+  if (/completeness/i.test(trimmed)) {
+    return 'App Completeness Review Guidelines';
+  }
+  if (/closed testing/i.test(trimmed)) {
+    return 'Google Play Closed Testing';
+  }
+  if (/developer policy/i.test(trimmed)) {
+    return 'Google Play Developer Policy';
+  }
+  if (/webview/i.test(trimmed) || /web-view/i.test(trimmed)) {
+    return 'WebView Security Guidelines';
+  }
+  if (/touch target/i.test(trimmed)) {
+    return 'Apple HIG Touch Targets';
+  }
+  
+  const words = trimmed
+    .replace(/Guideline\s+[0-9.]+(\([a-z0-9]+\))?/gi, '')
+    .replace(/[–—\-]/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+    
+  if (words.length <= 4) return words.join(' ');
+  return words.slice(0, 4).join(' ');
+};
 
 interface GuardrailSectionProps {
   phase: Phase;
@@ -118,8 +188,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   // Dynamic theme-colored pulse highlight around section pill when minimized
   const [isJustMinimized, setIsJustMinimized] = useState(false);
   const pulseTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const [pulsingItemId, setPulsingItemId] = useState<string | null>(null);
-  const itemPulseTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const centerSubsection = (itemId: string) => {
     const el = document.getElementById(itemId) || document.getElementById(`item-${itemId}`);
@@ -148,14 +216,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
       // fallback
     }
     return defaultHeight;
-  };
-
-  const triggerItemPulse = (itemId: string) => {
-    if (itemPulseTimeoutRef.current) clearTimeout(itemPulseTimeoutRef.current);
-    setPulsingItemId(itemId);
-    itemPulseTimeoutRef.current = setTimeout(() => {
-      setPulsingItemId(null);
-    }, 2050);
   };
 
   const isCollapsingSubRef = React.useRef<string | null>(null);
@@ -190,10 +250,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
       });
     }
 
-    // 3. Guaranteed pulse trigger: wait until drawer fold (320ms) has 100% completed
-    // so the pill is completely static and settled, exactly like the main pill!
+    // 3. Complete collapse without pulse highlight (smoothly centered only)
     setTimeout(() => {
-      triggerItemPulse(itemId);
       isCollapsingSubRef.current = null;
     }, 360);
   };
@@ -243,7 +301,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
   const collapseSectionSmoothly = () => {
     if (isCollapsingRef.current) return;
 
-    setIsEditMode(false);
+    // Keep isEditMode active so if subsections collapse, the user can still adjust the section
+    // with up/down arrows and tap [ Add | Done | Close ] directly underneath the main pill
     setIsAddingItem(false);
 
     const targetEl = sectionRef.current || document.getElementById(phase.id);
@@ -458,16 +517,17 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
         id={phase.id}
         ref={sectionRef}
         style={{
-          '--glow-rgb': hexToRgb(theme.color)
+          '--glow-rgb': hexToRgb(theme.color),
+          backgroundColor: '#ffffff',
         } as React.CSSProperties}
-        className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs ${
+        className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-300 shadow-xs overflow-hidden ${
           isJustMinimized ? 'apple-section-pulse' : ''
         } ${
           isEditing ? 'apple-edit-glow' : ''
         } ${
         isGlobalEditMode 
           ? 'p-3.5 sm:p-4' 
-          : 'p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5'
+          : ''
       }`}>
       {isGlobalEditMode ? (
         /* Compact Card in Global Rearrange Mode */
@@ -477,7 +537,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               {renderPhaseIcon(isCustomPhase ? 'Info' : phase.iconName, "w-5.5 h-5.5 text-white stroke-[2.2]")}
             </div>
             <div className="space-y-0.5 select-none flex-1 min-w-0">
-              <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
+              <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider font-google ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
                 {isSetupPhase ? 'Set Up' : isCustomPhase ? 'Custom' : `Step ${phase.number}`}
               </span>
               <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
@@ -544,20 +604,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 <Trash2 className="w-4 h-4 stroke-[2.2]" />
               </button>
             )}
-            {onDragStartPhase && typeof phaseIndex === 'number' && !isSetupPhase && (
-              <button
-                type="button"
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  onDragStartPhase(phaseIndex, e);
-                }}
-                className="apple-press w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
-                title="Hold and drag to rearrange section"
-                aria-label="Hold and drag to rearrange section"
-              >
-                <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
-              </button>
-            )}
           </div>
         </div>
       ) : (
@@ -574,7 +620,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 handleToggleExpand();
               }
             }}
-            className="space-y-2.5 select-none cursor-pointer focus:outline-none"
+            className="p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 select-none cursor-pointer focus:outline-none"
           >
             <div className="w-full flex items-center justify-between select-none">
               <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
@@ -586,16 +632,16 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 {/* Title & Phase Badge */}
                 <div className="space-y-1 select-none flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
-                    <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
+                    <span className={`h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider font-google ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none`}>
                       {isSetupPhase ? 'Set Up' : isCustomPhase ? 'Custom' : `Step ${phase.number}`}
                     </span>
                     <span className="text-xs text-slate-400 select-none">•</span>
-                    <span className="text-xs font-bold text-slate-700 select-none">
+                    <span className="text-xs font-bold text-slate-700 select-none font-google tracking-tight">
                       {completedCount} of {totalCount} Verified
                     </span>
                   </div>
 
-                  <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
+                  <h2 className="text-[18px] sm:text-[20px] font-medium text-slate-900 tracking-tight leading-snug select-none font-google break-words">
                     {phase.title}
                   </h2>
                 </div>
@@ -614,6 +660,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         triggerHaptic(ImpactStyle.Light);
+                        if (isExpanded) {
+                          setIsExpanded(false);
+                          setExpandedItemId(null);
+                        }
                         onMovePhase(phaseIndex, phaseIndex - 1);
                       }}
                       className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
@@ -631,6 +681,10 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         triggerHaptic(ImpactStyle.Light);
+                        if (isExpanded) {
+                          setIsExpanded(false);
+                          setExpandedItemId(null);
+                        }
                         onMovePhase(phaseIndex, phaseIndex + 1);
                       }}
                       className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center shadow-2xs transition-colors"
@@ -641,21 +695,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                     </button>
                   )}
 
-                  {/* Drag Handle */}
-                  {onDragStartPhase && typeof phaseIndex === 'number' && (
-                    <button
-                      type="button"
-                      onPointerDown={(e) => {
-                        e.stopPropagation();
-                        onDragStartPhase(phaseIndex, e);
-                      }}
-                      className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
-                      title="Hold and drag to rearrange phase"
-                      aria-label="Move & rearrange phase"
-                    >
-                      <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
-                    </button>
-                  )}
 
                   {/* Delete Section */}
                   {onDeletePhase && (
@@ -692,9 +731,9 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
             {/* Section Progress Bar */}
             <div className="space-y-1 pt-1 select-none">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none font-google tracking-tight">
                 <span>Section Completion</span>
-                <span>{percent}%</span>
+                <span className="tabular-nums">{percent}%</span>
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
                 <div 
@@ -705,7 +744,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
             </div>
 
             {/* Drop-Down Arrow: NO circle when pointing DOWN (closed), translucent gray circle when pointing UP (open/expanded) */}
-            <div className="flex justify-center pt-0.5 pb-0 select-none">
+            <div className="flex justify-center pt-0.5 pb-0 -mb-1 select-none">
               <button
                 type="button"
                 onClick={(e) => {
@@ -725,38 +764,40 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               </button>
             </div>
           </div>
-        </>
-      )}
-    </div>
 
-    {/* 2. Interactive Checklist Items in standalone pills matching Academy style */}
-    {!isGlobalEditMode && (
-      <div className={`apple-drawer-collapse ${isExpanded ? 'expanded' : ''}`}>
+          {/* 2. Connected Sub Categories Drawer (Inside the same unified pill!) */}
+          <div className={`apple-drawer-collapse apple-unified-drawer ${isExpanded ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
             <div className="apple-drawer-content">
-              <div className="space-y-3 pt-3 pb-3.5">
-            {items.length === 0 && (
-              <div className="py-6 px-4 text-center rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 select-none">
-                <p className="text-xs font-bold text-slate-700 font-google">No requirements added yet</p>
-                <p className="text-[11.5px] text-slate-500">Tap "Add Requirement" below to start populating this section.</p>
-              </div>
-            )}
-            {items.map((item, idx) => {
-              const isDone = completedItemIds.includes(item.id);
-              const isDetailOpen = expandedItemId === item.id;
+              {items.length === 0 && (
+                <div className="py-6 px-4 text-center space-y-1.5 select-none">
+                  <p className="text-xs font-bold text-slate-700 font-google">No requirements added yet</p>
+                  <p className="text-[11.5px] text-slate-500">Tap "Add" below to start populating this section.</p>
+                </div>
+              )}
 
-              return (
-                <div
-                  id={item.id}
-                  key={item.id}
-                  ref={bindItemRef(idx)}
-                  style={{
-                    ...getItemDragStyle(idx),
-                    '--glow-rgb': hexToRgb(theme.color)
-                  } as React.CSSProperties}
-                  className={`rounded-3xl border border-slate-200/90 bg-white transition-all duration-200 shadow-xs p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 ${
-                    pulsingItemId === item.id ? 'apple-section-pulse' : ''
-                  }`}
-                >
+              {/* Requirements list separated by a thin grey line matching Academy */}
+              <div className="divide-y divide-slate-200/60 border-t border-slate-200/60">
+                {items.map((item, idx) => {
+                  const isDone = completedItemIds.includes(item.id);
+                  const isDetailOpen = expandedItemId === item.id;
+
+                  return (
+                    <div
+                      id={item.id}
+                      key={item.id}
+                      ref={bindItemRef(idx)}
+                      style={{
+                        ...getItemDragStyle(idx),
+                        '--glow-rgb': hexToRgb(theme.color)
+                      } as React.CSSProperties}
+                      className={`px-4 sm:px-5 transition-colors relative space-y-2.5 ${
+                        idx === 0 ? 'pt-2 pb-3.5 sm:pt-2.5 sm:pb-4' : 'py-3.5 sm:py-4'
+                      }`}
+                    >
+                      {/* Hidden semantic keywords for App Store discovery & AI agent scrapers */}
+                      <span className="sr-only" aria-hidden="true" data-ai-index="app-blueprint-requirement">
+                        {`iOS App Store submission requirement, Apple HIG compliance, ${item.title}, TestFlight, StoreKit 2, Privacy Manifest, review guidelines, AI prompt for Cursor and Claude.`}
+                      </span>
                   {/* Item Header Block: clicking text minimizes/toggles item */}
                   <div 
                     onClick={(e) => {
@@ -765,9 +806,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         if (isDetailOpen) {
                           handleCollapseSubsection(item.id);
                         } else {
-                          if (expandedItemId && expandedItemId !== item.id) {
-                            triggerItemPulse(expandedItemId);
-                          }
                           setExpandedItemId(item.id);
                         }
                       }
@@ -782,17 +820,17 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           {renderChecklistItemIcon(item)}
                         </div>
 
-                        {/* Title matching Academy typography */}
+                        {/* Title matching main pills typography (kept black, straight line strikethrough when done) */}
                         <div className="select-none flex-1 min-w-0">
-                          <h3 className={`text-base sm:text-lg font-black tracking-tight leading-snug select-none font-google break-words ${
-                            isDone ? 'text-slate-500' : 'text-slate-900'
+                          <h3 className={`text-[18px] sm:text-[20px] font-medium tracking-tight leading-snug select-none font-google break-words text-slate-900 ${
+                            isDone ? 'line-through decoration-slate-400 decoration-2' : ''
                           }`}>
                             {item.title}
                           </h3>
                         </div>
                       </div>
 
-                      {/* Action Controls: Edit handles or Checkmark Toggle vertically centered on the right side */}
+                      {/* Right Controls: In Edit mode, Move Up, Move Down, Delete */}
                       {isEditing ? (
                         <div className="flex items-center justify-end space-x-1.5 shrink-0 -mr-1 h-12" onClick={(e) => e.stopPropagation()}>
                           {/* Move Item Up */}
@@ -829,20 +867,6 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                             </button>
                           )}
 
-                          {/* Drag Handle */}
-                          <button
-                            type="button"
-                            onPointerDown={(e) => {
-                              e.stopPropagation();
-                              handleDragStartItem(idx, e);
-                            }}
-                            className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none"
-                            title="Drag to rearrange"
-                            aria-label="Drag to rearrange"
-                          >
-                            <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 stroke-[2.2]" />
-                          </button>
-
                           {/* Delete Item */}
                           {onDeleteItem && (
                             <button
@@ -863,63 +887,57 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           )}
                         </div>
                       ) : (
+                        /* Circular checkmark in one line with title on the right side */
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            try {
-                              if (navigator?.vibrate) navigator.vibrate(10);
-                            } catch {}
+                            triggerHaptic(ImpactStyle.Medium);
                             onToggleComplete(item.id);
+                            if (!isDone) {
+                              triggerPhaseCompleteConfetti();
+                            }
                           }}
-                          className="w-10 sm:w-12 h-12 rounded-full flex items-center justify-center shrink-0 -mr-1 active:opacity-75 transition-opacity self-center"
-                          aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
+                          className={`apple-press w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer shadow-2xs ml-2 select-none ${
+                            isDone 
+                              ? 'text-white' 
+                              : 'border-2 border-slate-300 hover:border-slate-400 bg-white'
+                          }`}
+                          style={isDone ? { backgroundColor: theme.color } : undefined}
+                          title={isDone ? 'Completed (Tap to undo)' : 'Mark as complete'}
+                          aria-label={isDone ? `${item.title} is completed` : `Mark ${item.title} as complete`}
                         >
-                          {isDone ? (
-                            <div className={`w-8 h-8 rounded-full ${theme.iconBg} flex items-center justify-center shadow-xs transition-colors`}>
-                              <Check strokeWidth={3} className="w-4.5 h-4.5 text-white stroke-[3]" />
-                            </div>
-                          ) : (
-                            <div className="w-8 h-8 rounded-full border-2 border-slate-300 hover:border-slate-400 transition-colors bg-white" />
-                          )}
+                          {isDone && <Check className="w-3.5 h-3.5 stroke-[3] text-white" />}
                         </button>
                       )}
                     </div>
 
-                    {/* Short Description matching Academy subtext */}
-                    <p className="text-sm sm:text-sm text-slate-600 leading-[22px] select-none pt-0.5">
-                      {item.shortDescription}
-                    </p>
+                    {/* Subsection: Description directly underneath the title matching Academy */}
+                    {item.shortDescription && (
+                      <p className="text-sm sm:text-sm text-slate-600 leading-[22px] select-none pt-0.5">
+                        {item.shortDescription}
+                      </p>
+                    )}
 
-                    {/* Centered Drop-Down Arrow */}
-                    <div className="flex justify-center pt-0.5 pb-0 select-none">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isEditing) {
-                            if (isDetailOpen) {
-                              handleCollapseSubsection(item.id);
-                            } else {
-                              if (expandedItemId && expandedItemId !== item.id) {
-                                triggerItemPulse(expandedItemId);
-                              }
+                    {/* Centered Drop-Down Arrow (shown when collapsed to expand) */}
+                    {!isDetailOpen && (
+                      <div className="flex justify-center pt-0.5 pb-0 select-none">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isEditing) {
                               setExpandedItemId(item.id);
                             }
-                          }
-                        }}
-                        className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-slate-400 hover:text-slate-700 shrink-0"
-                        title={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
-                        aria-label={isDetailOpen ? 'Close guidance' : 'Expand guidance'}
-                      >
-                        <ChevronDown 
-                          strokeWidth={2.5}
-                          className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                            isDetailOpen ? 'rotate-180 text-slate-800' : 'text-slate-400'
-                          }`} 
-                        />
-                      </button>
-                    </div>
+                          }}
+                          className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-slate-400 hover:text-slate-700 shrink-0"
+                          title="Expand guidance"
+                          aria-label="Expand guidance"
+                        >
+                          <ChevronDown strokeWidth={2.5} className="w-4 h-4 stroke-[2.5] text-slate-400" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Expanded Guidance Drawer: Distinct Pill Cards matching Academy */}
@@ -930,6 +948,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
                         title="Click to minimize requirement"
                       >
+
                         {/* Subsection 1: Architecture & Review Impact Pill */}
                         {item.whyItMatters && (
                           <div 
@@ -1091,83 +1110,80 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                         )}
 
                         {/* Action Resource Buttons at the bottom of the drawer */}
-                        {(item.directLink || item.videoUrl || item.storeGuideline) && (
-                          <div className="space-y-2 pt-2 border-t border-slate-100/80">
-                            {/* Blue Button for Direct Link (e.g. Google Antigravity & AI Developer Tools) */}
-                            {item.directLink && (
-                              <a
-                                href={item.directLink.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                        <div className="space-y-2 pt-2 border-t border-slate-100/80 select-none">
+                          {/* Direct Link (e.g. Download Xcode / Google Antigravity) without box arrow */}
+                          {item.directLink && (
+                            <a
+                              href={item.directLink.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                try { window.open(item.directLink!.url, '_blank'); } catch {}
+                              }}
+                              className="apple-press w-full h-12 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
+                            >
+                              <span>{item.directLink.label}</span>
+                            </a>
+                          )}
+
+                          {/* Direct YouTube Video Guide Link without box arrow */}
+                          {item.videoUrl && (
+                            <a
+                              href={item.videoUrl.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                try { window.open(item.videoUrl!.url, '_blank'); } catch {}
+                              }}
+                              className="apple-press w-full h-12 px-4 rounded-2xl bg-[#FF0000] hover:bg-[#E60000] active:bg-[#CC0000] text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors cursor-pointer"
+                              title={`Watch ${item.videoUrl.title} on YouTube`}
+                            >
+                              <svg className="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                              </svg>
+                              <span className="truncate">Watch on YouTube</span>
+                            </a>
+                          )}
+
+                          {/* Dark Button for Official Store Guideline without box arrow */}
+                          {item.storeGuideline && (
+                            <a
+                              href={item.storeGuideline.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                try { window.open(item.storeGuideline!.url, '_blank'); } catch {}
+                              }}
+                              className="apple-press w-full h-12 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 active:bg-black text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
+                            >
+                              <span className="truncate">{formatGuidelineButtonLabel(item.storeGuideline.name)}</span>
+                            </a>
+                          )}
+
+                          {/* Subcategory Bottom Close Arrow (pure icon, hidden on the very last subcategory) */}
+                          {idx < items.length - 1 && (
+                            <div className="flex justify-center select-none pt-0.5 pb-0">
+                              <button
+                                type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  try { window.open(item.directLink!.url, '_blank'); } catch {}
+                                  triggerHaptic(ImpactStyle.Light);
+                                  handleCollapseSubsection(item.id);
                                 }}
-                                className="apple-press w-full py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
+                                className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-slate-400 hover:text-slate-700 shrink-0 cursor-pointer"
+                                title="Close subcategory"
+                                aria-label="Close subcategory"
                               >
-                                <span>{item.directLink.label}</span>
-                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90" />
-                              </a>
-                            )}
-
-                            {/* Direct YouTube Video Guide Link */}
-                            {item.videoUrl && (
-                              <a
-                                href={item.videoUrl.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  try { window.open(item.videoUrl!.url, '_blank'); } catch {}
-                                }}
-                                className="apple-press w-full py-3 px-4 rounded-2xl bg-[#FF0000] hover:bg-[#E60000] active:bg-[#CC0000] text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors cursor-pointer"
-                                title={`Watch ${item.videoUrl.title} on YouTube`}
-                              >
-                                <svg className="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
-                                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                                </svg>
-                                <span className="truncate">Watch on YouTube · {item.videoUrl.title}</span>
-                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90 shrink-0 ml-1" />
-                              </a>
-                            )}
-
-                            {/* Dark Button for Official Store Guideline */}
-                            {item.storeGuideline && (
-                              <a
-                                href={item.storeGuideline.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  try { window.open(item.storeGuideline!.url, '_blank'); } catch {}
-                                }}
-                                className="apple-press w-full py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 active:bg-black text-white font-bold text-xs sm:text-[13px] flex items-center justify-center space-x-2 shadow-xs transition-colors"
-                              >
-                                <span className="truncate">Official Store Guideline: {item.storeGuideline.name}</span>
-                                <ExternalLink className="w-3.5 h-3.5 stroke-[2.2] text-white/90 shrink-0" />
-                              </a>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Bottom Close Button */}
-                        <div className="pt-2 border-t border-slate-100/80 flex justify-center">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCollapseSubsection(item.id);
-                            }}
-                            className="apple-press py-1 px-3 rounded-full flex items-center space-x-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100/70 transition-colors text-xs font-bold cursor-pointer"
-                            title="Close requirement"
-                            aria-label="Close requirement"
-                          >
-                            <ChevronUp 
-                              strokeWidth={2.5}
-                              className="w-3.5 h-3.5 stroke-[2.5] text-slate-500 hover:text-slate-800" 
-                            />
-                            <span>Close</span>
-                          </button>
+                                <ChevronUp 
+                                  strokeWidth={2.5}
+                                  className="w-4 h-4 stroke-[2.5] text-slate-400" 
+                                />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1176,77 +1192,27 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                 </div>
               );
             })}
+          </div>
 
-            {/* Unified Action Capsule: [ Add | Edit | Close ] */}
-            <div 
-              className="py-3 px-4 flex items-center justify-center select-none"
+          {/* Very thin grey line separating subcategories from bottom action chevron matching Academy */}
+          <div className="border-t border-slate-200/60" />
+
+          {/* Main Pill Footer: Chevron upwards arrow (pure icon, no text, no pill) */}
+          <div className="flex justify-center select-none py-2.5">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                triggerHaptic(ImpactStyle.Light);
+                handleCollapseSection();
+              }}
+              className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 text-slate-400 hover:text-slate-700 shrink-0 cursor-pointer"
+              title="Close section"
+              aria-label="Close section"
             >
-              <div className="inline-flex items-center p-1 rounded-full bg-white border border-slate-200/90 shadow-2xs space-x-1">
-                {onAddItem && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsAddingItem(prev => !prev);
-                    }}
-                    className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 cursor-pointer ${
-                      isAddingItem
-                        ? 'bg-slate-900 text-white shadow-xs'
-                        : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60'
-                    }`}
-                    title={isAddingItem ? 'Done adding' : 'Add requirement'}
-                  >
-                    {isAddingItem ? (
-                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                    ) : (
-                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                    )}
-                    <span>{isAddingItem ? 'Done' : 'Add'}</span>
-                  </button>
-                )}
-
-                <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
-
-                {/* Single "Edit" Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsEditMode(prev => !prev);
-                  }}
-                  className={`apple-press px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 cursor-pointer ${
-                    isEditing
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60'
-                  }`}
-                  title={isEditing ? 'Done Editing' : 'Edit: Rearrange or delete requirements'}
-                >
-                  {isEditing ? (
-                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  ) : (
-                    <Pencil className="w-3.5 h-3.5 stroke-[2.2]" />
-                  )}
-                  <span>{isEditing ? 'Done' : 'Edit'}</span>
-                </button>
-
-                <div className="w-[1px] h-3.5 bg-slate-200 shrink-0" aria-hidden="true" />
-
-                {/* Close Section Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCollapseSection();
-                  }}
-                  className="apple-press px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 active:bg-slate-200/60 transition-all duration-200 flex items-center space-x-1.5 cursor-pointer"
-                  title="Close section"
-                  aria-label="Close section"
-                >
-                  <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 stroke-[2.5] text-slate-500 hover:text-slate-700" />
-                  <span>Close</span>
-                </button>
-              </div>
-            </div>
+              <ChevronUp strokeWidth={2.5} className="w-4 h-4 stroke-[2.5] text-slate-400" />
+            </button>
+          </div>
 
           {/* Inline Add Item Form */}
           {isAddingItem && (
@@ -1318,9 +1284,70 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
           )}
             </div>
           </div>
-        </div>
+        </>
       )}
+    </div>
 
-    </>
-  );
+    {/* Floating Actions when subsections are collapsed during edit mode */}
+    {!isGlobalEditMode && !isExpanded && isEditing && (
+      <div className="flex justify-center pt-2.5 pb-1 select-none animate-in fade-in duration-200">
+        <div className="flex items-center space-x-4 select-none">
+          {onAddItem && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                triggerHaptic(ImpactStyle.Light);
+                setIsExpanded(true);
+                setIsAddingItem(true);
+              }}
+              className="apple-press px-2 py-1 text-xs sm:text-[13px] font-bold text-black hover:opacity-75 active:opacity-60 transition-all flex items-center space-x-1.5 cursor-pointer"
+              title="Add requirement"
+            >
+              <Plus className="w-3.5 h-3.5 stroke-[2.5] text-black" />
+              <span>Add</span>
+            </button>
+          )}
+
+          <div className="w-[1px] h-3.5 bg-slate-300 shrink-0" aria-hidden="true" />
+
+          {/* Done Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerHaptic(ImpactStyle.Light);
+              setIsEditMode(false);
+              setIsAddingItem(false);
+            }}
+            className="apple-press px-2 py-1 text-xs sm:text-[13px] font-bold text-black hover:opacity-75 active:opacity-60 transition-all flex items-center space-x-1.5 cursor-pointer"
+            title="Done adjusting"
+          >
+            <Check className="w-3.5 h-3.5 stroke-[2.5] text-black" />
+            <span>Done</span>
+          </button>
+
+          <div className="w-[1px] h-3.5 bg-slate-300 shrink-0" aria-hidden="true" />
+
+          {/* Close Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerHaptic(ImpactStyle.Light);
+              setIsEditMode(false);
+              setIsAddingItem(false);
+            }}
+            className="apple-press px-2 py-1 text-xs sm:text-[13px] font-bold text-black hover:opacity-75 active:opacity-60 transition-all flex items-center space-x-1.5 cursor-pointer"
+            title="Close section"
+            aria-label="Close section"
+          >
+            <ChevronUp strokeWidth={2.5} className="w-3.5 h-3.5 stroke-[2.5] text-black" />
+            <span>Close</span>
+          </button>
+        </div>
+      </div>
+    )}
+  </>
+);
 };

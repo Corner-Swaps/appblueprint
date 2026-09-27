@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, ChevronRight, Check, ArrowLeft } from 'lucide-react';
+import { FileText, ChevronRight, ChevronDown, Check, ArrowLeft } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 import { ImpactStyle } from '@capacitor/haptics';
 
@@ -31,7 +31,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in select-none">
       <div 
-        className="w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden max-h-[70vh] sm:max-h-[72vh] transform transition-all duration-300"
+        className="w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden h-[680px] max-h-[90vh] transform transition-all duration-300"
         role="dialog"
         aria-modal="true"
         aria-labelledby="legal-modal-title"
@@ -50,10 +50,10 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
             </div>
 
             {/* Scrollable Terms Content */}
-            <div className="px-5 py-3.5 overflow-y-auto space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100">
+            <div className="flex-1 px-5 py-3.5 overflow-y-auto space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100">
               <div>
                 <p className="font-medium text-slate-700">
-                  Welcome to App Blueprint. By accessing or using this application, you acknowledge and agree to these terms:
+                  App Blueprint is designed from the ground up with strict safety standards. By using this app, you acknowledge and agree to these terms:
                 </p>
               </div>
 
@@ -63,7 +63,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>1. Scaffolding &amp; Educational Guidance</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  Provided strictly "AS IS" as an educational checklist and developer guide. Store approval by Apple or Google is not guaranteed.
+                  Provided strictly as an educational developer guide and blueprint. App Store approval by Apple or Google is never guaranteed.
                 </p>
               </div>
 
@@ -73,7 +73,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>2. Limitation of Liability</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  Contributors assume no liability for any claims, penalties, or losses resulting from software you create. You assume 100% sole responsibility for your apps.
+                  Contributors assume no liability for claims, penalties, or losses resulting from apps you create, deploy, or distribute.
                 </p>
               </div>
 
@@ -83,7 +83,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>3. Prohibited Usage</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  Strictly prohibited from developing unlawful, fraudulent, spyware, malicious, or sexually explicit applications.
+                  Strictly prohibited from building unlawful, fraudulent, spyware, malicious, or sexually explicit software products.
                 </p>
               </div>
 
@@ -93,45 +93,56 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>4. Store Guidelines &amp; Compliance</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  You are solely responsible for ensuring your software complies with Apple App Store Review Guidelines, Google Play Policies, and territorial laws.
+                  You are solely responsible for ensuring your software complies with Apple App Store Review Guidelines and territorial laws.
                 </p>
               </div>
 
-              {/* In-App Privacy Link Card */}
+              {/* Point 5: Privacy & Data Protection with drop-down arrow vertically centered on the right side */}
               <div className="pt-2.5">
-                <button
-                  type="button"
+                <div 
                   onClick={handleOpenPrivacy}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:bg-slate-100 transition-colors flex items-center justify-between text-left group cursor-pointer"
+                  className="group cursor-pointer select-none flex items-center justify-between gap-3"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleOpenPrivacy();
+                    }
+                  }}
                 >
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
-                      <FileText className="w-3.5 h-3.5 stroke-[2.2]" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-slate-900">Privacy Policy</div>
-                      <div className="text-[10px] text-slate-500">Zero data collection, 100% on-device storage</div>
-                    </div>
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block shrink-0" />
+                      <span>5. Privacy &amp; Data Protection</span>
+                    </h3>
+                    <p className="text-slate-600 text-xs leading-normal">
+                      Zero third-party tracking or telemetry. All roadmap progress and data remain 100% on your personal device.
+                    </p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
-                </button>
+                  
+                  {/* Arrow vertically in the middle on the right side */}
+                  <div className="shrink-0 flex items-center justify-center pl-1 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all">
+                    <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Modal Footer / Acceptance */}
-            <div className="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50/60 flex flex-col space-y-2 shrink-0">
+            {/* Modal Footer / Acceptance - positioned closer to the bottom */}
+            <div className="px-4 sm:px-5 pt-3 pb-3 sm:pb-3.5 border-t border-slate-100 bg-slate-50/60 flex flex-col space-y-2 shrink-0">
               <button
                 type="button"
                 onClick={handleAccept}
-                className="apple-press w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-semibold text-xs sm:text-sm shadow-sm flex items-center justify-center space-x-1.5 transition-all cursor-pointer"
+                className="apple-press w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
-                <Check className="w-4 h-4 stroke-[2.5]" />
+                <Check className="w-4.5 h-4.5 stroke-[2.5]" />
                 <span>Agree &amp; Continue</span>
               </button>
             </div>
           </>
         ) : (
-          /* Privacy Policy View */
+          /* Privacy Policy View: Full expanded sections */
           <>
             {/* Privacy Policy Header */}
             <div className="py-4 px-6 border-b border-slate-100 bg-white text-center shrink-0">
@@ -143,11 +154,11 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
               </p>
             </div>
 
-            {/* Scrollable Privacy Policy Content */}
-            <div className="px-5 py-3.5 overflow-y-auto space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100">
+            {/* Scrollable Privacy Policy Content with comprehensive sections */}
+            <div className="flex-1 px-5 py-3.5 overflow-y-auto space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100">
               <div>
                 <p className="font-medium text-slate-700">
-                  App Blueprint is designed with privacy-first principles. Your workflow data belongs entirely to you.
+                  App Blueprint is designed from the ground up with strict privacy-first principles. Your workflow data belongs entirely to you:
                 </p>
               </div>
 
@@ -157,49 +168,59 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>1. 100% Local On-Device Storage</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  All checklist progress, custom items, and settings are saved locally on your device in <code className="text-slate-800 bg-slate-100 px-1 py-0.5 rounded text-[10px]">localStorage</code>. No remote databases or user harvesting.
+                  All roadmap progress, custom phases, and settings are saved locally on your device. No cloud servers store data.
                 </p>
               </div>
 
               <div className="pt-2.5 space-y-1">
                 <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
-                  <span>2. No Ads or Telemetry</span>
+                  <span>2. No Tracking, Telemetry, or Ads</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  We do not embed third-party advertising trackers, sell user data, or track your activity across apps.
+                  We do not embed third-party advertising trackers, sell user data, or track your identity and behavioral activity.
                 </p>
               </div>
 
               <div className="pt-2.5 space-y-1">
                 <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block" />
-                  <span>3. External Links</span>
+                  <span>3. Apple StoreKit 2 &amp; Payment Privacy</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  Links to external tools or documentation open in third-party services subject to their respective policies.
+                  In-app purchases run securely through Apple App Store services. We never see or store your payment details.
+                </p>
+              </div>
+
+              <div className="pt-2.5 space-y-1">
+                <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-600 inline-block" />
+                  <span>4. External Documentation &amp; SDKs</span>
+                </h3>
+                <p className="text-slate-600 text-xs leading-normal">
+                  Links to developer tools open directly in your default browser and are subject to each site's privacy policy.
                 </p>
               </div>
 
               <div className="pt-2.5 space-y-1">
                 <h3 className="font-bold text-slate-900 text-xs flex items-center space-x-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-purple-600 inline-block" />
-                  <span>4. Data Control</span>
+                  <span>5. Complete User Data Control</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  You can reset or erase all local data at any time through the app settings or by clearing your browser/app data.
+                  You retain full ownership of your roadmap. You can erase, rename, or reset all stored project data anytime.
                 </p>
               </div>
             </div>
 
-            {/* Privacy Policy Return Footer */}
-            <div className="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50/60 flex flex-col space-y-2 shrink-0">
+            {/* Privacy Policy Return Footer - positioned closer to the bottom */}
+            <div className="px-4 sm:px-5 pt-3 pb-3 sm:pb-3.5 border-t border-slate-100 bg-slate-50/60 flex flex-col space-y-2 shrink-0">
               <button
                 type="button"
                 onClick={handleClosePrivacy}
-                className="apple-press w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-sm flex items-center justify-center space-x-1.5 transition-all cursor-pointer"
+                className="apple-press w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
                 <span>Back to Terms</span>
               </button>
             </div>

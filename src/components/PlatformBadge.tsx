@@ -26,12 +26,12 @@ export const PlatformBadge: React.FC<PlatformBadgeProps> = ({
   const isDark = variant === 'dark';
 
   const appleClasses = isDark
-    ? "px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-slate-950 border border-white/90 tracking-wide inline-flex items-center space-x-1 shadow-2xs"
-    : "px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-900 text-white border border-slate-900 tracking-wide inline-flex items-center space-x-1 shadow-2xs";
+    ? "px-2 py-0.5 rounded-full text-[10px] font-bold font-google bg-white text-slate-950 border border-white/90 tracking-wide inline-flex items-center space-x-1 shadow-2xs"
+    : "px-2 py-0.5 rounded-full text-[10px] font-bold font-google bg-slate-900 text-white border border-slate-900 tracking-wide inline-flex items-center space-x-1 shadow-2xs";
 
   const androidClasses = isDark
-    ? "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white border border-emerald-400 tracking-wide inline-flex items-center space-x-1 shadow-2xs"
-    : "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600 text-white border border-emerald-600 tracking-wide inline-flex items-center space-x-1 shadow-2xs";
+    ? "px-2 py-0.5 rounded-full text-[10px] font-bold font-google bg-emerald-500 text-white border border-emerald-400 tracking-wide inline-flex items-center space-x-1 shadow-2xs"
+    : "px-2 py-0.5 rounded-full text-[10px] font-bold font-google bg-emerald-600 text-white border border-emerald-600 tracking-wide inline-flex items-center space-x-1 shadow-2xs";
 
   if (platform === 'ios') {
     return (

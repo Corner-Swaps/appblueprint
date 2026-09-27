@@ -5,13 +5,13 @@ export const SETUP_STEPS_PHASE: Phase = {
   number: 0,
   title: 'Set Up & Environment',
   shortTitle: 'Set Up',
-  description: 'Complete these 11 foundational steps before diving into your project checklist. Configure your Mac, select your AI assistant, register developer accounts, install Xcode, and connect your phone.',
+  description: 'Complete these foundational steps before diving into your project checklist. Configure your Mac, select your AI assistant, register developer accounts, explore Apple design guidelines, install Xcode, and connect your phone.',
   iconName: 'Laptop',
   items: [
     {
       id: 'setup-prerequisites',
       phaseId: 'phase-setup',
-      title: 'Mac Prerequisites & Node.js 20+ LTS',
+      title: 'Mac Prerequisites',
       shortDescription: 'Install Node.js (v20+ LTS), npm, and Git on your Mac so your computer can build mobile applications.',
       category: 'functionality',
       platform: 'both',
@@ -19,7 +19,7 @@ export const SETUP_STEPS_PHASE: Phase = {
       whyItMatters: 'Mobile development tools like Vite, React, TypeScript, and Capacitor run on top of Node.js. Installing the long-term stable (LTS) release of Node.js guarantees that all packages, build scripts, and native compilers run smoothly without mysterious version incompatibilities.',
       whatHappensNext: 'Your computer has the foundational runtime required to install mobile dependencies, run local test servers, and compile your app for iOS and Android.',
       directLink: {
-        label: 'Download Node.js 20 LTS (Official Site)',
+        label: 'Download Node.js',
         url: 'https://nodejs.org/'
       },
       videoUrl: {
@@ -56,7 +56,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-model',
       phaseId: 'phase-setup',
-      title: 'Choose AI Coding Assistant & Models',
+      title: 'AI Assistant',
       shortDescription: 'Select a frontier AI coding assistant (Google Antigravity, Cursor, Windsurf, or Claude Code) and connect it to your project.',
       category: 'functionality',
       platform: 'both',
@@ -100,7 +100,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-github-repo',
       phaseId: 'phase-setup',
-      title: 'Initialize Git & Private Cloud Backup',
+      title: 'Git Backup',
       shortDescription: 'Safely back up your app to a private GitHub repository so you never lose your progress or code.',
       category: 'functionality',
       platform: 'both',
@@ -144,7 +144,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-xcode-tools',
       phaseId: 'phase-setup',
-      title: 'Install Xcode & Apple Developer Tools',
+      title: 'Xcode Tools',
       shortDescription: 'Install Apple’s official development tool from the Mac App Store so your computer can build for iPhone and iPad.',
       category: 'functionality',
       platform: 'ios',
@@ -152,7 +152,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
       whyItMatters: 'To install an app on an iPhone or submit it to the App Store, Apple requires a free Mac application called Xcode. You do not need to write code inside Xcode yourself—your AI assistant handles that—Xcode simply needs to be on your Mac to build the native binary.',
       whatHappensNext: 'Your Mac has Apple’s official iOS SDK and simulator engines ready to compile your app and deploy it to your physical iPhone.',
       directLink: {
-        label: 'Download Xcode from the Mac App Store',
+        label: 'Download Xcode',
         url: 'https://apps.apple.com/us/app/xcode/id497799835'
       },
       videoUrl: {
@@ -188,7 +188,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-android-studio',
       phaseId: 'phase-setup',
-      title: 'Install Android Studio & Android SDK',
+      title: 'Android Studio',
       shortDescription: 'Install Google’s official development environment and SDK tools if you plan to launch on Google Play.',
       category: 'functionality',
       platform: 'android',
@@ -196,7 +196,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
       whyItMatters: 'Android Studio provides the Android SDK, Google Play emulator images, and the Gradle build system required to compile Android App Bundles (.aab) for Google Play. If you are building for Android, this tool is required.',
       whatHappensNext: 'Your computer is equipped with the Android SDK (API 34/35) and JDK 17/21 to build, test, and release Android apps.',
       directLink: {
-        label: 'Download Android Studio (Official Site)',
+        label: 'Download Android Studio',
         url: 'https://developer.android.com/studio'
       },
       videoUrl: {
@@ -232,7 +232,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-developer-accounts',
       phaseId: 'phase-setup',
-      title: 'Enroll Apple & Google Developer Accounts',
+      title: 'Developer Accounts',
       shortDescription: 'Register official accounts with Apple ($99/yr) and Google ($25 one-time) so you have legal authorization to publish.',
       category: 'store',
       platform: 'both',
@@ -278,7 +278,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-connect-phone',
       phaseId: 'phase-setup',
-      title: 'Connect Physical Phone & Developer Mode',
+      title: 'Phone Testing',
       shortDescription: 'Plug your real iPhone or Android phone into your computer to test touch gestures, animations, and tactile feel.',
       category: 'functionality',
       platform: 'both',
@@ -325,9 +325,55 @@ EXECUTION PROTOCOL FOR THE AGENT:
       ]
     },
     {
+      id: 'setup-apple-design',
+      phaseId: 'phase-setup',
+      title: 'Apple Design',
+      shortDescription: 'Explore Apple\'s official design portal, Human Interface Guidelines (HIG), and UI resources before building screens.',
+      category: 'design',
+      platform: 'both',
+      priority: 'blocker',
+      whyItMatters: 'Designing an app that feels authentically native to iPhone and iPad requires understanding Apple\'s core design principles: fluid spring motion, 44pt touch targets, Dynamic Type hierarchy, safe area insets, and SF Symbols. Following developer.apple.com/design ensures your app feels effortless and gets approved smoothly by App Review.',
+      whatHappensNext: 'Your app adheres to Apple\'s proven design language, ensuring seamless thumb reachability, fluid navigation, and zero rejection under Guideline 4.0 (Design).',
+      directLink: {
+        label: 'Apple Developer Design Hub',
+        url: 'https://developer.apple.com/design/'
+      },
+      videoUrl: {
+        title: 'Apple Design & Fluid Interfaces',
+        url: 'https://developer.apple.com/videos/design/'
+      },
+      implementationSteps: [
+        'Visit Apple\'s official design portal at developer.apple.com/design to explore Human Interface Guidelines (HIG).',
+        'Study Apple\'s core design principles: 44x44pt minimum touch targets, 8pt layout grid, and fluid spring animations.',
+        'Download official Apple Design Resources (Figma UI kits, SF Symbols 6, and Apple system fonts).',
+        'Inspect your screen layouts to ensure safe area insets (Dynamic Island, notch, and home bar) are fully respected.',
+        'Tell your AI assistant: "Audit our application screens against Apple Developer Design guidelines to ensure native feel and touch ergonomics."'
+      ],
+      agentPrompt: `You are the autonomous Apple design systems architect and mobile UI lead.
+
+TASK & OBJECTIVE:
+Inspect and audit our application design against Apple's official design portal specifications at developer.apple.com/design and Apple Human Interface Guidelines (HIG).
+
+EXECUTION PROTOCOL FOR THE AGENT:
+1. DESIGN FOUNDATIONS: Review all views for authentic iOS design alignment: 44x44pt minimum interactive targets, standard Apple 8pt layout grid, and high-contrast typography hierarchy.
+2. SAFE AREAS & INSETS: Enforce strict viewport safe area handling with 'env(safe-area-inset-top)' and 'env(safe-area-inset-bottom)' on pinned navigation bars and bottom docks.
+3. FLUID INTERACTION: Verify that button press states respond immediately on touch-down ('active:scale-95') with natural spring timing and zero artificial delays.
+4. STORE COMPLIANCE: Apple Guideline 4.0 requires apps to be well-designed, intuitive, and native in feel. Ensure zero clipped headers, zero unhandled overflow, and zero tiny unclickable controls.
+5. ZERO REGRESSIONS: Ensure all screens render crisply across both compact iPhones (iPhone SE) and large Pro Max displays without layout shifts.`,
+      commonRejectionTraps: [
+        'Submitting an app with touch targets smaller than 44x44 points, causing poor user experience and Guideline 4.0 rejection.',
+        'Content clipping under the notch, Dynamic Island, or home indicator bar due to missing safe area insets.',
+        'Building a web wrapper that looks like an unstyled desktop site rather than a polished, native iOS application.'
+      ],
+      verificationQuestions: [
+        'Have you reviewed the Apple Design guidelines at developer.apple.com/design/?',
+        'Are all interactive buttons at least 44x44 points and comfortable to tap with a real thumb?'
+      ]
+    },
+    {
       id: 'setup-app-assets',
       phaseId: 'phase-setup',
-      title: 'App Icon & Splash Screen Asset Specs',
+      title: 'App Assets',
       shortDescription: 'Generate pixel-perfect app icons (1024x1024 without alpha) and native splash screens that follow store specs.',
       category: 'design',
       platform: 'both',
@@ -376,7 +422,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-typescript-swift',
       phaseId: 'phase-setup',
-      title: 'TypeScript, React & The Native Bridge',
+      title: 'Native Bridge',
       shortDescription: 'Understand how your app connects modern web code (React & Tailwind) to native phone features like haptics.',
       category: 'design',
       platform: 'both',
@@ -420,7 +466,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-agent-commands',
       phaseId: 'phase-setup',
-      title: 'Master AI Agent Build Commands',
+      title: 'Build Commands',
       shortDescription: 'The plain-language prompt cheat sheet you can give your AI assistant to build, test, and release your app automatically.',
       category: 'functionality',
       platform: 'both',
@@ -479,7 +525,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
     {
       id: 'setup-clear-caches',
       phaseId: 'phase-setup',
-      title: 'Clear Build Caches & Troubleshoot',
+      title: 'Clear Caches',
       shortDescription: 'Free up disk space and fix strange build hiccups by having your AI clear temporary compiler caches.',
       category: 'functionality',
       platform: 'both',

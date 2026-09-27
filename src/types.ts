@@ -9,6 +9,7 @@ export interface Project {
   customPhases?: Phase[];
   customItems?: Record<string, ChecklistItem[]>;
   deletedPhaseIds?: string[];
+  isNameLocked?: boolean;
 }
 
 export type Platform = 'ios' | 'android' | 'both';

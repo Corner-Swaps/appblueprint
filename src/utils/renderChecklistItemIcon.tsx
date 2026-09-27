@@ -104,31 +104,56 @@ import {
   Bookmark,
 } from 'lucide-react';
 
+import {
+  AppleLogo,
+  GoogleLogo,
+  GooglePlayLogo,
+  GitHubLogo,
+  AndroidLogo,
+  TestFlightLogo,
+  FastlaneLogo,
+  RevenueCatLogo,
+  CapacitorLogo,
+  XcodeLogo
+} from './brandIcons';
+
 /**
  * 100% Unique, dedicated icon assignments for every checklist item in the application.
- * Guaranteed: No duplicate icons within any phase, and NEVER a generic checkmark!
+ * Uses authentic company brand logos for referenced tools and services.
  */
 export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode => {
   const id = item.id.toLowerCase();
 
   // 1. Setup & Environment Phase (phase-setup)
+  if (id === 'setup-prerequisites') {
+    return <Terminal className="w-5 h-5 text-slate-800 stroke-[2.2]" />;
+  }
   if (id === 'setup-model') {
     return <Brain className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
   }
   if (id === 'setup-developer-accounts') {
-    return <KeyRound className="w-5 h-5 text-amber-600 stroke-[2.2]" />;
+    return <AppleLogo className="w-5 h-5 text-black" />;
   }
-  if (id === 'setup-xcode-android-studio') {
-    return <Laptop className="w-5 h-5 text-indigo-600 stroke-[2.2]" />;
+  if (id === 'setup-xcode-tools' || id === 'setup-xcode-android-studio') {
+    return <XcodeLogo className="w-5 h-5" />;
+  }
+  if (id === 'setup-android-studio') {
+    return <AndroidLogo className="w-5 h-5 text-[#3DDC84]" />;
   }
   if (id === 'setup-github-repo') {
-    return <GitBranch className="w-5 h-5 text-orange-600 stroke-[2.2]" />;
+    return <GitHubLogo className="w-5 h-5 text-[#24292F]" />;
   }
   if (id === 'setup-connect-phone') {
     return <Smartphone className="w-5 h-5 text-sky-600 stroke-[2.2]" />;
   }
+  if (id === 'setup-apple-design' || id === 'p2-apple-design') {
+    return <AppleLogo className="w-5 h-5 text-black" />;
+  }
+  if (id === 'setup-app-assets') {
+    return <Palette className="w-5 h-5 text-pink-600 stroke-[2.2]" />;
+  }
   if (id === 'setup-typescript-swift') {
-    return <Layers className="w-5 h-5 text-teal-600 stroke-[2.2]" />;
+    return <CapacitorLogo className="w-5 h-5 text-[#53B9EA]" />;
   }
   if (id === 'setup-agent-commands') {
     return <Terminal className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
@@ -148,7 +173,7 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
     return <Boxes className="w-5 h-5 text-indigo-600 stroke-[2.2]" />;
   }
   if (id === 'p1-developer-accounts') {
-    return <Key className="w-5 h-5 text-blue-600 stroke-[2.2]" />;
+    return <AppleLogo className="w-5 h-5 text-black" />;
   }
   if (id === 'p1-monetization-model') {
     return <Coins className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
@@ -237,13 +262,13 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
     return <Radio className="w-5 h-5 text-teal-600 stroke-[2.2]" />;
   }
   if (id === 'p3-sign-in-apple') {
-    return <ShieldCheck className="w-5 h-5 text-slate-800 stroke-[2.2]" />;
+    return <AppleLogo className="w-5 h-5 text-black" />;
   }
   if (id === 'p3-account-deletion') {
     return <UserX className="w-5 h-5 text-red-600 stroke-[2.2]" />;
   }
-  if (id === 'p3-in-app-purchases') {
-    return <DollarSign className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
+  if (id === 'p3-in-app-purchases' || id.includes('revenuecat')) {
+    return <RevenueCatLogo className="w-5 h-5 text-[#E75252]" />;
   }
   if (id === 'p3-push-notifications') {
     return <Bell className="w-5 h-5 text-indigo-600 stroke-[2.2]" />;
@@ -310,7 +335,7 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
     return <BookOpen className="w-5 h-5 text-teal-600 stroke-[2.2]" />;
   }
   if (id === 'p5-app-tracking-transparency') {
-    return <Crosshair className="w-5 h-5 text-orange-600 stroke-[2.2]" />;
+    return <AppleLogo className="w-5 h-5 text-black" />;
   }
   if (id === 'p5-intellectual-property') {
     return <Award className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
@@ -322,7 +347,7 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
     return <AlertTriangle className="w-5 h-5 text-yellow-600 stroke-[2.2]" />;
   }
   if (id === 'p5-github-pages-legal') {
-    return <FileCode className="w-5 h-5 text-slate-700 stroke-[2.2]" />;
+    return <GitHubLogo className="w-5 h-5 text-[#24292F]" />;
   }
   if (id === 'p5-self-host-fonts-gdpr') {
     return <Baseline className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
@@ -336,7 +361,7 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
     return <Gauge className="w-5 h-5 text-rose-600 stroke-[2.2]" />;
   }
   if (id === 'p6-android-vitals') {
-    return <BarChart2 className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
+    return <AndroidLogo className="w-5 h-5 text-[#3DDC84]" />;
   }
   if (id === 'p6-cold-launch') {
     return <Timer className="w-5 h-5 text-amber-600 stroke-[2.2]" />;
@@ -373,33 +398,33 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
 
   // 11. Phase 8: Signing, Beta & CI/CD
   if (id === 'p8-ios-signing') {
-    return <ShieldCheck className="w-5 h-5 text-blue-600 stroke-[2.2]" />;
+    return <AppleLogo className="w-5 h-5 text-black" />;
   }
   if (id === 'p8-android-keystore') {
-    return <Key className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
+    return <AndroidLogo className="w-5 h-5 text-[#3DDC84]" />;
   }
   if (id === 'p8-google-20-testers') {
-    return <Users className="w-5 h-5 text-amber-600 stroke-[2.2]" />;
+    return <GooglePlayLogo className="w-5 h-5" />;
   }
   if (id === 'p8-testflight-beta') {
-    return <Send className="w-5 h-5 text-sky-600 stroke-[2.2]" />;
+    return <TestFlightLogo className="w-5 h-5 text-[#007AFF]" />;
   }
   if (id === 'p8-fastlane-cicd') {
-    return <Rocket className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
+    return <FastlaneLogo className="w-5 h-5 text-[#EA3546]" />;
   }
   if (id === 'p8-signing-profiles-certificates') {
     return <Award className="w-5 h-5 text-indigo-600 stroke-[2.2]" />;
   }
   if (id === 'p8-testflight-external-groups') {
-    return <Share2 className="w-5 h-5 text-teal-600 stroke-[2.2]" />;
+    return <TestFlightLogo className="w-5 h-5 text-[#007AFF]" />;
   }
 
   // 12. Phase 9: Final Review & Going Live
   if (id === 'p9-apple-rejection-audit') {
-    return <FileSearch className="w-5 h-5 text-rose-600 stroke-[2.2]" />;
+    return <AppleLogo className="w-5 h-5 text-black" />;
   }
   if (id === 'p9-google-play-audit') {
-    return <CheckCheck className="w-5 h-5 text-emerald-600 stroke-[2.2]" />;
+    return <GooglePlayLogo className="w-5 h-5" />;
   }
   if (id === 'p9-submission-release-type') {
     return <Play className="w-5 h-5 text-blue-600 stroke-[2.2]" />;

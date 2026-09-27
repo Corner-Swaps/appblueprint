@@ -11,7 +11,17 @@ import { LegalConsentModal } from './components/LegalConsentModal';
 import { NativeReviewPromptModal } from './components/NativeReviewPromptModal';
 import { PaywallModal } from './components/PaywallModal';
 import { requestNativeStoreReview } from './utils/nativeReview';
-import { isProUnlocked, canCreateNewProject, markFreeQuotaClaimed, recordProjectCreated } from './utils/paywall';
+import { 
+  isProUnlocked, 
+  canCreateNewProject, 
+  markFreeQuotaClaimed, 
+  recordProjectCreated,
+  isTrialActive,
+  isProjectUnlocked,
+  isUnlimitedUnlocked,
+  getTrialRemainingMs
+} from './utils/paywall';
+import { syncActiveEntitlements } from './utils/nativeStoreKit';
 import { Capacitor } from '@capacitor/core';
 import { useFluidDragReorder } from './hooks/useFluidDragReorder';
 import { renderPhaseIcon } from './utils/renderPhaseIcon';
@@ -29,7 +39,8 @@ import {
   ChevronDown,
   Check,
   Plus,
-  X
+  X,
+  Lock
 } from 'lucide-react';
 import { Website } from './components/Website/Website';
 import { AppLauncherBar } from './components/Website/AppLauncherBar';
@@ -82,9 +93,10 @@ export const App: React.FC = () => {
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map((p: Project) => ({
             ...p,
-            phaseOrder: p.phaseOrder,
+            customPhases: [],
+            phaseOrder: p.phaseOrder ? p.phaseOrder.filter(id => !id.startsWith('custom-phase-') && !id.startsWith('custom-')) : undefined,
             deletedPhaseIds: (p.deletedPhaseIds || []).filter(
-              id => id !== SETUP_STEPS_PHASE.id && id !== 'phase-setup' && id !== 'phase-0' && id !== 'setup'
+              id => id !== SETUP_STEPS_PHASE.id && id !== 'phase-setup' && id !== 'phase-0' && id !== 'setup' && !id.startsWith('custom-phase-') && !id.startsWith('custom-')
             ),
             completedItemIds: (p.completedItemIds || []).map(id => id === 'p4-keychain' ? 'p4-keychain-keystore' : id)
           }));
@@ -114,28 +126,27 @@ export const App: React.FC = () => {
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false);
   const [collapseSignal, setCollapseSignal] = useState(0);
   const [resourcesCollapseSignal, setResourcesCollapseSignal] = useState(0);
-  const [isAddingCustomPhase, setIsAddingCustomPhase] = useState(false);
-  const [customPhaseTitle, setCustomPhaseTitle] = useState('');
-  const [customPhaseDesc, setCustomPhaseDesc] = useState('');
 
   // Pro Creator Pass & Paywall
   const [isPro, setIsPro] = useState<boolean>(() => isProUnlocked());
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [paywallTargetProjectId, setPaywallTargetProjectId] = useState<string | undefined>(undefined);
 
-  // Fresh brand new user reset: ensure Pro / Unlimited pass is revoked and user has 1 project
+  // Fresh brand new user reset: resets state exactly as if downloaded brand new from App Store
   useEffect(() => {
-    const FRESH_USER_KEY = 'appblueprint_fresh_brand_new_user_v7';
+    const FRESH_USER_KEY = 'appblueprint_fresh_brand_new_user_v29';
     if (!localStorage.getItem(FRESH_USER_KEY)) {
-      localStorage.removeItem('appblueprint_unlimited_unlocked_v2');
-      localStorage.removeItem('appblueprint_pro_unlocked_v1');
-      localStorage.removeItem('appblueprint_purchased_slots_v2');
-      localStorage.removeItem('appblueprint_creator_profile_v1');
+      // Clear all existing storage for a pristine first-launch user experience
+      localStorage.clear();
+
+      // Start pristine 7-day trial from now
+      localStorage.setItem('appblueprint_trial_start_date_v1', Date.now().toString());
       
       // Set to 1 creation used (the 1 free project)
       localStorage.setItem('appblueprint_creations_ever_v2', '1');
       localStorage.setItem('appblueprint_free_project_claimed_v1', 'true');
       
-      // Reset projects list to 1 default project
+      // Reset projects list to 1 default project that can be named once
       const initialProjects: Project[] = [
         {
           id: 'proj-1',
@@ -143,6 +154,7 @@ export const App: React.FC = () => {
           color: '#3B82F6',
           createdAt: new Date().toISOString(),
           completedItemIds: ['p1-problem-solution', 'p1-scope-pruning', 'p4-keychain-keystore'],
+          isNameLocked: false,
         }
       ];
       localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(initialProjects));
@@ -151,16 +163,44 @@ export const App: React.FC = () => {
 
       localStorage.setItem(FRESH_USER_KEY, 'true');
       setIsPro(false);
+      setShowLegalModal(Capacitor.isNativePlatform());
       window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed', { detail: { isPro: false } }));
     }
+
+    // Check App Store current entitlements on launch
+    syncActiveEntitlements();
   }, []);
+
+  // Monitor trial expiration in real time across the entire application
+  useEffect(() => {
+    let wasActive = isTrialActive();
+    const interval = setInterval(() => {
+      const active = isTrialActive();
+      if (wasActive && !active && !isUnlimitedUnlocked()) {
+        wasActive = false;
+        triggerHaptic(ImpactStyle.Heavy);
+        setPaywallTargetProjectId(activeProjectId);
+        setIsPaywallOpen(true);
+        window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed'));
+      }
+      wasActive = active;
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [activeProjectId]);
 
   useEffect(() => {
     const handleProChange = (e: any) => {
       setIsPro(e.detail?.isPro ?? isProUnlocked());
     };
+    const handleOpenPaywall = () => {
+      setIsPaywallOpen(true);
+    };
     window.addEventListener('appblueprint-pro-status-changed', handleProChange);
-    return () => window.removeEventListener('appblueprint-pro-status-changed', handleProChange);
+    window.addEventListener('open-paywall-modal', handleOpenPaywall);
+    return () => {
+      window.removeEventListener('appblueprint-pro-status-changed', handleProChange);
+      window.removeEventListener('open-paywall-modal', handleOpenPaywall);
+    };
   }, []);
 
   // View Mode: 'website' by default on web, 'app' if native platform or URL has #app or ?mode=app
@@ -196,8 +236,8 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Splash Loading Screen: Only shown on initial cold start on native mobile platforms
-  const [showSplash, setShowSplash] = useState(() => Capacitor.isNativePlatform());
+  // Splash Loading Screen: Handled directly by native SwiftUI BlueprintSplashIntroView on iOS
+  const [showSplash, setShowSplash] = useState(false);
 
   // Set body background to cream once splash is completed (or on web)
   useEffect(() => {
@@ -363,29 +403,62 @@ export const App: React.FC = () => {
     return getProjectColor(activeProject, idx >= 0 ? idx : 0);
   }, [projects, activeProject]);
 
+  // Real-time trial and lock status for current project & academy resources
+  const [trialActive, setTrialActive] = useState<boolean>(() => isTrialActive());
+  const [unlimitedUnlocked, setUnlimitedUnlocked] = useState<boolean>(() => isUnlimitedUnlocked());
+
+  useEffect(() => {
+    const checkStatus = () => {
+      setTrialActive(isTrialActive());
+      setUnlimitedUnlocked(isUnlimitedUnlocked());
+    };
+    checkStatus();
+    const interval = setInterval(checkStatus, 1000);
+    const handleProChange = () => checkStatus();
+    window.addEventListener('appblueprint-pro-status-changed', handleProChange);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('appblueprint-pro-status-changed', handleProChange);
+    };
+  }, []);
+
+  // Standard production monetization rules:
+  // - During 7-day free trial or when Unlimited is purchased, everything is accessible
+  // - When trial expires, individual projects can be kept with a $4.99 purchase
+  const isCurrentProjectLocked = !isProjectUnlocked(activeProject.id);
+  const isAcademyLocked = !trialActive && !unlimitedUnlocked;
+  const isProjectsLocked = false; // Allow viewing projects list so users can select/unlock specific projects
+
+  const isCurrentTabLocked = 
+    (displayedTab === 'checklist' && isCurrentProjectLocked) ||
+    (displayedTab === 'resources' && isAcademyLocked);
+
   // Deleted Phases for the Active Project (shown in deleted pill at the bottom with restore capability)
   const deletedPhases = useMemo<Phase[]>(() => {
     const deletedIds = activeProject.deletedPhaseIds || [];
     if (deletedIds.length === 0) return [];
-    const allAvailablePhases: Phase[] = [
-      ...PHASES_DATA,
-      ...(activeProject.customPhases || [])
-    ];
-    return allAvailablePhases.filter(p => deletedIds.includes(p.id));
-  }, [activeProject.deletedPhaseIds, activeProject.customPhases]);
+    return PHASES_DATA.filter(p => deletedIds.includes(p.id));
+  }, [activeProject.deletedPhaseIds]);
 
-  // Dynamic Phases for the Active Project (incorporating customPhases, customItems, phaseOrder, and deletedPhaseIds)
+  // Dynamic Phases for the Active Project (incorporating customItems, phaseOrder, and deletedPhaseIds)
   const currentProjectPhases = useMemo<Phase[]>(() => {
-    const allAvailablePhases: Phase[] = [
-      ...PHASES_DATA,
-      ...(activeProject.customPhases || []).map(p => ({ ...p, iconName: 'Info' }))
-    ].filter(p => !(activeProject.deletedPhaseIds || []).includes(p.id));
+    const allAvailablePhases: Phase[] = PHASES_DATA.filter(
+      p => !(activeProject.deletedPhaseIds || []).includes(p.id)
+    );
 
     const phasesWithCustomItems = allAvailablePhases.map(phase => {
       const customItemsForPhase = activeProject.customItems?.[phase.id];
+      if (customItemsForPhase && customItemsForPhase.length > 0) {
+        const existingIds = new Set(customItemsForPhase.map(i => i.id));
+        const missingDefaults = phase.items.filter(i => !existingIds.has(i.id));
+        return {
+          ...phase,
+          items: missingDefaults.length > 0 ? [...customItemsForPhase, ...missingDefaults] : customItemsForPhase
+        };
+      }
       return {
         ...phase,
-        items: customItemsForPhase ? customItemsForPhase : phase.items
+        items: phase.items
       };
     });
 
@@ -406,15 +479,24 @@ export const App: React.FC = () => {
     return phasesWithCustomItems;
   }, [activeProject]);
 
+  // Harmonized Set Up Steps (merging newly added defaults with any user-customized items)
+  const setupPhaseItems = useMemo(() => {
+    const customSetupItems = activeProject.customItems?.[SETUP_STEPS_PHASE.id];
+    if (customSetupItems && customSetupItems.length > 0) {
+      const existingIds = new Set(customSetupItems.map(i => i.id));
+      const missingDefaults = SETUP_STEPS_PHASE.items.filter(i => !existingIds.has(i.id));
+      return missingDefaults.length > 0 ? [...customSetupItems, ...missingDefaults] : customSetupItems;
+    }
+    return SETUP_STEPS_PHASE.items;
+  }, [activeProject.customItems]);
+
   // Flattened Checklist Items across Set Up Steps and all current project phases
   const allItems = useMemo(() => {
-    const customSetupItems = activeProject.customItems?.[SETUP_STEPS_PHASE.id];
-    const setupItems = (customSetupItems && customSetupItems.length > 0) ? customSetupItems : SETUP_STEPS_PHASE.items;
     return [
-      ...setupItems,
+      ...setupPhaseItems,
       ...currentProjectPhases.flatMap(p => p.items)
     ];
-  }, [activeProject.customItems, currentProjectPhases]);
+  }, [setupPhaseItems, currentProjectPhases]);
 
   const validItemIdsSet = useMemo(() => new Set(allItems.map(i => i.id)), [allItems]);
 
@@ -455,7 +537,7 @@ export const App: React.FC = () => {
 
   // Prevent background scroll when full modal pages are open
   useEffect(() => {
-    if (isAllPhasesPageOpen || isPaywallOpen) {
+    if (isAllPhasesPageOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -463,7 +545,7 @@ export const App: React.FC = () => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isAllPhasesPageOpen, isPaywallOpen]);
+  }, [isAllPhasesPageOpen]);
 
   // Toggle Item Completion ("The Little Click") for active project
   const handleToggleComplete = (itemId: string) => {
@@ -483,6 +565,12 @@ export const App: React.FC = () => {
 
   // Add Item to a Phase
   const handleAddItem = (phaseId: string, title: string, description: string) => {
+    if (!isTrialActive() && !isUnlimitedUnlocked() && !isProjectUnlocked(activeProject.id)) {
+      triggerHaptic(ImpactStyle.Light);
+      setPaywallTargetProjectId(activeProject.id);
+      setIsPaywallOpen(true);
+      return;
+    }
     const newItem: ChecklistItem = {
       id: `item-${Date.now()}`,
       phaseId,
@@ -576,64 +664,6 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         return proj;
       })
     );
-  };
-
-  // Add New Custom Phase
-  const handleAddPhase = (title: string, shortTitle: string, description: string) => {
-    const newPhaseId = `custom-phase-${Date.now()}`;
-    const newPhase: Phase = {
-      id: newPhaseId,
-      number: currentProjectPhases.length + 1,
-      title,
-      shortTitle: shortTitle || title,
-      description: description || 'Custom checklist phase section',
-      iconName: 'Info',
-      items: []
-    };
-
-    setProjects(prevProjects =>
-      prevProjects.map(proj => {
-        if (proj.id === activeProject.id) {
-          const customPhases = [...(proj.customPhases || []), newPhase];
-          const currentOrder = proj.phaseOrder || currentProjectPhases.map(p => p.id);
-          return {
-            ...proj,
-            customPhases,
-            phaseOrder: [...currentOrder, newPhaseId]
-          };
-        }
-        return proj;
-      })
-    );
-
-    // Blur active input to trigger keyboard dismissal on mobile
-    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-
-    const centerTarget = () => {
-      const el = document.getElementById(newPhaseId);
-      if (!el) return false;
-      const rect = el.getBoundingClientRect();
-      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-      const docTop = currentScroll + rect.top;
-      const viewportHeight = window.innerHeight;
-      const pillHeight = rect.height || 100;
-      const targetY = Math.max(0, docTop - (viewportHeight - pillHeight) / 2);
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
-      return true;
-    };
-
-    // Staged scroll ensures that even after iOS virtual keyboard collapse finishes (~350ms),
-    // the newly created section is locked directly in the middle of the screen
-    setTimeout(() => {
-      centerTarget();
-      window.dispatchEvent(new CustomEvent('pulse-phase', { detail: newPhaseId }));
-    }, 120);
-
-    setTimeout(() => {
-      centerTarget();
-    }, 420);
   };
 
   // Reorder Phases
@@ -888,21 +918,6 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         <SplashScreen onComplete={() => setShowSplash(false)} />
       )}
 
-      {/* Top Fade Vignette Effect (Only for Native Mobile Status Bar) */}
-      {Capacitor.isNativePlatform() && (
-        <div 
-          className="fixed top-0 left-0 right-0 pointer-events-none z-30 bg-gradient-to-b from-[#FAF8F6] via-[#FAF8F6]/80 to-transparent"
-          style={{ height: 'max(calc(env(safe-area-inset-top, 0px) + 8px), 48px)' }}
-          aria-hidden="true" 
-        />
-      )}
-
-      {/* Bottom Fade Vignette Effect */}
-      <div 
-        className="fixed bottom-0 left-0 right-0 h-28 pointer-events-none z-30 bg-gradient-to-t from-[#FAF8F6] via-[#FAF8F6]/90 to-transparent" 
-        aria-hidden="true" 
-      />
-
       {/* 1. Main Content Container (Starts right below iOS safe area with safe bottom clearance for the bottom menu) */}
       <main 
         onTouchStart={handlePageTouchStart}
@@ -911,7 +926,18 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       >
         <div className="relative w-full">
           {/* 1. Checklist Tab */}
-          <div className={displayedTab === 'checklist' ? 'space-y-3.5 pb-4' : 'hidden'}>
+          <div className={displayedTab === 'checklist' ? 'block relative' : 'hidden'}>
+            <div 
+              style={isCurrentProjectLocked ? {
+                filter: 'blur(3.5px)',
+                pointerEvents: 'none',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                opacity: 0.94,
+                transition: 'filter 0.3s ease, opacity 0.3s ease',
+              } : undefined}
+              className="space-y-3.5 pb-4"
+            >
               {/* Project Header at the Top: Centered, tapping opens Projects Page */}
               <div className="pt-2.5 pb-3 flex items-center justify-center w-full">
                 <button
@@ -938,11 +964,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                   phase={SETUP_STEPS_PHASE}
                   phaseIndex={0}
                   totalPhases={visiblePhases.length + 1}
-                  items={getFilteredItemsForPhase(
-                    (activeProject.customItems?.[SETUP_STEPS_PHASE.id] && activeProject.customItems[SETUP_STEPS_PHASE.id].length > 0)
-                      ? activeProject.customItems[SETUP_STEPS_PHASE.id]
-                      : SETUP_STEPS_PHASE.items
-                  )}
+                  items={getFilteredItemsForPhase(setupPhaseItems)}
                   completedItemIds={completedItemIds}
                   onToggleComplete={handleToggleComplete}
                   defaultExpanded={false}
@@ -987,96 +1009,9 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                 </div>
               ))}
 
-              {/* Add Custom Section Action Button & Inline Form */}
-              <div className="pt-2 pb-1 flex flex-col items-center">
-                {isAddingCustomPhase ? (
-                  <form 
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (!customPhaseTitle.trim()) return;
-                      handleAddPhase(customPhaseTitle.trim(), customPhaseTitle.trim(), customPhaseDesc.trim());
-                      setCustomPhaseTitle('');
-                      setCustomPhaseDesc('');
-                      setIsAddingCustomPhase(false);
-                    }}
-                    className="w-full p-4 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 animate-in fade-in duration-200"
-                  >
-                    <div className="flex items-center justify-between pb-1 border-b border-slate-100">
-                      <span className="text-xs font-bold text-slate-800 font-google">New Custom Section</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCustomPhaseTitle('');
-                          setCustomPhaseDesc('');
-                          setIsAddingCustomPhase(false);
-                        }}
-                        className="apple-press p-1 rounded-full text-slate-400 hover:text-slate-600"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                        Section Title
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. In-App Purchases, Apple Watch, Notifications"
-                        value={customPhaseTitle}
-                        onChange={(e) => setCustomPhaseTitle(e.target.value)}
-                        className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 bg-white"
-                        autoFocus
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                        Description (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Brief summary of requirements in this section"
-                        value={customPhaseDesc}
-                        onChange={(e) => setCustomPhaseDesc(e.target.value)}
-                        className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 bg-white"
-                      />
-                    </div>
-                    <div className="flex items-center justify-end space-x-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCustomPhaseTitle('');
-                          setCustomPhaseDesc('');
-                          setIsAddingCustomPhase(false);
-                        }}
-                        className="apple-press px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={!customPhaseTitle.trim()}
-                        className="apple-press px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white disabled:opacity-50 shadow-xs"
-                      >
-                        Create Section
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingCustomPhase(true)}
-                    className="apple-press inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 text-slate-700 hover:text-slate-900 font-bold text-xs cursor-pointer transition-all"
-                    title="Add a custom section"
-                  >
-                    <Plus className="w-3.5 h-3.5 stroke-[2.5] text-slate-500" />
-                    <span>Add Section</span>
-                  </button>
-                )}
-              </div>
 
-              {/* Empty State when no items match filter */}
-              {visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
+              {/* Empty State when no items match filter across all phases including Setup */}
+              {getFilteredItemsForPhase(setupPhaseItems).length === 0 && visiblePhases.every(phase => getFilteredItemsForPhase(phase.items).length === 0) && (
                 <div className="p-8 rounded-3xl bg-white border border-slate-200/90 text-center space-y-3 shadow-xs">
                   <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-6 h-6 stroke-[2.2]" />
@@ -1115,11 +1050,11 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                       {/* Title & Badge */}
                       <div className="space-y-1 select-none flex-1">
                         <div className="flex items-center space-x-2 select-none mt-0.5">
-                          <span className="h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200/80 shadow-xs select-none inline-flex items-center justify-center pt-[1.5px] leading-none">
+                          <span className="h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider font-google bg-rose-100 text-rose-700 border border-rose-200/80 shadow-xs select-none inline-flex items-center justify-center pt-[1.5px] leading-none">
                             Deleted ({deletedPhases.length})
                           </span>
                           <span className="text-xs text-slate-400 select-none">•</span>
-                          <span className="text-xs font-bold text-slate-600 select-none">
+                          <span className="text-xs font-bold text-slate-600 select-none font-google tracking-tight">
                             Tap Restore to Re-add
                           </span>
                         </div>
@@ -1200,81 +1135,115 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
               aria-hidden="true" 
             />
           </div>
+        </div>
 
           {/* 2. Projects Tab */}
-          <div className={displayedTab === 'projects' ? 'block' : 'hidden'}>
-            <ProjectsPage
-              projects={projects}
-              activeProjectId={activeProject.id}
-              totalRequirementsCount={allItems.length}
-              onSelectProject={(projId) => {
-                setIsGlobalEditMode(false);
-                setActiveProjectId(projId);
-                setSelectedPhaseId('all');
-                setFilterMode('all');
-                handleSelectTab('checklist');
-                window.dispatchEvent(new CustomEvent('collapse-all'));
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }}
-              onRenameProject={(projId, newName) => {
-                setProjects(prev => prev.map(p => p.id === projId ? { ...p, name: newName } : p));
-              }}
-              onDeleteProject={(projId) => {
-                handleDeleteProject(projId);
-              }}
-              isPro={isPro}
-              onOpenPaywall={() => setIsPaywallOpen(true)}
-              onCreateProject={(name, color) => {
-                if (!canCreateNewProject(projects.length)) {
+          <div className={displayedTab === 'projects' ? 'block relative' : 'hidden'}>
+            <div
+              style={isProjectsLocked ? {
+                filter: 'blur(3.5px)',
+                pointerEvents: 'none',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                opacity: 0.94,
+                transition: 'filter 0.3s ease, opacity 0.3s ease',
+              } : undefined}
+            >
+              <ProjectsPage
+                projects={projects}
+                activeProjectId={activeProject.id}
+                totalRequirementsCount={allItems.length}
+                onSelectProject={(projId) => {
+                  setIsGlobalEditMode(false);
+                  setActiveProjectId(projId);
+                  setSelectedPhaseId('all');
+                  setFilterMode('all');
+                  handleSelectTab('checklist');
+                  window.dispatchEvent(new CustomEvent('collapse-all'));
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                }}
+                onRenameProject={(projId, newName, markLocked) => {
+                  setProjects(prev => prev.map(p => p.id === projId ? { 
+                    ...p, 
+                    name: newName, 
+                    isNameLocked: markLocked !== undefined ? markLocked : (!isPro ? true : p.isNameLocked) 
+                  } : p));
+                }}
+                onDeleteProject={(projId) => {
+                  handleDeleteProject(projId);
+                }}
+                isPro={isPro || unlimitedUnlocked}
+                onOpenPaywall={(targetProjId) => {
+                  setPaywallTargetProjectId(targetProjId);
                   setIsPaywallOpen(true);
-                  return;
-                }
-                recordProjectCreated();
-                const newProj: Project = {
-                  id: `proj-${Date.now()}`,
-                  name: name,
-                  color: color,
-                  createdAt: new Date().toISOString(),
-                  completedItemIds: [],
-                  deletedPhaseIds: [],
-                  phaseOrder: undefined,
-                  customPhases: [],
-                  customItems: {},
-                };
-                setProjects(prev => [...prev, newProj]);
-                setActiveProjectId(newProj.id);
-                setSelectedPhaseId('all');
-                setFilterMode('all');
-                handleSelectTab('checklist');
-                window.dispatchEvent(new CustomEvent('collapse-all'));
-                window.scrollTo({ top: 0, behavior: 'instant' });
-              }}
-              onBackToChecklist={() => {
-                handleSelectTab('checklist');
-              }}
-            />
+                }}
+                onCreateProject={(name, color) => {
+                  if (!canCreateNewProject(projects.length)) {
+                    setIsPaywallOpen(true);
+                    return;
+                  }
+                  recordProjectCreated();
+                  const newProj: Project = {
+                    id: `proj-${Date.now()}`,
+                    name: name,
+                    color: color,
+                    createdAt: new Date().toISOString(),
+                    completedItemIds: [],
+                    deletedPhaseIds: [],
+                    phaseOrder: undefined,
+                    customPhases: [],
+                    customItems: {},
+                  };
+                  setProjects(prev => [...prev, newProj]);
+                  setActiveProjectId(newProj.id);
+                  setSelectedPhaseId('all');
+                  setFilterMode('all');
+                  handleSelectTab('checklist');
+                  window.dispatchEvent(new CustomEvent('collapse-all'));
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                }}
+                onBackToChecklist={() => {
+                  handleSelectTab('checklist');
+                }}
+              />
+            </div>
           </div>
 
           {/* 3. Resources Tab */}
-          <div className={displayedTab === 'resources' ? 'block' : 'hidden'}>
-            <ResourcesPage 
-              collapseSignal={resourcesCollapseSignal}
-              onBackToChecklist={() => {
-                handleSelectTab('checklist');
-              }} 
-            />
+          <div className={displayedTab === 'resources' ? 'block relative' : 'hidden'}>
+            <div
+              style={isAcademyLocked ? {
+                filter: 'blur(3.5px)',
+                pointerEvents: 'none',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                opacity: 0.94,
+                transition: 'filter 0.3s ease, opacity 0.3s ease',
+              } : undefined}
+            >
+              <ResourcesPage 
+                collapseSignal={resourcesCollapseSignal}
+                onBackToChecklist={() => {
+                  handleSelectTab('checklist');
+                }} 
+              />
+            </div>
           </div>
         </div>
 
       </main>
 
       {/* 3. Floating Bottom Navigation Menu (iPhone Liquid Glass Interactive Dock) */}
-      <div className="fixed ios-dock-bottom left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
+      <div 
+        className={`fixed ios-dock-bottom left-0 right-0 z-50 flex justify-center pointer-events-none px-4 transition-all duration-300 ${
+          isCurrentTabLocked || isPaywallOpen || showLegalModal ? 'opacity-25 filter blur-[10px] pointer-events-none' : ''
+        }`}
+      >
         <nav
           aria-label="Main Navigation"
-          className="pointer-events-auto relative select-none bg-white/80 dark:bg-black/70 backdrop-blur-2xl border border-white/70 dark:border-white/20 rounded-full p-[8px] flex items-center shadow-[0_16px_40px_rgba(0,0,0,0.12),0_2px_6px_rgba(0,0,0,0.04),inset_0_1px_1.5px_rgba(255,255,255,0.95)]"
+          className="pointer-events-auto relative select-none bg-white/80 dark:bg-black/70 backdrop-blur-2xl border border-white/70 dark:border-white/20 rounded-full p-[8px] flex items-center shadow-[0_16px_40px_rgba(0,0,0,0.12),0_2px_6px_rgba(0,0,0,0.04),inset_0_1px_1.5px_rgba(255,255,255,0.95)] transition-all duration-300"
         >
-          {/* Dynamic Sliding Liquid Glass Pill */}
+          {/* Dynamic Sliding Liquid Glass Pill (Slides between Checklist, Academy, and Projects tabs) */}
           <div
             className="absolute top-[8px] left-[8px] w-[56px] h-[56px] rounded-full border pointer-events-none transition-transform duration-[200ms] ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform transform-gpu"
             style={{
@@ -1342,7 +1311,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
               </span>
             </button>
 
-            {/* 2. Graduation Cap / Developer Academy & Resources Button */}
+            {/* 2. Graduation Cap / Developer Academy & Resources Button (56px) */}
             <button
               type="button"
               onClick={() => handleSelectTab('resources')}
@@ -1359,7 +1328,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
               />
             </button>
 
-            {/* 3. Folder / Projects Icon Button */}
+            {/* 3. Folder / Projects Icon Button (56px) */}
             <button
               type="button"
               onClick={() => handleSelectTab('projects')}
@@ -1403,7 +1372,6 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
           }, 100);
         }}
         onReorderPhases={(newPhases) => handleReorderPhases(newPhases.filter(p => p.id !== SETUP_STEPS_PHASE.id))}
-        onAddPhase={handleAddPhase}
         onDeletePhase={handleDeletePhase}
       />
 
@@ -1424,13 +1392,22 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         />
       )}
 
-      {/* Pro Creator Pass Modal */}
+      {/* Single Unified Smaller Paywall & Lock Modal (Same size, same text, same placement everywhere) */}
       <PaywallModal
-        isOpen={isPaywallOpen}
-        onClose={() => setIsPaywallOpen(false)}
+        isOpen={isCurrentTabLocked || isPaywallOpen}
+        onClose={() => {
+          setIsPaywallOpen(false);
+          setPaywallTargetProjectId(undefined);
+        }}
         onUnlocked={() => {
           setIsPro(true);
+          setTrialActive(isTrialActive());
+          setUnlimitedUnlocked(isUnlimitedUnlocked());
+          window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed', { detail: { isPro: true } }));
         }}
+        targetProjectId={paywallTargetProjectId || activeProject.id}
+        targetProjectName={projects.find(p => p.id === (paywallTargetProjectId || activeProject.id))?.name}
+        canDismiss={!isCurrentTabLocked}
       />
     </div>
   );

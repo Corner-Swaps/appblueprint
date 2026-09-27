@@ -12,7 +12,6 @@ import {
   X,
   CheckCircle2,
   Check,
-  ArrowUpDown,
   ArrowUp,
   ArrowDown
 } from 'lucide-react';
@@ -24,7 +23,7 @@ interface AllPhasesPageProps {
   completedItemIds: string[];
   onSelectPhase: (phaseId: string) => void;
   onReorderPhases: (phases: Phase[]) => void;
-  onAddPhase: (title: string, shortTitle: string, description: string) => void;
+  onAddPhase?: (title: string, shortTitle: string, description: string) => void;
   onDeletePhase?: (phaseId: string) => void;
 }
 
@@ -35,14 +34,9 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
   completedItemIds,
   onSelectPhase,
   onReorderPhases,
-  onAddPhase,
   onDeletePhase
 }) => {
   const [isRearranging, setIsRearranging] = useState(false);
-  const [isAddingPhase, setIsAddingPhase] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newShortTitle, setNewShortTitle] = useState('');
-  const [newDesc, setNewDesc] = useState('');
 
   const scrollContainerRef = useRef<HTMLElement | null>(null);
 
@@ -104,23 +98,6 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
     });
   };
 
-  const handleCreatePhase = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-    onAddPhase(
-      newTitle.trim(),
-      newShortTitle.trim() || newTitle.trim(),
-      newDesc.trim() || 'Custom requirements section'
-    );
-    setNewTitle('');
-    setNewShortTitle('');
-    setNewDesc('');
-    setIsAddingPhase(false);
-    onClose();
-  };
 
   return (
     <div className="fixed inset-0 z-50 bg-[#FAF8F6] text-[#1E2022] flex flex-col font-sans overflow-hidden animate-in fade-in duration-200">
@@ -158,7 +135,6 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
               type="button"
               onClick={() => {
                 setIsRearranging(prev => !prev);
-                setIsAddingPhase(false);
               }}
               className={`apple-press px-3.5 py-2 rounded-full text-xs font-bold border transition-colors flex items-center space-x-1 ${
                 isRearranging
@@ -170,23 +146,6 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
               <SlidersHorizontal className="w-4 h-4 stroke-[2]" />
               <span className="hidden sm:inline">{isRearranging ? 'Done' : 'Rearrange'}</span>
             </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setIsAddingPhase(prev => !prev);
-                setIsRearranging(false);
-              }}
-              className={`apple-press px-3.5 py-2 rounded-full text-xs font-bold border transition-colors flex items-center space-x-1 ${
-                isAddingPhase
-                  ? 'bg-slate-200 text-slate-900 border-slate-300 shadow-xs'
-                  : 'bg-[#FAF8F6] text-slate-800 border border-slate-300/80 hover:bg-slate-200/60 shadow-xs'
-              }`}
-              title="Add New Step"
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span className="hidden sm:inline">Step</span>
-            </button>
           </div>
         </div>
       </header>
@@ -194,84 +153,6 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
       {/* Main Scrollable Content */}
       <main ref={scrollContainerRef as any} className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 pb-28">
         <div className="max-w-xl md:max-w-3xl lg:max-w-4xl mx-auto space-y-3">
-
-          {/* Inline Add Step Form */}
-          {isAddingPhase && (
-            <form onSubmit={handleCreatePhase} className="p-4 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 animate-in fade-in duration-200">
-              <div className="flex items-center justify-between pb-1 border-b border-slate-100">
-                <span className="text-xs font-bold text-slate-800 font-google">Add New Step Section</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setNewTitle('');
-                    setNewShortTitle('');
-                    setNewDesc('');
-                    setIsAddingPhase(false);
-                  }}
-                  className="apple-press p-1 text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">Step Title</label>
-                <input
-                  type="text"
-                  required
-                  autoFocus
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Monetization & Subscriptions"
-                  className="w-full px-3.5 py-2.5 rounded-xl text-[16px] sm:text-sm font-google bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:ring-1 focus:ring-slate-800"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">Short Name</label>
-                <input
-                  type="text"
-                  value={newShortTitle}
-                  onChange={(e) => setNewShortTitle(e.target.value)}
-                  placeholder="e.g. Paywall"
-                  className="w-full px-3.5 py-2.5 rounded-xl text-[16px] sm:text-sm bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:ring-1 focus:ring-slate-800"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Brief overview of requirements in this step..."
-                  className="w-full px-3.5 py-2.5 rounded-xl text-[16px] sm:text-sm bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:ring-1 focus:ring-slate-800 resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setNewTitle('');
-                    setNewShortTitle('');
-                    setNewDesc('');
-                    setIsAddingPhase(false);
-                  }}
-                  className="apple-press px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={!newTitle.trim()}
-                  className="apple-press px-4 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white disabled:opacity-50 shadow-xs"
-                >
-                  Create Step
-                </button>
-              </div>
-            </form>
-          )}
 
           {/* List of All Phases */}
           {phases.map((phase, idx) => {
@@ -319,11 +200,11 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
 
                     <div className="space-y-1 flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                        <span className={`h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1.5px] leading-none`}>
+                        <span className={`h-[20px] px-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider font-google ${theme.iconBg} text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1.5px] leading-none`}>
                           {isSetup ? 'Set Up' : isCustom ? 'Custom' : `Step ${phase.number}`}
                         </span>
                         <span className="text-xs text-slate-400">•</span>
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-xs font-bold text-slate-700 font-google tracking-tight">
                           {phaseDone} of {phaseTotal} Verified ({phasePercent}%)
                         </span>
                       </div>
@@ -374,18 +255,6 @@ export const AllPhasesPage: React.FC<AllPhasesPageProps> = ({
                               <ArrowDown className="w-3.5 h-3.5 stroke-[2.2]" />
                             </button>
                           )}
-                          <button
-                            type="button"
-                            onPointerDown={(e) => {
-                              e.stopPropagation();
-                              handleDragStart(idx, e);
-                            }}
-                            className="apple-press w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-100 text-slate-500 cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xs touch-none select-none transition-colors"
-                            title="Hold and drag to rearrange step"
-                            aria-label="Hold and drag to rearrange step"
-                          >
-                            <ArrowUpDown className="w-4 h-4 text-slate-500 stroke-[2.2]" />
-                          </button>
                         </>
                       )}
                       {isCustom && onDeletePhase && (

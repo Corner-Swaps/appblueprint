@@ -8,8 +8,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        window?.overrideUserInterfaceStyle = .dark
-        window?.backgroundColor = .black
+        let purple = UIColor(red: 147.0 / 255.0, green: 51.0 / 255.0, blue: 234.0 / 255.0, alpha: 1.0)
+        window?.backgroundColor = purple
         return true
     }
 
@@ -48,3 +48,101 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return config
     }
 }
+
+// MARK: - Native Apple StoreKit 2 Capacitor Plugin
+import StoreKit
+
+@objc(StoreKitPlugin)
+public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "StoreKitPlugin"
+    public let jsName = "StoreKit"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "purchaseProduct", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "restorePurchases", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getEntitlements", returnType: CAPPluginReturnPromise)
+    ]
+
+    @objc public func purchaseProduct(_ call: CAPPluginCall) {
+        guard let productId = call.getString("productId") else {
+            call.reject("Product ID is required")
+            return
+        }
+
+        Task {
+            do {
+                let products = try await Product.products(for: [productId])
+                guard let product = products.first else {
+                    call.reject("Product '\(productId)' not found in App Store. Please ensure it is created in App Store Connect.")
+                    return
+                }
+
+                let result = try await product.purchase()
+                switch result {
+                case .success(let verification):
+                    switch verification {
+                    case .verified(let transaction):
+                        await transaction.finish()
+                        call.resolve([
+                            "success": true,
+                            "productId": transaction.productID,
+                            "transactionId": String(transaction.id)
+                        ])
+                    case .unverified(_, let error):
+                        call.reject("Transaction unverified: \(error.localizedDescription)")
+                    }
+                case .userCancelled:
+                    call.reject("Purchase cancelled by user", "USER_CANCELLED")
+                case .pending:
+                    call.resolve([
+                        "success": false,
+                        "pending": true,
+                        "message": "Purchase is pending approval (e.g. Ask to Buy)"
+                    ])
+                @unknown default:
+                    call.reject("Unknown transaction result")
+                }
+            } catch {
+                call.reject(error.localizedDescription)
+            }
+        }
+    }
+
+    @objc public func restorePurchases(_ call: CAPPluginCall) {
+        Task {
+            do {
+                try await AppStore.sync()
+                var activeEntitlements: [String] = []
+                for await result in Transaction.currentEntitlements {
+                    if case .verified(let transaction) = result {
+                        if transaction.revocationDate == nil {
+                            activeEntitlements.append(transaction.productID)
+                        }
+                    }
+                }
+                call.resolve([
+                    "success": true,
+                    "entitlements": activeEntitlements
+                ])
+            } catch {
+                call.reject(error.localizedDescription)
+            }
+        }
+    }
+
+    @objc public func getEntitlements(_ call: CAPPluginCall) {
+        Task {
+            var activeEntitlements: [String] = []
+            for await result in Transaction.currentEntitlements {
+                if case .verified(let transaction) = result {
+                    if transaction.revocationDate == nil {
+                        activeEntitlements.append(transaction.productID)
+                    }
+                }
+            }
+            call.resolve([
+                "entitlements": activeEntitlements
+            ])
+        }
+    }
+}
+

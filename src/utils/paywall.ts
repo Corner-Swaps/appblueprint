@@ -3,6 +3,11 @@ export const STORAGE_KEY_UNLIMITED_UNLOCKED = 'appblueprint_unlimited_unlocked_v
 export const STORAGE_KEY_PURCHASED_SLOTS = 'appblueprint_purchased_slots_v2';
 export const STORAGE_KEY_TOTAL_CREATIONS_EVER = 'appblueprint_creations_ever_v2';
 export const STORAGE_KEY_FREE_QUOTA_CLAIMED = 'appblueprint_free_project_claimed_v1';
+export const STORAGE_KEY_TRIAL_START_DATE = 'appblueprint_trial_start_date_v1';
+export const STORAGE_KEY_PAID_PROJECT_IDS = 'appblueprint_paid_project_ids_v1';
+
+export const TRIAL_DURATION_DAYS = 7;
+export const TRIAL_DURATION_MS = TRIAL_DURATION_DAYS * 24 * 60 * 60 * 1000;
 
 export const NEXT_PROJECT_PRICE_DISPLAY = '$4.99';
 export const NEXT_PROJECT_PRICE_VALUE = 4.99;
@@ -16,9 +21,119 @@ export const PRO_PRICE_VALUE = NEXT_PROJECT_PRICE_VALUE;
 export const COFFEE_PRICE_DISPLAY = NEXT_PROJECT_PRICE_DISPLAY;
 export const COFFEE_PRICE_VALUE = NEXT_PROJECT_PRICE_VALUE;
 
-export const PRODUCT_ID_NEXT_PROJECT = 'com.slava.appblueprint.next_project';
+export const PRODUCT_ID_KEEP_THIS_PROJECT = 'com.slava.appblueprint.keep_this_project';
+export const PRODUCT_ID_NEXT_PROJECT = PRODUCT_ID_KEEP_THIS_PROJECT;
 export const PRODUCT_ID_UNLIMITED_PROJECTS = 'com.slava.appblueprint.unlimited_projects';
 export const STORAGE_KEY_CREATOR_PROFILE = 'appblueprint_creator_profile_v1';
+
+/**
+ * Gets or initializes the 1-week free trial start date (timestamp in ms).
+ */
+export const getTrialStartDate = (): number => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_TRIAL_START_DATE);
+    if (raw) {
+      const parsed = parseInt(raw, 10);
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+    const now = Date.now();
+    localStorage.setItem(STORAGE_KEY_TRIAL_START_DATE, now.toString());
+    return now;
+  } catch {
+    return Date.now();
+  }
+};
+
+/**
+ * Returns exact milliseconds remaining in the 1-week free trial (0 if expired).
+ */
+export const getTrialRemainingMs = (): number => {
+  const start = getTrialStartDate();
+  const elapsed = Date.now() - start;
+  const remainingMs = TRIAL_DURATION_MS - elapsed;
+  return Math.max(0, remainingMs);
+};
+
+/**
+ * Returns number of days remaining in the 1-week free trial (0 if expired).
+ */
+export const getTrialDaysRemaining = (): number => {
+  const remainingMs = getTrialRemainingMs();
+  if (remainingMs <= 0) return 0;
+  return Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+};
+
+/**
+ * Returns true if the 1-week free trial is currently active.
+ */
+export const isTrialActive = (): boolean => {
+  return getTrialRemainingMs() > 0;
+};
+
+/**
+ * Gets list of individual project IDs unlocked via $4.99 purchase.
+ */
+export const getPaidProjectIds = (): string[] => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PAID_PROJECT_IDS);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * Checks whether a specific project is unlocked (unlimited unlocked, trial active, or project specifically purchased for $4.99).
+ */
+export const isProjectUnlocked = (projectId?: string): boolean => {
+  if (isUnlimitedUnlocked()) return true;
+  if (isTrialActive()) return true;
+  if (!projectId) return false;
+  const paid = getPaidProjectIds();
+  return paid.includes(projectId);
+};
+
+/**
+ * Unlocks a specific project ($4.99 purchase).
+ */
+export const unlockSingleProject = (projectId?: string): void => {
+  try {
+    if (projectId) {
+      const current = getPaidProjectIds();
+      if (!current.includes(projectId)) {
+        localStorage.setItem(STORAGE_KEY_PAID_PROJECT_IDS, JSON.stringify([...current, projectId]));
+      }
+    }
+    unlockNextProjectSlot();
+  } catch (e) {
+    console.warn('Failed to unlock single project', e);
+  }
+};
+
+/**
+ * Simulate setting trial days (for developer/user testing).
+ * e.g. set daysRemaining = 0 to simulate expired trial, or 7 to simulate fresh trial.
+ */
+export const setSimulatedTrialDaysRemaining = (days: number): void => {
+  try {
+    const desiredElapsedDays = TRIAL_DURATION_DAYS - days;
+    const simulatedStart = Date.now() - (desiredElapsedDays * 24 * 60 * 60 * 1000);
+    localStorage.setItem(STORAGE_KEY_TRIAL_START_DATE, simulatedStart.toString());
+    window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed'));
+  } catch {}
+};
+
+/**
+ * Simulate setting trial minutes (e.g. 5 minutes remaining for live countdown testing).
+ */
+export const setSimulatedTrialMinutesRemaining = (minutes: number): void => {
+  try {
+    const remainingMs = minutes * 60 * 1000;
+    const simulatedStart = Date.now() - (TRIAL_DURATION_MS - remainingMs);
+    localStorage.setItem(STORAGE_KEY_TRIAL_START_DATE, simulatedStart.toString());
+    window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed'));
+  } catch {}
+};
 
 export interface CreatorProfile {
   name: string;
@@ -218,6 +333,8 @@ export const resetProForTesting = (): void => {
     localStorage.removeItem(STORAGE_KEY_PURCHASED_SLOTS);
     localStorage.removeItem(STORAGE_KEY_TOTAL_CREATIONS_EVER);
     localStorage.removeItem(STORAGE_KEY_FREE_QUOTA_CLAIMED);
+    localStorage.removeItem(STORAGE_KEY_PAID_PROJECT_IDS);
+    localStorage.setItem(STORAGE_KEY_TRIAL_START_DATE, Date.now().toString());
     window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed'));
   } catch {}
 };

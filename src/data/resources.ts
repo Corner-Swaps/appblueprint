@@ -407,6 +407,31 @@ export const RESOURCES_DATA: ResourceItem[] = [
     promptLabel: "AI Prompt for Local AI"
   },
   {
+    id: "design-apple-design",
+    title: "Apple Developer Design",
+    category: "design",
+    categoryLabel: "Official Apple Design Hub",
+    badge: "Official",
+    badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+    platform: "ios",
+    shortDescription: "Apple's central design portal for Human Interface Guidelines, official Figma kits, SF Symbols, and WWDC fluid motion sessions.",
+    whyItMatters: "The definitive starting point for crafting authentic iOS apps. It brings together Apple's Human Interface Guidelines, downloadable UI kits, SF Symbols, typographic scales, and fluid interaction principles in one unified hub.",
+    keyFeatures: [
+      "Official Human Interface Guidelines (HIG) with actionable patterns for navigation, inputs, and layout.",
+      "Downloadable Apple Design Resources including official Figma kits, device frames, and wallpapers.",
+      "SF Symbols library with over 7,000 configurable symbols and fluid animation presets.",
+      "WWDC design session videos covering Liquid Glass materials, fluid spring mechanics, and spatial design."
+    ],
+    bestUsedFor: "Studying iOS design foundations, reviewing interface guidelines before App Store review, and downloading official Apple design kits.",
+    freeTierInfo: "100% free and open to all developers worldwide directly from Apple.",
+    quickStart: "Visit developer.apple.com/design to study iOS interface patterns, download the official Figma kit, and ask your AI assistant to audit your screens against Apple HIG standards.",
+    reviewTraps: "Stay on track: Apple reviewers evaluate apps under Guideline 4.0 for native feel, touch ergonomics, and safe area compliance. Apps that look like low-quality websites or ignore iOS navigation standards face immediate rejection.",
+    url: "https://developer.apple.com/design/",
+    iconName: "Apple",
+    promptOrCommand: "You are the autonomous Apple design systems auditor and iOS UI lead.\n\nTASK & OBJECTIVE:\nAudit our mobile application against Apple's official design standards at developer.apple.com/design and Apple Human Interface Guidelines.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. DESIGN AUDIT: Inspect all screens, cards, and modal sheets for authentic Apple design alignment (minimum 44x44pt touch targets, 8pt layout grid, standard system fonts).\n2. SAFE AREA & INSETS: Verify that navigation bars and bottom docks respect device safe area insets ('env(safe-area-inset-top)' and 'env(safe-area-inset-bottom)').\n3. FLUID MOTION: Ensure transitions use natural spring mechanics with interruptible gestures and zero artificial lag.\n4. ZERO REGRESSIONS: Verify that screens scale flawlessly across compact screens (iPhone SE) through large displays (iPhone 16 Pro Max).",
+    promptLabel: "AI Prompt for Apple Design Hub Audit"
+  },
+  {
     id: "design-apple-hig",
     title: "Apple Human Interface Guidelines",
     category: "design",

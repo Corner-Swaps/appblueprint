@@ -15,20 +15,29 @@ import {
   Info,
   Layers
 } from 'lucide-react';
-import { canCreateNewProject, isUnlimitedUnlocked, PRO_PRICE_DISPLAY } from '../utils/paywall';
+import { 
+  canCreateNewProject, 
+  isUnlimitedUnlocked, 
+  PRO_PRICE_DISPLAY,
+  isTrialActive,
+  getTrialDaysRemaining,
+  getTrialRemainingMs,
+  isProjectUnlocked,
+  getPaidProjectIds
+} from '../utils/paywall';
 import { triggerHaptic, ImpactStyle } from '../utils/haptics';
 
 interface ProjectsPageProps {
   projects: Project[];
   activeProjectId: string;
   onSelectProject: (projectId: string) => void;
-  onRenameProject: (projectId: string, newName: string) => void;
+  onRenameProject: (projectId: string, newName: string, markLocked?: boolean) => void;
   onDeleteProject: (projectId: string) => void;
   onCreateProject: (name: string, color: string) => void;
   totalRequirementsCount?: number;
   onBackToChecklist?: () => void;
   isPro?: boolean;
-  onOpenPaywall?: () => void;
+  onOpenPaywall?: (targetProjectId?: string) => void;
 }
 
 export const ProjectsPage: React.FC<ProjectsPageProps> = ({
@@ -43,7 +52,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
   isPro = false,
   onOpenPaywall,
 }) => {
-  const isUnlocked = isPro || isUnlimitedUnlocked() || canCreateNewProject(projects.length);
+  const [trialDaysRemaining, setTrialDaysRemaining] = useState<number>(getTrialDaysRemaining());
+  const [trialRemainingMs, setTrialRemainingMs] = useState<number>(() => getTrialRemainingMs());
+  const [trialActive, setTrialActive] = useState<boolean>(isTrialActive());
+  const [unlimitedUnlocked, setUnlimitedUnlocked] = useState<boolean>(isUnlimitedUnlocked());
+
+  const isUnlocked = isPro || unlimitedUnlocked || (trialActive && canCreateNewProject(projects.length));
   const isLocked = !isUnlocked;
 
   const [isAddingProject, setIsAddingProject] = useState(false);
@@ -51,6 +65,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
   const [selectedColor, setSelectedColor] = useState(PROJECT_COLORS[0]);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
+  const [lockedNameModal, setLockedNameModal] = useState<{ type: 'created' | 'attempted_rename'; projectName: string } | null>(null);
   const isCancellingRenameRef = useRef(false);
   const createFormRef = useRef<HTMLFormElement>(null);
   const isCancellingCreateRef = useRef(false);
@@ -65,8 +80,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
       setEditingProjectId(null);
       return;
     }
-    onRenameProject(projId, trimmed);
+    const willLock = !isPro && !isUnlimitedUnlocked();
+    onRenameProject(projId, trimmed, willLock);
     setEditingProjectId(null);
+    triggerHaptic(ImpactStyle.Light);
   };
 
   const handleCreateSubmit = (e: React.FormEvent) => {
@@ -78,9 +95,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
       onOpenPaywall?.();
       return;
     }
-    onCreateProject(trimmed, selectedColor);
-    setNewProjectName('');
+    triggerHaptic(ImpactStyle.Medium);
     setIsAddingProject(false);
+    setNewProjectName('');
+    onCreateProject(trimmed, selectedColor);
   };
 
   useEffect(() => {
@@ -119,6 +137,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
   // Seamlessly transition into project creation when Pro is activated
   useEffect(() => {
     const handleProStatus = (e: any) => {
+      setTrialDaysRemaining(getTrialDaysRemaining());
+      setTrialActive(isTrialActive());
+      setUnlimitedUnlocked(isUnlimitedUnlocked());
       if (e?.detail?.isPro || isUnlimitedUnlocked()) {
         setIsAddingProject(true);
         setSelectedColor(PROJECT_COLORS[projects.length % PROJECT_COLORS.length]);
@@ -127,6 +148,53 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
     window.addEventListener('appblueprint-pro-status-changed' as any, handleProStatus);
     return () => window.removeEventListener('appblueprint-pro-status-changed' as any, handleProStatus);
   }, [projects.length]);
+
+  // Live real-time ticking countdown clock (updates every 1s)
+  useEffect(() => {
+    let wasActive = trialActive;
+    const updateCountdown = () => {
+      const ms = getTrialRemainingMs();
+      setTrialRemainingMs(ms);
+      const active = ms > 0;
+      setTrialActive(active);
+      setTrialDaysRemaining(getTrialDaysRemaining());
+      setUnlimitedUnlocked(isUnlimitedUnlocked());
+
+      // If trial expires right on this screen, open paywall modal automatically!
+      if (wasActive && !active && !isUnlimitedUnlocked()) {
+        wasActive = false;
+        triggerHaptic(ImpactStyle.Heavy);
+        onOpenPaywall?.(activeProjectId);
+      }
+      wasActive = active;
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [trialActive, activeProjectId, onOpenPaywall]);
+
+  const formatTrialCountdown = () => {
+    if (trialRemainingMs <= 0) return 'Tap to unlock';
+
+    const totalSeconds = Math.floor(trialRemainingMs / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+
+    // If there are days left
+    if (days > 0) {
+      return `${days} ${days === 1 ? 'day' : 'days'} left`;
+    }
+
+    // If there are hours left
+    if (hours > 0) {
+      return `${hours} ${hours === 1 ? 'hour' : 'hours'} left`;
+    }
+
+    // Minutes left
+    const mins = Math.max(1, Math.ceil(trialRemainingMs / 60000));
+    return `${mins} ${mins === 1 ? 'minute' : 'minutes'} left`;
+  };
 
   return (
     <div className="space-y-3.5 pb-4">
@@ -161,6 +229,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           const percent = totalRequirementsCount > 0 
             ? Math.round((completedCount / totalRequirementsCount) * 100) 
             : 0;
+          const isPaidProject = getPaidProjectIds().includes(proj.id);
+          const isCardUnlocked = isPro || unlimitedUnlocked || trialActive || isPaidProject;
 
           return (
             <div
@@ -171,6 +241,11 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                   handleSaveRename(editingProjectId);
                 }
                 if (editingProjectId === proj.id) return;
+                if (!isCardUnlocked) {
+                  triggerHaptic(ImpactStyle.Light);
+                  onOpenPaywall?.(proj.id);
+                  return;
+                }
                 onSelectProject(proj.id);
                 onBackToChecklist?.();
               }}
@@ -188,7 +263,37 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                     <Folder className="w-6 h-6 stroke-[2.2]" />
                   </div>
 
-                  <div className="select-none flex-1 min-w-0">
+                  <div className="space-y-1 select-none flex-1 min-w-0">
+                    {/* Trial / Tier Pill and subtext above the title like Step 1 - Hidden in Host Mode */}
+                    {!isPro && (
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 select-none mt-0.5">
+                        <span 
+                          className="h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider font-google text-white shadow-2xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none"
+                          style={{ backgroundColor: projColor }}
+                        >
+                          {unlimitedUnlocked 
+                            ? 'Unlimited' 
+                            : isPaidProject
+                            ? 'Unlocked'
+                            : trialActive 
+                            ? 'One Week Trial' 
+                            : 'Trial Ended'}
+                        </span>
+                        <div className="text-xs font-bold text-slate-600 select-none inline-flex items-center space-x-1 shrink-0 font-google tracking-tight">
+                          <span className="text-slate-300 select-none mr-0.5">•</span>
+                          {unlimitedUnlocked ? (
+                            <span>Lifetime Access</span>
+                          ) : isPaidProject ? (
+                            <span>Lifetime Access</span>
+                          ) : trialActive ? (
+                            <span className="tabular-nums">{formatTrialCountdown()}</span>
+                          ) : (
+                            <span>Tap to unlock</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     {isEditingThisProj ? (
                       <div 
                         data-rename-controls
@@ -223,10 +328,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                         <button
                           type="button"
                           onClick={() => handleSaveRename(proj.id)}
-                          className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0 apple-press"
+                          className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 apple-press shadow-xs"
                           title="Save name"
                         >
-                          <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <Check className="w-4 h-4 stroke-[3]" />
                         </button>
                         <button
                           type="button"
@@ -237,14 +342,14 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                             isCancellingRenameRef.current = true;
                             setEditingProjectId(null);
                           }}
-                          className="w-7 h-7 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center shrink-0 apple-press"
+                          className="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center shrink-0 apple-press transition-colors shadow-xs"
                           title="Cancel"
                         >
-                          <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <X className="w-4 h-4 stroke-[2.5]" />
                         </button>
                       </div>
                     ) : (
-                      <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
+                      <h2 className="text-[18px] sm:text-[20px] font-medium text-slate-900 tracking-tight leading-snug select-none font-google break-words">
                         {proj.name}
                       </h2>
                     )}
@@ -252,19 +357,33 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                 </div>
 
                 {!isEditingThisProj && (
-                  <div className="flex items-center space-x-1.5 shrink-0 -mr-1 self-center">
+                  <div className="flex items-center space-x-1.5 shrink-0 self-center">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (!isCardUnlocked) {
+                          triggerHaptic(ImpactStyle.Light);
+                          onOpenPaywall?.(proj.id);
+                          return;
+                        }
+                        const isNameLocked = !isPro && !isUnlimitedUnlocked() && proj.isNameLocked;
+                        if (isNameLocked) {
+                          triggerHaptic(ImpactStyle.Light);
+                          setLockedNameModal({
+                            type: 'attempted_rename',
+                            projectName: proj.name
+                          });
+                          return;
+                        }
                         setEditingProjectId(proj.id);
                         setEditingProjectName(proj.name);
                       }}
-                      className="p-1 bg-transparent border-0 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                      title="Rename Project"
+                      className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center shrink-0 apple-press shadow-xs transition-colors"
+                      title={!isCardUnlocked ? "Unlock Project" : (!isPro && !isUnlimitedUnlocked() && proj.isNameLocked ? "Project Name Locked" : "Rename Project")}
                       aria-label="Rename Project"
                     >
-                      <Pencil className="w-[18px] h-[18px] stroke-[2.2]" />
+                      <Pencil className="w-4 h-4 stroke-[2.2] fill-white" />
                     </button>
 
                     <button
@@ -273,11 +392,11 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
                         e.stopPropagation();
                         onDeleteProject(proj.id);
                       }}
-                      className="p-1 bg-transparent border-0 text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
+                      className="w-8 h-8 rounded-xl bg-slate-100 text-rose-500 hover:text-rose-600 flex items-center justify-center shrink-0 apple-press transition-colors shadow-xs"
                       title="Delete Project"
                       aria-label="Delete Project"
                     >
-                      <Trash2 className="w-[18px] h-[18px] stroke-[2.2]" />
+                      <Trash2 className="w-4 h-4 stroke-[2.2] text-rose-500" />
                     </button>
                   </div>
                 )}
@@ -285,9 +404,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
 
               {/* Progress Bar with Labels (matching other sections) */}
               <div className="space-y-1 pt-1 select-none">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none font-google tracking-tight">
                   <span>Project Completion</span>
-                  <span>{percent}%</span>
+                  <span className="tabular-nums">{percent}%</span>
                 </div>
                 <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
                   <div
@@ -329,8 +448,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           >
             <div className="w-full flex items-center justify-between select-none">
               <div className="flex items-center space-x-3.5 select-none flex-1 min-w-0">
-                {/* Squircle Icon: Clean slate-900 background with white icon */}
-                <div className="w-12 h-12 rounded-2xl bg-slate-900 flex items-center justify-center shrink-0 shadow-xs relative text-white">
+                {/* Squircle Icon: Vibrant Purple background with white plus (or lock when locked) */}
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs relative text-white bg-purple-600 shadow-purple-500/25">
                   {isLocked ? (
                     <Lock className="w-6 h-6 stroke-[2.2] text-white" />
                   ) : (
@@ -340,7 +459,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
 
                 {/* Clean Title & Subtitle */}
                 <div className="select-none flex-1 min-w-0">
-                  <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug select-none font-google break-words">
+                  <h2 className="text-[18px] sm:text-[20px] font-medium text-slate-900 tracking-tight leading-snug select-none font-google break-words">
                     Add a New Project
                   </h2>
                   <p className="text-xs text-slate-500 font-medium leading-normal mt-0.5 select-none">
@@ -450,6 +569,95 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
         aria-hidden="true" 
       />
 
+      {/* 4. Project Name Locked / Setup Pop-Up Modal */}
+      {lockedNameModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-5 select-none overflow-y-auto">
+          {/* Fullscreen Backdrop overlay - guaranteed 1-tap dismiss */}
+          <div 
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200 cursor-pointer"
+            aria-hidden="true"
+            onClick={() => setLockedNameModal(null)}
+          />
+
+          <div 
+            className="relative z-10 w-full max-w-sm sm:max-w-md bg-white rounded-[32px] border border-slate-200/90 shadow-2xl p-6 sm:p-7 flex flex-col items-center text-center space-y-4 my-auto animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="locked-name-modal-title"
+          >
+            {/* Top Icon: Vibrant Purple squircle with white lock */}
+            <div className="w-14 h-14 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-md shadow-purple-500/30 shrink-0">
+              <Lock className="w-7 h-7 stroke-[2.2] text-white" />
+            </div>
+
+            {/* Title & Body */}
+            <div className="space-y-2 px-1">
+              <h3 id="locked-name-modal-title" className="text-lg sm:text-xl font-black text-slate-900 font-google tracking-tight">
+                {lockedNameModal.type === 'created' 
+                  ? 'Project Setup Complete' 
+                  : 'Project Name Locked'}
+              </h3>
+              
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                {lockedNameModal.type === 'created' ? (
+                  <>
+                    Your free project <strong className="font-bold text-slate-900">"{lockedNameModal.projectName}"</strong> is ready! In the free tier, project names are locked once set to keep your blueprint dedicated to your app. Any future projects will be protected by Pro.
+                  </>
+                ) : (
+                  <>
+                    In the free tier, project names are locked once set to keep your production blueprint dedicated to your app. Upgrade to Pro to rename projects anytime, add new projects, or unlock unlimited access.
+                  </>
+                )}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="w-full space-y-2 pt-1">
+              {lockedNameModal.type === 'attempted_rename' ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLockedNameModal(null);
+                      onOpenPaywall?.();
+                    }}
+                    className="apple-press w-full py-3.5 px-4 rounded-2xl font-bold text-sm text-white bg-purple-600 hover:bg-purple-700 active:bg-purple-800 shadow-md shadow-purple-500/25 transition-all flex items-center justify-center cursor-pointer"
+                  >
+                    <span>Upgrade with Pro</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setLockedNameModal(null)}
+                    className="w-full py-2.5 px-4 rounded-2xl font-bold text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                  >
+                    Keep "{lockedNameModal.projectName}"
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLockedNameModal(null);
+                    onBackToChecklist?.();
+                  }}
+                  className="apple-press w-full py-3.5 px-4 rounded-2xl font-bold text-sm text-white bg-purple-600 hover:bg-purple-700 active:bg-purple-800 shadow-md shadow-purple-500/25 transition-all flex items-center justify-center cursor-pointer"
+                >
+                  <span>Continue to Checklist</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clearance space underneath the last project card for floating dock */}
+      <div 
+        className="w-full shrink-0 pointer-events-none" 
+        style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 96px), 120px)' }} 
+        aria-hidden="true" 
+      />
     </div>
   );
 };
