@@ -655,7 +655,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
       {/* Clearance space underneath the last project card for floating dock */}
       <div 
         className="w-full shrink-0 pointer-events-none" 
-        style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 96px), 120px)' }} 
+        style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 140px), 164px)' }} 
         aria-hidden="true" 
       />
     </div>

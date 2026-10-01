@@ -547,6 +547,26 @@ export const App: React.FC = () => {
     };
   }, [isAllPhasesPageOpen]);
 
+  // Track scroll position for dynamic top & bottom viewport fading effects
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const isScrolledDown = scrollY > 6;
+
   // Toggle Item Completion ("The Little Click") for active project
   const handleToggleComplete = (itemId: string) => {
     setProjects(prevProjects =>
@@ -902,8 +922,8 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
   return (
     <div className="min-h-screen bg-[#FAF8F6] text-[#1E2022] flex flex-col font-sans selection:bg-slate-900 selection:text-white overflow-x-hidden">
       
-      {/* Top Banner when running Interactive Suite on Web */}
-      {!Capacitor.isNativePlatform() && (
+      {/* Top Banner when running Interactive Suite on Web (hidden during screenshots) */}
+      {!Capacitor.isNativePlatform() && !(typeof window !== 'undefined' && (window.location.search.includes('screenshot') || window.location.search.includes('splash'))) && (
         <AppLauncherBar 
           onBackToWebsite={() => {
             setViewMode('website');
@@ -913,10 +933,22 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         />
       )}
 
-      {/* Launch Loading Animation Overlay for Native Mobile */}
-      {showSplash && Capacitor.isNativePlatform() && (
+      {/* Launch Loading Animation Overlay for Native Mobile or explicit splash preview */}
+      {((showSplash && Capacitor.isNativePlatform()) || (typeof window !== 'undefined' && window.location.search.includes('splash'))) && (
         <SplashScreen onComplete={() => setShowSplash(false)} />
       )}
+
+      {/* Top Ambient Edge Fade (Smoothly dissolves cards as they scroll up under the top safe area) */}
+      <div 
+        className={`scroll-fade-top transition-opacity duration-300 ease-out ${
+          isScrolledDown && !isAllPhasesPageOpen ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          top: !Capacitor.isNativePlatform() ? '37px' : '0px',
+          height: 'calc(max(env(safe-area-inset-top, 0px), 16px) + 36px)',
+        }}
+        aria-hidden="true"
+      />
 
       {/* 1. Main Content Container (Starts right below iOS safe area with safe bottom clearance for the bottom menu) */}
       <main 
@@ -1131,7 +1163,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
             {/* Bottom Spacing clearance above the fixed bottom navigation dock */}
             <div 
               className="w-full pointer-events-none select-none transition-all duration-300"
-              style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 96px), 120px)' }}
+              style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 140px), 164px)' }}
               aria-hidden="true" 
             />
           </div>
@@ -1232,6 +1264,17 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         </div>
 
       </main>
+
+      {/* Bottom Menu Section Fade (Bigger, deeper dissolve gracefully framing the floating menu dock) */}
+      <div 
+        className={`scroll-fade-bottom transition-opacity duration-300 ease-out ${
+          !isAllPhasesPageOpen && !isPaywallOpen && !showLegalModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        style={{
+          height: 'max(calc(env(safe-area-inset-bottom, 0px) + 148px), 180px)',
+        }}
+        aria-hidden="true"
+      />
 
       {/* 3. Floating Bottom Navigation Menu (iPhone Liquid Glass Interactive Dock) */}
       <div 

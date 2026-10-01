@@ -4,7 +4,9 @@ import {
   Check, 
   Unlock,
   CheckCircle2,
-  Loader2
+  Loader2,
+  AlertCircle,
+  Info
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { 
@@ -15,7 +17,11 @@ import {
   unlockUnlimited,
   unlockSingleProject
 } from '../utils/paywall';
-import { purchaseWithStoreKit, restoreWithStoreKit } from '../utils/nativeStoreKit';
+import { 
+  purchaseWithStoreKit, 
+  restoreWithStoreKit, 
+  getStoreProducts 
+} from '../utils/nativeStoreKit';
 import { triggerHaptic, ImpactStyle } from '../utils/haptics';
 
 interface PaywallModalProps {
@@ -39,7 +45,24 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   const [storeKitState, setStoreKitState] = useState<'idle' | 'processing' | 'done'>('idle');
   const [purchaseTier, setPurchaseTier] = useState<'single' | 'unlimited'>('unlimited');
   const [isNativeProcessing, setIsNativeProcessing] = useState(false);
-  const [nativeMessage, setNativeMessage] = useState<string | null>(null);
+  const [singlePrice, setSinglePrice] = useState(NEXT_PROJECT_PRICE_DISPLAY);
+  const [unlimitedPrice, setUnlimitedPrice] = useState(UNLIMITED_PRICE_DISPLAY);
+  const [inlineMessage, setInlineMessage] = useState<{ type: 'info' | 'error' | 'success'; text: string } | null>(null);
+
+  // Fetch native StoreKit product details when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setInlineMessage(null);
+      getStoreProducts([PRODUCT_ID_NEXT_PROJECT, PRODUCT_ID_UNLIMITED_PROJECTS]).then((products) => {
+        if (products[PRODUCT_ID_NEXT_PROJECT]?.displayPrice) {
+          setSinglePrice(products[PRODUCT_ID_NEXT_PROJECT].displayPrice);
+        }
+        if (products[PRODUCT_ID_UNLIMITED_PROJECTS]?.displayPrice) {
+          setUnlimitedPrice(products[PRODUCT_ID_UNLIMITED_PROJECTS].displayPrice);
+        }
+      });
+    }
+  }, [isOpen]);
 
   // Reset StoreKit state when modal closes and ensure body is never scroll-locked
   useEffect(() => {
@@ -47,36 +70,46 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     if (!isOpen) {
       setShowStoreKitSheet(false);
       setStoreKitState('idle');
+      setInlineMessage(null);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const currentPrice = purchaseTier === 'unlimited' ? UNLIMITED_PRICE_DISPLAY : NEXT_PROJECT_PRICE_DISPLAY;
+  const currentPrice = purchaseTier === 'unlimited' ? unlimitedPrice : singlePrice;
   const currentTitle = purchaseTier === 'unlimited' ? 'Unlimited Projects' : 'Project Blueprint';
 
   const handleStartPurchase = async (tier: 'single' | 'unlimited') => {
     triggerHaptic(ImpactStyle.Medium);
     setPurchaseTier(tier);
+    setInlineMessage(null);
 
     const productId = tier === 'unlimited' ? PRODUCT_ID_UNLIMITED_PROJECTS : PRODUCT_ID_NEXT_PROJECT;
 
     if (Capacitor.isNativePlatform()) {
       setIsNativeProcessing(true);
-      setNativeMessage(null);
       const res = await purchaseWithStoreKit(productId, targetProjectId);
       setIsNativeProcessing(false);
 
       if (res.success) {
         triggerHaptic(ImpactStyle.Heavy);
-        onUnlocked();
-        onClose();
+        setInlineMessage({ type: 'success', text: 'Purchase completed successfully!' });
+        setTimeout(() => {
+          onUnlocked();
+          onClose();
+        }, 600);
       } else if (res.userCancelled) {
-        // Apple HIG: silently cancel
+        // Apple HIG requirement: silently cancel, no error dialog
       } else if (res.pending) {
-        alert('Your purchase is pending approval (such as Ask to Buy). Access will activate once approved.');
+        setInlineMessage({
+          type: 'info',
+          text: 'Your purchase is pending approval (such as Ask to Buy). Access will activate automatically once approved.'
+        });
       } else if (res.error) {
-        alert(res.error);
+        setInlineMessage({
+          type: 'error',
+          text: res.error
+        });
       }
       return;
     }
@@ -117,20 +150,21 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   const handleRestore = async () => {
     triggerHaptic(ImpactStyle.Light);
     setIsNativeProcessing(true);
-    setNativeMessage('Restoring purchases with Apple ID...');
+    setInlineMessage(null);
     const res = await restoreWithStoreKit();
     setIsNativeProcessing(false);
-    setNativeMessage(null);
 
     if (res.isUnlimited || res.restoredCount > 0) {
       triggerHaptic(ImpactStyle.Heavy);
-      alert('Purchases restored successfully!');
-      onUnlocked();
-      onClose();
+      setInlineMessage({ type: 'success', text: 'Purchases restored successfully!' });
+      setTimeout(() => {
+        onUnlocked();
+        onClose();
+      }, 800);
     } else if (res.error) {
-      alert(res.error);
+      setInlineMessage({ type: 'error', text: res.error });
     } else {
-      alert('No active purchases found for this Apple ID.');
+      setInlineMessage({ type: 'info', text: 'No active purchases found for this Apple ID.' });
     }
   };
 
@@ -143,7 +177,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
           className="fixed inset-0 cursor-pointer"
           aria-hidden="true"
           onClick={() => {
-            if (canDismiss && !showStoreKitSheet && storeKitState !== 'processing') {
+            if (canDismiss && !showStoreKitSheet && storeKitState !== 'processing' && !isNativeProcessing) {
               onClose();
             }
           }}
@@ -151,7 +185,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
         {/* The Card - Exact same size, border, shadow, and rounded-3xl styling as Terms & Safety modal */}
         <div 
-          className="relative z-10 w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden h-[680px] max-h-[90vh] transform transition-all duration-300"
+          className="relative z-10 w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden h-[710px] max-h-[92vh] transform transition-all duration-300"
           role="dialog"
           aria-modal="true"
           onClick={(e) => e.stopPropagation()}
@@ -161,7 +195,8 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-3.5 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer z-20"
+              disabled={isNativeProcessing}
+              className="absolute top-3.5 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer z-20 disabled:opacity-50"
               title="Close"
               aria-label="Close"
             >
@@ -238,8 +273,40 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
             </div>
           </div>
 
-          {/* Modal Footer / Action Buttons - positioned closer to the bottom */}
-          <div className="px-4 sm:px-5 pt-3 pb-3 sm:pb-3.5 border-t border-slate-100 bg-slate-50/60 flex flex-col space-y-2 shrink-0">
+          {/* Modal Footer / Action Buttons */}
+          <div className="px-4 sm:px-5 pt-2.5 pb-3 sm:pb-3.5 border-t border-slate-100 bg-slate-50/70 flex flex-col space-y-2 shrink-0">
+            {/* Inline Feedback Banner (Replaces jarring alert modals per Apple HIG) */}
+            {inlineMessage && (
+              <div 
+                className={`p-2.5 rounded-xl text-xs flex items-start space-x-2 animate-in fade-in duration-200 ${
+                  inlineMessage.type === 'error' 
+                    ? 'bg-rose-50 border border-rose-200 text-rose-800' 
+                    : inlineMessage.type === 'success'
+                    ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                    : 'bg-blue-50 border border-blue-200 text-blue-800'
+                }`}
+              >
+                {inlineMessage.type === 'error' ? (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                ) : inlineMessage.type === 'success' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                ) : (
+                  <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                )}
+                <div className="flex-1 min-w-0 font-medium leading-snug">
+                  {inlineMessage.text}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setInlineMessage(null)}
+                  className="text-slate-400 hover:text-slate-600 shrink-0 ml-1 cursor-pointer"
+                  title="Dismiss"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             <button
               type="button"
               disabled={isNativeProcessing}
@@ -249,7 +316,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
               {isNativeProcessing && purchaseTier === 'single' ? (
                 <Loader2 className="w-4.5 h-4.5 animate-spin text-white" />
               ) : (
-                <span>Keep This Project • $4.99</span>
+                <span>Keep This Project • {singlePrice}</span>
               )}
             </button>
 
@@ -262,9 +329,30 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
               {isNativeProcessing && purchaseTier === 'unlimited' ? (
                 <Loader2 className="w-4.5 h-4.5 animate-spin text-white" />
               ) : (
-                <span>Unlock for Life • $12.99</span>
+                <span>Unlock for Life • {unlimitedPrice}</span>
               )}
             </button>
+
+            {/* Apple StoreKit 3.1.1 Mandatory Compliance: Restore Purchases & Legal Links */}
+            <div className="pt-1 flex items-center justify-center space-x-2 text-[11px] text-slate-400 font-medium">
+              <button
+                type="button"
+                onClick={handleRestore}
+                disabled={isNativeProcessing}
+                className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer disabled:opacity-50"
+              >
+                Restore Purchases
+              </button>
+              <span>•</span>
+              <a
+                href="/privacy.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer"
+              >
+                Terms &amp; Privacy
+              </a>
+            </div>
           </div>
         </div>
       </div>

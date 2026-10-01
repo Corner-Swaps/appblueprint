@@ -177,10 +177,18 @@ class PortraitBridgeViewController: CAPBridgeViewController {
         return .lightContent
     }
 
+    private var didRegisterCustomPlugins: Bool = false
+
+    override func capacitorDidLoad() {
+        super.capacitorDidLoad()
+        registerCustomPlugins()
+    }
+
     override func viewDidLoad() {
         let purpleColor = UIColor(red: 147.0 / 255.0, green: 51.0 / 255.0, blue: 234.0 / 255.0, alpha: 1.0)
         view.backgroundColor = purpleColor
         super.viewDidLoad()
+        registerCustomPlugins()
         view.backgroundColor = purpleColor
         webView?.backgroundColor = purpleColor
         webView?.scrollView.backgroundColor = purpleColor
@@ -188,6 +196,13 @@ class PortraitBridgeViewController: CAPBridgeViewController {
         webView?.scrollView.bounces = false
         webView?.scrollView.alwaysBounceVertical = false
         showNativeSplash()
+    }
+
+    private func registerCustomPlugins() {
+        guard !didRegisterCustomPlugins, let bridge = self.bridge else { return }
+        didRegisterCustomPlugins = true
+        bridge.registerPluginInstance(StoreKitPlugin())
+        bridge.registerPluginInstance(NativeReviewPlugin())
     }
 
     override func viewWillAppear(_ animated: Bool) {

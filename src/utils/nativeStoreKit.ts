@@ -7,20 +7,37 @@ import {
   isUnlimitedUnlocked
 } from './paywall';
 
+export interface StoreProduct {
+  id: string;
+  displayName: string;
+  description: string;
+  displayPrice: string;
+  price: number;
+}
+
 export interface StoreKitPluginInterface {
   purchaseProduct(options: { productId: string }): Promise<{
     success: boolean;
     productId?: string;
     transactionId?: string;
     pending?: boolean;
+    userCancelled?: boolean;
     message?: string;
+    error?: string;
   }>;
   restorePurchases(): Promise<{
     success: boolean;
     entitlements: string[];
+    error?: string;
   }>;
   getEntitlements(): Promise<{
+    success?: boolean;
     entitlements: string[];
+  }>;
+  getProducts(options: { productIds: string[] }): Promise<{
+    success: boolean;
+    products: StoreProduct[];
+    error?: string;
   }>;
 }
 
@@ -32,6 +49,27 @@ export interface PurchaseResult {
   userCancelled?: boolean;
   pending?: boolean;
   error?: string;
+}
+
+/**
+ * Queries product details from native StoreKit 2.
+ */
+export async function getStoreProducts(productIds: string[]): Promise<Record<string, StoreProduct>> {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const res = await StoreKit.getProducts({ productIds });
+      if (res && res.success && Array.isArray(res.products)) {
+        const map: Record<string, StoreProduct> = {};
+        for (const p of res.products) {
+          map[p.id] = p;
+        }
+        return map;
+      }
+    } catch (e) {
+      console.warn('StoreKit getProducts query notice:', e);
+    }
+  }
+  return {};
 }
 
 /**
@@ -49,10 +87,12 @@ export async function purchaseWithStoreKit(productId: string, targetProjectId?: 
           unlockSingleProject(targetProjectId);
         }
         return { success: true };
+      } else if (res.userCancelled) {
+        return { success: false, userCancelled: true };
       } else if (res.pending) {
         return { success: false, pending: true };
       }
-      return { success: false, error: res.message || 'Purchase could not be verified' };
+      return { success: false, error: res.message || res.error || 'Purchase could not be completed at this time.' };
     } catch (err: any) {
       const errorMsg = String(err?.message || err || '');
       if (errorMsg.includes('USER_CANCELLED') || errorMsg.includes('cancelled') || errorMsg.includes('canceled')) {
@@ -125,6 +165,11 @@ export async function syncActiveEntitlements(): Promise<void> {
     if (entitlements.includes(PRODUCT_ID_UNLIMITED_PROJECTS)) {
       unlockUnlimited();
     }
+    entitlements.forEach((pid) => {
+      if (pid.startsWith('com.slava.appblueprint.keep_this_project') || pid.startsWith('com.slava.appblueprint.next_project')) {
+        unlockSingleProject();
+      }
+    });
   } catch (err) {
     console.warn('Failed to sync active entitlements on startup', err);
   }

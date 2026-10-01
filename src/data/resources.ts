@@ -1801,6 +1801,56 @@ export const RESOURCES_DATA: ResourceItem[] = [
     promptLabel: "AI Prompt for Product Hunt Launch"
   },
   {
+    id: "launch-applaunchpad",
+    title: "AppLaunchpad Screenshot Builder",
+    category: "launch",
+    categoryLabel: "App Store & Google Play Mockup Studio",
+    badge: "Free Tier",
+    badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    platform: "both",
+    shortDescription: "Design panoramic App Store & Google Play screenshot templates with device frames, bold captions, and custom layouts.",
+    whyItMatters: "Your screenshots drive over 70% of user install decisions on the App Store. AppLaunchpad provides hundreds of ready-to-use screenshot templates, 3D device frames, and caption styles to create high-converting promotional galleries.",
+    keyFeatures: [
+      "1,000+ pre-designed templates for iPhone, iPad, and Android phones with customizable device mockups.",
+      "Panoramic continuous-flow screenshot backgrounds that span seamlessly across multiple screen cards.",
+      "REFORMATTING NOTICE: AppLaunchpad exports do NOT come pre-formatted to Apple & Google's exact pixel requirements. You MUST use BIRME (birme.net) to bulk-resize exports before uploading.",
+      "EXACT PIXEL REQUIREMENTS: iPhone 16 Pro Max (1320x2868px), iPhone 15/14 Pro Max (1290x2796px), iPad Pro 13\" (2064x2752px), iPad 12.9\" (2048x2732px), Google Play Phone (1080x2400px), Feature Graphic (1024x500px)."
+    ],
+    bestUsedFor: "Creating multi-screen promotional screenshot templates, adding 3D device mockups, and drafting bold marketing headlines before reformatting with BIRME.",
+    freeTierInfo: "Generous free tier with standard templates; premium plans unlock advanced device frames and unlimited exports.",
+    quickStart: "1. Create your screenshot cards on theapplaunchpad.com and export them. 2. Drop the exported PNGs into birme.net. 3. Enter exact target dimensions: 1320x2868 for iPhone 16 Pro Max, 2064x2752 for iPad, or 1080x2400 for Google Play.",
+    reviewTraps: "Stay on track: App Store Connect rejects screenshots if they differ by even 1 single pixel from Apple's required specs (1320x2868 or 1290x2796 for iPhone, 2064x2752 or 2048x2732 for iPad). Always run exports through BIRME (birme.net) before uploading.",
+    url: "https://theapplaunchpad.com/",
+    iconName: "Smartphone",
+    promptOrCommand: "You are the autonomous App Store Optimization (ASO) and visual designer.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application following AppLaunchpad layout conventions.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD:\n   - Card 1 (The Hook): Hero value proposition with punchy 3-word title.\n   - Card 2 (Core Action): Interactive main screen showing primary workflow.\n   - Card 3 (Key Differentiator): Standout feature (offline mode, speed, AI).\n   - Card 4 (Insights & Data): Charts, progress, or detail view.\n   - Card 5 (Social Proof & Privacy): Zero-tracking pledge, dark mode, or celebration.\n2. EXACT RESOLUTION TARGETS:\n   - iPhone 6.9\" (iPhone 16 Pro Max): 1320 x 2868 px\n   - iPhone 6.7\" (iPhone 15/14 Pro Max): 1290 x 2796 px\n   - iPad 13\" Pro (M4): 2064 x 2752 px\n   - iPad 12.9\" Pro: 2048 x 2732 px\n   - Google Play Phone: 1080 x 2400 px\n   - Google Play Feature Graphic: 1024 x 500 px\n3. BIRME REFORMATTING STEP: Remind user to batch-resize exported cards through birme.net to guarantee 100% pixel-perfect compliance with zero store rejection.",
+    promptLabel: "AI Prompt for Screenshot Storyboard"
+  },
+  {
+    id: "launch-birme",
+    title: "BIRME Bulk Image Resizer",
+    category: "launch",
+    categoryLabel: "Bulk Screenshot Reformatting Tool",
+    badge: "Free",
+    badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    platform: "both",
+    shortDescription: "Free bulk image resizer to reformat AppLaunchpad screenshots into exact Apple App Store and Google Play pixel dimensions.",
+    whyItMatters: "App Store Connect and Google Play strictly reject screenshots with incorrect pixel dimensions. AppLaunchpad exports do NOT come pre-formatted for Apple's exact Retina specs. BIRME lets you bulk drag-and-drop all your screenshots and resize them in seconds directly in your browser with zero data upload.",
+    keyFeatures: [
+      "Bulk crop and resize multiple images simultaneously directly in your browser with zero server uploads.",
+      "iPhone exact formatting: 1320x2868 (6.9\" iPhone 16 Pro Max), 1290x2796 (6.7\" iPhone 15/14 Pro Max), 1284x2778, 1242x2208 (5.5\").",
+      "iPad exact formatting: 2064x2752 (13\" iPad Pro M4), 2048x2732 (12.9\" iPad Pro), 1668x2388 (11\" iPad Pro).",
+      "Google Play exact formatting: 1080x2400 or 1080x1920 (Phones), 1200x1920 (7\" Tablets), 1600x2560 (10\" Tablets), 1024x500 (Feature Graphic)."
+    ],
+    bestUsedFor: "Batch-resizing and cropping AppLaunchpad screenshot exports to 100% compliant App Store Connect and Google Play pixel dimensions.",
+    freeTierInfo: "100% free web tool with unlimited bulk processing and no account required.",
+    quickStart: "1. Open birme.net in your browser. 2. Drag & drop all screenshot images. 3. Enter target width & height (e.g. 1320 x 2868 for iPhone 16 Pro Max, or 2064 x 2752 for iPad Pro). 4. Click 'Save As Zip'.",
+    reviewTraps: "Stay on track: App Store Connect throws automated error ITMS-90111 / ITMS-90112 if your screenshot is off by even 1 pixel. Use BIRME to force exact pixel dimensions before uploading.",
+    url: "https://www.birme.net/",
+    iconName: "Sliders",
+    promptOrCommand: "You are the autonomous mobile asset automation engineer.\n\nTASK & OBJECTIVE:\nInspect and format all exported mobile screenshot assets to meet exact App Store Connect and Google Play pixel dimensions.\n\nEXACT RESOLUTION AUDIT TABLE:\n- Apple iPhone 16 Pro Max (6.9\"): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n- Apple iPhone 15/14 Pro Max (6.7\"): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n- Apple iPhone 8 Plus (5.5\"): 1242 x 2208 px (Portrait) / 2208 x 1242 px (Landscape)\n- Apple iPad Pro 13\" (M4): 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n- Apple iPad Pro 12.9\" (6th gen): 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n- Apple iPad Pro 11\": 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n- Google Play Phones: 1080 x 2400 px (Portrait) or 1080 x 1920 px (Portrait)\n- Google Play 7\" Tablets: 1200 x 1920 px (Portrait)\n- Google Play 10\" Tablets: 1600 x 2560 px (Portrait)\n- Google Play Feature Graphic: 1024 x 500 px (JPEG or 24-bit PNG, no alpha)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. Check exported image files with 'sips -g pixelWidth -g pixelHeight <image.png>'.\n2. If dimensions do not match the exact targets above, reformat using BIRME (birme.net) or run local Pillow/sips resizing scripts.\n3. Ensure images are 24-bit RGB with zero alpha channel to avoid ITMS rejection.",
+    promptLabel: "AI Prompt for Screenshot Resolution Audit"
+  },
+  {
     id: "analytics-posthog",
     title: "PostHog Product Analytics",
     category: "analytics",

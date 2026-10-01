@@ -1,0 +1,62 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : ""
+      }
+    ]
+  },
+  "identifier" : "33A780DF",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "67329101",
+      "localizations" : [
+        {
+          "description" : "Unlock full access and unlimited edits for this project blueprint.",
+          "displayName" : "Keep This Project",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.slava.appblueprint.keep_this_project",
+      "referenceName" : "Keep This Project",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "12.99",
+      "familyShareable" : false,
+      "internalID" : "67329102",
+      "localizations" : [
+        {
+          "description" : "Lifetime access to unlimited projects and all app creation blueprints.",
+          "displayName" : "Unlock for Life",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.slava.appblueprint.unlimited_projects",
+      "referenceName" : "Unlimited Projects",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

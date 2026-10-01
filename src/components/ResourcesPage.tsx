@@ -813,7 +813,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     }
 
     // ----------------------------------------------------
-    // CATEGORY 9: STORE LAUNCH & ASO (8 Tools)
+    // CATEGORY 9: STORE LAUNCH & ASO (10 Tools)
     // ----------------------------------------------------
     if (item.id === "launch-app-store-connect") {
       return <AppleLogo className="w-6 h-6 text-[#1D1D1F]" />;
@@ -838,6 +838,12 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     }
     if (item.id === "launch-producthunt") {
       return <ProductHuntLogo className="w-6 h-6 text-[#DA552F]" />;
+    }
+    if (item.id === "launch-applaunchpad") {
+      return <Smartphone className="w-6 h-6 text-[#6366F1] stroke-[2]" />;
+    }
+    if (item.id === "launch-birme") {
+      return <Sliders className="w-6 h-6 text-[#10B981] stroke-[2]" />;
     }
 
     // ----------------------------------------------------
@@ -1564,7 +1570,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
       {/* Clearance space underneath the last resource card for floating dock */}
       <div 
         className="w-full shrink-0 pointer-events-none" 
-        style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 94px), 112px)' }} 
+        style={{ height: 'max(calc(env(safe-area-inset-bottom, 0px) + 140px), 164px)' }} 
         aria-hidden="true" 
       />
 

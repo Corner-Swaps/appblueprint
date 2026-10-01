@@ -7,13 +7,15 @@ interface SplashScreenProps {
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+  const isSplashParam = typeof window !== 'undefined' && window.location.search.includes('splash');
+
   // If running natively in Capacitor on iOS, native SwiftUI BlueprintSplashIntroView handles the intro seamlessly!
-  if (typeof window !== 'undefined' && Capacitor.isNativePlatform()) {
+  if (typeof window !== 'undefined' && Capacitor.isNativePlatform() && !isSplashParam) {
     return null;
   }
 
   const [visible, setVisible] = useState(true);
-  const [animating, setAnimating] = useState(false);
+  const [animating, setAnimating] = useState(() => isSplashParam);
   const [fadingOut, setFadingOut] = useState(false);
   const hasDismissedRef = useRef(false);
 
@@ -28,6 +30,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   };
 
   useEffect(() => {
+    if (isSplashParam) {
+      setAnimating(true);
+      return;
+    }
+
     // 0.08s initial delay before expansion starts (matching Essential Timer exact timing)
     const animTimer = setTimeout(() => {
       setAnimating(true);
@@ -42,7 +49,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       clearTimeout(animTimer);
       clearTimeout(dismissTimer);
     };
-  }, []);
+  }, [isSplashParam]);
 
   return (
     <div

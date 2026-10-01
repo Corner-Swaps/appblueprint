@@ -59,20 +59,56 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "purchaseProduct", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "restorePurchases", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getEntitlements", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "getEntitlements", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getProducts", returnType: CAPPluginReturnPromise)
     ]
+
+    private var updateListenerTask: Task<Void, Never>? = nil
+
+    public override func load() {
+        super.load()
+        startTransactionUpdatesListener()
+    }
+
+    deinit {
+        updateListenerTask?.cancel()
+    }
+
+    private func startTransactionUpdatesListener() {
+        updateListenerTask = Task.detached {
+            for await result in Transaction.updates {
+                if case .verified(let transaction) = result {
+                    await transaction.finish()
+                }
+            }
+        }
+    }
 
     @objc public func purchaseProduct(_ call: CAPPluginCall) {
         guard let productId = call.getString("productId") else {
-            call.reject("Product ID is required")
+            call.resolve([
+                "success": false,
+                "error": "MISSING_PRODUCT_ID",
+                "message": "Product ID is required."
+            ])
             return
         }
 
         Task {
             do {
-                let products = try await Product.products(for: [productId])
+                // Fetch products with sandbox warmup retry
+                var products = try await Product.products(for: [productId])
+                if products.isEmpty {
+                    try? await Task.sleep(nanoseconds: 600_000_000)
+                    products = try await Product.products(for: [productId])
+                }
+
                 guard let product = products.first else {
-                    call.reject("Product '\(productId)' not found in App Store. Please ensure it is created in App Store Connect.")
+                    call.resolve([
+                        "success": false,
+                        "error": "PRODUCT_NOT_AVAILABLE",
+                        "message": "Product currently unavailable from App Store. Please check your network connection or App Store Connect configuration."
+                    ])
                     return
                 }
 
@@ -88,21 +124,44 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                             "transactionId": String(transaction.id)
                         ])
                     case .unverified(_, let error):
-                        call.reject("Transaction unverified: \(error.localizedDescription)")
+                        call.resolve([
+                            "success": false,
+                            "error": "UNVERIFIED_TRANSACTION",
+                            "message": error.localizedDescription
+                        ])
                     }
                 case .userCancelled:
-                    call.reject("Purchase cancelled by user", "USER_CANCELLED")
+                    call.resolve([
+                        "success": false,
+                        "userCancelled": true
+                    ])
                 case .pending:
                     call.resolve([
                         "success": false,
                         "pending": true,
-                        "message": "Purchase is pending approval (e.g. Ask to Buy)"
+                        "message": "Purchase is pending approval (such as Ask to Buy). Access will activate automatically once approved."
                     ])
                 @unknown default:
-                    call.reject("Unknown transaction result")
+                    call.resolve([
+                        "success": false,
+                        "error": "UNKNOWN_RESULT",
+                        "message": "Unknown transaction result."
+                    ])
                 }
             } catch {
-                call.reject(error.localizedDescription)
+                let nsError = error as NSError
+                if nsError.domain == SKErrorDomain && nsError.code == SKError.Code.paymentCancelled.rawValue {
+                    call.resolve([
+                        "success": false,
+                        "userCancelled": true
+                    ])
+                } else {
+                    call.resolve([
+                        "success": false,
+                        "error": "PURCHASE_FAILED",
+                        "message": error.localizedDescription
+                    ])
+                }
             }
         }
     }
@@ -124,7 +183,11 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                     "entitlements": activeEntitlements
                 ])
             } catch {
-                call.reject(error.localizedDescription)
+                call.resolve([
+                    "success": false,
+                    "entitlements": [],
+                    "error": error.localizedDescription
+                ])
             }
         }
     }
@@ -140,8 +203,45 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                 }
             }
             call.resolve([
+                "success": true,
                 "entitlements": activeEntitlements
             ])
+        }
+    }
+
+    @objc public func getProducts(_ call: CAPPluginCall) {
+        guard let productIds = call.getArray("productIds", String.self), !productIds.isEmpty else {
+            call.resolve([
+                "success": false,
+                "products": [],
+                "error": "Product IDs array is required"
+            ])
+            return
+        }
+
+        Task {
+            do {
+                let products = try await Product.products(for: Set(productIds))
+                let productList = products.map { p in
+                    [
+                        "id": p.id,
+                        "displayName": p.displayName,
+                        "description": p.description,
+                        "displayPrice": p.displayPrice,
+                        "price": Double(truncating: p.price as NSNumber)
+                    ]
+                }
+                call.resolve([
+                    "success": true,
+                    "products": productList
+                ])
+            } catch {
+                call.resolve([
+                    "success": false,
+                    "products": [],
+                    "error": error.localizedDescription
+                ])
+            }
         }
     }
 }

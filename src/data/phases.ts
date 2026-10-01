@@ -2210,30 +2210,34 @@ export const PHASES_DATA: Phase[] = [
         "id": "p7-screenshots-video",
         "phaseId": "phase-7",
         "title": "Store Screenshot",
-        "shortDescription": "Prepare screenshots for 6.9\" iPhone 16 Pro Max, 6.7\", 6.5\", 13\" iPad Pro, and Google Play phone/tablets.",
+        "shortDescription": "Create templates with AppLaunchpad, then bulk-reformat with BIRME to exact Apple (1320x2868, 2064x2752) and Google (1080x2400) resolutions.",
         "category": "store",
         "platform": "both",
         "priority": "blocker",
-        "whyItMatters": "App Store Connect blocks submission if required screenshot dimensions (specifically 6.9\" / 6.7\" iPhone displays) are missing. Screenshots must show the real app, not just abstract drawings.",
+        "whyItMatters": "App Store Connect and Google Play reject any screenshot that differs by even 1 single pixel from required specifications. AppLaunchpad (theapplaunchpad.com) lets you build panoramic screenshot sequences, but exports do not come pre-formatted. You must reformat them with BIRME (birme.net) to guarantee 100% upload compliance.",
         "implementationSteps": [
-          "iOS: Export screenshots for 6.9\" / 6.7\" iPhone displays (e.g. 1290x2796px or 1320x2868px) and iPad if iPad-compatible.",
-          "Google Play: Provide at least 2 phone screenshots and a 1024x500px Feature Graphic banner.",
-          "Make sure device mockup frames match the target platform (no Android frames in Apple screenshots)."
+          "Design panoramic screenshot sequences on AppLaunchpad (theapplaunchpad.com) using 3D device frames and bold feature headlines.",
+          "Export screenshot cards from AppLaunchpad and drop them directly into BIRME (birme.net) for instant bulk browser-based reformatting.",
+          "iPhone Exact Dimensions: Set BIRME to 1320 x 2868 px (6.9\" iPhone 16 Pro Max) or 1290 x 2796 px (6.7\" iPhone 15/14 Pro Max) or 1242 x 2208 px (5.5\").",
+          "iPad Exact Dimensions: Set BIRME to 2064 x 2752 px (13\" iPad Pro M4) or 2048 x 2732 px (12.9\" iPad Pro) or 1668 x 2388 px (11\" iPad Pro).",
+          "Google Play Exact Dimensions: Set BIRME to 1080 x 2400 px (or 1080 x 1920 px) for phones, 1200 x 1920 px (7\" tablets), 1600 x 2560 px (10\" tablets), and 1024 x 500 px (Feature Graphic).",
+          "Ensure exported PNG files are 24-bit sRGB with strictly NO transparency / alpha channel (App Store Connect rejects transparent pixels)."
         ],
-        "agentPrompt": "You are the autonomous mobile marketing designer. Do NOT ask the user to design screenshots—plan and generate specifications for high-converting app store screenshot mockups autonomously.\n\nTASK & OBJECTIVE:\nPlan, design, and specify high-converting app store screenshot mockups showcasing real in-app UI across modern Apple iPhone and Google Play dimensions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect key user workflows, high-value screens, and visual components in our app.\n2. IMPLEMENTATION:\n   - Outline 5 distinct screenshot frames:\n     1. Hook Frame: The primary value proposition in action.\n     2. Core Feature: The main interactive tool that solves the user's problem.\n     3. Secondary Feature: Offline capability, smart sync, or workflow optimization.\n     4. Insights & Analytics: Beautiful dashboards or progress tracking.\n     5. Privacy & Security: Local hardware encryption and zero-tracking pledge.\n   - Specify exact pixel dimensions: 1290x2796px (6.7\"/6.9\" iPhone Display) and 1080x2400px (Android Phone).\n   - Use authentic in-app UI with legible benefit headlines above each screen mockup.\n3. STORE COMPLIANCE: Apple Guideline 2.3 strictly requires screenshots to display actual in-app footage rather than generic lifestyle advertisements.\n4. VERIFICATION: Ensure screenshot plan documents exact dimensions, captions, and screen states ready for export.",
+        "agentPrompt": "You are the autonomous mobile marketing designer and ASO specialist. Do NOT ask the user to design screenshots—plan and specify high-converting app store screenshot mockups autonomously.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application using AppLaunchpad layout patterns and specify exact BIRME reformatting dimensions for Apple App Store and Google Play.\n\nEXACT RESOLUTION SPECIFICATIONS:\n1. APPLE IPHONE:\n   - 6.9\" Display (iPhone 16 Pro Max): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n   - 6.7\" Display (iPhone 15/14 Pro Max): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n   - 5.5\" Display (iPhone 8 Plus): 1242 x 2208 px (Portrait) / 2208 x 1242 px (Landscape)\n2. APPLE IPAD:\n   - 13\" iPad Pro (M4): 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n   - 12.9\" iPad Pro (6th gen): 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n   - 11\" iPad Pro: 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n3. GOOGLE PLAY:\n   - Phone: 1080 x 2400 px (Portrait) or 1080 x 1920 px (Portrait)\n   - 7\" Tablet: 1200 x 1920 px (Portrait)\n   - 10\" Tablet: 1600 x 2560 px (Portrait)\n   - Feature Graphic: 1024 x 500 px (JPEG or 24-bit PNG, NO alpha)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD:\n   - Card 1: Hook headline with hero product visual.\n   - Card 2: Core interactive workflow solving primary problem.\n   - Card 3: Key differentiator (speed, offline-first, security).\n   - Card 4: Analytics, progress tracking, or detail sheets.\n   - Card 5: Social proof, dark mode, or privacy reassurance.\n2. TOOLCHAIN INTEGRATION: Plan templates on AppLaunchpad (theapplaunchpad.com) and batch-reformat exports via BIRME (birme.net).\n3. STORE COMPLIANCE: Apple Guideline 2.3 strictly requires screenshots to display actual in-app footage rather than generic lifestyle advertisements.\n4. VERIFICATION: Ensure all files are 24-bit RGB with zero alpha channel to avoid ITMS rejection.",
         "commonRejectionTraps": [
-          "Uploading screenshots with incorrect pixel dimensions.",
-          "Showing an Android phone mockup frame in an Apple App Store screenshot.",
-          "Uploading device frames that do not match the platform (e.g. displaying Android navigation buttons on an iPhone screenshot)."
+          "Uploading AppLaunchpad exports directly without reformatting via BIRME—App Store Connect automatically rejects invalid pixel dimensions with ITMS errors.",
+          "Uploading screenshots with transparency (alpha channel)—App Store Connect rejects with error ITMS-90717.",
+          "Showing an Android phone mockup frame in an Apple App Store screenshot, or an iPhone mockup on Google Play."
         ],
         "verificationQuestions": [
-          "Are all required screenshot sizes exported at high resolution without pixelation?",
-          "Do your screenshots showcase real, working app features?"
+          "Have you reformatted all exported screenshots in BIRME (birme.net) to match Apple and Google's exact pixel dimensions?",
+          "Are all required screenshot sizes exported at 24-bit sRGB with zero transparency/alpha channels?",
+          "Do your screenshots showcase real, working app features rather than generic promotional art?"
         ],
-        "whatHappensNext": "Your store listing displays pixel-perfect screenshot mockups with legible benefit headlines, meeting all App Store Connect and Google Play upload requirements on the first try.",
+        "whatHappensNext": "Your store listing displays pixel-perfect screenshot mockups built with AppLaunchpad and formatted with BIRME, meeting all App Store Connect and Google Play upload requirements on the first try.",
         "directLink": {
-          "label": "Shots.so - Free Screenshot Mockup Tool",
-          "url": "https://shots.so/"
+          "label": "AppLaunchpad - Screenshot Builder",
+          "url": "https://theapplaunchpad.com/"
         },
         "videoUrl": {
           "title": "Fast Screenshot Tools",
