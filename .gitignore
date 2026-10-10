@@ -41,3 +41,9 @@ build_device/
 scratch/
 website-build/
 
+# Mobile Release Artifacts
+*.ipa
+*.aab
+deliverables/*.ipa
+deliverables/*.aab
+
