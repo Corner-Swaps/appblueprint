@@ -46,4 +46,11 @@ website-build/
 *.aab
 deliverables/*.ipa
 deliverables/*.aab
+*.keystore
+*.jks
+.keystore_password
+backups/
+android/.gradle/
+android/build/
+android/app/build/
 

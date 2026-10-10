@@ -74,7 +74,16 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // On Android, all features are unlocked in v1 (no paywall or StoreKit)
+  useEffect(() => {
+    if (isOpen && Capacitor.getPlatform() === 'android') {
+      unlockUnlimited();
+      onUnlocked();
+      onClose();
+    }
+  }, [isOpen, onClose, onUnlocked]);
+
+  if (!isOpen || Capacitor.getPlatform() === 'android') return null;
 
   const currentPrice = purchaseTier === 'unlimited' ? unlimitedPrice : singlePrice;
   const currentTitle = purchaseTier === 'unlimited' ? 'Unlimited Projects' : 'Project Blueprint';
@@ -86,7 +95,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
     const productId = tier === 'unlimited' ? PRODUCT_ID_UNLIMITED_PROJECTS : PRODUCT_ID_NEXT_PROJECT;
 
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.getPlatform() === 'ios') {
       setIsNativeProcessing(true);
       const res = await purchaseWithStoreKit(productId, targetProjectId);
       setIsNativeProcessing(false);

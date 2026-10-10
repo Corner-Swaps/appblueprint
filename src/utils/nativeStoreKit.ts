@@ -55,7 +55,7 @@ export interface PurchaseResult {
  * Queries product details from native StoreKit 2.
  */
 export async function getStoreProducts(productIds: string[]): Promise<Record<string, StoreProduct>> {
-  if (Capacitor.isNativePlatform()) {
+  if (Capacitor.getPlatform() === 'ios') {
     try {
       const res = await StoreKit.getProducts({ productIds });
       if (res && res.success && Array.isArray(res.products)) {
@@ -77,7 +77,7 @@ export async function getStoreProducts(productIds: string[]): Promise<Record<str
  * Falls back to simulation only when running on web preview.
  */
 export async function purchaseWithStoreKit(productId: string, targetProjectId?: string): Promise<PurchaseResult> {
-  if (Capacitor.isNativePlatform()) {
+  if (Capacitor.getPlatform() === 'ios') {
     try {
       const res = await StoreKit.purchaseProduct({ productId });
       if (res.success) {
@@ -117,7 +117,7 @@ export async function purchaseWithStoreKit(productId: string, targetProjectId?: 
  * Mandatory under Apple App Store Review Guideline 3.1.1.
  */
 export async function restoreWithStoreKit(): Promise<{ restoredCount: number; isUnlimited: boolean; error?: string }> {
-  if (Capacitor.isNativePlatform()) {
+  if (Capacitor.getPlatform() === 'ios') {
     try {
       const res = await StoreKit.restorePurchases();
       const entitlements = res.entitlements || [];
@@ -158,7 +158,7 @@ export async function restoreWithStoreKit(): Promise<{ restoredCount: number; is
  * Sync active entitlements on startup.
  */
 export async function syncActiveEntitlements(): Promise<void> {
-  if (!Capacitor.isNativePlatform()) return;
+  if (Capacitor.getPlatform() !== 'ios') return;
   try {
     const res = await StoreKit.getEntitlements();
     const entitlements = res.entitlements || [];

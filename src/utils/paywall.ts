@@ -1,3 +1,5 @@
+import { Capacitor } from '@capacitor/core';
+
 export const STORAGE_KEY_PRO_UNLOCKED = 'appblueprint_pro_unlocked_v1';
 export const STORAGE_KEY_UNLIMITED_UNLOCKED = 'appblueprint_unlimited_unlocked_v2';
 export const STORAGE_KEY_PURCHASED_SLOTS = 'appblueprint_purchased_slots_v2';
@@ -166,6 +168,9 @@ export const saveCreatorProfile = (profile: { name: string; email: string }): vo
  */
 export const isUnlimitedUnlocked = (): boolean => {
   try {
+    if (Capacitor.getPlatform() === 'android') {
+      return true;
+    }
     return (
       localStorage.getItem(STORAGE_KEY_UNLIMITED_UNLOCKED) === 'true' ||
       localStorage.getItem(STORAGE_KEY_PRO_UNLOCKED) === 'true'
