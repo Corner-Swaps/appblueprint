@@ -167,10 +167,10 @@ export const saveCreatorProfile = (profile: { name: string; email: string }): vo
  * Checks whether the user has purchased Unlimited Projects.
  */
 export const isUnlimitedUnlocked = (): boolean => {
+  if (Capacitor.getPlatform() === 'android') {
+    return true;
+  }
   try {
-    if (Capacitor.getPlatform() === 'android') {
-      return true;
-    }
     return (
       localStorage.getItem(STORAGE_KEY_UNLIMITED_UNLOCKED) === 'true' ||
       localStorage.getItem(STORAGE_KEY_PRO_UNLOCKED) === 'true'

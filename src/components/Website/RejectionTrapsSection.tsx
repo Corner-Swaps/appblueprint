@@ -5,7 +5,7 @@ interface RejectionTrapsSectionProps {
   onLaunchApp: () => void;
 }
 
-export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ onLaunchApp }) => {
+export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = React.memo(({ onLaunchApp }) => {
   const traps = [
     {
       icon: WifiOff,
@@ -31,17 +31,17 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
       tag: 'Apple Guidelines 4.8 & 5.1.1',
       title: 'Sign in with Apple & Account Deletion',
       description:
-        'If you offer Google or Facebook login, Apple mandates Sign in with Apple with equal prominence. And if users can register, self-service account deletion must be fully implemented inside the app.',
+        'If you offer third-party login, Apple mandates Sign in with Apple with equal prominence. And if users can register, self-service account deletion must be fully implemented inside the app.',
       guardrail: 'Step-by-step guidance & copy-paste prompts for auth parity & deletion flows.',
     },
     {
       icon: Clock,
       color: 'from-blue-500 to-cyan-600',
-      tag: 'Google Play Core Policy',
-      title: '20-Tester Rule & Background Vitals',
+      tag: 'Apple Guidelines 3.1.1 & 2.1(b)',
+      title: 'StoreKit 2 Purchases & Restore',
       description:
-        'New personal developer accounts must recruit 20 opted-in testers for 14 continuous days before requesting production access. Background tasks must justify foreground services.',
-      guardrail: 'Phase 9 includes closed testing playbook & Android Vitals health criteria.',
+        'Digital feature unlocks must use Apple StoreKit with a prominent "Restore Purchases" button, transparent pricing terms, and graceful handling of sandbox purchase states without throwing runtime errors.',
+      guardrail: 'Includes StoreKit 2 integration playbook, restore flows, and sandbox test scripts.',
     },
   ];
 
@@ -71,7 +71,7 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
           </h2>
 
           <p className="text-base sm:text-lg text-slate-400 leading-relaxed text-balance">
-            Apple and Google reviewers don&apos;t just evaluate your design. They run rigorous automated and manual audits across network edge cases, privacy manifests, account lifecycle rules, and platform policies.
+            Apple App Store reviewers don&apos;t just evaluate your design. They run rigorous automated and manual audits across network edge cases, privacy manifests, account lifecycle rules, and platform policies.
           </p>
         </div>
 
@@ -137,4 +137,4 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = ({ on
       </div>
     </section>
   );
-};
+});

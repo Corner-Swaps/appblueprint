@@ -5,7 +5,7 @@ interface ReadinessCalculatorProps {
   onLaunchApp: () => void;
 }
 
-export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = ({ onLaunchApp }) => {
+export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = React.memo(({ onLaunchApp }) => {
   const questions = [
     {
       id: 'ipv6',
@@ -19,7 +19,7 @@ export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = ({ onLaun
     },
     {
       id: 'auth',
-      text: 'If you support third-party login (Google/Meta), is Sign in with Apple implemented with equal prominence?',
+      text: 'If you support third-party social login, is Sign in with Apple implemented with equal prominence?',
       rule: 'Apple Guideline 4.8',
     },
     {
@@ -235,4 +235,4 @@ export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = ({ onLaun
       </div>
     </section>
   );
-};
+});

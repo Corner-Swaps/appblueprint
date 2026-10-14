@@ -17,7 +17,7 @@ interface WebsiteProps {
 
 export const Website: React.FC<WebsiteProps> = ({ onLaunchApp }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activePlatform, setActivePlatform] = useState<'all' | 'ios' | 'android'>('all');
+  const [activePlatform, setActivePlatform] = useState<'all' | 'ios' | 'ipad'>('all');
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   // Smooth scroll support for hash links (both on initial mount and on hashchange)

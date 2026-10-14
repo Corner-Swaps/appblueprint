@@ -93,10 +93,8 @@ export const TroubleshootingWizard: React.FC = () => {
             onChange={(e) => setPlatformFilter(e.target.value as any)}
             className="bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 rounded-xl px-3 py-2 text-[16px] sm:text-xs font-medium text-apple-gray-700 dark:text-apple-300 outline-none cursor-pointer"
           >
-            <option value="all">All Platforms</option>
-            <option value="ios">Apple Rejections & Issues</option>
-            <option value="android">Android Rejections & Issues</option>
-            <option value="both">Apple + Android Issues</option>
+            <option value="all">All Store Scenarios</option>
+            <option value="ios">App Store Rejections & Fixes</option>
           </select>
         </div>
       </div>
@@ -170,11 +168,6 @@ export const TroubleshootingWizard: React.FC = () => {
                   {selectedScenario.appStoreGuidelineRef && (
                     <span className="text-xs px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-950/40 text-apple-purple font-medium">
                       {selectedScenario.appStoreGuidelineRef}
-                    </span>
-                  )}
-                  {selectedScenario.googlePlayPolicyRef && (
-                    <span className="text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-apple-blue font-medium">
-                      {selectedScenario.googlePlayPolicyRef}
                     </span>
                   )}
                 </div>

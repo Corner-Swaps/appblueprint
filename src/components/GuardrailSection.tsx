@@ -79,7 +79,7 @@ const formatGuidelineButtonLabel = (rawName?: string): string => {
     return 'Health & Medical Policy';
   }
   if (/core vitals/i.test(trimmed)) {
-    return 'Google Play Core Vitals';
+    return 'App Store Core Performance';
   }
   if (/listing/i.test(trimmed) || /metadata/i.test(trimmed)) {
     return 'Store Listing Metadata Policy';
@@ -88,10 +88,10 @@ const formatGuidelineButtonLabel = (rawName?: string): string => {
     return 'App Completeness Review Guidelines';
   }
   if (/closed testing/i.test(trimmed)) {
-    return 'Google Play Closed Testing';
+    return 'TestFlight External Testing';
   }
   if (/developer policy/i.test(trimmed)) {
-    return 'Google Play Developer Policy';
+    return 'App Store Review Guidelines';
   }
   if (/webview/i.test(trimmed) || /web-view/i.test(trimmed)) {
     return 'WebView Security Guidelines';
@@ -132,7 +132,7 @@ interface GuardrailSectionProps {
   onToggleGlobalEdit?: () => void;
 }
 
-export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
+export const GuardrailSection: React.FC<GuardrailSectionProps> = React.memo(({
   phase,
   phaseIndex,
   totalPhases,
@@ -487,8 +487,12 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
 
   const isCustomPhase = phase.id.startsWith('custom-');
   const theme = isCustomPhase ? CUSTOM_PHASE_THEME : getPhaseTheme(phase.number);
+  const completedSet = React.useMemo(() => new Set(completedItemIds), [completedItemIds]);
   const totalCount = phase.items.length;
-  const completedCount = phase.items.filter(i => completedItemIds.includes(i.id)).length;
+  const completedCount = React.useMemo(
+    () => phase.items.reduce((acc, i) => acc + (completedSet.has(i.id) ? 1 : 0), 0),
+    [phase.items, completedSet]
+  );
   const isAllComplete = totalCount > 0 && completedCount === totalCount;
   const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -768,6 +772,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
           {/* 2. Connected Sub Categories Drawer (Inside the same unified pill!) */}
           <div className={`apple-drawer-collapse apple-unified-drawer ${isExpanded ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
             <div className="apple-drawer-content">
+              {isExpanded && (
+                <>
               {items.length === 0 && (
                 <div className="py-6 px-4 text-center space-y-1.5 select-none">
                   <p className="text-xs font-bold text-slate-700 font-google">No requirements added yet</p>
@@ -778,7 +784,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               {/* Requirements list separated by a thin grey line matching Academy */}
               <div className="divide-y divide-slate-200/60 border-t border-slate-200/60">
                 {items.map((item, idx) => {
-                  const isDone = completedItemIds.includes(item.id);
+                  const isDone = completedSet.has(item.id);
                   const isDetailOpen = expandedItemId === item.id;
 
                   return (
@@ -943,6 +949,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                   {/* Expanded Guidance Drawer: Distinct Pill Cards matching Academy */}
                   <div className={`apple-drawer-collapse ${!isEditing && isDetailOpen ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
                     <div className="apple-drawer-content">
+                      {!isEditing && isDetailOpen && (
                       <div 
                         onClick={(e) => handleDrawerTextClick(e, item.id)}
                         className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
@@ -1186,6 +1193,7 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
                           )}
                         </div>
                       </div>
+                      )}
                     </div>
                   </div>
 
@@ -1282,6 +1290,8 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
               </div>
             </form>
           )}
+                </>
+              )}
             </div>
           </div>
         </>
@@ -1350,4 +1360,4 @@ export const GuardrailSection: React.FC<GuardrailSectionProps> = ({
     )}
   </>
 );
-};
+});

@@ -3,8 +3,8 @@ import { Rocket, Menu, X, ArrowRight, Search, Apple, Smartphone, Globe } from 'l
 
 interface NavbarProps {
   onLaunchApp: () => void;
-  activePlatform?: 'all' | 'ios' | 'android';
-  onSelectPlatform?: (platform: 'all' | 'ios' | 'android') => void;
+  activePlatform?: 'all' | 'ios' | 'ipad';
+  onSelectPlatform?: (platform: 'all' | 'ios' | 'ipad') => void;
   onOpenSearch?: () => void;
 }
 
@@ -46,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { label: 'FAQ', shortLabel: 'FAQ', href: '#faq' },
   ];
 
-  const handlePlatformClick = (platform: 'all' | 'ios' | 'android') => {
+  const handlePlatformClick = (platform: 'all' | 'ios' | 'ipad') => {
     if (onSelectPlatform) {
       onSelectPlatform(platform);
     }
@@ -155,15 +155,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => handlePlatformClick('android')}
+              onClick={() => handlePlatformClick('ipad')}
               className={`apple-press inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activePlatform === 'android'
+                activePlatform === 'ipad'
                   ? 'bg-slate-950 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-black/4'
               }`}
             >
               <Smartphone className="w-3 h-3 stroke-[2.2]" />
-              <span>Android Play</span>
+              <span>iPadOS</span>
             </button>
           </div>
 
@@ -270,14 +270,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  handlePlatformClick('android');
+                  handlePlatformClick('ipad');
                   setIsMobileMenuOpen(false);
                 }}
                 className={`py-1.5 rounded-lg text-xs font-bold text-center ${
-                  activePlatform === 'android' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
+                  activePlatform === 'ipad' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
                 }`}
               >
-                Android
+                iPadOS
               </button>
             </div>
 

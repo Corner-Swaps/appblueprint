@@ -102,14 +102,12 @@ import {
   Flag,
   Tag,
   Bookmark,
+  ShoppingBag,
 } from 'lucide-react';
 
 import {
   AppleLogo,
-  GoogleLogo,
-  GooglePlayLogo,
   GitHubLogo,
-  AndroidLogo,
   TestFlightLogo,
   FastlaneLogo,
   RevenueCatLogo,
@@ -121,8 +119,9 @@ import {
  * 100% Unique, dedicated icon assignments for every checklist item in the application.
  * Uses authentic company brand logos for referenced tools and services.
  */
-export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode => {
-  const id = item.id.toLowerCase();
+const iconCache = new Map<string, React.ReactNode>();
+
+const computeChecklistItemIcon = (id: string): React.ReactNode => {
 
   // 1. Setup & Environment Phase (phase-setup)
   if (id === 'setup-prerequisites') {
@@ -134,11 +133,11 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
   if (id === 'setup-developer-accounts') {
     return <AppleLogo className="w-5 h-5 text-black" />;
   }
-  if (id === 'setup-xcode-tools' || id === 'setup-xcode-android-studio') {
+  if (id === 'setup-xcode-tools') {
     return <XcodeLogo className="w-5 h-5" />;
   }
-  if (id === 'setup-android-studio') {
-    return <AndroidLogo className="w-5 h-5 text-[#3DDC84]" />;
+  if (id === 'setup-storekit-sandbox') {
+    return <ShoppingBag className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
   }
   if (id === 'setup-github-repo') {
     return <GitHubLogo className="w-5 h-5 text-[#24292F]" />;
@@ -287,7 +286,7 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
   if (id === 'p4-privacy-manifest') {
     return <FileText className="w-5 h-5 text-indigo-600 stroke-[2.2]" />;
   }
-  if (id === 'p4-play-data-safety') {
+  if (id === 'p4-play-data-safety' || id === 'p4-app-privacy-details') {
     return <Shield className="w-5 h-5 text-blue-600 stroke-[2.2]" />;
   }
   if (id === 'p4-keychain-keystore') {
@@ -360,8 +359,8 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
   if (id === 'p6-memory-leaks') {
     return <Gauge className="w-5 h-5 text-rose-600 stroke-[2.2]" />;
   }
-  if (id === 'p6-android-vitals') {
-    return <AndroidLogo className="w-5 h-5 text-[#3DDC84]" />;
+  if (id === 'p6-xcode-metrics') {
+    return <Activity className="w-5 h-5 text-indigo-600 stroke-[2.2]" />;
   }
   if (id === 'p6-cold-launch') {
     return <Timer className="w-5 h-5 text-amber-600 stroke-[2.2]" />;
@@ -397,14 +396,14 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
   }
 
   // 11. Phase 8: Signing, Beta & CI/CD
-  if (id === 'p8-ios-signing') {
+  if (id === 'p8-ios-signing' || id === 'p8-apple-distribution-cert') {
     return <AppleLogo className="w-5 h-5 text-black" />;
   }
-  if (id === 'p8-android-keystore') {
-    return <AndroidLogo className="w-5 h-5 text-[#3DDC84]" />;
+  if (id === 'p8-storekit-iap-readiness') {
+    return <ShoppingBag className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
   }
-  if (id === 'p8-google-20-testers') {
-    return <GooglePlayLogo className="w-5 h-5" />;
+  if (id === 'p8-testflight-external-beta') {
+    return <TestFlightLogo className="w-5 h-5 text-[#007AFF]" />;
   }
   if (id === 'p8-testflight-beta') {
     return <TestFlightLogo className="w-5 h-5 text-[#007AFF]" />;
@@ -423,8 +422,8 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
   if (id === 'p9-apple-rejection-audit') {
     return <AppleLogo className="w-5 h-5 text-black" />;
   }
-  if (id === 'p9-google-play-audit') {
-    return <GooglePlayLogo className="w-5 h-5" />;
+  if (id === 'p9-app-store-submission-audit') {
+    return <ShieldCheck className="w-5 h-5 text-purple-600 stroke-[2.2]" />;
   }
   if (id === 'p9-submission-release-type') {
     return <Play className="w-5 h-5 text-blue-600 stroke-[2.2]" />;
@@ -487,4 +486,13 @@ export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode =>
   ];
 
   return customPalette[hash % customPalette.length];
+};
+
+export const renderChecklistItemIcon = (item: ChecklistItem): React.ReactNode => {
+  const id = item.id.toLowerCase();
+  const cached = iconCache.get(id);
+  if (cached !== undefined) return cached;
+  const icon = computeChecklistItemIcon(id);
+  iconCache.set(id, icon);
+  return icon;
 };

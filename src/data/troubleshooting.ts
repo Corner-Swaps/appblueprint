@@ -7,7 +7,7 @@ export const TROUBLESHOOTING_DATA: TroubleshootingScenario[] = [
     category: 'rejection',
     platform: 'ios',
     appStoreGuidelineRef: 'Guideline 2.1 - App Completeness',
-    triggerSymptom: 'Reviewer rejected with: "We discovered one or more bugs in your app... Your app crashed on launch or displayed a blank screen when we attempted to review it on iPad/iPhone running iOS 18."',
+    triggerSymptom: 'Reviewer rejected with: "We discovered one or more bugs in your app... Your app crashed on launch or displayed a blank screen when we attempted to review it on iPad/iPhone running iOS 18/26."',
     rootCauses: [
       'App was tested in an IPv4 environment, but Apple review runs in an isolated IPv6 NAT64 network.',
       'Missing permission description in Info.plist (e.g. NSCameraUsageDescription or NSLocationWhenInUseUsageDescription) causing an unhandled SIGABRT upon access.',
@@ -51,14 +51,50 @@ guard let userProfile = viewModel.currentUser else {
     ]
   },
   {
+    id: 'ts-guideline-2-1-iap-sandbox',
+    title: 'Apple Guideline 2.1(b): In-App Purchases Unresponsive or Displaying Errors',
+    category: 'rejection',
+    platform: 'ios',
+    appStoreGuidelineRef: 'Guideline 2.1(b) - App Completeness',
+    triggerSymptom: 'Reviewer rejected with: "The In-App Purchase products in the app exhibited one or more bugs. Specifically, there was an error message displayed when we tapped Unlock."',
+    rootCauses: [
+      'StoreKit 2 product queries take longer on review sandbox servers and timeout without fallback retry.',
+      'Paid Apps Agreement in App Store Connect Business section is not accepted or pending banking/tax info.',
+      'The In-App Purchase capability is not enabled on the Xcode target attributes.',
+      'UI immediately pops an error alert instead of keeping the user in a loading state or offering a silent retry.'
+    ],
+    immediateFix: [
+      'Step 1: Check App Store Connect -> Agreements -> Paid Apps Agreement and confirm status is "Active".',
+      'Step 2: Add `com.apple.InAppPurchase` capability to your Xcode target in `project.pbxproj`.',
+      'Step 3: Query StoreKit 2 products at app launch with automated retry logic so products are pre-cached before the paywall opens.',
+      'Step 4: Gracefully handle cancellation and sandbox latency without displaying red error banners to the reviewer.'
+    ],
+    codeSnippet: {
+      language: 'swift',
+      filename: 'StoreKitManager.swift',
+      code: `// StoreKit 2 robust product retrieval with retry
+func fetchProducts(productIdentifiers: [String], retries: Int = 3) async -> [Product] {
+    for _ in 0..<retries {
+        do {
+            let products = try await Product.products(for: productIdentifiers)
+            if !products.isEmpty { return products }
+        } catch {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+    }
+    return []
+}`
+    }
+  },
+  {
     id: 'ts-guideline-4-8-apple-signin',
     title: 'Apple Guideline 4.8: Missing Sign in with Apple Parity',
     category: 'rejection',
     platform: 'ios',
     appStoreGuidelineRef: 'Guideline 4.8 - Sign in with Apple',
-    triggerSymptom: 'Reviewer rejected with: "Apps that use a third-party or social login service (such as Google Sign-In or Facebook) to set up or authenticate the user\'s primary account must also offer Sign in with Apple as an equivalent option."',
+    triggerSymptom: 'Reviewer rejected with: "Apps that use a third-party or social login service to set up or authenticate the user\'s primary account must also offer Sign in with Apple as an equivalent option."',
     rootCauses: [
-      'The app provides Google, Facebook, Twitter/X, or GitHub login buttons, but omitted Sign in with Apple.',
+      'The app provides social login buttons, but omitted Sign in with Apple.',
       'The Sign in with Apple button is placed below the fold or smaller than third-party options.'
     ],
     immediateFix: [
@@ -80,7 +116,7 @@ SignInWithAppleButton(
         case .success(let authResults):
             handleAppleAuth(authResults)
         case .failure(let error):
-            print("Auth failed: \(error)")
+            print("Auth failed: \\(error)")
         }
     }
 )
@@ -90,11 +126,10 @@ SignInWithAppleButton(
   },
   {
     id: 'ts-guideline-5-1-1-account-deletion',
-    title: 'Apple Guideline 5.1.1(v) & Google Play: Missing In-App Account Deletion',
+    title: 'Apple Guideline 5.1.1(v): Missing In-App Account Deletion',
     category: 'rejection',
-    platform: 'both',
+    platform: 'ios',
     appStoreGuidelineRef: 'Guideline 5.1.1(v) - Account Deletion',
-    googlePlayPolicyRef: 'Google Play User Data - Account Deletion Requirement',
     triggerSymptom: 'Rejection stating: "We noticed that your app allows users to create an account, but does not provide an option to initiate account deletion directly in the app."',
     rootCauses: [
       'Account deletion option redirects to an external support email or contact form.',
@@ -105,76 +140,51 @@ SignInWithAppleButton(
       'Step 1: Add a visible "Delete Account" button in the Settings / Profile screen.',
       'Step 2: Show a confirmation modal explaining that all personal data will be permanently wiped.',
       'Step 3: Call an endpoint that invalidates auth tokens and queues data deletion within 30 days.',
-      'Step 4: Host a public URL (e.g. `https://yourapp.com/delete-account`) allowing users to request deletion from a browser and link this in Google Play Console.'
+      'Step 4: Host a public URL (e.g. `https://yourapp.com/delete-account`) allowing users to request deletion from a browser and link this in App Store Connect.'
     ]
   },
   {
-    id: 'ts-google-foreground-service',
-    title: 'Google Play Rejection: Foreground Service Permission Without Justification',
-    category: 'rejection',
-    platform: 'android',
-    googlePlayPolicyRef: 'Google Play Foreground Services Policy (Android 14+)',
-    triggerSymptom: 'Google Play automated review rejection: "Your declared Foreground Service is not permitted under the policy... You must provide a valid justification and video proof."',
+    id: 'ts-testflight-external-review',
+    title: 'TestFlight Beta Testing & App Store Review Preparation',
+    category: 'store_ops',
+    platform: 'ios',
+    appStoreGuidelineRef: 'App Store Review - TestFlight Guidelines',
+    triggerSymptom: 'TestFlight External Testing build is waiting for review or rejected for incomplete demo credentials or test information.',
     rootCauses: [
-      'Requesting generic `FOREGROUND_SERVICE` permission in Android 14+ without specifying the sub-type permission.',
-      'Using a foreground service for background syncing or tasks that should use WorkManager instead.',
-      'Missing or invalid video link demonstrating the user-initiated foreground service in action.'
+      'Review notes lacked working test login credentials or 2FA bypass instructions.',
+      'Missing privacy policy URL in App Store Connect or invalid test information in "What to Test".',
+      'Build missing export compliance encryption declaration in Info.plist (`ITSAppUsesNonExemptEncryption`).'
     ],
     immediateFix: [
-      'Step 1: Replace generic foreground services with `androidx.work:work-runtime-ktx` (WorkManager) for non-immediate background sync.',
-      'Step 2: If a real-time foreground service is required (e.g. media playback, active navigation, call): declare the specific permission like `FOREGROUND_SERVICE_MEDIA_PLAYBACK` in AndroidManifest.xml.',
-      'Step 3: Record a 30-second screen video showing the user tapping "Play" or "Start Route" and the persistent notification appearing in the notification shade.',
-      'Step 4: Submit the video link in the Play Console declaration form.'
+      'Step 1: In App Store Connect -> TestFlight -> External Groups, provide complete demo credentials with test data already seeded.',
+      'Step 2: Add `<key>ITSAppUsesNonExemptEncryption</key><false/>` to Info.plist to skip export compliance prompts on every upload.',
+      'Step 3: Ensure "What to Test" field has clear, concise release notes explaining newly added features.'
     ],
     codeSnippet: {
       language: 'xml',
-      filename: 'AndroidManifest.xml',
-      code: `<!-- Android 14+ specific foreground service type -->
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-
-<service
-    android:name=".sync.DataSyncService"
-    android:foregroundServiceType="dataSync"
-    android:exported="false" />`
+      filename: 'Info.plist',
+      code: `<!-- Skip TestFlight Export Compliance prompt -->
+<key>ITSAppUsesNonExemptEncryption</key>
+<false/>`
     }
   },
   {
-    id: 'ts-google-20-testers',
-    title: 'Google Play 20-Tester / 14-Day Closed Testing Qualification Issues',
-    category: 'store_ops',
-    platform: 'android',
-    googlePlayPolicyRef: 'Closed Testing Requirements for Personal Developer Accounts',
-    triggerSymptom: 'Unable to apply for Production Access after 14 days, or application for production access was rejected by Google.',
-    rootCauses: [
-      'Testers uninstalled the app or opted out before the 14 continuous days were completed.',
-      'Testers never opened or engaged with the app during the test window.',
-      'Answers to the Google Play questionnaire ("How did you recruit testers? What feedback did you get?") were generic, one-word, or appeared automated.'
-    ],
-    immediateFix: [
-      'Step 1: Maintain a buffer: recruit 25-30 testers rather than exactly 20 to safeguard against dropouts.',
-      'Step 2: Have testers actively open and use the app every 2-3 days and submit written feedback via Google Play testing link.',
-      'Step 3: Push at least 1 update to the closed testing track during the 14 days to prove active iteration.',
-      'Step 4: In the production access questionnaire, provide thorough, authentic answers: detail the specific feedback received (e.g. "Users requested larger font size on checkout") and explain the code fixes made.'
-    ]
-  },
-  {
     id: 'ts-universal-links-failure',
-    title: 'Universal Links / App Links Open in Browser Instead of App',
+    title: 'Apple Universal Links Open in Safari Instead of App',
     category: 'runtime',
-    platform: 'both',
-    triggerSymptom: 'Tapping a web link (e.g. `https://yourapp.com/invite/123`) opens the website in Safari or Chrome instead of seamlessly opening the installed app.',
+    platform: 'ios',
+    appStoreGuidelineRef: 'Universal Links & Associated Domains',
+    triggerSymptom: 'Tapping a web link (e.g. `https://yourapp.com/invite/123`) opens the website in Safari instead of seamlessly opening the installed app.',
     rootCauses: [
       'AASA (Apple App Site Association) file is served with redirects or incorrect MIME type (`text/html` instead of `application/json`).',
       'Apple CDN cache has not scraped the latest AASA file yet.',
-      'User previously tapped the top-right domain link in Safari (e.g. "yourapp.com >"), which instructs iOS to permanently open that domain in Safari for that user.',
-      'Android `assetlinks.json` has incorrect SHA-256 fingerprint (used debug keystore fingerprint instead of Google Play App Signing key).'
+      'User previously tapped the top-right domain link in Safari (e.g. "yourapp.com >"), which instructs iOS to open that domain in Safari for that user.',
+      'Missing Associated Domains entitlement (`applinks:yourapp.com`) in Xcode target.'
     ],
     immediateFix: [
       'Step 1: Test AASA URL with `curl -v -L -H "Accept: application/json" https://yourapp.com/.well-known/apple-app-site-association`. Must return HTTP 200 without 301/302 redirects.',
       'Step 2: Check Apple CDN scraper cache directly at: `https://app-site-association.cdn-apple.com/a/v1/yourapp.com`.',
-      'Step 3: On Android, get the SHA-256 fingerprint from Google Play Console -> Setup -> App Signing -> App signing key certificate (NOT the upload key!).',
-      'Step 4: Run `adb shell pm get-app-links com.yourapp` to verify verification status.'
+      'Step 3: Verify Associated Domains capability is present in `App.entitlements` with `applinks:yourapp.com`.'
     ],
     codeSnippet: {
       language: 'json',
@@ -199,32 +209,21 @@ SignInWithAppleButton(
     }
   },
   {
-    id: 'ts-release-crash-proguard',
-    title: 'Release Build Crashes on Launch (Works in Debug Mode)',
+    id: 'ts-release-crash-dsym',
+    title: 'iOS Release Build Crashes on Launch (Symbolication & dSYM Missing)',
     category: 'build',
-    platform: 'android',
-    triggerSymptom: 'App runs perfectly in Xcode/Android Studio debug simulator, but crashes immediately with `ClassNotFoundException` or `NullPointerException` when installed from Release APK or Play Store.',
+    platform: 'ios',
+    appStoreGuidelineRef: 'Guideline 2.1 - Release Crash Diagnostics',
+    triggerSymptom: 'App runs in Xcode debug simulator, but crashes immediately when installed from TestFlight or App Store with unsymbolicated crash log.',
     rootCauses: [
-      'R8 / ProGuard obfuscation stripped serialized data model classes, so JSON parsing fails at runtime.',
-      'Reflection-based libraries (Gson, Retrofit, Kotlinx Serialization) cannot find renamed field names.',
-      'Missing native C++ libraries for 64-bit architectures (`arm64-v8a`).'
+      'Release optimization level (-O) exposed concurrency race conditions or uninitialized variables.',
+      'dSYM debug symbols were not uploaded to App Store Connect, resulting in hex addresses instead of file/line symbols.',
+      'Missing required fonts, assets, or localization bundles in Copy Bundle Resources build phase.'
     ],
     immediateFix: [
-      'Step 1: Run `adb logcat -s AndroidRuntime:E` while launching the release build to inspect the exact fatal exception stack trace.',
-      'Step 2: Add `@Keep` annotation to all serialized data classes, or add keep rules in `proguard-rules.pro`.',
-      'Step 3: If using Retrofit/Gson, keep model package: `-keepclassmembers class com.yourapp.data.models.** { <fields>; }`.',
-      'Step 4: Rebuild release APK and test on physical device with `adb install -r app-release.apk` before uploading to console.'
-    ],
-    codeSnippet: {
-      language: 'groovy',
-      filename: 'proguard-rules.pro',
-      code: `# Keep JSON Data Models
--keep class com.yourapp.models.** { *; }
--keepclassmembers class * {
-    @com.google.gson.annotations.SerializedName <fields>;
-}
--keepattributes Signature
--keepattributes *Annotation*`
-    }
+      'Step 1: Open Xcode Organizer -> select the Archive -> click "Download Debug Symbols" to fetch store symbols.',
+      'Step 2: Check Xcode Build Settings -> "Debug Information Format" is set to "DWARF with dSYM File" for Release configuration.',
+      'Step 3: In TestFlight crash feedback, view symbolicated stack trace to pinpoint the failing method.'
+    ]
   }
 ];

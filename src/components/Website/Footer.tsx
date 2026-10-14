@@ -5,7 +5,7 @@ interface FooterProps {
   onLaunchApp: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onLaunchApp }) => {
+export const Footer: React.FC<FooterProps> = React.memo(({ onLaunchApp }) => {
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith('#')) {
       e.preventDefault();
@@ -49,7 +49,7 @@ export const Footer: React.FC<FooterProps> = ({ onLaunchApp }) => {
             </div>
 
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
-              The zero-to-store mobile production operating system. Guiding indie builders and AI agents from raw idea to Apple App Store and Google Play approval without missing a single requirement.
+              The zero-to-store mobile production operating system. Guiding indie builders and AI agents from raw idea to Apple App Store approval without missing a single requirement.
             </p>
 
             <div className="pt-2 flex items-center space-x-3">
@@ -130,7 +130,7 @@ export const Footer: React.FC<FooterProps> = ({ onLaunchApp }) => {
               &copy; 2026 App Blueprint. All rights reserved.
             </p>
             <p className="text-[11px] text-slate-600">
-              Apple, App Store, iOS, TestFlight, and iPhone are trademarks of Apple Inc. Google Play and Android are trademarks of Google LLC.
+              Apple, App Store, iOS, iPadOS, TestFlight, and iPhone are trademarks of Apple Inc.
             </p>
           </div>
           <div className="flex items-center space-x-2 text-slate-400">
@@ -141,4 +141,4 @@ export const Footer: React.FC<FooterProps> = ({ onLaunchApp }) => {
       </div>
     </footer>
   );
-};
+});

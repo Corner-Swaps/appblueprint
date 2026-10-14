@@ -92,10 +92,15 @@ export async function purchaseWithStoreKit(productId: string, targetProjectId?: 
       } else if (res.pending) {
         return { success: false, pending: true };
       }
+      const rawError = String(res.message || res.error || '').toLowerCase();
+      if (rawError.includes('cancel') || rawError.includes('abort') || rawError.includes('dismiss')) {
+        return { success: false, userCancelled: true };
+      }
       return { success: false, error: res.message || res.error || 'Purchase could not be completed at this time.' };
     } catch (err: any) {
       const errorMsg = String(err?.message || err || '');
-      if (errorMsg.includes('USER_CANCELLED') || errorMsg.includes('cancelled') || errorMsg.includes('canceled')) {
+      const lower = errorMsg.toLowerCase();
+      if (lower.includes('cancel') || lower.includes('abort') || lower.includes('dismiss')) {
         return { success: false, userCancelled: true };
       }
       return { success: false, error: errorMsg };

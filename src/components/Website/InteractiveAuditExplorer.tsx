@@ -35,13 +35,27 @@ interface InteractiveAuditExplorerProps {
   onLaunchApp: () => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
-  activePlatform?: 'all' | 'ios' | 'android';
-  onSelectPlatform?: (platform: 'all' | 'ios' | 'android') => void;
+  activePlatform?: 'all' | 'ios' | 'ipad';
+  onSelectPlatform?: (platform: 'all' | 'ios' | 'ipad') => void;
   activeCategory?: string;
   onSelectCategory?: (category: string) => void;
 }
 
-export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> = ({ 
+const PHASE_MAP = new Map(PHASES_DATA.map(p => [p.id, p]));
+const ALL_CATALOG_ITEMS: ChecklistItem[] = [
+  ...SETUP_STEPS_PHASE.items,
+  ...PHASES_DATA.flatMap(p => p.items),
+];
+const ITEM_SEARCH_INDEX = new Map<string, string>(
+  ALL_CATALOG_ITEMS.map(item => [
+    item.id,
+    `${item.title}\n${item.shortDescription}\n${item.whyItMatters}\n${item.agentPrompt || ''}\n${item.storeGuideline?.name || ''}`.toLowerCase(),
+  ])
+);
+const TOTAL_BLOCKER_COUNT = ALL_CATALOG_ITEMS.filter(i => i.priority === 'blocker').length;
+const TOTAL_IOS_COUNT = ALL_CATALOG_ITEMS.filter(i => i.platform === 'ios' || i.platform === 'both').length;
+
+export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> = React.memo(({ 
   onLaunchApp,
   searchQuery: externalSearchQuery,
   onSearchChange: externalOnSearchChange,
@@ -52,7 +66,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
 }) => {
   // Local state fallbacks if not controlled
   const [localSearchQuery, setLocalSearchQuery] = useState('');
-  const [localActivePlatform, setLocalActivePlatform] = useState<'all' | 'ios' | 'android'>('all');
+  const [localActivePlatform, setLocalActivePlatform] = useState<'all' | 'ios' | 'ipad'>('all');
   const [localActiveCategory, setLocalActiveCategory] = useState<string>('all');
   
   const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : localSearchQuery;
@@ -74,30 +88,20 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
   );
 
   // Flatten all items from setup phase + 10 phases
-  const allItems: ChecklistItem[] = useMemo(() => {
-    const list: ChecklistItem[] = [...SETUP_STEPS_PHASE.items];
-    PHASES_DATA.forEach(p => list.push(...p.items));
-    return list;
-  }, []);
+  const allItems = ALL_CATALOG_ITEMS;
 
-  // Filtered items based on query, platform, and category
+  // Filtered items based on query, platform, and category using precomputed lowercase index
   const filteredItems = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
     return allItems.filter(item => {
       // Query filter
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchesText = 
-          item.title.toLowerCase().includes(q) ||
-          item.shortDescription.toLowerCase().includes(q) ||
-          item.whyItMatters.toLowerCase().includes(q) ||
-          (item.agentPrompt && item.agentPrompt.toLowerCase().includes(q)) ||
-          (item.storeGuideline && item.storeGuideline.name.toLowerCase().includes(q));
-        if (!matchesText) return false;
+      if (q) {
+        const searchBlob = ITEM_SEARCH_INDEX.get(item.id) || '';
+        if (!searchBlob.includes(q)) return false;
       }
 
       // Platform filter
-      if (activePlatform === 'ios' && item.platform === 'android') return false;
-      if (activePlatform === 'android' && item.platform === 'ios') return false;
+      if (activePlatform === 'ios' && item.platform !== 'ios' && item.platform !== 'both') return false;
 
       // Category filter
       if (activeCategory === 'blockers') return item.priority === 'blocker';
@@ -111,9 +115,9 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
     });
   }, [allItems, searchQuery, activePlatform, activeCategory]);
 
-  const blockerCount = useMemo(() => allItems.filter(i => i.priority === 'blocker').length, [allItems]);
-  const iosCount = useMemo(() => allItems.filter(i => i.platform === 'ios' || i.platform === 'both').length, [allItems]);
-  const androidCount = useMemo(() => allItems.filter(i => i.platform === 'android' || i.platform === 'both').length, [allItems]);
+  const blockerCount = TOTAL_BLOCKER_COUNT;
+  const iosCount = TOTAL_IOS_COUNT;
+  const ipadCount = allItems.length;
 
   // Toggle completion mark
   const toggleComplete = (id: string, e?: React.MouseEvent) => {
@@ -187,7 +191,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
   const getPhaseName = (phaseId: string) => {
     if (phaseId.toLowerCase().includes('setup') || phaseId === 'phase-0') return 'Phase 0 • Setup & Pre-flight';
     const num = phaseId.replace('phase-', '');
-    const phase = PHASES_DATA.find(p => p.id === phaseId);
+    const phase = PHASE_MAP.get(phaseId);
     return phase ? `Phase ${num} • ${phase.title}` : `Phase ${num}`;
   };
 
@@ -195,7 +199,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
   const getPhaseShortName = (phaseId: string) => {
     if (phaseId.toLowerCase().includes('setup') || phaseId === 'phase-0') return 'Phase 0 • Setup';
     const num = phaseId.replace('phase-', '');
-    const phase = PHASES_DATA.find(p => p.id === phaseId);
+    const phase = PHASE_MAP.get(phaseId);
     return phase ? `Phase ${num} • ${phase.shortTitle || phase.title}` : `Phase ${num}`;
   };
 
@@ -208,7 +212,8 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
           src="./screenshots/01_welcome.png" 
           alt={item.title} 
           className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105" 
-          loading="eager" 
+          loading="lazy"
+          decoding="async"
         />
       );
     }
@@ -218,7 +223,8 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
           src="./screenshots/02_production_checklist.png" 
           alt={item.title} 
           className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105" 
-          loading="eager" 
+          loading="lazy"
+          decoding="async"
         />
       );
     }
@@ -228,7 +234,8 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
           src="./screenshots/03_interactive_roadmap.png" 
           alt={item.title} 
           className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105" 
-          loading="eager" 
+          loading="lazy"
+          decoding="async"
         />
       );
     }
@@ -238,7 +245,8 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
           src="./screenshots/04_app_launch_academy.png" 
           alt={item.title} 
           className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105" 
-          loading="eager" 
+          loading="lazy"
+          decoding="async"
         />
       );
     }
@@ -248,7 +256,8 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
           src="./screenshots/05_production_playbook.png" 
           alt={item.title} 
           className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105" 
-          loading="eager" 
+          loading="lazy"
+          decoding="async"
         />
       );
     }
@@ -335,7 +344,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
         </h2>
 
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-          Filter and inspect real app screens, review Apple HIG and Google Play guidelines, test verification checks, and copy 1-click prompts for autonomous coding agents.
+          Filter and inspect real app screens, review Apple HIG and App Store guidelines, test verification checks, and copy 1-click prompts for autonomous coding agents.
         </p>
       </div>
 
@@ -406,15 +415,15 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
 
               <button
                 type="button"
-                onClick={() => setActivePlatform('android')}
+                onClick={() => setActivePlatform('ipad')}
                 className={`apple-press inline-flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  activePlatform === 'android'
+                  activePlatform === 'ipad'
                     ? 'bg-slate-950 text-white shadow-xs'
                     : 'bg-white text-slate-600 hover:text-slate-950 border border-black/6'
                 }`}
               >
                 <Smartphone className="w-3 h-3" />
-                <span>Android ({androidCount})</span>
+                <span>iPadOS ({ipadCount})</span>
               </button>
             </div>
 
@@ -907,7 +916,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
               </div>
 
               <div className="mt-4 flex items-center space-x-2">
-                <span className="text-[11px] text-slate-400">Tested on iOS 18 &amp; Android 15</span>
+                <span className="text-[11px] text-slate-400">Tested on iOS 18 &amp; iPadOS 18</span>
               </div>
             </div>
 
@@ -1097,4 +1106,4 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
 
     </section>
   );
-};
+});

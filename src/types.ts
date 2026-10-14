@@ -12,7 +12,7 @@ export interface Project {
   isNameLocked?: boolean;
 }
 
-export type Platform = 'ios' | 'android' | 'both';
+export type Platform = 'ios' | 'both';
 
 export type Category = 'security' | 'legal' | 'design' | 'functionality' | 'store' | 'cicd';
 
@@ -79,7 +79,6 @@ export interface TroubleshootingScenario {
   immediateFix: string[];
   codeSnippet?: CodeSnippet;
   appStoreGuidelineRef?: string;
-  googlePlayPolicyRef?: string;
 }
 
 export interface ProjectState {

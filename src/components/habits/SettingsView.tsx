@@ -143,7 +143,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </div>
           <div className="flex justify-between items-center py-1 border-t border-white/10">
             <span className="text-white/60">Target Systems:</span>
-            <span className="text-white font-semibold">iOS 17+ • Android API 34+</span>
+            <span className="text-white font-semibold">iOS 17+ • iPadOS 17+</span>
           </div>
         </div>
       </div>

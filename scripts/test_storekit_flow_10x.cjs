@@ -210,10 +210,9 @@ assert(
 // ---------------------------------------------------------
 console.log(`\n${BOLD}[PHASE 7] Sandbox Warmup & Transient Failure Handling${RESET}`);
 assert(
-  appDelegateContent.includes('if products.isEmpty {') &&
-  appDelegateContent.includes('try? await Task.sleep(nanoseconds: 600_000_000)') &&
-  appDelegateContent.includes('products = try await Product.products(for: [productId])'),
-  'Swift native purchaseProduct includes automatic 600ms warmup retry',
+  appDelegateContent.includes('warmupProducts()') &&
+  appDelegateContent.includes('cachedProducts'),
+  'Swift native purchaseProduct includes automatic product pre-warming and cached retrieval',
   'Resolves Sandbox cold-start delays on Apple Review devices'
 );
 
@@ -256,9 +255,9 @@ const buildMatches = pbxprojContent.match(/CURRENT_PROJECT_VERSION = (\d+);/g);
 console.log(`  Current Xcode project build settings: ${buildMatches ? buildMatches.join(', ') : 'None'}`);
 
 assert(
-  pbxprojContent.includes('CURRENT_PROJECT_VERSION'),
-  'CURRENT_PROJECT_VERSION setting exists in Xcode project',
-  'Ready for version increment to 9'
+  pbxprojContent.includes('CURRENT_PROJECT_VERSION = 10;'),
+  'CURRENT_PROJECT_VERSION bumped to Build 10 in Xcode project',
+  'Ready for App Store Connect release as Build 10'
 );
 
 console.log(`\n${BOLD}================================================================${RESET}`);

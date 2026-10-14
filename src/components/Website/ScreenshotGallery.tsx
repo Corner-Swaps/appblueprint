@@ -5,69 +5,71 @@ interface ScreenshotGalleryProps {
   onLaunchApp?: () => void;
 }
 
-export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ onLaunchApp }) => {
-  const flowScreens = [
-    {
-      src: './screenshots/02_production_checklist.png',
-      title: 'Production Checklist & Audit',
-      subtitle: '101 store requirements with deep-dive guidance, traps, and 1-click AI prompts',
-      tag: 'Checklist Flow',
-      flowStep: 'Step 1 of 5',
-      highlights: [
-        'Real-time verification progress tracking',
-        'Store Review Blocker priority filters',
-        '1-Click AI Coding Prompts for Cursor & Claude',
-      ],
-    },
-    {
-      src: './screenshots/01_welcome.png',
-      title: 'Welcome & Project Initialization',
-      subtitle: 'Distraction-free onboarding with local persistent state and phase setup',
-      tag: 'Onboarding Flow',
-      flowStep: 'Step 2 of 5',
-      highlights: [
-        'Zero-login, 100% private local storage',
-        'Immediate workspace setup in under 60 seconds',
-        'Built-in project switcher with color coding',
-      ],
-    },
-    {
-      src: './screenshots/03_interactive_roadmap.png',
-      title: 'Multi-Phase Milestone Roadmap',
-      subtitle: 'Reorderable phase milestones from concept through submission and post-launch',
-      tag: 'Roadmap Flow',
-      flowStep: 'Step 3 of 5',
-      highlights: [
-        '10 guided phases with step-by-step deliverables',
-        'Tactile reorderable milestone cards',
-        'Completion badges and velocity tracking',
-      ],
-    },
-    {
-      src: './screenshots/04_app_launch_academy.png',
-      title: 'App Launch Academy & Design Tokens',
-      subtitle: 'Curated typography pairs, palettes, fluid spring curves, and WCAG contrast tools',
-      tag: 'Academy Flow',
-      flowStep: 'Step 4 of 5',
-      highlights: [
-        'Apple HIG and Google Material typography pairing',
-        'Built-in 44x44pt touch target validator',
-        'Dynamic Type Large Text accessibility spec',
-      ],
-    },
-    {
-      src: './screenshots/05_production_playbook.png',
-      title: 'Store Review Traps & Playbooks',
-      subtitle: 'Actionable diagnostic playbooks for IPv6, IAP, Sign in with Apple, and deletion',
-      tag: 'Playbook Flow',
-      flowStep: 'Step 5 of 5',
-      highlights: [
-        'NAT64 IPv6-only network crash diagnostics',
-        'Apple Privacy 2026 manifest XML generator',
-        'Self-serve in-app account deletion flow',
-      ],
-    },
-  ];
+const FLOW_SCREENS = [
+  {
+    src: './screenshots/02_production_checklist.png',
+    title: 'Production Checklist & Audit',
+    subtitle: '101 store requirements with deep-dive guidance, traps, and 1-click AI prompts',
+    tag: 'Checklist Flow',
+    flowStep: 'Step 1 of 5',
+    highlights: [
+      'Real-time verification progress tracking',
+      'Store Review Blocker priority filters',
+      '1-Click AI Coding Prompts for Cursor & Claude',
+    ],
+  },
+  {
+    src: './screenshots/01_welcome.png',
+    title: 'Welcome & Project Initialization',
+    subtitle: 'Distraction-free onboarding with local persistent state and phase setup',
+    tag: 'Onboarding Flow',
+    flowStep: 'Step 2 of 5',
+    highlights: [
+      'Zero-login, 100% private local storage',
+      'Immediate workspace setup in under 60 seconds',
+      'Built-in project switcher with color coding',
+    ],
+  },
+  {
+    src: './screenshots/03_interactive_roadmap.png',
+    title: 'Multi-Phase Milestone Roadmap',
+    subtitle: 'Reorderable phase milestones from concept through submission and post-launch',
+    tag: 'Roadmap Flow',
+    flowStep: 'Step 3 of 5',
+    highlights: [
+      '10 guided phases with step-by-step deliverables',
+      'Tactile reorderable milestone cards',
+      'Completion badges and velocity tracking',
+    ],
+  },
+  {
+    src: './screenshots/04_app_launch_academy.png',
+    title: 'App Launch Academy & Design Tokens',
+    subtitle: 'Curated typography pairs, palettes, fluid spring curves, and WCAG contrast tools',
+    tag: 'Academy Flow',
+    flowStep: 'Step 4 of 5',
+    highlights: [
+      'Apple HIG SF Pro and native typography pairing',
+      'Built-in 44x44pt touch target validator',
+      'Dynamic Type Large Text accessibility spec',
+    ],
+  },
+  {
+    src: './screenshots/05_production_playbook.png',
+    title: 'Store Review Traps & Playbooks',
+    subtitle: 'Actionable diagnostic playbooks for IPv6, IAP, Sign in with Apple, and deletion',
+    tag: 'Playbook Flow',
+    flowStep: 'Step 5 of 5',
+    highlights: [
+      'NAT64 IPv6-only network crash diagnostics',
+      'Apple Privacy 2026 manifest XML generator',
+      'Self-serve in-app account deletion flow',
+    ],
+  },
+];
+
+export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = React.memo(({ onLaunchApp }) => {
+  const flowScreens = FLOW_SCREENS;
 
   const [activeIdx, setActiveIdx] = useState(0);
 
@@ -141,7 +143,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ onLaunchAp
                 {flowScreens[activeIdx].tag}
               </span>
               <span className="text-xs font-semibold text-slate-400">
-                iOS 18 &amp; Android 15
+                iOS 18 &amp; iPadOS 18
               </span>
             </div>
 
@@ -184,7 +186,8 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ onLaunchAp
                 src={flowScreens[activeIdx].src}
                 alt={flowScreens[activeIdx].title}
                 className="w-full h-full object-cover transition-opacity duration-300"
-                loading="eager"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
@@ -210,7 +213,8 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ onLaunchAp
                     src={s.src}
                     alt={s.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="eager"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-xs text-white text-[9px] font-mono font-bold uppercase tracking-wider">
                     {s.flowStep}
@@ -234,4 +238,4 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = ({ onLaunchAp
 
     </section>
   );
-};
+});

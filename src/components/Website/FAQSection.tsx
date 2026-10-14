@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { HelpCircle, ChevronDown, Sparkles } from 'lucide-react';
 
-export const FAQSection: React.FC = () => {
+export const FAQSection: React.FC = React.memo(() => {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
   const faqs = [
     {
       q: 'What is App Blueprint?',
-      a: 'App Blueprint is an interactive production operating system designed to guide mobile developers and indie hackers through all 10 phases required to successfully launch an app on the Apple App Store and Google Play Store without rejections.',
+      a: 'App Blueprint is an interactive production operating system designed to guide mobile developers and indie hackers through all 10 phases required to successfully launch an app on the Apple App Store without rejections.',
     },
     {
-      q: 'Does it support both iOS and Android?',
-      a: 'Yes! Every checklist requirement clearly tags whether it applies to iOS, Android, or both. It covers platform-specific rules like Apple Privacy Manifests, Sign in with Apple parity, Android Keystore encryption, and Google Play closed testing.',
+      q: 'Which platforms does it support?',
+      a: 'App Blueprint is specifically designed for iOS and iPadOS apps, covering the complete Apple Human Interface Guidelines and App Store Review Guidelines. It includes specialized rules like Apple Privacy Manifests (PrivacyInfo.xcprivacy), Sign in with Apple parity, StoreKit 2 in-app purchases, and iOS Keychain encryption.',
     },
     {
       q: 'How do I use this with AI coding tools (Claude, Cursor, ChatGPT)?',
@@ -23,7 +23,7 @@ export const FAQSection: React.FC = () => {
     },
     {
       q: 'Can I generate store configuration files like Privacy manifests?',
-      a: 'Yes! In the Resources section of the app, our built-in Config Generators allow you to generate store-ready Apple Privacy Manifest (PrivacyInfo.xcprivacy XML), Universal Links JSON, Android App Links JSON, and Markdown Privacy Policies in seconds.',
+      a: 'Yes! In the Resources section of the app, our built-in Config Generators allow you to generate store-ready Apple Privacy Manifest (PrivacyInfo.xcprivacy XML), Universal Links JSON (apple-app-site-association), Apple Entitlements (App.entitlements), and Markdown Privacy Policies in seconds.',
     },
     {
       q: 'Can I track multiple apps simultaneously?',
@@ -96,4 +96,4 @@ export const FAQSection: React.FC = () => {
 
     </section>
   );
-};
+});

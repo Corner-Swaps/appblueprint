@@ -109,7 +109,7 @@ export const INITIAL_HABITS: HabitTask[] = [
     implementationSteps: [
       'Audit all dependencies for declared required reason APIs',
       'Generate PrivacyInfo.xcprivacy and link into app target resources',
-      'Store sensitive tokens strictly in Keychain (iOS) and EncryptedSharedPreferences (Android)'
+      'Store sensitive tokens strictly in iOS Keychain Services'
     ],
     commonRejectionTraps: [
       'Storing authentication tokens in UserDefaults or unencrypted AsyncStorage.'
@@ -143,7 +143,7 @@ export const INITIAL_HABITS: HabitTask[] = [
     commonRejectionTraps: [
       'Forcing users to email support or submit a contact form to delete their account.'
     ],
-    storeGuidelineRef: 'Apple Guideline 5.1.1(v) & Google Play Account Deletion',
+    storeGuidelineRef: 'Apple Guideline 5.1.1(v) Data Privacy & Deletion',
     completedDates: ['2026-09-03', '2026-09-04', '2026-09-05', '2026-09-06', '2026-09-07', '2026-09-08']
   },
   {
@@ -165,7 +165,7 @@ export const INITIAL_HABITS: HabitTask[] = [
     priority: 'blocker',
     whyItMatters: 'Guideline 3.1.1 requires native StoreKit for digital features. Every paywall MUST have a visible Restore Purchases button and Terms link.',
     implementationSteps: [
-      'Configure Product IDs in App Store Connect and Google Play Console',
+      'Configure Product IDs in App Store Connect',
       'Add Transaction.updates listener on app boot',
       'Provide clearly visible Restore Purchases button on all paywalls'
     ],
@@ -177,9 +177,9 @@ export const INITIAL_HABITS: HabitTask[] = [
   },
   {
     id: 'task-qa-testers',
-    title: '20-Tester QA & Crash Reporting',
-    subtitle: 'Google Play 14-Day Closed Test',
-    badgeText: '20/20 Testers Active',
+    title: 'TestFlight External QA & Stability',
+    subtitle: 'Apple TestFlight Beta Distribution',
+    badgeText: 'TestFlight Active',
     category: 'qa',
     currentValue: 20,
     targetValue: 20,
@@ -192,21 +192,21 @@ export const INITIAL_HABITS: HabitTask[] = [
     isCompleted: true,
     phaseId: 'phase-7',
     priority: 'blocker',
-    whyItMatters: 'Google Play requires personal developer accounts to maintain 20+ testers opted into a closed test for 14 continuous days before production access.',
+    whyItMatters: 'Apple recommends thorough external beta testing via TestFlight to validate release candidate builds and prevent reviewer crashes.',
     implementationSteps: [
-      'Recruit 20+ opt-in testers through Google Play Console closed testing track',
-      'Maintain active daily engagement to prevent tester drop-off',
-      'Integrate Firebase Crashlytics to monitor crash-free sessions (>99.5%)'
+      'Distribute external build via Apple TestFlight to beta testers',
+      'Maintain active tester feedback loop to resolve UX defects',
+      'Monitor crash-free sessions (>99.5%) in Xcode Organizer'
     ],
     commonRejectionTraps: [
-      'Testers opting out drops count below 20 and resets the 14-day timer.'
+      'Submitting untested binary directly to App Review resulting in immediate launch crashes.'
     ],
-    storeGuidelineRef: 'Google Play 20-Tester Policy',
+    storeGuidelineRef: 'Apple Guideline 2.1 (App Completeness & Stability)',
     completedDates: ['2026-09-03', '2026-09-04', '2026-09-05', '2026-09-06', '2026-09-07', '2026-09-08', '2026-09-09']
   },
   {
     id: 'task-store-assets',
-    title: 'App Store Connect & Play Assets',
+    title: 'App Store Connect & Media Assets',
     subtitle: '6.7" Screenshots & 1024x1024 Icon',
     badgeText: 'Assets Ready',
     category: 'store',

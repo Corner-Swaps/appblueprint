@@ -5,7 +5,7 @@ interface AcademyHighlightProps {
   onLaunchApp: () => void;
 }
 
-export const AcademyHighlight: React.FC<AcademyHighlightProps> = ({ onLaunchApp }) => {
+export const AcademyHighlight: React.FC<AcademyHighlightProps> = React.memo(({ onLaunchApp }) => {
   const topics = [
     {
       icon: Type,
@@ -94,4 +94,4 @@ export const AcademyHighlight: React.FC<AcademyHighlightProps> = ({ onLaunchApp 
       </div>
     </section>
   );
-};
+});

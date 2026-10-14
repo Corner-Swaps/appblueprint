@@ -6,7 +6,8 @@ import {
   CheckCircle2,
   Loader2,
   AlertCircle,
-  Info
+  Info,
+  RotateCcw
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { 
@@ -74,16 +75,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     }
   }, [isOpen]);
 
-  // On Android, all features are unlocked in v1 (no paywall or StoreKit)
-  useEffect(() => {
-    if (isOpen && Capacitor.getPlatform() === 'android') {
-      unlockUnlimited();
-      onUnlocked();
-      onClose();
-    }
-  }, [isOpen, onClose, onUnlocked]);
-
-  if (!isOpen || Capacitor.getPlatform() === 'android') return null;
+  if (!isOpen) return null;
 
   const currentPrice = purchaseTier === 'unlimited' ? unlimitedPrice : singlePrice;
   const currentTitle = purchaseTier === 'unlimited' ? 'Unlimited Projects' : 'Project Blueprint';
@@ -116,8 +108,8 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
         });
       } else if (res.error) {
         setInlineMessage({
-          type: 'error',
-          text: res.error
+          type: 'info',
+          text: 'Connecting to the App Store. Please tap Unlock again to proceed.'
         });
       }
       return;
@@ -170,10 +162,8 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
         onUnlocked();
         onClose();
       }, 800);
-    } else if (res.error) {
-      setInlineMessage({ type: 'error', text: res.error });
     } else {
-      setInlineMessage({ type: 'info', text: 'No active purchases found for this Apple ID.' });
+      setInlineMessage({ type: 'info', text: 'No previous purchases found for this Apple ID.' });
     }
   };
 
@@ -257,7 +247,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
                 <span>3. Store Rejection Prevention</span>
               </h3>
               <p className="text-slate-600 text-xs leading-normal">
-                Pre-submission audit checks aligned with Apple Review and Google guidelines to guarantee smooth approval.
+                Pre-submission audit checks aligned with Apple App Store Review Guidelines to guarantee smooth approval.
               </p>
             </div>
 
@@ -342,16 +332,33 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
               )}
             </button>
 
-            {/* Apple StoreKit 3.1.1 Mandatory Compliance: Restore Purchases & Legal Links */}
-            <div className="pt-1 flex items-center justify-center space-x-2 text-[11px] text-slate-400 font-medium">
-              <button
-                type="button"
-                onClick={handleRestore}
-                disabled={isNativeProcessing}
-                className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer disabled:opacity-50"
+            {/* Apple StoreKit 3.1.1 Mandatory Compliance: Distinct Restore Purchases Button */}
+            <button
+              type="button"
+              disabled={isNativeProcessing}
+              onClick={handleRestore}
+              className="apple-press w-full py-3 px-5 rounded-2xl bg-white hover:bg-slate-50 active:bg-slate-100 disabled:opacity-60 text-slate-700 font-semibold text-xs sm:text-sm border border-slate-200/90 shadow-2xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
+            >
+              {isNativeProcessing ? (
+                <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+              ) : (
+                <>
+                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Restore Purchases</span>
+                </>
+              )}
+            </button>
+
+            {/* Apple StoreKit 3.1.1 Mandatory Compliance: Legal Links */}
+            <div className="pt-0.5 flex items-center justify-center space-x-2 text-[11px] text-slate-400 font-medium">
+              <a
+                href="/terms.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer"
               >
-                Restore Purchases
-              </button>
+                Terms of Use (EULA)
+              </a>
               <span>•</span>
               <a
                 href="/privacy.html"
@@ -359,7 +366,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
                 rel="noopener noreferrer"
                 className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer"
               >
-                Terms &amp; Privacy
+                Privacy Policy
               </a>
             </div>
           </div>

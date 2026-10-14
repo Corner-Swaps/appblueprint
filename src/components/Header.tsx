@@ -22,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-widest text-white/60">
-              App Store & Google Play
+              iOS App Store
             </span>
             <h1 className="text-2xl font-black text-white tracking-tight">
               App Launch Checklist

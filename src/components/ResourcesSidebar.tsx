@@ -199,23 +199,23 @@ export const ResourcesSidebar: React.FC<ResourcesSidebarProps> = ({
           </li>
           <li>
             <a
-              href="https://m3.material.io/"
+              href="https://developer.apple.com/app-store/review/guidelines/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
             >
-              <span>Material Design 3 Guidelines</span>
+              <span>App Store Review Guidelines</span>
               <ExternalLink className="w-3 h-3 text-slate-400" />
             </a>
           </li>
           <li>
             <a
-              href="https://developer.android.com/distribute/play-policies"
+              href="https://developer.apple.com/documentation/storekit"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
             >
-              <span>Google Play Developer Policy Center</span>
+              <span>Apple StoreKit Documentation</span>
               <ExternalLink className="w-3 h-3 text-slate-400" />
             </a>
           </li>

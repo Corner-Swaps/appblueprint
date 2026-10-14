@@ -18,11 +18,13 @@ interface PhasesShowcaseProps {
   onLaunchApp: () => void;
 }
 
-export const PhasesShowcase: React.FC<PhasesShowcaseProps> = ({ onLaunchApp }) => {
+const ALL_SHOWCASE_PHASES = [SETUP_STEPS_PHASE, ...PHASES_DATA];
+
+export const PhasesShowcase: React.FC<PhasesShowcaseProps> = React.memo(({ onLaunchApp }) => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>(PHASES_DATA[0].id);
 
   // Combine Setup Steps + 10 Phases for the showcase
-  const allPhases = [SETUP_STEPS_PHASE, ...PHASES_DATA];
+  const allPhases = ALL_SHOWCASE_PHASES;
 
   const currentPhase = allPhases.find((p) => p.id === selectedPhaseId) || allPhases[0];
   const theme = getPhaseTheme(currentPhase.number);
@@ -197,4 +199,4 @@ export const PhasesShowcase: React.FC<PhasesShowcaseProps> = ({ onLaunchApp }) =
 
     </section>
   );
-};
+});

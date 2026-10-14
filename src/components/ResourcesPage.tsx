@@ -75,10 +75,7 @@ import {
 } from 'lucide-react';
 import {
   AppleLogo,
-  GoogleLogo,
-  GooglePlayLogo,
   GitHubLogo,
-  AndroidLogo,
   TestFlightLogo,
   FastlaneLogo,
   RevenueCatLogo,
@@ -148,7 +145,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'github_repos',
     title: 'Open Source Frameworks & SDKs',
     badge: 'Verified SDKs',
-    description: 'Open source libraries provide pre-built building blocks so you never have to reinvent the wheel. Add tactile vibrations, camera access, and offline data storage with battle-tested community code. These packages save hundreds of hours of manual work and work seamlessly across iOS and Android.',
+    description: 'Open source libraries provide pre-built building blocks so you never have to reinvent the wheel. Add tactile vibrations, camera access, and offline data storage with battle-tested community code. These packages save hundreds of hours of manual work and work seamlessly across iOS and iPadOS.',
     iconBg: 'bg-blue-600',
     icon: (
       <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -168,7 +165,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'security',
     title: 'Security & Keychain Auth',
     badge: 'Hardware Enclave',
-    description: 'Security protects your users and keeps private login passwords safe on their physical phones. Using the iOS Keychain and Android Keystore hardware chips ensures sensitive data is never exposed. Following these essential guardrails prevents data leaks and helps you pass store security audits on your first try. All security patterns and system APIs shown here are built right into your phone for free.',
+    description: 'Security protects your users and keeps private login passwords safe on their physical phones. Using the iOS Keychain and Secure Enclave hardware chips ensures sensitive data is never exposed. Following these essential guardrails prevents data leaks and helps you pass store security audits on your first try. All security patterns and system APIs shown here are built right into your phone for free.',
     iconBg: 'bg-emerald-600',
     icon: <Lock className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -176,7 +173,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'privacy',
     title: 'Privacy & Store Compliance',
     badge: 'Store Compliance',
-    description: 'User privacy is one of the most strictly enforced requirements in the Apple App Store and Google Play. You must inform users what data you collect and declare required privacy manifests before publishing. Bundling fonts locally and avoiding hidden ad trackers keeps you completely safe from legal fines. These free privacy templates and tools guarantee you satisfy Apple and Google rules.',
+    description: 'User privacy is one of the most strictly enforced requirements in the Apple App Store. You must inform users what data you collect and declare required privacy manifests before publishing. Bundling fonts locally and avoiding hidden ad trackers keeps you completely safe from legal fines. These free privacy templates and tools guarantee you satisfy Apple rules.',
     iconBg: 'bg-indigo-600',
     icon: <EyeOff className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -206,7 +203,12 @@ const SECTION_CONFIGS: SectionConfig[] = [
   }
 ];
 
-export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist, collapseSignal }) => {
+const SECTION_CONFIG_MAP = new Map<string, SectionConfig>(
+  SECTION_CONFIGS.map(s => [s.id, s])
+);
+const DEFAULT_SECTION_ORDER = SECTION_CONFIGS.map(s => s.id);
+
+export const ResourcesPage: React.FC<ResourcesPageProps> = React.memo(({ onBackToChecklist, collapseSignal }) => {
   const [expandedSectionId, setExpandedSectionId] = useState<string | null>(null);
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null);
@@ -333,11 +335,28 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
   });
 
   useEffect(() => {
+    if (resourceItems === RESOURCES_DATA && !localStorage.getItem('appblueprint_resources_items_v1')) {
+      return;
+    }
     try {
       localStorage.setItem('appblueprint_resources_items_v1', JSON.stringify(resourceItems));
     } catch (e) {
       console.warn('Failed to save resource items', e);
     }
+  }, [resourceItems]);
+
+  // Pre-group resource items by category for O(1) lookup per section
+  const itemsByCategory = React.useMemo(() => {
+    const map = new Map<string, ResourceItem[]>();
+    for (const item of resourceItems) {
+      const list = map.get(item.category);
+      if (list) {
+        list.push(item);
+      } else {
+        map.set(item.category, [item]);
+      }
+    }
+    return map;
   }, [resourceItems]);
 
   // Category Ordering State (persisted to localStorage)
@@ -351,10 +370,13 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     } catch (e) {
       console.warn('Failed to load saved category order', e);
     }
-    return SECTION_CONFIGS.map(s => s.id);
+    return DEFAULT_SECTION_ORDER;
   });
 
   useEffect(() => {
+    if (sectionOrder === DEFAULT_SECTION_ORDER && !localStorage.getItem('appblueprint_resources_order_v1')) {
+      return;
+    }
     try {
       localStorage.setItem('appblueprint_resources_order_v1', JSON.stringify(sectionOrder));
     } catch (e) {
@@ -603,8 +625,8 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     if (item.id === "type-apple-sf-pro") {
       return <AppleLogo className="w-6 h-6 text-[#1D1D1F]" />;
     }
-    if (item.id === "type-google-fonts-local") {
-      return <GoogleLogo className="w-6 h-6" />;
+    if (item.id === "type-open-fonts-local" || item.id.includes("fonts")) {
+      return <Baseline className="w-6 h-6 text-[#059669] stroke-[2]" />;
     }
     if (item.id === "type-geist-vercel") {
       return <VercelLogo className="w-6 h-6 text-black" />;
@@ -652,9 +674,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     }
     if (item.id === "design-sf-symbols") {
       return <AppleLogo className="w-6 h-6 text-[#007AFF]" />;
-    }
-    if (item.id === "design-google-material") {
-      return <GoogleLogo className="w-6 h-6" />;
     }
     if (item.id === "design-lucide-icons") {
       return <Shapes className="w-6 h-6 text-[#F43F5E] stroke-[2]" />;
@@ -777,8 +796,8 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
     if (item.id === "priv-iubenda") {
       return <Shield className="w-6 h-6 text-[#0069FF] stroke-[2]" />;
     }
-    if (item.id === "priv-google-data-safety") {
-      return <GooglePlayLogo className="w-6 h-6" />;
+    if (item.id === "priv-google-data-safety" || item.id === "priv-apple-privacy-nutrition") {
+      return <Shield className="w-6 h-6 text-[#0069FF] stroke-[2]" />;
     }
     if (item.id === "priv-duckduckgo-tracker") {
       return <Globe className="w-6 h-6 text-[#DE5833] stroke-[2]" />;
@@ -819,7 +838,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
       return <AppleLogo className="w-6 h-6 text-[#1D1D1F]" />;
     }
     if (item.id === "launch-google-play-console") {
-      return <GooglePlayLogo className="w-6 h-6" />;
+      return <AppleLogo className="w-6 h-6 text-[#1D1D1F]" />;
     }
     if (item.id === "launch-testflight") {
       return <TestFlightLogo className="w-6 h-6 text-[#007AFF]" />;
@@ -828,7 +847,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
       return <AppleLogo className="w-6 h-6 text-[#1D1D1F]" />;
     }
     if (item.id === "launch-google-policy") {
-      return <GoogleLogo className="w-6 h-6" />;
+      return <AppleLogo className="w-6 h-6 text-[#1D1D1F]" />;
     }
     if (item.id === "launch-appfigures") {
       return <Search className="w-6 h-6 text-[#0284C7] stroke-[2]" />;
@@ -879,7 +898,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
       return <AppleLogo className="w-6 h-6 text-[#1D1D1F]" />;
     }
     if (item.id.includes("google") || item.id.includes("play")) {
-      return <GooglePlayLogo className="w-6 h-6" />;
+      return <Shield className="w-6 h-6 text-[#0069FF] stroke-[2]" />;
     }
 
     // Default Fallback Icons (distinct per iconName, for user-added custom tools)
@@ -921,9 +940,9 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
       {/* 2. Section Cards */}
       <div className="space-y-4 pt-1">
         {sectionOrder.map((secId, secIdx) => {
-          const sec = SECTION_CONFIGS.find(s => s.id === secId);
+          const sec = SECTION_CONFIG_MAP.get(secId);
           if (!sec) return null;
-          const secItems = resourceItems.filter(r => r.category === sec.id);
+          const secItems = itemsByCategory.get(sec.id) || [];
           const isSectionOpen = expandedSectionId === sec.id;
           const isCategoryEditing = editingCategoryId === sec.id;
 
@@ -1075,6 +1094,8 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                 {/* Connected Curated Tools Drawer (Inside the same unified pill!) */}
                 <div className={`apple-drawer-collapse apple-unified-drawer ${isSectionOpen ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
                   <div className="apple-drawer-content">
+                    {isSectionOpen && (
+                      <>
                     {secItems.length === 0 && (
                       <div className="py-6 px-4 text-center space-y-1.5 select-none">
                         <p className="text-xs font-bold text-slate-700 font-google">No tools added yet</p>
@@ -1087,7 +1108,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                       {secItems.map((item, itemIdx) => {
                         const isItemOpen = expandedItemId === item.id;
                         const isApple = item.id.includes('apple') || item.id.includes('att') || item.id.includes('testflight') || item.id.includes('sf-pro');
-                        const isGooglePlay = item.id.includes('play') || item.id.includes('google-policy');
 
                         return (
                           <div 
@@ -1123,9 +1143,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                     className={`text-[18px] sm:text-[20px] font-medium tracking-tight leading-snug select-none break-words ${
                                       isApple 
                                         ? 'text-[#1D1D1F] font-sans' 
-                                        : isGooglePlay 
-                                          ? 'text-[#202124] font-google' 
-                                          : 'text-slate-900 font-google'
+                                        : 'text-slate-900 font-google'
                                     }`}
                                   >
                                     {item.title}
@@ -1214,6 +1232,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                           {/* Expanded Guidance Drawer with Subsections in their own pills */}
                           <div className={`apple-drawer-collapse ${isItemOpen ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
                             <div className="apple-drawer-content">
+                              {isItemOpen && (
                               <div 
                                 onClick={(e) => handleDrawerTextClick(e, item.id)}
                                 className="space-y-3 pt-3 border-t border-slate-100/90 text-slate-800 select-none cursor-pointer"
@@ -1406,6 +1425,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                                   </div>
                                 )}
                               </div>
+                              )}
                             </div>
                           </div>
 
@@ -1520,6 +1540,8 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
                         </div>
                       </form>
                     )}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1576,4 +1598,4 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onBackToChecklist,
 
     </div>
   );
-};
+});

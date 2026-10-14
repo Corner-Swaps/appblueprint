@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { PHASES_DATA } from './data/phases';
 import { SETUP_STEPS_PHASE } from './data/setupSteps';
 import { ChecklistItem, Phase, Project } from './types';
@@ -171,23 +171,6 @@ export const App: React.FC = () => {
     syncActiveEntitlements();
   }, []);
 
-  // Monitor trial expiration in real time across the entire application
-  useEffect(() => {
-    let wasActive = isTrialActive();
-    const interval = setInterval(() => {
-      const active = isTrialActive();
-      if (wasActive && !active && !isUnlimitedUnlocked()) {
-        wasActive = false;
-        triggerHaptic(ImpactStyle.Heavy);
-        setPaywallTargetProjectId(activeProjectId);
-        setIsPaywallOpen(true);
-        window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed'));
-      }
-      wasActive = active;
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [activeProjectId]);
-
   useEffect(() => {
     const handleProChange = (e: any) => {
       setIsPro(e.detail?.isPro ?? isProUnlocked());
@@ -270,8 +253,8 @@ export const App: React.FC = () => {
     }
   };
 
-  // Track session visit count for authentic native App Store / Google Play review prompt (at 15 and 30 visits, never > 30)
-  // In compliance with Apple Guideline 5.6.1 and Google Play Policy, triggers official native SKStoreReviewController
+  // Track session visit count for authentic native App Store review prompt (at 15 and 30 visits, never > 30)
+  // In compliance with Apple Guideline 5.6.1, triggers official native SKStoreReviewController
   useEffect(() => {
     try {
       const sessionCounted = sessionStorage.getItem('appblueprint_session_counted') || sessionStorage.getItem('launchready_session_counted');
@@ -408,9 +391,20 @@ export const App: React.FC = () => {
   const [unlimitedUnlocked, setUnlimitedUnlocked] = useState<boolean>(() => isUnlimitedUnlocked());
 
   useEffect(() => {
+    let wasActive = isTrialActive();
     const checkStatus = () => {
-      setTrialActive(isTrialActive());
-      setUnlimitedUnlocked(isUnlimitedUnlocked());
+      const active = isTrialActive();
+      const unlimited = isUnlimitedUnlocked();
+      setTrialActive(active);
+      setUnlimitedUnlocked(unlimited);
+      if (wasActive && !active && !unlimited) {
+        wasActive = false;
+        triggerHaptic(ImpactStyle.Heavy);
+        setPaywallTargetProjectId(activeProjectId);
+        setIsPaywallOpen(true);
+        window.dispatchEvent(new CustomEvent('appblueprint-pro-status-changed'));
+      }
+      wasActive = active;
     };
     checkStatus();
     const interval = setInterval(checkStatus, 1000);
@@ -420,7 +414,7 @@ export const App: React.FC = () => {
       clearInterval(interval);
       window.removeEventListener('appblueprint-pro-status-changed', handleProChange);
     };
-  }, []);
+  }, [activeProjectId]);
 
   // Standard production monetization rules:
   // - During 7-day free trial or when Unlimited is purchased, everything is accessible
@@ -504,6 +498,8 @@ export const App: React.FC = () => {
     return (activeProject.completedItemIds || []).filter(id => validItemIdsSet.has(id));
   }, [activeProject.completedItemIds, validItemIdsSet]);
 
+  const completedItemIdsSet = useMemo(() => new Set(completedItemIds), [completedItemIds]);
+
   // Sync Projects to localStorage
   useEffect(() => {
     try {
@@ -547,15 +543,16 @@ export const App: React.FC = () => {
     };
   }, [isAllPhasesPageOpen]);
 
-  // Track scroll position for dynamic top & bottom viewport fading effects
-  const [scrollY, setScrollY] = useState(0);
+  // Track scroll threshold for dynamic top & bottom viewport fading effects without 60fps re-renders
+  const [isScrolledDown, setIsScrolledDown] = useState(false);
 
   useEffect(() => {
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
+          const scrolled = window.scrollY > 6;
+          setIsScrolledDown(prev => (prev === scrolled ? prev : scrolled));
           ticking = false;
         });
         ticking = true;
@@ -565,10 +562,8 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isScrolledDown = scrollY > 6;
-
   // Toggle Item Completion ("The Little Click") for active project
-  const handleToggleComplete = (itemId: string) => {
+  const handleToggleComplete = useCallback((itemId: string) => {
     setProjects(prevProjects =>
       prevProjects.map(proj => {
         if (proj.id === activeProject.id) {
@@ -581,10 +576,10 @@ export const App: React.FC = () => {
         return proj;
       })
     );
-  };
+  }, [activeProject.id]);
 
   // Add Item to a Phase
-  const handleAddItem = (phaseId: string, title: string, description: string) => {
+  const handleAddItem = useCallback((phaseId: string, title: string, description: string) => {
     if (!isTrialActive() && !isUnlimitedUnlocked() && !isProjectUnlocked(activeProject.id)) {
       triggerHaptic(ImpactStyle.Light);
       setPaywallTargetProjectId(activeProject.id);
@@ -611,7 +606,7 @@ SPECIFICATION & DETAILS:
 EXECUTION PROTOCOL FOR THE CODING AGENT:
 1. ARCHITECTURE & CODEBASE SCAN: Locate existing components, state management stores, utilities, and configuration files in the codebase. Understand the project layout and dependencies before modifying files.
 2. FULL PRODUCTION IMPLEMENTATION: Write complete, bug-free, production-grade code. Never leave "TODO", "FIXME", stub methods, or fake placeholder mock data. Fully integrate all UI components, state bindings, controllers, and database/API connectors.
-3. PLATFORM & STORE COMPLIANCE: Adhere strictly to Apple Human Interface Guidelines and Google Play developer policies. Implement safe-area padding for notches and gesture bars, ensure minimum touch targets (44x44pt on Apple, 48x48dp on Android), support Dynamic Type text scaling without layout truncation, and support both Dark and Light themes.
+3. PLATFORM & STORE COMPLIANCE: Adhere strictly to Apple Human Interface Guidelines and App Store Review Guidelines. Implement safe-area padding for notches and Home indicator bars, ensure minimum touch targets (44x44pt on Apple), support Dynamic Type text scaling without layout truncation, and support both Dark and Light themes.
 4. DEFENSIVE ERROR & OFFLINE HANDLING: Implement resilient network retry logic, offline data caching or fallback states, loading spinners/skeletons, descriptive user-facing error messages, and sanitize all user inputs.
 5. VERIFICATION & ZERO REGRESSIONS: Run TypeScript compilation ("npx tsc --noEmit"), resolve any type errors or warnings, ensure no unused imports remain, and verify that all surrounding features remain functional without requiring manual coding from the user.`,
       implementationSteps: [
@@ -644,10 +639,10 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         return proj;
       })
     );
-  };
+  }, [activeProject.id, currentProjectPhases]);
 
   // Reorder Items within a Phase
-  const handleReorderItems = (phaseId: string, newItems: ChecklistItem[]) => {
+  const handleReorderItems = useCallback((phaseId: string, newItems: ChecklistItem[]) => {
     setProjects(prevProjects =>
       prevProjects.map(proj => {
         if (proj.id === activeProject.id) {
@@ -662,10 +657,10 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         return proj;
       })
     );
-  };
+  }, [activeProject.id]);
 
   // Delete an Item from a Phase
-  const handleDeleteItem = (phaseId: string, itemId: string) => {
+  const handleDeleteItem = useCallback((phaseId: string, itemId: string) => {
     setProjects(prevProjects =>
       prevProjects.map(proj => {
         if (proj.id === activeProject.id) {
@@ -684,10 +679,10 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         return proj;
       })
     );
-  };
+  }, [activeProject.id, currentProjectPhases]);
 
   // Reorder Phases
-  const handleReorderPhases = (reordered: Phase[]) => {
+  const handleReorderPhases = useCallback((reordered: Phase[]) => {
     const newOrder = reordered.map(p => p.id);
     setProjects(prevProjects =>
       prevProjects.map(proj => {
@@ -700,7 +695,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         return proj;
       })
     );
-  };
+  }, [activeProject.id]);
 
   // Fresh Restart: restore default canonical order with Idea & Audience as Phase 1
   const handleFreshRestartPhases = () => {
@@ -723,7 +718,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
   };
 
   // Toggle Global Rearrange: minimize all drop-downs & make phases moveable
-  const handleToggleGlobalRearrange = () => {
+  const handleToggleGlobalRearrange = useCallback(() => {
     // 1. Always minimize drop-down menus
     setCollapseSignal(prev => prev + 1);
     // 2. Toggle global edit mode
@@ -732,10 +727,10 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       triggerHaptic(ImpactStyle.Light);
       return next;
     });
-  };
+  }, []);
 
   // Move Phase Up or Down with silky smooth viewport stabilization (zero jump or off-screen scroll)
-  const handleMovePhase = (fromIdx: number, toIdx: number) => {
+  const handleMovePhase = useCallback((fromIdx: number, toIdx: number) => {
     if (toIdx < 0 || toIdx >= currentProjectPhases.length) return;
     const movedPhase = currentProjectPhases[fromIdx];
     if (!movedPhase) return;
@@ -760,10 +755,10 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
         }
       }
     });
-  };
+  }, [currentProjectPhases, handleReorderPhases]);
 
   // Delete a Phase Section (Custom or Built-in)
-  const handleDeletePhase = (phaseId: string) => {
+  const handleDeletePhase = useCallback((phaseId: string) => {
     if (phaseId === SETUP_STEPS_PHASE.id || phaseId === 'phase-setup') {
       return;
     }
@@ -793,7 +788,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     if (selectedPhaseId === phaseId) {
       setSelectedPhaseId('all');
     }
-  };
+  }, [activeProject.id, currentProjectPhases, selectedPhaseId]);
 
   // Delete a Project
   const handleDeleteProject = (projId: string) => {
@@ -866,14 +861,11 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
     wasOverall100Ref.current = overallPercent === 100 && totalAll > 0;
   }, [overallPercent, totalAll]);
 
-  // Filter items for each phase (all or completed)
-  const getFilteredItemsForPhase = (items: ChecklistItem[]) => {
-    return items.filter(item => {
-      const isDone = completedItemIds.includes(item.id);
-      if (filterMode === 'completed' && !isDone) return false;
-      return true;
-    });
-  };
+  // Filter items for each phase (all or completed) - returns stable array reference when filterMode === 'all'
+  const getFilteredItemsForPhase = useCallback((items: ChecklistItem[]) => {
+    if (filterMode === 'all') return items;
+    return items.filter(item => completedItemIdsSet.has(item.id));
+  }, [filterMode, completedItemIdsSet]);
 
   // Visible Phases based on selected filter
   const visiblePhases = useMemo(() => {
@@ -1392,31 +1384,33 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
       </div>
 
       {/* 5. Dedicated All Phases Page */}
-      <AllPhasesPage
-        isOpen={isAllPhasesPageOpen}
-        onClose={() => {
-          setIsGlobalEditMode(false);
-          setIsAllPhasesPageOpen(false);
-        }}
-        phases={[SETUP_STEPS_PHASE, ...currentProjectPhases]}
-        completedItemIds={completedItemIds}
-        onSelectPhase={(phaseId) => {
-          setIsGlobalEditMode(false);
-          setSelectedPhaseId('all');
-          setPreviousTab(activeTab);
-          setActiveTab('checklist');
-          setIsAllPhasesPageOpen(false);
-          window.dispatchEvent(new CustomEvent('expand-phase', { detail: phaseId }));
-          setTimeout(() => {
-            const el = document.getElementById(phaseId);
-            if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          }, 100);
-        }}
-        onReorderPhases={(newPhases) => handleReorderPhases(newPhases.filter(p => p.id !== SETUP_STEPS_PHASE.id))}
-        onDeletePhase={handleDeletePhase}
-      />
+      {isAllPhasesPageOpen && (
+        <AllPhasesPage
+          isOpen={isAllPhasesPageOpen}
+          onClose={() => {
+            setIsGlobalEditMode(false);
+            setIsAllPhasesPageOpen(false);
+          }}
+          phases={[SETUP_STEPS_PHASE, ...currentProjectPhases]}
+          completedItemIds={completedItemIds}
+          onSelectPhase={(phaseId) => {
+            setIsGlobalEditMode(false);
+            setSelectedPhaseId('all');
+            setPreviousTab(activeTab);
+            setActiveTab('checklist');
+            setIsAllPhasesPageOpen(false);
+            window.dispatchEvent(new CustomEvent('expand-phase', { detail: phaseId }));
+            setTimeout(() => {
+              const el = document.getElementById(phaseId);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 100);
+          }}
+          onReorderPhases={(newPhases) => handleReorderPhases(newPhases.filter(p => p.id !== SETUP_STEPS_PHASE.id))}
+          onDeletePhase={handleDeletePhase}
+        />
+      )}
 
       {/* Mandatory First-Launch Terms of Service & Legal Disclaimer Modal */}
       {!showSplash && (

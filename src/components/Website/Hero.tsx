@@ -22,8 +22,8 @@ interface HeroProps {
   onLaunchApp: () => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
-  activePlatform?: 'all' | 'ios' | 'android';
-  onSelectPlatform?: (platform: 'all' | 'ios' | 'android') => void;
+  activePlatform?: 'all' | 'ios' | 'ipad';
+  onSelectPlatform?: (platform: 'all' | 'ios' | 'ipad') => void;
   onSelectCategory?: (category: string) => void;
 }
 
@@ -77,7 +77,7 @@ export const Hero: React.FC<HeroProps> = ({
     }
   };
 
-  const handlePlatformSelect = (p: 'all' | 'ios' | 'android') => {
+  const handlePlatformSelect = (p: 'all' | 'ios' | 'ipad') => {
     if (onSelectPlatform) onSelectPlatform(p);
     const el = document.getElementById('explorer');
     if (el) {
@@ -121,7 +121,7 @@ export const Hero: React.FC<HeroProps> = ({
             <span className="font-google text-slate-900 font-bold hidden sm:inline">2026 Mobile Production Readiness OS</span>
             <span className="font-google text-slate-900 font-bold sm:hidden">2026 Production OS</span>
             <span className="text-slate-300 shrink-0">•</span>
-            <span className="text-slate-500 shrink-0 font-medium">Apple HIG &amp; Google Play Reference</span>
+            <span className="text-slate-500 shrink-0 font-medium">Apple HIG &amp; App Store Reference</span>
           </div>
 
           {/* Main Title - Mobbin Editorial High-Contrast Typography */}
@@ -196,15 +196,15 @@ export const Hero: React.FC<HeroProps> = ({
 
               <button
                 type="button"
-                onClick={() => handlePlatformSelect('android')}
+                onClick={() => handlePlatformSelect('ipad')}
                 className={`apple-press inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  activePlatform === 'android'
+                  activePlatform === 'ipad'
                     ? 'bg-slate-950 text-white shadow-xs'
                     : 'bg-white text-slate-700 hover:bg-slate-100 border border-black/6 shadow-2xs'
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>Google Play (72)</span>
+                <span>iPadOS (101)</span>
               </button>
 
               <button

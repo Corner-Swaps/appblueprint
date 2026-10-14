@@ -26,7 +26,7 @@ interface Trap {
   id: string;
   rule: string;
   title: string;
-  platform: 'Apple' | 'Google' | 'Both';
+  platform: 'Apple';
   severity: 'BLOCKER' | 'CRITICAL' | 'WARNING';
   remedy: string;
   codeSnippet?: string;
@@ -61,21 +61,13 @@ const CRITICAL_TRAPS: Trap[] = [
     codeSnippet: `<!-- PrivacyInfo.xcprivacy -->\n<key>NSPrivacyAccessedAPITypes</key>\n<array>\n  <dict>\n    <key>NSPrivacyAccessedAPIType</key>\n    <string>NSPrivacyAccessedAPICategoryUserDefaults</string>\n    <key>NSPrivacyAccessedAPITypeReasons</key>\n    <array><string>CA92.1</string></array>\n  </dict>\n</array>`
   },
   {
-    id: 'google-20-testers',
-    rule: 'Google Play 20-Tester Rule',
-    title: '14-Day Continuous Closed Testing Requirement',
-    platform: 'Google',
-    severity: 'BLOCKER',
-    remedy: 'Personal Google Play developer accounts created after Nov 2023 must recruit 20+ testers opted in for at least 14 days before applying for Production access.',
-    codeSnippet: `# Track closed testers in Google Play Console:\nClosed testing (Alpha) track -> Testers -> 20 opted in\nMonitor 14 days consecutive opt-in before clicking Apply for Production.`
-  },
-  {
     id: 'apple-3-1-1',
     rule: 'Apple Guideline 3.1.1',
     title: 'In-App Purchases & StoreKit 2 Non-Consumable Restore',
     platform: 'Apple',
-    severity: 'CRITICAL',
+    severity: 'BLOCKER',
     remedy: 'Must include a clearly visible "Restore Purchases" button on every paywall and provide Terms of Use (EULA) and Privacy Policy links before purchase.',
+    codeSnippet: `// StoreKit 2 restore purchases handler\nasync function handleRestore() {\n  try {\n    await AppStore.sync();\n    for await (const result of Transaction.currentEntitlements) {\n      if (result.verified) unlockEntitlement(result.productID);\n    }\n  } catch (error) {\n    console.warn("Restore error", error);\n  }\n}`
   },
 ];
 
@@ -100,7 +92,7 @@ export const AdvisorView: React.FC<AdvisorViewProps> = ({
     { id: 'check-2', title: 'PrivacyInfo.xcprivacy declared in Xcode', sub: 'Required Reason APIs verified with no missing SDK signatures' },
     { id: 'check-3', title: 'In-App Account Deletion button functional', sub: 'Instant account purge compliant with Guideline 5.1.1(v)' },
     { id: 'check-4', title: 'Terms of Service & Privacy Policy URLs live', sub: 'Public HTTPS URLs accessible without login or paywall' },
-    { id: 'check-5', title: 'StoreKit 2 / Google Billing purchase restore tested', sub: 'Restore Purchases button present on paywalls' },
+    { id: 'check-5', title: 'StoreKit 2 purchase restore tested in sandbox', sub: 'Distinct Restore Purchases button present on paywalls' },
   ];
 
   const checksPassed = Object.values(verifiedItems).filter(Boolean).length;
@@ -175,7 +167,7 @@ export const AdvisorView: React.FC<AdvisorViewProps> = ({
             {percent >= 80 ? (
               <>Your app is approaching store production readiness! Verify all critical blockers and run your final release archive on Xcode.</>
             ) : (
-              <>Focus on high-priority security and guideline items to prevent immediate rejection by Apple and Google review engines.</>
+              <>Focus on high-priority security and guideline items to prevent immediate rejection by the Apple App Review team.</>
             )}
           </p>
         </div>
@@ -250,7 +242,7 @@ export const AdvisorView: React.FC<AdvisorViewProps> = ({
           </h3>
         </div>
         <p className="text-xs text-white/70">
-          The 5 most frequent reasons Apple & Google reject newly submitted apps:
+          The most frequent reasons Apple App Review rejects newly submitted apps:
         </p>
 
         <div className="space-y-3 pt-1">

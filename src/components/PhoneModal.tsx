@@ -86,7 +86,7 @@ export const PhoneModal: React.FC<PhoneModalProps> = ({ isOpen, onClose, localIp
                 Load App Blueprint on Your Phone
               </h2>
               <p className="text-xs text-apple-gray-500 dark:text-apple-gray-400">
-                Install as a standalone home-screen app on your iPhone or Android
+                Install as a standalone home-screen app on your iPhone or iPad
               </p>
             </div>
           </div>

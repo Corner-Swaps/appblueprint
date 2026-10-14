@@ -15,7 +15,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Target Audience",
         "shortDescription": "Explain the main problem your app solves in one simple sentence.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "If you try to build an app for \"everyone,\" it quickly becomes confusing and bloated. Having one clear problem and one target user makes your app much easier to build, test, and market.",
         "implementationSteps": [
@@ -41,7 +41,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Scope Pruning",
         "shortDescription": "Focus on the 2 or 3 core features you need to launch, and save the rest for later.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Shipping an app with 3 polished features that work reliably is a massive success. Shipping 15 half-finished or buggy features guarantees app store rejections and frustrating user reviews.",
         "implementationSteps": [
@@ -67,16 +67,16 @@ export const PHASES_DATA: Phase[] = [
         "title": "Build Setup",
         "shortDescription": "Use a reliable, modern coding setup so the app runs smoothly on real phones.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Using strict TypeScript catches typos and logic bugs before they reach real phones. Compiling your app into native mobile code with Capacitor and Xcode ensures it feels fast, responsive, and native.",
         "implementationSteps": [
           "Write code using strict TypeScript so the compiler catches bugs automatically.",
-          "Build your web code and sync it into native iOS and Android projects using Capacitor commands.",
+          "Build your web code and sync it into native iOS and iPadOS projects using Capacitor commands.",
           "Open the native project in Xcode and make sure it compiles cleanly and runs on your phone.",
-          "Set the minimum operating system version to modern standards (iOS 16+ and Android 14+)."
+          "Set the minimum operating system version to modern standards (iOS 16+ and iPadOS 16+)."
         ],
-        "agentPrompt": "You are the autonomous mobile systems engineer responsible for our build pipeline. Do NOT ask the user to configure build settings—implement and verify this entire configuration autonomously.\n\nTASK & OBJECTIVE:\nInspect and harden our project's TypeScript configuration, Capacitor native bridge settings, and mobile build environment to ensure flawless, crash-free execution on physical devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `tsconfig.json`, `capacitor.config.ts`, `package.json`, and the native iOS/Android bridge targets.\n2. IMPLEMENTATION:\n   - Enforce strict TypeScript: eliminate all implicit or explicit `any` types, resolve potential undefined/null property accesses, and ensure clean type imports.\n   - Configure Capacitor: ensure native plugins are cleanly linked, correct app bundle ID and app name are declared in `capacitor.config.ts`, and web assets build directly into native target directories.\n   - Ensure minimum mobile OS deployment targets are set to modern standards (iOS 16+ in Xcode project settings, Android 14+ / minSdk 24 in build.gradle).\n3. VERIFICATION: Execute `npm run build` and `npx cap sync ios`. Confirm zero compilation errors, zero type errors, and zero unresolved native plugin warnings.",
+        "agentPrompt": "You are the autonomous mobile systems engineer responsible for our build pipeline. Do NOT ask the user to configure build settings—implement and verify this entire configuration autonomously.\n\nTASK & OBJECTIVE:\nInspect and harden our project's TypeScript configuration, Capacitor native bridge settings, and mobile build environment to ensure flawless, crash-free execution on physical devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `tsconfig.json`, `capacitor.config.ts`, `package.json`, and the native iOS bridge targets.\n2. IMPLEMENTATION:\n   - Enforce strict TypeScript: eliminate all implicit or explicit `any` types, resolve potential undefined/null property accesses, and ensure clean type imports.\n   - Configure Capacitor: ensure native plugins are cleanly linked, correct app bundle ID and app name are declared in `capacitor.config.ts`, and web assets build directly into native target directories.\n   - Ensure minimum mobile OS deployment targets are set to modern standards (iOS 16+ / iPadOS 16+ in Xcode project settings).\n3. VERIFICATION: Execute `npm run build` and `npx cap sync ios`. Confirm zero compilation errors, zero type errors, and zero unresolved native plugin warnings.",
         "commonRejectionTraps": [
           "Ignoring build warnings or type errors that cause random crashes when people open the app on physical phones.",
           "Forgetting to configure your Apple Developer Team in Xcode, which prevents testing on real iPhones.",
@@ -86,7 +86,7 @@ export const PHASES_DATA: Phase[] = [
           "Does `npx tsc --noEmit` pass with zero errors across all codebase files?",
           "Does the app build and run cleanly on a real physical phone?"
         ],
-        "whatHappensNext": "Your project compiles cleanly into native iOS and Android packages with complete terminal debugging tools and fast live-reloading.",
+        "whatHappensNext": "Your project compiles cleanly into native iOS and iPadOS packages with complete terminal debugging tools and fast live-reloading.",
         "videoUrl": {
           "title": "Capacitor Mobile Setup",
           "url": "https://www.youtube.com/watch?v=SSv--IrWH3c"
@@ -96,18 +96,18 @@ export const PHASES_DATA: Phase[] = [
         "id": "p1-developer-accounts",
         "phaseId": "phase-1",
         "title": "Developer Accounts",
-        "shortDescription": "Register official accounts with Apple and Google so you have permission to publish apps.",
+        "shortDescription": "Enroll in the Apple Developer Program so you have official permission to publish apps.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Account verification can take 1 to 3 weeks because Apple and Google verify your identity or business details. Setting this up early prevents launch delays when your code is ready.",
+        "whyItMatters": "Account verification can take 1 to 3 weeks because Apple verifies your identity or legal business details. Setting this up early prevents launch delays when your code is ready.",
         "implementationSteps": [
           "Enroll in the Apple Developer Program ($99/year). If enrolling as a company, request a free D-U-N-S business number first.",
-          "Enroll in the Google Play Console ($25 one-time fee) and complete their identity check.",
-          "Fill out your contact, banking, and tax agreements in App Store Connect and Google Play Console if you plan to sell subscriptions or paid apps.",
-          "Note for Google Play: New personal developer accounts must complete a mandatory closed beta test with 20 testers for 14 continuous days before publishing to the public."
+          "Complete identity verification in the Apple Developer app and accept program agreements.",
+          "Fill out your contact, banking, and tax agreements (Paid Apps Agreement) in App Store Connect to offer In-App Purchases.",
+          "Configure internal and external TestFlight beta testing groups to validate your build before public submission."
         ],
-        "agentPrompt": "You are the autonomous mobile release engineer for this application. Do NOT ask the user to research store registration parameters—generate and verify the entire technical release specification autonomously.\n\nTASK & OBJECTIVE:\nPrepare and configure our application's exact technical identifiers, bundle ID, versioning scheme, and release metadata required for Apple Developer Program and Google Play Console registrations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `capacitor.config.ts`, `ios/App/App.xcodeproj`, and `android/app/build.gradle`.\n2. IMPLEMENTATION:\n   - Standardize our unique Bundle Identifier (e.g. `com.company.appname`) in reverse-DNS format across all native build files.\n   - Set initial production semantic versioning (`version: \"1.0.0\"`, `versionCode: 1`, `CFBundleVersion: \"1\"`).\n   - Generate a dedicated production release profile config (`release-config.json` or markdown spec) documenting the official Bundle ID, SKUs, Team IDs, Privacy Policy URLs, and store entitlement requirements.\n3. STORE COMPLIANCE: Ensure bundle IDs and package names never use protected Apple/Google trademark prefixes. Confirm Google Play closed testing track preparation (20 testers for 14 continuous days).\n4. VERIFICATION: Verify that `capacitor.config.ts` matches Xcode and Gradle identifiers perfectly with zero mismatches during `npx cap sync`.",
+        "agentPrompt": "You are the autonomous mobile release engineer for this application. Do NOT ask the user to research store registration parameters—generate and verify the entire technical release specification autonomously.\n\nTASK & OBJECTIVE:\nPrepare and configure our application's exact technical identifiers, bundle ID, versioning scheme, and release metadata required for Apple Developer Program and App Store Connect registrations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `capacitor.config.ts` and `ios/App/App.xcodeproj`.\n2. IMPLEMENTATION:\n   - Standardize our unique Bundle Identifier (e.g. `com.company.appname`) in reverse-DNS format across all native build files.\n   - Set initial production semantic versioning (`version: \"1.0.0\"`, `versionCode: 1`, `CFBundleVersion: \"1\"`).\n   - Generate a dedicated production release profile config (`release-config.json` or markdown spec) documenting the official Bundle ID, SKUs, Team IDs, Privacy Policy URLs, and store entitlement requirements.\n3. STORE COMPLIANCE: Ensure bundle IDs and package names never use protected Apple trademark prefixes. Confirm Paid Apps Agreement is active in App Store Connect.\n4. VERIFICATION: Verify that `capacitor.config.ts` matches Xcode identifiers perfectly with zero mismatches during `npx cap sync`.",
         "commonRejectionTraps": [
           "Waiting until launch week to apply for developer accounts, only to be held up by identity verification for weeks.",
           "Leaving tax and banking agreements unsigned, which prevents In-App Purchases from working.",
@@ -115,9 +115,9 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Is your Apple Developer Program membership active and approved?",
-          "Is your Google Play Console identity and payment profile verified?"
+          "Is your App Store Connect identity and payment profile verified?"
         ],
-        "whatHappensNext": "You receive authorized developer access to App Store Connect, Google Play Console, and direct hardware testing on your physical phone.",
+        "whatHappensNext": "You receive authorized developer access to App Store Connect, App Store Connect, and direct hardware testing on your physical phone.",
         "videoUrl": {
           "title": "Developer Accounts",
           "url": "https://www.youtube.com/watch?v=YpQWcGC6uoE"
@@ -127,27 +127,27 @@ export const PHASES_DATA: Phase[] = [
         "id": "p1-monetization-model",
         "phaseId": "phase-1",
         "title": "Monetization Rules",
-        "shortDescription": "Choose how users pay, following Apple and Google official payment rules.",
+        "shortDescription": "Choose how users pay, following Apple and Apple official payment rules.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
-        "whyItMatters": "If you charge for digital features (like subscriptions, extra tools, or premium content), you must use Apple and Google official In-App Purchases. Putting external links like Stripe or PayPal to unlock digital features in the app will get your app banned.",
+        "whyItMatters": "If you charge for digital features (like subscriptions, extra tools, or premium content), you must use Apple and Apple official In-App Purchases. Putting external links like Stripe or PayPal to unlock digital features in the app will get your app banned.",
         "implementationSteps": [
-          "Classify your offerings: Digital features and subscriptions MUST use Apple and Google In-App Purchases (15% to 30% store fee). Physical goods (like selling clothes or food delivery) can use Stripe.",
+          "Classify your offerings: Digital features and subscriptions MUST use Apple and Apple In-App Purchases (15% to 30% store fee). Physical goods (like selling clothes or food delivery) can use Stripe.",
           "Sign up for the Apple Small Business Program to lower Apple's commission from 30% down to 15%.",
-          "Enroll in Google Play's 15% tier for your first $1M in annual earnings."
+          "Enroll in App Store's 15% tier for your first $1M in annual earnings."
         ],
-        "agentPrompt": "You are the autonomous mobile monetization and commerce architect. Do NOT ask the user to write payment logic or research guidelines—implement the store-compliant monetization architecture autonomously in our codebase.\n\nTASK & OBJECTIVE:\nDesign and implement the digital commerce architecture for our mobile application, ensuring 100% compliance with Apple App Store Review Guideline 3.1.1 and Google Play Billing policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the app for any payment buttons, checkout flows, subscription paywalls, or external links.\n2. IMPLEMENTATION:\n   - For all digital unlocks, premium features, and recurring subscriptions, wire exclusively to native In-App Purchases (StoreKit 2 / Google Play Billing).\n   - Strictly remove any web payment buttons (Stripe checkout, PayPal, external payment web links) for digital goods inside the app.\n   - Implement entitlement state management: create a reactive store/hook (`useSubscription` or `useEntitlements`) that unlocks features instantly upon successful purchase receipt validation.\n3. STORE COMPLIANCE: Digital goods sold inside mobile apps MUST use Apple/Google IAP. External payment links for digital services will trigger immediate rejection under Guideline 3.1.1.\n4. VERIFICATION: Verify that paywalls clearly display subscription pricing, billing cycle, trial terms, and that feature gates correctly toggle based on entitlement state without build errors.",
+        "agentPrompt": "You are the autonomous mobile monetization and commerce architect. Do NOT ask the user to write payment logic or research guidelines—implement the store-compliant monetization architecture autonomously in our codebase.\n\nTASK & OBJECTIVE:\nDesign and implement the digital commerce architecture for our mobile application, ensuring 100% compliance with Apple App Store Review Guideline 3.1.1 and App Store Billing policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the app for any payment buttons, checkout flows, subscription paywalls, or external links.\n2. IMPLEMENTATION:\n   - For all digital unlocks, premium features, and recurring subscriptions, wire exclusively to native In-App Purchases (StoreKit 2 / App Store Billing).\n   - Strictly remove any web payment buttons (Stripe checkout, PayPal, external payment web links) for digital goods inside the app.\n   - Implement entitlement state management: create a reactive store/hook (`useSubscription` or `useEntitlements`) that unlocks features instantly upon successful purchase receipt validation.\n3. STORE COMPLIANCE: Digital goods sold inside mobile apps MUST use Apple/Apple IAP. External payment links for digital services will trigger immediate rejection under Guideline 3.1.1.\n4. VERIFICATION: Verify that paywalls clearly display subscription pricing, billing cycle, trial terms, and that feature gates correctly toggle based on entitlement state without build errors.",
         "commonRejectionTraps": [
           "Adding a link that says \"Go to our website to buy a subscription\" inside the mobile app is an instant rejection under Apple Guideline 3.1.1.",
           "Attempting to bypass Apple In-App Purchase by directing digital content buyers to external web payment links without authorization (Guideline 3.1.1).",
-          "Using external payment processors (Stripe/PayPal) to unlock digital features instead of Apple/Google In-App Purchases (Guideline 3.1.1)."
+          "Using external payment processors (Stripe/PayPal) to unlock digital features instead of Apple/Apple In-App Purchases (Guideline 3.1.1)."
         ],
         "verificationQuestions": [
           "Are all digital upgrades and subscriptions set up through official store In-App Purchases?",
           "Have you enrolled in the Apple Small Business Program to cut store fees to 15%?"
         ],
-        "whatHappensNext": "Your revenue architecture complies with Apple Guideline 3.1.1 and Google Play Billing, avoiding payment rejection and unexpected store delisting."
+        "whatHappensNext": "Your revenue architecture complies with Apple Guideline 3.1.1 and App Store Billing, avoiding payment rejection and unexpected store delisting."
       },
       {
         "id": "p1-duns-organization",
@@ -155,9 +155,9 @@ export const PHASES_DATA: Phase[] = [
         "title": "DUNS Number",
         "shortDescription": "Obtain Dun & Bradstreet verification early if enrolling as an LLC or company.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "If you enroll as an organization or company on Apple Developer or Google Play Console, you must provide a Dun & Bradstreet (D-U-N-S) number. Dun & Bradstreet verification takes 14 to 30 days. Waiting until launch week will stall your entire release.",
+        "whyItMatters": "If you enroll as an organization or company on Apple Developer or App Store Connect, you must provide a Dun & Bradstreet (D-U-N-S) number. Dun & Bradstreet verification takes 14 to 30 days. Waiting until launch week will stall your entire release.",
         "implementationSteps": [
           "Search the Dun & Bradstreet lookup tool for your legal entity name and exact registered address.",
           "If not found, request a free D-U-N-S number on the Apple Developer D-U-N-S request portal.",
@@ -173,7 +173,7 @@ export const PHASES_DATA: Phase[] = [
           "Do you have an active D-U-N-S number matching your legal company name and address?",
           "Have you verified whether your Apple Developer account is Individual or Organization?"
         ],
-        "whatHappensNext": "Apple and Google verify your company identity, enabling your legal business name to appear as the public seller on the App Store."
+        "whatHappensNext": "Apple and Apple verify your company identity, enabling your legal business name to appear as the public seller on the App Store."
       },
       {
         "id": "p1-bundle-id-naming",
@@ -181,19 +181,19 @@ export const PHASES_DATA: Phase[] = [
         "title": "Bundle ID",
         "shortDescription": "Lock in your reverse-domain identifier and verify trademark availability before writing code.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Your Bundle Identifier (e.g., com.company.appname) cannot be changed once uploaded to App Store Connect or Google Play. If you use a placeholder like com.example, your push certificates, universal links, and analytics will be permanently locked or broken.",
+        "whyItMatters": "Your Bundle Identifier (e.g., com.company.appname) cannot be changed once uploaded to App Store Connect. If you use a placeholder like com.example, your push certificates, universal links, and entitlements will be permanently locked or broken.",
         "implementationSteps": [
           "Choose a reverse-domain notation bundle ID: com.[company].[appname] using lowercase alphanumeric characters.",
           "Register the App ID in the Apple Developer Certificates, Identifiers & Profiles portal.",
-          "Configure the exact bundle ID in capacitor.config.ts, project.pbxproj, and Android build.gradle."
+          "Configure the exact bundle ID in capacitor.config.ts and ios/App/App.xcodeproj/project.pbxproj."
         ],
-        "agentPrompt": "You are the autonomous mobile systems architect. Do NOT ask the user to configure identifiers—audit and standardize our application bundle ID and display names autonomously.\n\nTASK & OBJECTIVE:\nAudit and standardize our application's App Bundle ID, internal package name, and user-facing App Display Name across all native and web configuration files to ensure permanent, collision-free naming.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `capacitor.config.ts`, `ios/App/App.xcodeproj/project.pbxproj`, `ios/App/App/Info.plist`, and `android/app/build.gradle`.\n2. IMPLEMENTATION:\n   - Enforce permanent reverse-DNS format (e.g. `com.company.appname`) with zero placeholder prefixes (no `com.example`, `com.test`, or temporary names).\n   - Verify that `CFBundleDisplayName` in `Info.plist` and `app_name` in Android `strings.xml` cleanly match the public marketing title (under 30 characters).\n   - Ensure the Bundle ID is strictly synchronized between Capacitor, Xcode, and Android Gradle files.\n3. STORE COMPLIANCE: Bundle IDs cannot be changed once an app is created in App Store Connect or Google Play Console. Collisions or dummy identifiers require recreating the store entry from scratch.\n4. VERIFICATION: Run `npx cap sync` and confirm that bundle identifiers and display names synchronize with zero mismatches or warnings.",
+        "agentPrompt": "You are the autonomous mobile systems architect. Do NOT ask the user to configure identifiers—audit and standardize our application bundle ID and display names autonomously.\n\nTASK & OBJECTIVE:\nAudit and standardize our application's App Bundle ID and user-facing App Display Name across all native and web configuration files to ensure permanent, collision-free naming.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `capacitor.config.ts`, `ios/App/App.xcodeproj/project.pbxproj`, and `ios/App/App/Info.plist`.\n2. IMPLEMENTATION:\n   - Enforce permanent reverse-DNS format (e.g. `com.company.appname`) with zero placeholder prefixes (no `com.example`, `com.test`, or temporary names).\n   - Verify that `CFBundleDisplayName` in `Info.plist` cleanly matches the public marketing title (under 30 characters).\n   - Ensure the Bundle ID is strictly synchronized between Capacitor and Xcode.\n3. STORE COMPLIANCE: Bundle IDs cannot be changed once an app is created in App Store Connect. Collisions or dummy identifiers require recreating the store entry from scratch.\n4. VERIFICATION: Run `npx cap sync` and confirm that bundle identifiers and display names synchronize with zero mismatches or warnings.",
         "commonRejectionTraps": [
           "Uploading a binary with 'com.example' or 'test' in the bundle ID, which Apple Connect rejects automatically.",
-          "Including trademarked brand names (such as \"Apple\", \"iPhone\", \"Google\", or third-party brands) inside your Bundle Identifier or app display name.",
-          "Using protected trademark terms (e.g. 'iPhone', 'Google', 'Apple') in your application's reverse-DNS package identifier."
+          "Including trademarked brand names (such as \"Apple\", \"iPhone\", \"Apple\", or third-party brands) inside your Bundle Identifier or app display name.",
+          "Using protected trademark terms (e.g. 'iPhone', 'Apple', 'Apple') in your application's reverse-DNS package identifier."
         ],
         "verificationQuestions": [
           "Is your bundle ID unique and registered in Apple Developer Certificates & Identifiers?",
@@ -221,7 +221,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Screen Inventory",
         "shortDescription": "Detail every screen, modal sheet, and transition before designing components or writing visual code.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Jumping straight into button styling without a clear screen flow results in dead-end paths, missing back navigation, disjointed modal states, and user confusion that triggers Apple Guideline 4.0/4.2 rejection.",
         "whatHappensNext": "You will have a definitive blueprint of every screen, route, and transition in your app, ensuring users can navigate freely without encountering dead ends or trapped views.",
@@ -256,7 +256,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Screen Anatomy",
         "shortDescription": "Structure screens into 3 distinct vertical zones: sticky safe-area header, scrollable content canvas, and fixed bottom action dock.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Inconsistent mobile layouts where headers scroll off-screen unexpectedly or bottom action buttons jump around create a disorienting, amateur experience. Consistent screen anatomy feels native and predictable.",
         "whatHappensNext": "Your application interface adheres to standard native layout structure with pinned headers, fluid scrolling bodies, and anchored action bars that respect hardware borders.",
@@ -291,10 +291,10 @@ export const PHASES_DATA: Phase[] = [
         "title": "8pt Spatial",
         "shortDescription": "Align every screen element to a consistent 8-point spatial rhythm (8px, 16px, 24px, 32px) for proportional visual balance.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Irregular margins (like 7px here, 23px there) make interfaces look messy and unprofessional. An 8pt grid guarantees visual harmony across phone screens from iPhone SE to iPad.",
-        "whatHappensNext": "Your interface acquires pixel-perfect proportional spacing and structured card depth that matches premier Apple and Google design benchmarks.",
+        "whatHappensNext": "Your interface acquires pixel-perfect proportional spacing and structured card depth that matches premier Apple and Apple design benchmarks.",
         "directLink": {
           "label": "The 8-Point Grid System in Mobile Design",
           "url": "https://spec.fm/specifics/8-pt-grid"
@@ -326,7 +326,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Mobile Navigation",
         "shortDescription": "Use the right navigation paradigm for each interaction: tabs for core destinations, push stacks for drill-downs, and sheets for transient tasks.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Misusing navigation (like nesting tabs inside tabs or opening full push screens for quick 5-second edits) breaks standard platform conventions and confuses users.",
         "whatHappensNext": "Your app flows with intuitive platform navigation habits that users instantly understand without needing tutorials or explanations.",
@@ -361,7 +361,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Thumb Reach",
         "shortDescription": "Place frequent high-impact actions in the lower half of the screen where thumbs comfortably reach on large modern phones.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Modern phones (like iPhone Pro Max and Galaxy Ultra) are over 6.7 inches tall. Forcing users to stretch their thumbs to the top corners for frequent actions causes hand fatigue and accidental device drops.",
         "whatHappensNext": "Users can operate your application comfortably with one hand, dramatically increasing engagement and session satisfaction.",
@@ -396,7 +396,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Card-Based Form",
         "shortDescription": "Group related inputs into distinct card sections with top labels, clear placeholders, and auto-advancing focus progression.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Long monolithic forms cause cognitive overload and form abandonment. Clean card-based groupings with clear visual affordances make data entry quick, intuitive, and error-free.",
         "whatHappensNext": "Forms become painless and quick to complete, lowering drop-off rates and eliminating input frustration across your user base.",
@@ -441,7 +441,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Apple Design",
         "shortDescription": "Align your application layout, components, and interactions with Apple's official design system at developer.apple.com/design.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Apple's Human Interface Guidelines and design resources are the gold standard for iOS apps. Apps following Apple design principles feel authentic, achieve higher user retention, and pass App Review without design rejections under Guideline 4.0.",
         "whatHappensNext": "Your application interface adheres to Apple's proven design language, ensuring seamless thumb reachability, fluid navigation, and zero rejection under Guideline 4.0 (Design).",
@@ -477,7 +477,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Design Inspiration",
         "shortDescription": "Take screenshots of top-tier apps you admire to benchmark layouts, user flows, and spacing without copying copyrighted assets.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Studying successful mobile apps helps you identify proven UX patterns (navigation hierarchy, card spacing, thumb-friendly actions). Taking screenshots to study visual structure is standard industry practice—just ensure you never copy brand logos, trademarked names, or unique illustrations.",
         "whatHappensNext": "You will have a clear visual benchmark and reference moodboard for your app screens, ensuring your interface feels familiar, polished, and intuitive while remaining 100% legally original.",
@@ -513,7 +513,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Liquid Glass",
         "shortDescription": "Incorporate modern translucent materials, specular refraction, spring-driven gesture mechanics, and responsive press feedback.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Modern iOS interfaces rely on physical depth, layered translucency (backdrop-blur), and spring physics. When an interface responds instantaneously to touch without artificial delay, it stops feeling like a computer and starts feeling like a natural extension of the user.",
         "whatHappensNext": "Your application feels alive and responsive in the user's hand, matching the tactile physical quality of authentic Apple system apps.",
@@ -549,7 +549,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Touch Targets",
         "shortDescription": "Ensure every clickable icon, button, and link is large enough to tap comfortably with a thumb.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "Apple HIG Touch Targets",
@@ -557,11 +557,11 @@ export const PHASES_DATA: Phase[] = [
         },
         "whyItMatters": "Cramped, tiny buttons frustrate users who accidentally tap the wrong thing. Reviewers test apps on physical phones and reject apps that feel clumsy or hard to navigate.",
         "implementationSteps": [
-          "Ensure all buttons, close icons (\"X\"), and list items have a tappable area of at least 44x44 points on iOS and 48x48 dp on Android.",
+          "Ensure all buttons, close icons (\"X\"), and list items have a tappable area of at least 44x44 points on iOS and 48x48 dp on iOS.",
           "If an icon looks visually small, expand its invisible touch padding so it remains easy to hit.",
           "Keep at least 8 points of breathing room between adjacent buttons so users do not tap both at once."
         ],
-        "agentPrompt": "You are the autonomous mobile UI/UX engineer. Do NOT ask the user to adjust button dimensions—audit and refactor touch targets across the entire codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit every interactive button, icon button, tab bar item, checkbox, and list row across all screens to guarantee a minimum tappable touch target area of at least 44x44 points on Apple iOS and 48x48 dp on Android.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all button and clickable icon elements across all components. Identify any small icons (e.g., 16px-24px close icons, back buttons, disclosure arrows) that lack sufficient tap padding.\n2. IMPLEMENTATION:\n   - Apply minimum touch target constraints: ensure all interactive elements enforce at least `min-w-[44px] min-h-[44px]` or generous invisible padding (`p-2.5` or `-m-2 p-2`) around small icons.\n   - Enforce at least 8 points of spacing between neighboring interactive buttons to prevent accidental mis-taps.\n   - Add Apple-grade fluid touch feedback to every clickable element (`active:scale-[0.97] transition-transform duration-100`).\n3. STORE COMPLIANCE: Complies with Apple Human Interface Guidelines and Google Material 3 touch target standards. Prevents user frustration and reviewer rejection under Apple Guideline 4.0 (Design).\n4. VERIFICATION: Test touch responsiveness across mobile viewports. Ensure `tsc --noEmit` passes with zero errors.",
+        "agentPrompt": "You are the autonomous mobile UI/UX engineer. Do NOT ask the user to adjust button dimensions—audit and refactor touch targets across the entire codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit every interactive button, icon button, tab bar item, checkbox, and list row across all screens to guarantee a minimum tappable touch target area of at least 44x44 points on Apple iOS and 48x48 dp on iOS.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all button and clickable icon elements across all components. Identify any small icons (e.g., 16px-24px close icons, back buttons, disclosure arrows) that lack sufficient tap padding.\n2. IMPLEMENTATION:\n   - Apply minimum touch target constraints: ensure all interactive elements enforce at least `min-w-[44px] min-h-[44px]` or generous invisible padding (`p-2.5` or `-m-2 p-2`) around small icons.\n   - Enforce at least 8 points of spacing between neighboring interactive buttons to prevent accidental mis-taps.\n   - Add Apple-grade fluid touch feedback to every clickable element (`active:scale-[0.97] transition-transform duration-100`).\n3. STORE COMPLIANCE: Complies with Apple Human Interface Guidelines and Apple Material 3 touch target standards. Prevents user frustration and reviewer rejection under Apple Guideline 4.0 (Design).\n4. VERIFICATION: Test touch responsiveness across mobile viewports. Ensure `tsc --noEmit` passes with zero errors.",
         "commonRejectionTraps": [
           "Tiny close buttons (\"X\") in modal popups that take multiple frustrated taps to close.",
           "Interactive icons or list row chevron buttons smaller than 44x44 points, causing repeated mis-taps during manual human testing by App Store reviewers.",
@@ -583,7 +583,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Screen Safe",
         "shortDescription": "Prevent text and buttons from hiding behind the camera notch, Dynamic Island, or home bar.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "If headers slide underneath the camera cutout or buttons sit directly behind the phone home indicator bar, the app looks broken and amateurish.",
         "implementationSteps": [
@@ -613,7 +613,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Dynamic Type",
         "shortDescription": "Make sure your text scales cleanly when users increase font size in their phone settings.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Over 30% of smartphone users increase their system text size for better readability. If your app ignores this or cuts text off into \"...\", users with visual needs cannot use it.",
         "implementationSteps": [
@@ -621,7 +621,7 @@ export const PHASES_DATA: Phase[] = [
           "Allow containers, cards, and buttons to expand vertically when text becomes larger.",
           "Allow labels to wrap onto multiple lines instead of clipping text."
         ],
-        "agentPrompt": "You are the autonomous accessibility and typography engineer. Do NOT ask the user to rewrite text styles—audit and refactor the typography system autonomously across our application.\n\nTASK & OBJECTIVE:\nRefactor our text styling and container layouts to fully support system accessibility font scaling (Apple Dynamic Type and Android font scaling) without UI breakage.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan all component styles for fixed pixel container heights (`h-10`, `h-12`, `h-16`) wrapping text labels, fixed `max-lines` without scrollability, or text with `overflow: hidden` without fallback wrapping.\n2. IMPLEMENTATION:\n   - Replace fixed container heights on buttons, cards, and list rows with flexible min-heights (`min-h-[44px]`) and auto-expanding padding (`py-3 px-4`).\n   - Allow text to wrap cleanly onto multiple lines (`break-words`, `whitespace-normal`) rather than truncating with unreadable ellipsis when the user scales system fonts up.\n   - Ensure critical user actions and labels remain completely legible and operable at the largest accessibility text sizes (up to 200% zoom).\n3. STORE COMPLIANCE: Required by Apple Accessibility Human Interface Guidelines. Reviewers test apps under Accessibility settings with Large Text enabled.\n4. VERIFICATION: Test scaling font sizes in CSS. Confirm zero overlapping containers and zero unreadable text truncation.",
+        "agentPrompt": "You are the autonomous accessibility and typography engineer. Do NOT ask the user to rewrite text styles—audit and refactor the typography system autonomously across our application.\n\nTASK & OBJECTIVE:\nRefactor our text styling and container layouts to fully support system accessibility font scaling (Apple Dynamic Type and iOS font scaling) without UI breakage.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan all component styles for fixed pixel container heights (`h-10`, `h-12`, `h-16`) wrapping text labels, fixed `max-lines` without scrollability, or text with `overflow: hidden` without fallback wrapping.\n2. IMPLEMENTATION:\n   - Replace fixed container heights on buttons, cards, and list rows with flexible min-heights (`min-h-[44px]`) and auto-expanding padding (`py-3 px-4`).\n   - Allow text to wrap cleanly onto multiple lines (`break-words`, `whitespace-normal`) rather than truncating with unreadable ellipsis when the user scales system fonts up.\n   - Ensure critical user actions and labels remain completely legible and operable at the largest accessibility text sizes (up to 200% zoom).\n3. STORE COMPLIANCE: Required by Apple Accessibility Human Interface Guidelines. Reviewers test apps under Accessibility settings with Large Text enabled.\n4. VERIFICATION: Test scaling font sizes in CSS. Confirm zero overlapping containers and zero unreadable text truncation.",
         "commonRejectionTraps": [
           "Text overflowing out of buttons or headers truncating critical words into \"...\" when accessibility font size is turned up.",
           "Layout containers with fixed height clipping or truncating critical user text into \"...\" when users increase font size in Accessibility settings.",
@@ -639,7 +639,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Light Dark",
         "shortDescription": "Deliver a great visual experience whether the user has light mode or dark mode turned on.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Users expect apps to match their phone theme. If your app has hardcoded white text on a light background or black text on a dark card, content becomes completely invisible.",
         "implementationSteps": [
@@ -667,17 +667,17 @@ export const PHASES_DATA: Phase[] = [
         "id": "p2-app-icon",
         "phaseId": "phase-2",
         "title": "Master App",
-        "shortDescription": "Generate 1024x1024px PNG for iOS AppIcon.appiconset (no alpha) and 512x512px icon for Google Play.",
+        "shortDescription": "Generate 1024x1024px PNG for iOS AppIcon.appiconset (no alpha) and 512x512px icon for App Store.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Your app icon is the first thing users see on the store and their home screen. Format mistakes (like transparent backgrounds or pre-curved corners) cause build errors in Xcode.",
         "implementationSteps": [
           "iOS: Create a crisp 1024x1024px PNG image with NO transparency and sharp square corners (iOS rounds the corners automatically).",
-          "Android: Create an Adaptive Icon with a separate background layer and foreground artwork inside the central safe circle.",
-          "Provide a clean monochrome variant so Android 13+ can tint your icon with the user's wallpaper theme."
+          "iOS: Create an Adaptive Icon with a separate background layer and foreground artwork inside the central safe circle.",
+          "Provide a clean monochrome variant so iOS 17+ can tint your icon with the user's wallpaper theme."
         ],
-        "agentPrompt": "You are the autonomous mobile production engineer. Do NOT ask the user to format icon layers—configure production-grade icon assets for both Apple and Android platforms autonomously.\n\nTASK & OBJECTIVE:\nGenerate, format, and configure production-ready app icon asset catalogs for Apple iOS and adaptive icon resources for Android.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Assets.xcassets/AppIcon.appiconset` and `android/app/src/main/res/mipmap-*`.\n2. IMPLEMENTATION:\n   - For Apple iOS: Configure a crisp 1024x1024px PNG icon with zero alpha transparency (no transparent background) and sharp 90-degree square corners. (Xcode rejects icons with transparent pixels or pre-rounded corners).\n   - For Android: Configure modern adaptive icons with distinct foreground layer (432x432px centered within a 108dp safe zone), background layer (color or pattern), and a monochrome vector icon for Android 13+ Material You themed launchers.\n   - Configure `Contents.json` in Xcode asset catalog and `ic_launcher.xml` in Android res folder.\n3. STORE COMPLIANCE: Apple App Store upload will fail validation with \"Invalid App Store Icon\" if transparency exists. Google Play requires adaptive icon format.\n4. VERIFICATION: Verify that icon configuration files exist in native folders and that asset catalogs pass Xcode validation.",
+        "agentPrompt": "You are the autonomous mobile production engineer. Do NOT ask the user to format icon layers—configure production-grade icon assets for both Apple and iOS platforms autonomously.\n\nTASK & OBJECTIVE:\nGenerate, format, and configure production-ready app icon asset catalogs for Apple iOS and adaptive icon resources for iOS.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Assets.xcassets/AppIcon.appiconset` and `ios/app/src/main/res/mipmap-*`.\n2. IMPLEMENTATION:\n   - For Apple iOS: Configure a crisp 1024x1024px PNG icon with zero alpha transparency (no transparent background) and sharp 90-degree square corners. (Xcode rejects icons with transparent pixels or pre-rounded corners).\n   - For iOS: Configure modern adaptive icons with distinct foreground layer (432x432px centered within a 108dp safe zone), background layer (color or pattern), and a monochrome vector icon for iOS 17+ Material You themed launchers.\n   - Configure `Contents.json` in Xcode asset catalog and `ic_launcher.xml` in iOS res folder.\n3. STORE COMPLIANCE: Apple App Store upload will fail validation with \"Invalid App Store Icon\" if transparency exists. App Store requires adaptive icon format.\n4. VERIFICATION: Verify that icon configuration files exist in native folders and that asset catalogs pass Xcode validation.",
         "commonRejectionTraps": [
           "Uploading an iOS icon with transparent edges (Xcode rejects with \"Invalid App Store Icon\").",
           "Pre-rounding the corners of your icon before uploading.",
@@ -685,9 +685,9 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Is your iOS icon a solid square 1024x1024px PNG with zero transparent pixels?",
-          "Does your Android adaptive icon look sharp without clipping edges?"
+          "Does your iOS adaptive icon look sharp without clipping edges?"
         ],
-        "whatHappensNext": "Your app displays a crisp, memorable icon on user home screens, in notifications, in Xcode archives, and in the App Store and Google Play storefronts.",
+        "whatHappensNext": "Your app displays a crisp, memorable icon on user home screens, in notifications, in Xcode archives, and in the Apple App Store storefronts.",
         "directLink": {
           "label": "IconKitchen - App Icon Generator",
           "url": "https://iconkitchen.com/"
@@ -703,15 +703,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "Smooth Launch",
         "shortDescription": "Show a simple, clean screen while the app loads into memory without artificial pauses.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "The launch screen bridges the brief fraction of a second while the phone loads your code. Adding artificial 3-second delays or marketing popups annoys users and violates guidelines.",
         "implementationSteps": [
           "iOS: Use a simple launch screen matching your app background color and logo.",
-          "Android: Use the official system Splash Screen API.",
+          "iOS: Use the official system Splash Screen API.",
           "Never put ads, progress bars, or fake multi-second delays on the launch screen."
         ],
-        "agentPrompt": "You are the autonomous mobile performance engineer. Do NOT ask the user to design splash screens—configure a native, instantaneous launch screen autonomously in our mobile project.\n\nTASK & OBJECTIVE:\nConfigure a clean, native launch screen for our application that matches the app's first screen background color and transitions instantly without artificial sleep delays or fake loading spinners.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Base.lproj/LaunchScreen.storyboard`, Android splash screen styles in `styles.xml`, and `capacitor.config.ts`.\n2. IMPLEMENTATION:\n   - Configure the native iOS launch storyboard and Android Splash theme with a solid background color identical to the first rendered screen background.\n   - Center our application logo cleanly without stretching or distortion across different device aspect ratios.\n   - Eliminate any artificial delay in JavaScript initialization: remove any `setTimeout` artificial splash delays. Hide the native splash screen immediately when the first interactive DOM element renders using `SplashScreen.hide()`.\n3. STORE COMPLIANCE: Apple Guideline 4.0 discourages artificial splash delays. Launch screens should convey instant responsiveness rather than an advertising billboard.\n4. VERIFICATION: Test app cold launch. Confirm the launch screen transitions seamlessly into the first screen with zero flicker and zero artificial delays.",
+        "agentPrompt": "You are the autonomous mobile performance engineer. Do NOT ask the user to design splash screens—configure a native, instantaneous launch screen autonomously in our mobile project.\n\nTASK & OBJECTIVE:\nConfigure a clean, native launch screen for our application that matches the app's first screen background color and transitions instantly without artificial sleep delays or fake loading spinners.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Base.lproj/LaunchScreen.storyboard`, iOS splash screen styles in `styles.xml`, and `capacitor.config.ts`.\n2. IMPLEMENTATION:\n   - Configure the native iOS launch storyboard and iOS Splash theme with a solid background color identical to the first rendered screen background.\n   - Center our application logo cleanly without stretching or distortion across different device aspect ratios.\n   - Eliminate any artificial delay in JavaScript initialization: remove any `setTimeout` artificial splash delays. Hide the native splash screen immediately when the first interactive DOM element renders using `SplashScreen.hide()`.\n3. STORE COMPLIANCE: Apple Guideline 4.0 discourages artificial splash delays. Launch screens should convey instant responsiveness rather than an advertising billboard.\n4. VERIFICATION: Test app cold launch. Confirm the launch screen transitions seamlessly into the first screen with zero flicker and zero artificial delays.",
         "commonRejectionTraps": [
           "Adding a forced 3-second timer before showing the main screen.",
           "Displaying marketing popups, splash screen advertisements, or unbranded static screens during cold launch instead of an authentic launch storyboard.",
@@ -729,7 +729,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Empty States",
         "shortDescription": "Prevent blank screens when lists are empty or data is loading for new accounts.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "When a user first opens your app, their lists, feeds, or carts are empty. Showing a blank white screen makes Apple reviewers think the app has crashed or is broken, triggering Guideline 4.2 rejections.",
         "implementationSteps": [
@@ -755,7 +755,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Keyboard Avoidance",
         "shortDescription": "Keep text inputs, textareas, and submit buttons visible when the virtual keyboard pops up.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "On mobile devices, the virtual keyboard takes up half the viewport. If input fields or submit buttons get covered behind the keyboard, users cannot log in, register, or complete purchases.",
         "implementationSteps": [
@@ -763,7 +763,7 @@ export const PHASES_DATA: Phase[] = [
           "Use the Keyboard API or keyboard-aware scroll views to scroll active inputs smoothly into view.",
           "Add a tap-outside-to-dismiss gesture and iOS keyboard toolbar accessories for easy input completion."
         ],
-        "agentPrompt": "You are the autonomous mobile layout and interaction engineer. Do NOT ask the user to fix input scrolling—implement automatic keyboard avoidance and outside-tap dismissal autonomously.\n\nTASK & OBJECTIVE:\nAudit all form fields, input dialogs, textareas, and login screens to guarantee that the virtual software keyboard never obscures active input fields or submit buttons.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all modal dialogs, account forms, search bars, and input screens across the application.\n2. IMPLEMENTATION:\n   - Implement keyboard avoidance: when a user focuses any input field or textarea, automatically scroll the active input smoothly into the visible viewport with at least 20px of breathing room above the software keyboard.\n   - Implement outside-tap keyboard dismissal: tapping anywhere on the background outside an active input must automatically dismiss the virtual keyboard.\n   - Configure Capacitor Keyboard plugin settings (`resize: KeyboardResize.Body` or `KeyboardResize.Native`) in `capacitor.config.ts` to ensure proper webview resizing on iOS and Android.\n   - Ensure the primary \"Save\" or \"Submit\" button remains accessible or pinned above the keyboard.\n3. STORE COMPLIANCE: Obscured form fields and keyboards that cannot be dismissed represent major usability defects that prompt immediate reviewer rejection under Apple Guideline 4.0.\n4. VERIFICATION: Test focusing bottom inputs on mobile viewports. Confirm smooth scrolling above the keyboard and tap-to-dismiss behavior with zero errors.",
+        "agentPrompt": "You are the autonomous mobile layout and interaction engineer. Do NOT ask the user to fix input scrolling—implement automatic keyboard avoidance and outside-tap dismissal autonomously.\n\nTASK & OBJECTIVE:\nAudit all form fields, input dialogs, textareas, and login screens to guarantee that the virtual software keyboard never obscures active input fields or submit buttons.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all modal dialogs, account forms, search bars, and input screens across the application.\n2. IMPLEMENTATION:\n   - Implement keyboard avoidance: when a user focuses any input field or textarea, automatically scroll the active input smoothly into the visible viewport with at least 20px of breathing room above the software keyboard.\n   - Implement outside-tap keyboard dismissal: tapping anywhere on the background outside an active input must automatically dismiss the virtual keyboard.\n   - Configure Capacitor Keyboard plugin settings (`resize: KeyboardResize.Body` or `KeyboardResize.Native`) in `capacitor.config.ts` to ensure proper webview resizing on iOS and iPadOS.\n   - Ensure the primary \"Save\" or \"Submit\" button remains accessible or pinned above the keyboard.\n3. STORE COMPLIANCE: Obscured form fields and keyboards that cannot be dismissed represent major usability defects that prompt immediate reviewer rejection under Apple Guideline 4.0.\n4. VERIFICATION: Test focusing bottom inputs on mobile viewports. Confirm smooth scrolling above the keyboard and tap-to-dismiss behavior with zero errors.",
         "commonRejectionTraps": [
           "Input fields or submit buttons getting pushed under the keyboard on smaller iPhones (like iPhone SE), causing reviewers to reject for broken UI.",
           "Software keyboard covering text input fields or the Submit button on smaller screens (like iPhone SE), preventing users from submitting forms.",
@@ -791,7 +791,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Data Models",
         "shortDescription": "Model your application's entities with explicit TypeScript interfaces, runtime validators, and strict type boundaries.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Loose typing or unexpected null/undefined data from network payloads or storage is the #1 cause of mobile app crashes in production.",
         "whatHappensNext": "Your application code operates on bulletproof, predictable data structures that eliminate null-pointer exceptions and cold-start crashes.",
@@ -826,7 +826,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Local Storage",
         "shortDescription": "Save user input and state automatically to local storage with debounce throttling and quota safety.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Mobile users switch apps constantly to answer calls or check texts. If typing a form is lost because they didn't manually click 'Save', users leave 1-star reviews.",
         "whatHappensNext": "User data and progress persist seamlessly across app restarts, ensuring zero loss of draft work even if the app process is terminated.",
@@ -859,9 +859,9 @@ export const PHASES_DATA: Phase[] = [
         "id": "p4-state-restoration",
         "phaseId": "phase-data",
         "title": "Lifecycle State",
-        "shortDescription": "Restore the user's active tab, current screen route, and scroll position when iOS or Android resumes the app from memory purge.",
+        "shortDescription": "Restore the user's active tab, current screen route, and scroll position when iOS or iOS resumes the app from memory purge.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Mobile operating systems aggressively terminate backgrounded apps to reclaim RAM. When the user taps the app icon again, they should return exactly where they were, not be dumped at the splash screen.",
         "whatHappensNext": "Your app delivers a seamless resume experience where users pick up exactly where they left off after multitasking.",
@@ -896,7 +896,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Schema Data",
         "shortDescription": "Include a schema version number in stored data and write automatic upgrade migrations so app updates never wipe user data.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "When you release update 1.1 or 2.0 with new database fields, existing users will have old data formats. Without migrations, the app crashes or wipes their existing data on update.",
         "whatHappensNext": "Every app update automatically and seamlessly upgrades local data structures without ever losing user files or requiring manual resets.",
@@ -941,7 +941,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "State Restoration",
         "shortDescription": "Make sure typed text and current screens aren't lost if the user answers a call or copies an SMS code.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "When a user switches to another app, the phone operating system may temporarily pause or close your app in the background to free up memory. If they return and their form is wiped clean, they leave 1-star reviews.",
         "implementationSteps": [
@@ -949,7 +949,7 @@ export const PHASES_DATA: Phase[] = [
           "Remember which screen the user was viewing so they return right where they left off.",
           "Test by switching between apps and returning to verify nothing was reset."
         ],
-        "agentPrompt": "You are the autonomous mobile state architect. Do NOT ask the user to write state persistence—implement comprehensive state restoration autonomously across our application.\n\nTASK & OBJECTIVE:\nImplement robust lifecycle state preservation and restoration so that if the mobile operating system suspends or kills the app in the background while the user answers a call, switches apps, or copies a 2FA code, their active screen, navigation position, and unsaved form inputs are automatically preserved upon return.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our state management stores, active navigation state, and form input components across all screens.\n2. IMPLEMENTATION:\n   - Create a state restoration manager (`useAutoSaveState` or persistent state middleware) that saves active screen route, tab selection, and form input values to persistent storage on change.\n   - Subscribe to Capacitor `appStateChange` events to persist uncommitted user inputs immediately when `isActive` becomes false.\n   - Upon app cold launch, check for saved restoration state; if valid and recent, restore the user to their exact previous screen and restore their input fields smoothly.\n3. STORE COMPLIANCE: Meets Apple HIG and Android developer quality guidelines for process death handling, preventing user frustration and data loss.\n4. VERIFICATION: Test state restoration by navigating deep into a form, putting the app in the background, and verifying all form values remain intact upon return.",
+        "agentPrompt": "You are the autonomous mobile state architect. Do NOT ask the user to write state persistence—implement comprehensive state restoration autonomously across our application.\n\nTASK & OBJECTIVE:\nImplement robust lifecycle state preservation and restoration so that if the mobile operating system suspends or kills the app in the background while the user answers a call, switches apps, or copies a 2FA code, their active screen, navigation position, and unsaved form inputs are automatically preserved upon return.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our state management stores, active navigation state, and form input components across all screens.\n2. IMPLEMENTATION:\n   - Create a state restoration manager (`useAutoSaveState` or persistent state middleware) that saves active screen route, tab selection, and form input values to persistent storage on change.\n   - Subscribe to Capacitor `appStateChange` events to persist uncommitted user inputs immediately when `isActive` becomes false.\n   - Upon app cold launch, check for saved restoration state; if valid and recent, restore the user to their exact previous screen and restore their input fields smoothly.\n3. STORE COMPLIANCE: Meets Apple HIG and iOS developer quality guidelines for process death handling, preventing user frustration and data loss.\n4. VERIFICATION: Test state restoration by navigating deep into a form, putting the app in the background, and verifying all form values remain intact upon return.",
         "commonRejectionTraps": [
           "App reloading to a blank screen or losing filled-in forms after being put in the background.",
           "Failing to preserve form inputs or active tab selection when the operating system terminates the background process under memory pressure.",
@@ -967,7 +967,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Offline Mode",
         "shortDescription": "Cache data locally so users can still read and use the app in elevators or on subways.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Mobile connections drop all the time. An app that displays a giant full-screen error or crashes whenever Wi-Fi drops feels unreliable.",
         "implementationSteps": [
@@ -975,7 +975,7 @@ export const PHASES_DATA: Phase[] = [
           "Update the screen immediately when the user taps an action, and queue the update to sync to your server when internet returns.",
           "Show a subtle, friendly banner if offline (e.g. \"Working offline\") instead of blocking the screen."
         ],
-        "agentPrompt": "You are the autonomous mobile architecture engineer. Do NOT ask the user to build offline storage—implement an offline-first data caching and synchronization layer autonomously.\n\nTASK & OBJECTIVE:\nBuild a robust offline-first architecture for our application so all core features remain functional when the user is in Airplane Mode, an elevator, or experiencing weak connectivity.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect data fetching services, API client utilities, and state stores.\n2. IMPLEMENTATION:\n   - Implement local persistent caching (using IndexedDB, SQLite, or persistent storage) to cache all queried feeds, lists, and user records.\n   - Ensure the UI loads and displays cached records immediately upon screen launch before attempting network requests.\n   - Implement an offline mutation queue: when the user creates or edits records while offline, update the UI optimistically, serialize the action to a local mutation queue, and display a subtle \"Syncing when online\" status indicator.\n   - Listen to network status change events (`Network.addListener`); when connectivity is restored, automatically replay pending mutations in order and synchronize with the server.\n3. STORE COMPLIANCE: Prevents white-screen failures and network crashes during store review (where Apple/Google test in simulated offline/poor network environments).\n4. VERIFICATION: Simulate offline mode in browser dev tools. Verify that all screens render cached data and queued mutations sync seamlessly upon reconnection.",
+        "agentPrompt": "You are the autonomous mobile architecture engineer. Do NOT ask the user to build offline storage—implement an offline-first data caching and synchronization layer autonomously.\n\nTASK & OBJECTIVE:\nBuild a robust offline-first architecture for our application so all core features remain functional when the user is in Airplane Mode, an elevator, or experiencing weak connectivity.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect data fetching services, API client utilities, and state stores.\n2. IMPLEMENTATION:\n   - Implement local persistent caching (using IndexedDB, SQLite, or persistent storage) to cache all queried feeds, lists, and user records.\n   - Ensure the UI loads and displays cached records immediately upon screen launch before attempting network requests.\n   - Implement an offline mutation queue: when the user creates or edits records while offline, update the UI optimistically, serialize the action to a local mutation queue, and display a subtle \"Syncing when online\" status indicator.\n   - Listen to network status change events (`Network.addListener`); when connectivity is restored, automatically replay pending mutations in order and synchronize with the server.\n3. STORE COMPLIANCE: Prevents white-screen failures and network crashes during store review (where Apple/Apple test in simulated offline/poor network environments).\n4. VERIFICATION: Simulate offline mode in browser dev tools. Verify that all screens render cached data and queued mutations sync seamlessly upon reconnection.",
         "commonRejectionTraps": [
           "App crashing or freezing on an infinite loading spinner when opened in Airplane mode.",
           "Freezing with an infinite spinner or crashing when launching in Airplane mode without showing an informative offline banner or cached content.",
@@ -997,7 +997,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Network Resilience",
         "shortDescription": "Automatically retry failed network calls without double-submitting payments or forms.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "A weak mobile signal can briefly fail a network request. Automatic retry recovers smoothly, and using unique request keys prevents users from being charged twice if a payment call is retried.",
         "implementationSteps": [
@@ -1029,17 +1029,17 @@ export const PHASES_DATA: Phase[] = [
           "name": "Sign in with Apple",
           "url": "https://developer.apple.com/app-store/review/guidelines/#sign-in-with-apple"
         },
-        "whyItMatters": "If your iOS app lets users log in with Google, Facebook, or other social buttons, Apple strictly requires that you also offer \"Sign in with Apple\" with equal visual prominence.",
+        "whyItMatters": "If your iOS app lets users log in with Apple, Facebook, or other social buttons, Apple strictly requires that you also offer \"Sign in with Apple\" with equal visual prominence.",
         "implementationSteps": [
           "Enable \"Sign in with Apple\" in your Apple Developer Portal and Xcode project.",
           "Place the official Apple Sign-in button right next to or above your other social login buttons.",
           "Properly handle users who choose to hide their email address using Apple's private relay email."
         ],
-        "agentPrompt": "You are the autonomous authentication security engineer. Do NOT ask the user to implement authentication—implement native \"Sign in with Apple\" autonomously in our application.\n\nTASK & OBJECTIVE:\nInspect our login and registration system. If third-party social login buttons (Google, Facebook, etc.) are offered, implement native \"Sign in with Apple\" with equal visual prominence strictly adhering to Apple Guideline 4.8.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Check login screens, signup modals, and authentication services for social login providers.\n2. IMPLEMENTATION:\n   - Place the official \"Sign in with Apple\" button alongside other social login options with equal visual prominence, size, and styling.\n   - Integrate native Apple Sign In via Capacitor / Apple Authentication services: handle the authentication credential response (Apple user ID, identity token, authorization code, full name, and private relay email address).\n   - Ensure the backend securely validates Apple's JWT identity token with Apple's public key.\n   - Properly support user accounts created with Apple's \"Hide My Email\" private relay service.\n   - Implement account revocation handling via Apple's `/auth/revoke` endpoint when an account is deleted.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 4.8. Offering Google or Facebook login without Sign in with Apple triggers an immediate store rejection.\n4. VERIFICATION: Verify Apple ID button rendering and credential response handling with zero TypeScript errors.",
+        "agentPrompt": "You are the autonomous authentication security engineer. Do NOT ask the user to implement authentication—implement native \"Sign in with Apple\" autonomously in our application.\n\nTASK & OBJECTIVE:\nInspect our login and registration system. If third-party social login buttons (Apple, Facebook, etc.) are offered, implement native \"Sign in with Apple\" with equal visual prominence strictly adhering to Apple Guideline 4.8.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Check login screens, signup modals, and authentication services for social login providers.\n2. IMPLEMENTATION:\n   - Place the official \"Sign in with Apple\" button alongside other social login options with equal visual prominence, size, and styling.\n   - Integrate native Apple Sign In via Capacitor / Apple Authentication services: handle the authentication credential response (Apple user ID, identity token, authorization code, full name, and private relay email address).\n   - Ensure the backend securely validates Apple's JWT identity token with Apple's public key.\n   - Properly support user accounts created with Apple's \"Hide My Email\" private relay service.\n   - Implement account revocation handling via Apple's `/auth/revoke` endpoint when an account is deleted.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 4.8. Offering Apple or Facebook login without Sign in with Apple triggers an immediate store rejection.\n4. VERIFICATION: Verify Apple ID button rendering and credential response handling with zero TypeScript errors.",
         "commonRejectionTraps": [
-          "Offering Google or Facebook login on iOS without Sign in with Apple is an instant rejection under Guideline 4.8.",
-          "Hiding the Apple button at the bottom while featuring Google at the top.",
-          "Offering third-party social logins (Google/Facebook) without providing Sign in with Apple as an equal primary option (Guideline 4.8)."
+          "Offering Apple or Facebook login on iOS without Sign in with Apple is an instant rejection under Guideline 4.8.",
+          "Hiding the Apple button at the bottom while featuring Apple at the top.",
+          "Offering third-party social logins (Apple/Facebook) without providing Sign in with Apple as an equal primary option (Guideline 4.8)."
         ],
         "verificationQuestions": [
           "Is Sign in with Apple offered with equal prominence to other social logins?",
@@ -1057,21 +1057,21 @@ export const PHASES_DATA: Phase[] = [
         "title": "In-App Account",
         "shortDescription": "Let users delete their account and personal data directly inside the app.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "Account Deletion Policy Guidelines",
           "url": "https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage"
         },
-        "whyItMatters": "Both Apple and Google strictly mandate that if an app allows users to create an account, it MUST allow them to delete their account and data entirely inside the app without having to email support.",
+        "whyItMatters": "Both Apple and Apple strictly mandate that if an app allows users to create an account, it MUST allow them to delete their account and data entirely inside the app without having to email support.",
         "implementationSteps": [
           "Add a clear \"Delete Account\" button in your Account Settings screen.",
           "Ask for a quick confirmation so users don't delete their account by accident.",
           "Permanently delete their entire record and database data on your backend server (Apple rejects apps that merely soft-delete or deactivate).",
           "If using \"Sign in with Apple\", call Apple's `/auth/revoke` REST API endpoint using your server secret to revoke their authorization grant.",
-          "Provide a public web link for account deletion for users who already uninstalled the app (mandated by Google Play)."
+          "Provide a public web link for account deletion for users who already uninstalled the app (mandated by App Store)."
         ],
-        "agentPrompt": "You are the autonomous mobile security engineer. Do NOT ask the user to write account deletion logic—implement a complete in-app Account Deletion flow autonomously.\n\nTASK & OBJECTIVE:\nImplement an easily accessible, fully functional in-app \"Delete Account\" button in the account/profile settings as strictly mandated by Apple Guideline 5.1.1(v) and Google Play policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect user profile screens, account settings components, and authentication stores.\n2. IMPLEMENTATION:\n   - Add a clearly labeled \"Delete Account\" button in the Account / Profile settings section. It must be accessible directly within the app (not forcing the user to send an email or visit a separate web browser page).\n   - Implement a two-step confirmation modal with clear warning explaining that deletion is permanent and irrecoverable.\n   - Upon confirmation: call the backend deletion API to permanently wipe personal user records, revoke OAuth / Apple login tokens, clear all local Keychain/Keystore credentials, and route the user cleanly back to the logged-out welcome screen.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1(v) and Google Play account deletion requirement. Missing this flow causes instant app rejection.\n4. VERIFICATION: Test deletion flow in test mode. Confirm tokens and local storage are purged and user is returned to the logged-out state with zero errors.",
+        "agentPrompt": "You are the autonomous mobile security engineer. Do NOT ask the user to write account deletion logic—implement a complete in-app Account Deletion flow autonomously.\n\nTASK & OBJECTIVE:\nImplement an easily accessible, fully functional in-app \"Delete Account\" button in the account/profile settings as strictly mandated by Apple Guideline 5.1.1(v) and App Store policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect user profile screens, account settings components, and authentication stores.\n2. IMPLEMENTATION:\n   - Add a clearly labeled \"Delete Account\" button in the Account / Profile settings section. It must be accessible directly within the app (not forcing the user to send an email or visit a separate web browser page).\n   - Implement a two-step confirmation modal with clear warning explaining that deletion is permanent and irrecoverable.\n   - Upon confirmation: call the backend deletion API to permanently wipe personal user records, revoke OAuth / Apple login tokens, clear all local Keychain/Keystore credentials, and route the user cleanly back to the logged-out welcome screen.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1(v) and App Store account deletion requirement. Missing this flow causes instant app rejection.\n4. VERIFICATION: Test deletion flow in test mode. Confirm tokens and local storage are purged and user is returned to the logged-out state with zero errors.",
         "commonRejectionTraps": [
           "Telling users to \"email support to delete your account\" instead of providing an in-app button is an instant rejection.",
           "Merely disabling or marking the account \"inactive\" instead of completely purging the user's stored personal data from backend servers.",
@@ -1080,7 +1080,7 @@ export const PHASES_DATA: Phase[] = [
         "verificationQuestions": [
           "Can a user initiate account deletion directly inside the app in 2 or 3 taps?",
           "Are all user records and database rows permanently erased on your backend server?",
-          "Is a public web link for account deletion ready for your Google Play Data Safety form?"
+          "Is a public web link for account deletion ready for your App Store Data Safety form?"
         ],
         "whatHappensNext": "Users can delete their account and associated data directly within the app, fulfilling Apple Guideline 5.1.1(v) without manual support emails.",
         "videoUrl": {
@@ -1094,7 +1094,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "In-App Purchases",
         "shortDescription": "Show transparent pricing, subscription terms, and an easy restore button on paywalls.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "In-App Purchase Guidelines",
@@ -1102,12 +1102,12 @@ export const PHASES_DATA: Phase[] = [
         },
         "whyItMatters": "Over 40% of first-time rejections involve subscription screens: missing a \"Restore Purchases\" button, hiding the subscription renewal terms, or missing clickable links to Terms of Use.",
         "implementationSteps": [
-          "Use modern StoreKit 2 on iOS and Google Play Billing on Android.",
+          "Use modern StoreKit 2 on iOS and App Store Billing on iOS.",
           "Put a prominent, clickable \"Restore Purchases\" button on every paywall screen so returning users can reclaim past purchases.",
           "Display clear pricing: price with local currency symbol, renewal duration, billing frequency, and how to cancel in phone settings (FTC Click-to-Cancel transparency).",
           "Include visible, clickable links to your Privacy Policy and Terms of Use (EULA) directly on the paywall screen itself."
         ],
-        "agentPrompt": "You are the autonomous mobile monetization engineer. Do NOT ask the user to build paywalls or billing logic—implement native In-App Purchases and auto-renewable subscriptions autonomously.\n\nTASK & OBJECTIVE:\nImplement native in-app subscriptions and digital purchases using StoreKit 2 (iOS) and Google Play Billing (Android), ensuring 100% compliance with Apple Guideline 3.1.2.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, pricing tables, subscription models, and entitlement stores.\n2. IMPLEMENTATION:\n   - Integrate StoreKit 2 / Google Play Billing native plugins to fetch live product pricing from App Store Connect / Play Console.\n   - On the paywall UI, clearly render: subscription title, localized price, billing duration (e.g. \"$4.99 / month\"), trial period length, and auto-renewal notice.\n   - Add a prominent, fully functional \"Restore Purchases\" button that queries previous transactions and restores entitlements with one tap without re-billing.\n   - Add direct, clickable links on the paywall screen to our Privacy Policy and Terms of Use (EULA).\n   - Implement server-side verification using signed JWS transactions and App Store Server Notifications V2.\n3. STORE COMPLIANCE: Paywalls lacking pricing terms, EULA links, or a functional Restore Purchases button trigger instant rejection under Apple Guideline 3.1.2.\n4. VERIFICATION: Test purchase and restore flows in sandbox mode. Verify state transitions and confirm `tsc --noEmit` passes cleanly.",
+        "agentPrompt": "You are the autonomous mobile monetization engineer. Do NOT ask the user to build paywalls or billing logic—implement native In-App Purchases and auto-renewable subscriptions autonomously.\n\nTASK & OBJECTIVE:\nImplement native in-app subscriptions and digital purchases using StoreKit 2 (iOS) and App Store Billing (iOS), ensuring 100% compliance with Apple Guideline 3.1.2.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, pricing tables, subscription models, and entitlement stores.\n2. IMPLEMENTATION:\n   - Integrate StoreKit 2 / App Store Billing native plugins to fetch live product pricing from App Store Connect / App Store Connect.\n   - On the paywall UI, clearly render: subscription title, localized price, billing duration (e.g. \"$4.99 / month\"), trial period length, and auto-renewal notice.\n   - Add a prominent, fully functional \"Restore Purchases\" button that queries previous transactions and restores entitlements with one tap without re-billing.\n   - Add direct, clickable links on the paywall screen to our Privacy Policy and Terms of Use (EULA).\n   - Implement server-side verification using signed JWS transactions and App Store Server Notifications V2.\n3. STORE COMPLIANCE: Paywalls lacking pricing terms, EULA links, or a functional Restore Purchases button trigger instant rejection under Apple Guideline 3.1.2.\n4. VERIFICATION: Test purchase and restore flows in sandbox mode. Verify state transitions and confirm `tsc --noEmit` passes cleanly.",
         "commonRejectionTraps": [
           "Paywall missing a working \"Restore Purchases\" button.",
           "Paywall missing direct, clickable links to Terms of Use (EULA) and Privacy Policy.",
@@ -1119,7 +1119,7 @@ export const PHASES_DATA: Phase[] = [
           "Are Terms of Use and Privacy Policy links clickable on every paywall screen?",
           "Does the paywall explain how users can cancel their subscription in phone settings?"
         ],
-        "whatHappensNext": "Digital purchases unlock instantly and survive device restores via StoreKit 2 and Google Play Billing, protecting customer entitlements.",
+        "whatHappensNext": "Digital purchases unlock instantly and survive device restores via StoreKit 2 and App Store Billing, protecting customer entitlements.",
         "videoUrl": {
           "title": "RevenueCat Subs",
           "url": "https://www.youtube.com/watch?v=-QcZOwsHvBI"
@@ -1131,7 +1131,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Push Notification",
         "shortDescription": "Explain why notifications are helpful before popping up the system permission prompt.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Asking for notification permissions the exact second someone opens the app for the very first time leads to 70%+ rejection rates. Explaining the benefit first doubles opt-in rates.",
         "implementationSteps": [
@@ -1139,7 +1139,7 @@ export const PHASES_DATA: Phase[] = [
           "Show a friendly, custom in-app screen first (e.g. \"Turn on alerts to know when your order ships\").",
           "Only trigger the real phone permission prompt after the user taps \"Allow\" on your explanation screen."
         ],
-        "agentPrompt": "You are the autonomous mobile notification engineer. Do NOT ask the user to configure permissions—implement a contextual, high-converting push notification permission flow autonomously.\n\nTASK & OBJECTIVE:\nImplement a compliant push notification permission strategy that requests notification permission contextually and gracefully explains value before triggering the system prompt.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the app startup sequence and push notification registration handlers.\n2. IMPLEMENTATION:\n   - Remove any push notification permission prompts from the cold-launch sequence. Never prompt for notification permissions immediately upon first opening the app.\n   - Implement a contextual trigger: prompt the user only after they complete a meaningful action where notifications provide clear value (e.g., setting a reminder, completing a milestone).\n   - Show a custom pre-permission modal / sheet that clearly explains what alerts the user will receive and how they benefit, with \"Allow\" and \"Not Now\" options.\n   - Only call the native system permission dialog (`PushNotifications.requestPermissions()`) after the user taps \"Allow\" on the explanation sheet.\n3. STORE COMPLIANCE: Complies with Apple HIG and Google Play notification permission policies, preventing user drop-off and low opt-in rates.\n4. VERIFICATION: Test first-launch experience. Confirm no system prompts appear on startup and the custom explanation sheet appears only upon contextual trigger.",
+        "agentPrompt": "You are the autonomous mobile notification engineer. Do NOT ask the user to configure permissions—implement a contextual, high-converting push notification permission flow autonomously.\n\nTASK & OBJECTIVE:\nImplement a compliant push notification permission strategy that requests notification permission contextually and gracefully explains value before triggering the system prompt.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the app startup sequence and push notification registration handlers.\n2. IMPLEMENTATION:\n   - Remove any push notification permission prompts from the cold-launch sequence. Never prompt for notification permissions immediately upon first opening the app.\n   - Implement a contextual trigger: prompt the user only after they complete a meaningful action where notifications provide clear value (e.g., setting a reminder, completing a milestone).\n   - Show a custom pre-permission modal / sheet that clearly explains what alerts the user will receive and how they benefit, with \"Allow\" and \"Not Now\" options.\n   - Only call the native system permission dialog (`PushNotifications.requestPermissions()`) after the user taps \"Allow\" on the explanation sheet.\n3. STORE COMPLIANCE: Complies with Apple HIG and App Store notification permission policies, preventing user drop-off and low opt-in rates.\n4. VERIFICATION: Test first-launch experience. Confirm no system prompts appear on startup and the custom explanation sheet appears only upon contextual trigger.",
         "commonRejectionTraps": [
           "Spamming promotional marketing notifications without user consent.",
           "Triggering the system push notification permission prompt on the first cold launch before explaining the specific value users will receive.",
@@ -1161,15 +1161,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "Universal App",
         "shortDescription": "Make web and email links open directly into the app instead of Safari or Chrome.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "When a user taps an email verification link, invite code, or product link, they should land straight on the right screen inside your app instead of getting stuck in a mobile web browser.",
         "implementationSteps": [
           "Ask your AI assistant: 'Set up Universal Links so shared links open directly in our app instead of a mobile browser.'",
-          "Your AI assistant will create the two small link-matching verification files required for Apple and Google.",
+          "Your AI assistant will create the two small link-matching verification files required for Apple and Apple.",
           "Test by sending a link to your phone via Notes or Messages and tapping it—it should open right into your app."
         ],
-        "agentPrompt": "You are the autonomous mobile linking specialist. Do NOT ask the user to configure web routes—implement Universal Links and Android App Links autonomously.\n\nTASK & OBJECTIVE:\nConfigure Universal Links for Apple iOS and App Links for Android so that web URLs matching our domain open directly inside the mobile app without opening the browser.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect routing configuration, URL scheme settings, and deep link event listeners.\n2. IMPLEMENTATION:\n   - Create domain verification files:\n     - `apple-app-site-association` for iOS with `applinks` configuration, App ID, and path patterns.\n     - `assetlinks.json` for Android with package name and SHA-256 certificate fingerprint.\n   - Configure deep link listeners in Capacitor (`App.addListener('appUrlOpen')`): parse incoming URLs, validate and sanitize path and query parameters, and route the user directly to the target screen.\n   - Handle cold launch deep links (when the app is opened via a link from a closed state).\n3. STORE COMPLIANCE: Complies with Apple and Google modern mobile linking specifications, ensuring seamless user experience.\n4. VERIFICATION: Test opening sample deep links. Verify parameter parsing and ensure proper navigation routing with zero crashes.",
+        "agentPrompt": "You are the autonomous mobile linking specialist. Do NOT ask the user to configure web routes—implement Universal Links and iOS App Links autonomously.\n\nTASK & OBJECTIVE:\nConfigure Universal Links for Apple iOS and App Links for iOS so that web URLs matching our domain open directly inside the mobile app without opening the browser.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect routing configuration, URL scheme settings, and deep link event listeners.\n2. IMPLEMENTATION:\n   - Create domain verification files:\n     - `apple-app-site-association` for iOS with `applinks` configuration, App ID, and path patterns.\n     - `assetlinks.json` for iOS with package name and SHA-256 certificate fingerprint.\n   - Configure deep link listeners in Capacitor (`App.addListener('appUrlOpen')`): parse incoming URLs, validate and sanitize path and query parameters, and route the user directly to the target screen.\n   - Handle cold launch deep links (when the app is opened via a link from a closed state).\n3. STORE COMPLIANCE: Complies with Apple and Apple modern mobile linking specifications, ensuring seamless user experience.\n4. VERIFICATION: Test opening sample deep links. Verify parameter parsing and ensure proper navigation routing with zero crashes.",
         "commonRejectionTraps": [
           "Serving your verification file with an HTTP redirect (Apple's verification crawler will fail).",
           "Deep links redirecting to broken 404 views or requiring users to log in repeatedly when clicking universal links from emails or social media.",
@@ -1179,7 +1179,7 @@ export const PHASES_DATA: Phase[] = [
           "Does tapping a link to your domain open the app directly on your phone?",
           "Does your domain host the verification files over secure HTTPS without redirects?"
         ],
-        "whatHappensNext": "Marketing emails, shared links, and web banners route directly to the intended in-app screen via Universal Links and Android App Links.",
+        "whatHappensNext": "Marketing emails, shared links, and web banners route directly to the intended in-app screen via Universal Links and iOS App Links.",
         "videoUrl": {
           "title": "Universal & App Links",
           "url": "https://www.youtube.com/watch?v=kNbEEYlFIPs"
@@ -1191,15 +1191,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "Tactile Haptic",
         "shortDescription": "Provide responsive, physical feedback for button taps, list selections, and completions.",
         "category": "design",
-        "platform": "both",
+        "platform": "ios",
         "priority": "medium",
-        "whyItMatters": "Tactile haptics make mobile apps feel physical, responsive, and authentic to iOS and Android. Modern Apple Human Interface Guidelines encourage light impact haptics on selection toggles, success moments, and destructive warnings.",
+        "whyItMatters": "Tactile haptics make mobile apps feel physical, responsive, and authentic to iOS and iPadOS. Modern Apple Human Interface Guidelines encourage light impact haptics on selection toggles, success moments, and destructive warnings.",
         "implementationSteps": [
           "Ask your AI assistant: 'Add subtle tactile haptic vibrations when users tap buttons, check off items, or complete tasks.'",
           "Make sure the vibrations are gentle and rewarding—like a soft tap rather than a jarring buzz.",
           "Test on your real phone to ensure the vibrations feel crisp and natural in your palm."
         ],
-        "agentPrompt": "You are the autonomous mobile interaction engineer. Do NOT ask the user to write vibration logic—implement Apple-grade tactile haptics autonomously across all primary interactive controls.\n\nTASK & OBJECTIVE:\nIntegrate subtle, authentic tactile haptic feedback across all primary touch interactions, switches, completions, and gestures using the Capacitor Haptics API.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect buttons, checkboxes, modal openers, tabs, switches, and completion triggers across the app.\n2. IMPLEMENTATION:\n   - Integrate `@capacitor/haptics`:\n     - Light Impact (`ImpactStyle.Light`): on tab navigation, button taps, and pill toggles.\n     - Medium Impact (`ImpactStyle.Medium`): on copying code/prompts, opening sheets, and modal confirmations.\n     - Notification Success (`NotificationType.Success`): when marking an item complete, saving a project, or finishing a checklist.\n     - Notification Warning (`NotificationType.Warning`): when triggering a destructive action (like deleting a project).\n   - Ensure haptic triggers are wrapped in try-catch blocks to run silently on desktop web environments without throwing errors.\n3. STORE COMPLIANCE: Follows Apple Human Interface Guidelines for tactile response, giving the application the authentic feel of a premium native iOS app.\n4. VERIFICATION: Test on a physical iOS/Android device. Confirm crisp haptic vibrations occur on taps and completions without performance overhead.",
+        "agentPrompt": "You are the autonomous mobile interaction engineer. Do NOT ask the user to write vibration logic—implement Apple-grade tactile haptics autonomously across all primary interactive controls.\n\nTASK & OBJECTIVE:\nIntegrate subtle, authentic tactile haptic feedback across all primary touch interactions, switches, completions, and gestures using the Capacitor Haptics API.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect buttons, checkboxes, modal openers, tabs, switches, and completion triggers across the app.\n2. IMPLEMENTATION:\n   - Integrate `@capacitor/haptics`:\n     - Light Impact (`ImpactStyle.Light`): on tab navigation, button taps, and pill toggles.\n     - Medium Impact (`ImpactStyle.Medium`): on copying code/prompts, opening sheets, and modal confirmations.\n     - Notification Success (`NotificationType.Success`): when marking an item complete, saving a project, or finishing a checklist.\n     - Notification Warning (`NotificationType.Warning`): when triggering a destructive action (like deleting a project).\n   - Ensure haptic triggers are wrapped in try-catch blocks to run silently on desktop web environments without throwing errors.\n3. STORE COMPLIANCE: Follows Apple Human Interface Guidelines for tactile response, giving the application the authentic feel of a premium native iOS app.\n4. VERIFICATION: Test on a physical iOS/iOS device. Confirm crisp haptic vibrations occur on taps and completions without performance overhead.",
         "commonRejectionTraps": [
           "Overusing continuous heavy vibrations on every minor scroll event, causing user irritation and excessive battery drain.",
           "Overusing heavy haptic patterns on routine scrolling actions rather than reserving subtle tactile feedback for meaningful user confirmations.",
@@ -1221,7 +1221,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Background Modes",
         "shortDescription": "Declare only background capabilities your app actually uses to prevent Guideline 2.5.4 rejections.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Declaring background modes (audio, VoIP, location, background fetch) in UIBackgroundModes without providing clear user functionality is one of Apple's swiftest Guideline 2.5.4 rejections.",
         "implementationSteps": [
@@ -1229,7 +1229,7 @@ export const PHASES_DATA: Phase[] = [
           "Apple rejects apps that ask to run in the background (like continuous GPS or audio) if the app doesn't actually need them.",
           "Ensure your app goes to sleep properly when closed so it never drains your users' phone batteries."
         ],
-        "agentPrompt": "You are the autonomous mobile background execution specialist. Do NOT ask the user to edit Plist keys—audit and configure background modes autonomously in our project files.\n\nTASK & OBJECTIVE:\nAudit `Info.plist` and `AndroidManifest.xml` for background execution modes, removing any unnecessary background declarations and ensuring legitimate background tasks finish within strict OS limits.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Info.plist` for `UIBackgroundModes` array and `AndroidManifest.xml` for background services.\n2. IMPLEMENTATION:\n   - Audit `UIBackgroundModes`: remove any unused entries (such as `audio`, `location`, `voip`, or `external-accessory`) unless the core feature genuinely requires continuous background operation.\n   - For legitimate background operations (like silent push data sync or periodic background fetch), ensure handlers strictly complete within Apple's 30-second execution window and call the completion handler promptly (`UIBackgroundFetchResultNewData`).\n   - On Android, ensure WorkManager is utilized for deferrable background jobs instead of lingering foreground services.\n3. STORE COMPLIANCE: Apple Guideline 2.5.4 strictly rejects apps that declare background modes without using them actively or that fail to justify why continuous background execution is needed.\n4. VERIFICATION: Confirm `Info.plist` contains only justified background modes and all background handlers invoke completion callbacks cleanly.",
+        "agentPrompt": "You are the autonomous mobile background execution specialist. Do NOT ask the user to edit Plist keys—audit and configure background modes autonomously in our project files.\n\nTASK & OBJECTIVE:\nAudit `Info.plist` and `iOSManifest.xml` for background execution modes, removing any unnecessary background declarations and ensuring legitimate background tasks finish within strict OS limits.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Info.plist` for `UIBackgroundModes` array and `iOSManifest.xml` for background services.\n2. IMPLEMENTATION:\n   - Audit `UIBackgroundModes`: remove any unused entries (such as `audio`, `location`, `voip`, or `external-accessory`) unless the core feature genuinely requires continuous background operation.\n   - For legitimate background operations (like silent push data sync or periodic background fetch), ensure handlers strictly complete within Apple's 30-second execution window and call the completion handler promptly (`UIBackgroundFetchResultNewData`).\n   - On iOS, ensure WorkManager is utilized for deferrable background jobs instead of lingering foreground services.\n3. STORE COMPLIANCE: Apple Guideline 2.5.4 strictly rejects apps that declare background modes without using them actively or that fail to justify why continuous background execution is needed.\n4. VERIFICATION: Confirm `Info.plist` contains only justified background modes and all background handlers invoke completion callbacks cleanly.",
         "commonRejectionTraps": [
           "Including 'audio' or 'location' in UIBackgroundModes without an active media player or navigation feature triggers instant rejection under Guideline 2.5.4.",
           "Enabling background audio, location, or VoIP capabilities in Info.plist without providing an active, user-facing feature that requires them (Guideline 2.5.4).",
@@ -1248,7 +1248,7 @@ export const PHASES_DATA: Phase[] = [
     "number": 6,
     "title": "Privacy & Security Checks",
     "shortTitle": "Privacy & Security",
-    "description": "Keep user data secure, declare required privacy manifests for Apple and Google, and ask only for permissions your app actually needs.",
+    "description": "Keep user data secure, declare required privacy manifests for Apple and Apple, and ask only for permissions your app actually needs.",
     "iconName": "ShieldCheck",
     "items": [
       {
@@ -1286,36 +1286,35 @@ export const PHASES_DATA: Phase[] = [
         }
       },
       {
-        "id": "p4-play-data-safety",
+        "id": "p4-app-privacy-details",
         "phaseId": "phase-4",
-        "title": "Google Play",
-        "shortDescription": "Declare all user data your app collects, uses, or shares in the Google Play Console.",
+        "title": "Privacy Details",
+        "shortDescription": "Complete App Store Connect Privacy Nutrition Labels for all collected data and tracking.",
         "category": "security",
-        "platform": "android",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
-          "name": "Play Data Safety Guidelines",
-          "url": "https://support.google.com/googleplay/android-developer/answer/10787469"
+          "name": "App Store Privacy Details (Guideline 5.1.2)",
+          "url": "https://developer.apple.com/app-store/app-privacy-details/"
         },
-        "whyItMatters": "If you check \"No data collected\" on your store form, but an included analytics or crash SDK collects an advertising ID or device identifier, Google will remove your app for policy violation.",
+        "whyItMatters": "Apple requires detailed declarations for every data type collected by your app and third-party SDKs. Inaccurate privacy nutrition labels result in immediate Guideline 5.1.2 rejection.",
         "implementationSteps": [
-          "List all data collected by your app and any included tools (like user email, crash logs, or device info).",
-          "Declare whether data is required or optional, and confirm that data is encrypted while traveling over the internet.",
-          "Confirm that users can request their data to be deleted."
+          "List all data collected by your app (e.g. contact info, user content, identifiers, diagnostics).",
+          "Declare whether each data type is linked to the user identity.",
+          "Confirm whether any data is used for third-party tracking purposes."
         ],
-        "agentPrompt": "You are the autonomous mobile compliance engineer. Do NOT ask the user to audit data—generate the complete Google Play Data Safety specification autonomously.\n\nTASK & OBJECTIVE:\nAudit all data collected or shared by our application and included third-party SDKs, and generate the exact answers required for the Google Play Data Safety questionnaire.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan our codebase and dependencies for data collection (user profile data, analytics, device identifiers, crash logs).\n2. IMPLEMENTATION:\n   - Generate a dedicated compliance report (`docs/google-play-data-safety.json` or markdown spec) mapping every collected data category to its purpose (e.g. app functionality, analytics).\n   - Confirm security practices: declare that all data is encrypted in transit via HTTPS/TLS, declare whether data is encrypted at rest, and confirm that users can request account and data deletion.\n   - Detail third-party SDK data practices (e.g. Crashlytics, analytics).\n3. STORE COMPLIANCE: Google Play will suspend apps or reject submissions if declared Data Safety disclosures conflict with actual SDK network traffic.\n4. VERIFICATION: Ensure data declarations match network calls and third-party libraries bundled in the application.",
+        "agentPrompt": "You are the autonomous Apple App Store privacy compliance engineer. Audit all data collected or shared by our application and included third-party SDKs, and generate the exact answers required for App Store Connect Privacy Nutrition labels.",
         "commonRejectionTraps": [
-          "Declaring \"No data collected\" while an included crash or analytics tool automatically reads advertising identifiers.",
-          "Declaring that the app collects no user data when integrated analytics or crash reporting SDKs actually collect device identifiers or crash logs.",
-          "Discrepancy between declared Google Play Data Safety form responses and the network telemetry emitted by embedded SDKs."
+          "Declaring no data collected while an embedded analytics or crash SDK collects device identifiers.",
+          "Failing to declare data used for tracking without App Tracking Transparency prompt."
         ],
         "verificationQuestions": [
-          "Does your Data Safety declaration match the exact behavior of all libraries in your app?",
-          "Is data encrypted in transit marked as \"Yes\"?"
+          "Do your App Store Connect Privacy Nutrition labels match your codebase?",
+          "Is every collected data type accurately declared in App Store Connect?"
         ],
-        "whatHappensNext": "Your Google Play Console Data Safety form accurately matches codebase behavior, preventing policy warnings and app suspension.",
+        "whatHappensNext": "Your App Store Connect Privacy Nutrition labels accurately reflect codebase data handling, guaranteeing Guideline 5.1.2 compliance.",
         "videoUrl": {
-          "title": "Play Data Safety Form",
+          "title": "App Store Privacy Nutrition Labels",
           "url": "https://www.youtube.com/watch?v=SkYmI4KJVCU"
         }
       },
@@ -1325,16 +1324,16 @@ export const PHASES_DATA: Phase[] = [
         "title": "Keychain Keystore",
         "shortDescription": "Never save login tokens, passwords, or personal details in plain text files.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Standard settings files (like UserDefaults on iOS or SharedPreferences on Android) are stored as unencrypted text files on disk. Passwords, biometric keys, and login tokens must be saved in the phone's encrypted hardware vault.",
+        "whyItMatters": "Standard settings files (like UserDefaults on iOS or SharedPreferences on iOS) are stored as unencrypted text files on disk. Passwords, biometric keys, and login tokens must be saved in the phone's encrypted hardware vault.",
         "implementationSteps": [
           "iOS: Store login tokens and sensitive credentials in the iOS Keychain using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.",
           "If offering Face ID / Touch ID, use Keychain access control flags with `kSecAccessControlBiometryAny` and always provide a device passcode fallback.",
-          "Android: Use EncryptedSharedPreferences backed by the hardware Android Keystore, paired with `BiometricPrompt` for fingerprint or face unlock.",
+          "iOS: Use EncryptedSharedPreferences backed by the hardware iOS Keystore, paired with `BiometricPrompt` for fingerprint or face unlock.",
           "Never store raw user passwords or secret API keys in plain text files or unencrypted local storage on the device."
         ],
-        "agentPrompt": "You are the autonomous mobile security engineer. Do NOT ask the user to store tokens—implement secure hardware-backed storage for all credentials and tokens autonomously.\n\nTASK & OBJECTIVE:\nAudit and refactor all local data storage across the application to ensure sensitive credentials, passwords, JWT tokens, and private keys are stored strictly in hardware-backed secure storage.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the codebase for any sensitive tokens or passwords stored in standard `localStorage`, `UserDefaults`, or `SharedPreferences`.\n2. IMPLEMENTATION:\n   - Integrate native secure storage (Apple Keychain on iOS using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` and EncryptedSharedPreferences / Android Keystore on Android).\n   - Store all authentication access tokens, refresh tokens, encryption keys, and user credentials in secure storage.\n   - If biometric authentication (Face ID / Fingerprint) is supported, configure hardware-backed access control with device passcode fallback.\n   - Purge any legacy plaintext credentials from standard preferences upon upgrade.\n3. STORE COMPLIANCE: Meets OWASP Mobile Security Standard MASVS-STORAGE and prevents extraction of user credentials from unencrypted backups.\n4. VERIFICATION: Verify all token read/write operations use secure storage wrappers and confirm `tsc --noEmit` passes with zero errors.",
+        "agentPrompt": "You are the autonomous mobile security engineer. Do NOT ask the user to store tokens—implement secure hardware-backed storage for all credentials and tokens autonomously.\n\nTASK & OBJECTIVE:\nAudit and refactor all local data storage across the application to ensure sensitive credentials, passwords, JWT tokens, and private keys are stored strictly in hardware-backed secure storage.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the codebase for any sensitive tokens or passwords stored in standard `localStorage`, `UserDefaults`, or `SharedPreferences`.\n2. IMPLEMENTATION:\n   - Integrate native secure storage (Apple Keychain on iOS using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` and EncryptedSharedPreferences / iOS Keystore on iOS).\n   - Store all authentication access tokens, refresh tokens, encryption keys, and user credentials in secure storage.\n   - If biometric authentication (Face ID / Fingerprint) is supported, configure hardware-backed access control with device passcode fallback.\n   - Purge any legacy plaintext credentials from standard preferences upon upgrade.\n3. STORE COMPLIANCE: Meets OWASP Mobile Security Standard MASVS-STORAGE and prevents extraction of user credentials from unencrypted backups.\n4. VERIFICATION: Verify all token read/write operations use secure storage wrappers and confirm `tsc --noEmit` passes with zero errors.",
         "commonRejectionTraps": [
           "Saving login tokens or user passwords inside plain UserDefaults or local storage files.",
           "Using a naive client-side boolean flag for biometric unlock without tying the authentication token to the hardware Keychain/Keystore.",
@@ -1357,15 +1356,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "HTTPS Transit",
         "shortDescription": "Enforce strong encryption for all server communication and disallow unencrypted HTTP.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Unencrypted HTTP connections expose user data to being intercepted on public Wi-Fi networks. Apple and Google block unencrypted traffic by default.",
+        "whyItMatters": "Unencrypted HTTP connections expose user data to being intercepted on public Wi-Fi networks. Apple and Apple block unencrypted traffic by default.",
         "implementationSteps": [
           "Verify that all server API endpoints and image links use secure `https://`.",
           "Keep Apple App Transport Security (ATS) enabled with no broad exceptions.",
-          "Configure Android Network Security Config to disallow cleartext HTTP traffic."
+          "Configure iOS Network Security Config to disallow cleartext HTTP traffic."
         ],
-        "agentPrompt": "You are the autonomous network security engineer. Do NOT ask the user to configure transport security—harden all network configurations and connections autonomously.\n\nTASK & OBJECTIVE:\nAudit all network calls and mobile configurations to ensure 100% of communication uses secure HTTPS with modern TLS encryption, removing any insecure cleartext bypasses.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `Info.plist`, `AndroidManifest.xml`, network configuration XMLs, and all API endpoint URLs in the codebase.\n2. IMPLEMENTATION:\n   - Ensure all API endpoints, image URLs, and asset links strictly use `https://` protocols.\n   - In `Info.plist`, verify that Apple App Transport Security (ATS) exceptions like `NSAllowsArbitraryLoads: true` are completely removed.\n   - In Android, configure `res/xml/network_security_config.xml` with `cleartextTrafficPermitted=\"false\"` and reference it in `AndroidManifest.xml`.\n3. STORE COMPLIANCE: Apple and Google reject apps that permit arbitrary unencrypted HTTP traffic without strict, proven justifications.\n4. VERIFICATION: Confirm that zero `http://` endpoints exist in source code and that ATS/network security configurations disallow cleartext.",
+        "agentPrompt": "You are the autonomous network security engineer. Do NOT ask the user to configure transport security—harden all network configurations and connections autonomously.\n\nTASK & OBJECTIVE:\nAudit all network calls and mobile configurations to ensure 100% of communication uses secure HTTPS with modern TLS encryption, removing any insecure cleartext bypasses.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `Info.plist`, `iOSManifest.xml`, network configuration XMLs, and all API endpoint URLs in the codebase.\n2. IMPLEMENTATION:\n   - Ensure all API endpoints, image URLs, and asset links strictly use `https://` protocols.\n   - In `Info.plist`, verify that Apple App Transport Security (ATS) exceptions like `NSAllowsArbitraryLoads: true` are completely removed.\n   - In iOS, configure `res/xml/network_security_config.xml` with `cleartextTrafficPermitted=\"false\"` and reference it in `iOSManifest.xml`.\n3. STORE COMPLIANCE: Apple and Apple reject apps that permit arbitrary unencrypted HTTP traffic without strict, proven justifications.\n4. VERIFICATION: Confirm that zero `http://` endpoints exist in source code and that ATS/network security configurations disallow cleartext.",
         "commonRejectionTraps": [
           "Enabling `NSAllowsArbitraryLoads: true` in your iOS settings without a strict, proven justification causes review rejections.",
           "Disabling App Transport Security (ATS) with broad NSAllowsArbitraryLoads exemptions instead of securing backend APIs with TLS 1.3 HTTPS endpoints.",
@@ -1383,27 +1382,26 @@ export const PHASES_DATA: Phase[] = [
         "title": "Code Obfuscation",
         "shortDescription": "Enable code shrinking and protection so outside actors cannot easily reverse-engineer your app.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Unprotected Android apps can be decompiled and read in seconds, exposing your business logic and backend endpoints. Code shrinking also makes your app download much smaller and faster.",
+        "whyItMatters": "Unoptimized release builds can be reverse engineered and analyzed. Enabling Xcode dead code stripping and compiler optimizations reduces binary size and protects logic.",
         "implementationSteps": [
-          "Android: Turn on code shrinking (`minifyEnabled true` and `shrinkResources true`) in your release settings.",
-          "Test your release build on a physical phone to make sure code shrinking didn't accidentally remove needed data models.",
-          "Save your build mapping and symbol files so crash reports can still show readable file names."
+          "Xcode: Enable Dead Code Stripping (`DEAD_CODE_STRIPPING = YES`) in Release build configuration.",
+          "Xcode: Enable Strip Linked Product (`STRIP_INSTALLED_PRODUCT = YES`) to remove debug symbols from distribution binaries.",
+          "Verify that release archive compiles cleanly with Fast/Smallest optimizations (`-Os` or `-O`)."
         ],
-        "agentPrompt": "You are the autonomous mobile build and security engineer. Do NOT ask the user to write ProGuard rules—configure code shrinking and symbol obfuscation autonomously in our build files.\n\nTASK & OBJECTIVE:\nConfigure code shrinking, dead code elimination, and symbol obfuscation for production release builds to protect proprietary code, API endpoints, and logic from reverse engineering.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `android/app/build.gradle`, `android/app/proguard-rules.pro`, and iOS release build configurations.\n2. IMPLEMENTATION:\n   - In Android: enable R8 shrinking and resource optimization in the release build type (`minifyEnabled true`, `shrinkResources true`).\n   - Configure `proguard-rules.pro` with keep rules for Capacitor bridge plugins, serialization models, and reflection interfaces to prevent runtime crashes.\n   - In iOS: verify that release build settings enable symbol stripping (`STRIP_INSTALLED_PRODUCT = YES`) and dead code stripping.\n3. STORE COMPLIANCE: Meets OWASP MASVS-CODE requirements and significantly reduces release binary download size on the App Store and Google Play.\n4. VERIFICATION: Verify that release build configurations compile cleanly without stripping required reflection models.",
+        "agentPrompt": "You are the autonomous mobile build and security engineer. Do NOT ask the user to configure Xcode settings—configure code shrinking, symbol stripping, and dead code elimination autonomously in our build files.\n\nTASK & OBJECTIVE:\nConfigure compiler optimizations, dead code elimination, and symbol stripping for production release builds to protect proprietary code, API endpoints, and logic from reverse engineering.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App.xcodeproj/project.pbxproj` and release build configurations.\n2. IMPLEMENTATION:\n   - In Xcode: enable Dead Code Stripping (`DEAD_CODE_STRIPPING = YES`) and Strip Linked Product (`STRIP_INSTALLED_PRODUCT = YES`) in Release configuration.\n   - Ensure optimization level is set to Fast/Smallest (`GCC_OPTIMIZATION_LEVEL = s` or `SWIFT_OPTIMIZATION_LEVEL = -O`).\n   - In Vite/Webpack: enable Terser/esbuild minification and tree-shaking for web assets.\n3. STORE COMPLIANCE: Meets OWASP MASVS-CODE requirements and significantly reduces release binary download size on the Apple App Store.\n4. VERIFICATION: Verify that release build configurations compile cleanly with `xcodebuild -configuration Release`.",
         "commonRejectionTraps": [
-          "Turning on code shrinking without testing the release build on a real phone, causing data models to fail at runtime.",
-          "Overly aggressive ProGuard or R8 shrinking stripping required JSON model classes or native reflection methods, causing silent production crashes.",
-          "Shipping production Android builds without ProGuard/R8 code minification, exposing proprietary APIs to reverse engineering."
+          "Shipping Debug configurations to App Store Connect, resulting in bloated binaries with unstripped symbols.",
+          "Forgetting to generate and upload dSYM symbol files, preventing readable crash logs in App Store Connect."
         ],
         "verificationQuestions": [
-          "Have you installed and tested the optimized release build on a physical phone?",
-          "Are crash report symbol files saved with every release build?"
+          "Is Dead Code Stripping enabled in Xcode Release build settings?",
+          "Are crash report dSYM symbol files generated with the release archive?"
         ],
-        "whatHappensNext": "Production Android binaries are shrunk and obfuscated via R8, preventing reverse engineering while maintaining model serialization.",
+        "whatHappensNext": "Production iOS binaries are stripped and optimized with dSYMs, maximizing launch speed while maintaining clean crash reporting.",
         "videoUrl": {
-          "title": "R8 & ProGuard Rules",
+          "title": "Xcode Release Optimization",
           "url": "https://www.youtube.com/watch?v=bgpyuuzMlo0"
         }
       },
@@ -1413,7 +1411,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Permission Hygiene",
         "shortDescription": "Explain why your app needs camera, photo, or location access in plain, friendly language.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "Permissions & Privacy Guidelines",
@@ -1425,7 +1423,7 @@ export const PHASES_DATA: Phase[] = [
           "Use modern zero-permission photo pickers so users can pick an avatar without granting access to their entire photo library.",
           "Only ask for permissions when the user actually taps a feature that requires them."
         ],
-        "agentPrompt": "You are the autonomous mobile privacy engineer. Do NOT ask the user to edit manifest files—audit and minimize application permissions autonomously.\n\nTASK & OBJECTIVE:\nAudit all device permissions requested by the application across `Info.plist` and `AndroidManifest.xml`, eliminate unnecessary permissions, and write clear, user-centric usage descriptions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `Info.plist` and `AndroidManifest.xml` for requested permissions (camera, microphone, location, photo library, contacts).\n2. IMPLEMENTATION:\n   - Remove any broad, non-essential permissions that are not strictly necessary for core functionality.\n   - For photo selection, migrate to modern system photo pickers (`PHPickerViewController` on iOS, Android Photo Picker) that require zero permissions.\n   - For every remaining permission, write a friendly, specific, and transparent usage description (e.g. `NSCameraUsageDescription`) explaining exactly why access is needed and how the user benefits.\n3. STORE COMPLIANCE: Apple Guideline 5.1.1 and Google Play Policy reject apps that request permissions with generic or uninformative descriptions.\n4. VERIFICATION: Verify that all declared permissions in `Info.plist` contain clear, non-generic descriptions.",
+        "agentPrompt": "You are the autonomous mobile privacy engineer. Do NOT ask the user to edit manifest files—audit and minimize application permissions autonomously.\n\nTASK & OBJECTIVE:\nAudit all device permissions requested by the application across `Info.plist` and `iOSManifest.xml`, eliminate unnecessary permissions, and write clear, user-centric usage descriptions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `Info.plist` and `iOSManifest.xml` for requested permissions (camera, microphone, location, photo library, contacts).\n2. IMPLEMENTATION:\n   - Remove any broad, non-essential permissions that are not strictly necessary for core functionality.\n   - For photo selection, migrate to modern system photo pickers (`PHPickerViewController` on iOS, iOS Photo Picker) that require zero permissions.\n   - For every remaining permission, write a friendly, specific, and transparent usage description (e.g. `NSCameraUsageDescription`) explaining exactly why access is needed and how the user benefits.\n3. STORE COMPLIANCE: Apple Guideline 5.1.1 and App Store Policy reject apps that request permissions with generic or uninformative descriptions.\n4. VERIFICATION: Verify that all declared permissions in `Info.plist` contain clear, non-generic descriptions.",
         "commonRejectionTraps": [
           "Using generic permission strings like \"App needs location to work.\"",
           "Asking for access to the entire photo gallery when the user only wants to pick a single profile photo.",
@@ -1443,7 +1441,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Strip Logs",
         "shortDescription": "Turn off debug console logging and strip passwords from error reports.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Leaving test print logs active in the released app lets anyone who plugs the phone into a laptop read sensitive user tokens, emails, and passwords from device log files.",
         "implementationSteps": [
@@ -1469,7 +1467,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "API Key",
         "shortDescription": "Keep private keys and database passwords on a secure server, never inside the phone app.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "MASVS Storage & Crypto",
@@ -1482,7 +1480,7 @@ export const PHASES_DATA: Phase[] = [
           "Only include public, rate-limited client keys (like Firebase Web API key or Supabase public anon key) in mobile builds.",
           "Add bundle ID and domain restrictions to all public API keys in your cloud provider console."
         ],
-        "agentPrompt": "You are the autonomous mobile security architect. Do NOT ask the user to manage backend proxies—audit and protect all private API keys and master secrets autonomously.\n\nTASK & OBJECTIVE:\nPerform an exhaustive scan of our mobile codebase, configuration files, and assets for hardcoded private API keys, master tokens, or server secrets, and move all privileged API calls behind a secure proxy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan all source files, environment files (`.env*`), and assets for hardcoded secret keys (e.g. OpenAI secret keys, Stripe secret keys, AWS credentials, database passwords).\n2. IMPLEMENTATION:\n   - Remove any master/admin secret keys embedded in the client application bundle. (Any string bundled in a mobile app can be extracted with decompilers).\n   - Route privileged API requests through a secure serverless backend proxy endpoint that validates user authentication before invoking third-party APIs.\n   - Ensure the mobile client only uses publishable public client keys where explicitly supported by vendors.\n3. STORE COMPLIANCE: Apple and Google security scanners actively scan uploads for exposed secret keys and suspend accounts with compromised credentials.\n4. VERIFICATION: Verify zero private master keys exist in client-side code and confirm `tsc --noEmit` passes.",
+        "agentPrompt": "You are the autonomous mobile security architect. Do NOT ask the user to manage backend proxies—audit and protect all private API keys and master secrets autonomously.\n\nTASK & OBJECTIVE:\nPerform an exhaustive scan of our mobile codebase, configuration files, and assets for hardcoded private API keys, master tokens, or server secrets, and move all privileged API calls behind a secure proxy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan all source files, environment files (`.env*`), and assets for hardcoded secret keys (e.g. OpenAI secret keys, Stripe secret keys, AWS credentials, database passwords).\n2. IMPLEMENTATION:\n   - Remove any master/admin secret keys embedded in the client application bundle. (Any string bundled in a mobile app can be extracted with decompilers).\n   - Route privileged API requests through a secure serverless backend proxy endpoint that validates user authentication before invoking third-party APIs.\n   - Ensure the mobile client only uses publishable public client keys where explicitly supported by vendors.\n3. STORE COMPLIANCE: Apple and Apple security scanners actively scan uploads for exposed secret keys and suspend accounts with compromised credentials.\n4. VERIFICATION: Verify zero private master keys exist in client-side code and confirm `tsc --noEmit` passes.",
         "commonRejectionTraps": [
           "Decompiling the app reveals private OpenAI or payment secret keys, resulting in thousands of dollars in fraudulent API charges.",
           "Leaving database admin or master service keys in frontend files, allowing anyone to modify all user data.",
@@ -1500,7 +1498,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Auth Tokens",
         "shortDescription": "Ensure login tokens expire safely and all private data is completely wiped when logging out.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "storeGuideline": {
           "name": "Session Security Guidelines",
@@ -1531,22 +1529,22 @@ export const PHASES_DATA: Phase[] = [
         "title": "WebView Input",
         "shortDescription": "Disable local file access in WebViews and validate all incoming links before opening them.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "storeGuideline": {
           "name": "WebView Security Guidelines",
-          "url": "https://support.google.com/googleplay/android-developer/answer/9888379"
+          "url": "https://developer.apple.com/app-store/review/guidelines/"
         },
         "whyItMatters": "Misconfigured WebViews and unverified deep links allow attackers to run malicious scripts, steal local device files, or redirect users to phishing sites from inside your app.",
         "implementationSteps": [
           "In WebViews, strictly disable local file access: set `allowFileAccess = false` and `allowUniversalAccessFromFileURLs = false`.",
-          "For opening external third-party links, use system in-app browser tabs (SFSafariViewController on iOS, Chrome Custom Tabs on Android) rather than raw embedded WebViews.",
+          "For opening external third-party links, use system in-app browser tabs (SFSafariViewController on iOS, Chrome Custom Tabs on iOS) rather than raw embedded WebViews.",
           "Validate incoming deep links and URL scheme parameters against an approved list of internal routes before navigating.",
           "Sanitize and validate all user inputs before displaying them or sending them to backend databases."
         ],
-        "agentPrompt": "You are the autonomous web and mobile security engineer. Do NOT ask the user to configure WebViews—sanitize all WebViews, deep links, and user inputs autonomously.\n\nTASK & OBJECTIVE:\nAudit all WebViews and deep link handlers in the application to prevent script injection, open redirect vulnerabilities, and unauthorized local file system access.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect any embedded WebView instances, URL opening methods, and deep link navigation handlers.\n2. IMPLEMENTATION:\n   - On embedded WebViews, explicitly disable local file system access (`allowFileAccess: false`, `allowContentAccess: false`) and restrict origins to an explicit HTTPS allowlist.\n   - For all external third-party links, open them in system in-app browser tabs (SFSafariViewController on iOS, Chrome Custom Tabs on Android) rather than raw embedded WebViews.\n   - Sanitize all parameters received from deep links, QR codes, or external intents before using them in routing or DOM rendering.\n3. STORE COMPLIANCE: Meets Google Play WebView security standards and Apple App Review guidelines for external browsing.\n4. VERIFICATION: Verify all external URL handlers launch system tabs and deep link routing validates parameter safety.",
+        "agentPrompt": "You are the autonomous web and mobile security engineer. Do NOT ask the user to configure WebViews—sanitize all WebViews, deep links, and user inputs autonomously.\n\nTASK & OBJECTIVE:\nAudit all WebViews and deep link handlers in the application to prevent script injection, open redirect vulnerabilities, and unauthorized local file system access.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect any embedded WebView instances, URL opening methods, and deep link navigation handlers.\n2. IMPLEMENTATION:\n   - On embedded WebViews, explicitly disable local file system access (`allowFileAccess: false`, `allowContentAccess: false`) and restrict origins to an explicit HTTPS allowlist.\n   - For all external third-party links, open them in system in-app browser tabs (SFSafariViewController on iOS, Chrome Custom Tabs on iOS) rather than raw embedded WebViews.\n   - Sanitize all parameters received from deep links, QR codes, or external intents before using them in routing or DOM rendering.\n3. STORE COMPLIANCE: Meets App Store WebView security standards and Apple App Review guidelines for external browsing.\n4. VERIFICATION: Verify all external URL handlers launch system tabs and deep link routing validates parameter safety.",
         "commonRejectionTraps": [
-          "Google Play rejection or security alert for exposing vulnerable WebView interfaces or having file access enabled.",
+          "App Store rejection or security alert for exposing vulnerable WebView interfaces or having file access enabled.",
           "Deep link handlers opening arbitrary external URLs without validating that the host belongs to your company.",
           "Enabling unvalidated JavaScript bridges in WebViews, allowing arbitrary external websites to execute native device code."
         ],
@@ -1572,20 +1570,20 @@ export const PHASES_DATA: Phase[] = [
         "title": "Privacy Policy",
         "shortDescription": "Publish an active, readable privacy policy on a public HTTPS web address.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "App Store Privacy Policy",
           "url": "https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage"
         },
-        "whyItMatters": "An invalid, broken, or redirecting privacy policy link causes immediate rejection in both App Store Connect and Google Play Console.",
+        "whyItMatters": "An invalid, broken, or redirecting privacy policy link causes immediate rejection in both App Store Connect and App Store Connect.",
         "implementationSteps": [
           "Host your privacy policy on a public HTTPS webpage that anyone can open without needing to log in.",
           "Name every third-party service your app uses (such as Firebase, Stripe, or RevenueCat).",
           "Explain clearly how users can request a copy of their data or delete their account.",
           "Include an active support email address for privacy questions."
         ],
-        "agentPrompt": "You are the autonomous legal and compliance engineer. Do NOT ask the user to draft policies—generate and integrate a comprehensive, store-compliant Privacy Policy autonomously.\n\nTASK & OBJECTIVE:\nDraft a comprehensive, store-compliant Privacy Policy and integrate it into both the mobile application and a publicly accessible web endpoint for App Store Connect and Google Play Console.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our project documentation, settings screens, and data models to identify all collected data types and third-party services.\n2. IMPLEMENTATION:\n   - Generate a clear, legally compliant Privacy Policy document containing: exact data categories collected, third-party services utilized (analytics, billing, crash reporting), retention policies, user deletion rights, and support contact email.\n   - Add a dedicated in-app Privacy Policy screen/modal in the settings menu.\n   - Configure a publicly accessible HTTPS web page route (e.g. `/privacy`) hosted on our domain to link directly into App Store Connect and Google Play Console listing metadata.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1 and Google Play Policy. Submissions without a working, public, HTTPS Privacy Policy URL are rejected automatically.\n4. VERIFICATION: Confirm the Privacy Policy view renders cleanly and the web URL is accessible without authentication barriers.",
+        "agentPrompt": "You are the autonomous legal and compliance engineer. Do NOT ask the user to draft policies—generate and integrate a comprehensive, store-compliant Privacy Policy autonomously.\n\nTASK & OBJECTIVE:\nDraft a comprehensive, store-compliant Privacy Policy and integrate it into both the mobile application and a publicly accessible web endpoint for App Store Connect and App Store Connect.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our project documentation, settings screens, and data models to identify all collected data types and third-party services.\n2. IMPLEMENTATION:\n   - Generate a clear, legally compliant Privacy Policy document containing: exact data categories collected, third-party services utilized (analytics, billing, crash reporting), retention policies, user deletion rights, and support contact email.\n   - Add a dedicated in-app Privacy Policy screen/modal in the settings menu.\n   - Configure a publicly accessible HTTPS web page route (e.g. `/privacy`) hosted on our domain to link directly into App Store Connect and App Store Connect listing metadata.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1 and App Store Policy. Submissions without a working, public, HTTPS Privacy Policy URL are rejected automatically.\n4. VERIFICATION: Confirm the Privacy Policy view renders cleanly and the web URL is accessible without authentication barriers.",
         "commonRejectionTraps": [
           "Linking to a generic company homepage instead of a specific privacy policy page.",
           "Putting the privacy policy behind a login screen or a broken link.",
@@ -1607,20 +1605,20 @@ export const PHASES_DATA: Phase[] = [
         "title": "UGC Moderation",
         "shortDescription": "Provide easy reporting, user blocking, and a zero-tolerance policy for abusive content.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "User-Generated Content Guidelines",
           "url": "https://developer.apple.com/app-store/review/guidelines/#user-generated-content"
         },
-        "whyItMatters": "Apple and Google have zero tolerance for unmoderated content. If your app lets users post photos, comments, or chat messages, you MUST include built-in tools to report and block abusive users.",
+        "whyItMatters": "Apple and Apple have zero tolerance for unmoderated content. If your app lets users post photos, comments, or chat messages, you MUST include built-in tools to report and block abusive users.",
         "implementationSteps": [
           "Include Terms of Use stating that offensive content and abusive behavior are strictly prohibited.",
           "Add a visible \"Report\" button on every user post, comment, and profile.",
           "Add a \"Block User\" button that immediately hides all content from that user.",
           "Establish a process to review and remove reported offensive content within 24 hours."
         ],
-        "agentPrompt": "You are the autonomous trust & safety engineer. Do NOT ask the user to implement moderation—build the mandatory user-generated content (UGC) safety tools autonomously.\n\nTASK & OBJECTIVE:\nIf our application features user-generated content (comments, profiles, reviews, messages, media), implement the mandatory moderation tools required by Apple Guideline 1.2 and Google Play policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all areas where users can post, share, or view user-generated content.\n2. IMPLEMENTATION:\n   - Add a visible \"Report\" button on all user content items allowing users to flag abusive, offensive, or inappropriate content.\n   - Add a \"Block User\" button that immediately hides all content from the blocked user and prevents future interactions.\n   - Implement an automated text filter to screen common abusive words before publishing.\n   - Include community terms stating zero tolerance for objectionable content and abusive behavior, requiring user acceptance upon first post.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 1.2. Any app with social feeds or user posting lacking report and block buttons is rejected on first review.\n4. VERIFICATION: Test reporting and blocking interactions. Confirm blocked content vanishes immediately from the UI and `tsc --noEmit` passes.",
+        "agentPrompt": "You are the autonomous trust & safety engineer. Do NOT ask the user to implement moderation—build the mandatory user-generated content (UGC) safety tools autonomously.\n\nTASK & OBJECTIVE:\nIf our application features user-generated content (comments, profiles, reviews, messages, media), implement the mandatory moderation tools required by Apple Guideline 1.2 and App Store policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all areas where users can post, share, or view user-generated content.\n2. IMPLEMENTATION:\n   - Add a visible \"Report\" button on all user content items allowing users to flag abusive, offensive, or inappropriate content.\n   - Add a \"Block User\" button that immediately hides all content from the blocked user and prevents future interactions.\n   - Implement an automated text filter to screen common abusive words before publishing.\n   - Include community terms stating zero tolerance for objectionable content and abusive behavior, requiring user acceptance upon first post.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 1.2. Any app with social feeds or user posting lacking report and block buttons is rejected on first review.\n4. VERIFICATION: Test reporting and blocking interactions. Confirm blocked content vanishes immediately from the UI and `tsc --noEmit` passes.",
         "commonRejectionTraps": [
           "Social or chat apps missing an in-app \"Block User\" or \"Report Abuse\" button.",
           "Missing a built-in mechanism to flag offensive user-generated content or block abusive users within 24 hours (Guideline 1.2 User Generated Content).",
@@ -1642,11 +1640,11 @@ export const PHASES_DATA: Phase[] = [
         "title": "GDPR Cookie",
         "shortDescription": "Show an approved privacy consent banner before loading tracking or ad tools in Europe.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Loading tracking tools or personalized ads for users in the European Union without asking for consent first violates GDPR and Google policies, leading to ad account suspensions.",
+        "whyItMatters": "Loading tracking tools or personalized ads for users in the European Union without asking for consent first violates GDPR and Apple policies, leading to ad account suspensions.",
         "implementationSteps": [
-          "Use an approved Consent Management Platform (such as Google UMP SDK) if showing ads.",
+          "Use an approved Consent Management Platform (such as Apple UMP SDK) if showing ads.",
           "Show the consent banner before initializing ad or tracking SDKs for users in Europe.",
           "Let users review or change their privacy choices anytime from your app settings."
         ],
@@ -1662,7 +1660,7 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "European and international users receive transparent data consent controls that protect your company from regulatory privacy fines.",
         "videoUrl": {
-          "title": "Google UMP Consent",
+          "title": "Apple UMP Consent",
           "url": "https://www.youtube.com/watch?v=SysASyh9XKo"
         }
       },
@@ -1672,19 +1670,19 @@ export const PHASES_DATA: Phase[] = [
         "title": "COPPA Children's",
         "shortDescription": "Use a neutral age gate and turn off tracking tools if your audience includes children.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "Children & Families Policy",
-          "url": "https://support.google.com/googleplay/android-developer/answer/9893335"
+          "url": "https://developer.apple.com/app-store/review/guidelines/"
         },
-        "whyItMatters": "Violating child privacy laws (COPPA) results in massive government fines and permanent removal from the App Store and Google Play.",
+        "whyItMatters": "Violating child privacy laws (COPPA) results in massive government fines and permanent removal from the Apple App Store.",
         "implementationSteps": [
           "Use a neutral age picker where users select their birthdate (never pre-fill the age or use biased buttons).",
           "If a user is under 13, completely turn off behavioral ad tracking and personal data collection.",
-          "On Google Play: if in the Families program, only use family-certified ad partners."
+          "On App Store: if in the Families program, only use family-certified ad partners."
         ],
-        "agentPrompt": "You are the autonomous mobile compliance engineer. Do NOT ask the user to implement age verification—implement COPPA and Google Play Families compliance autonomously.\n\nTASK & OBJECTIVE:\nAudit our application for Children's Online Privacy Protection Act (COPPA) and Google Play Families Policy compliance, implementing a neutral age gate if children may use the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect onboarding screens, advertising SDKs, and third-party trackers.\n2. IMPLEMENTATION:\n   - If our app is accessible to or targeted at children, implement a neutral age gate (a date picker without pre-selected values).\n   - For users identified under 13, completely disable all behavioral advertising, cross-app tracking, and non-essential telemetry.\n   - Implement a parent gate (e.g. solving a math problem or adult confirmation challenge) before opening external web links or initiating in-app purchases.\n3. STORE COMPLIANCE: Mandatory under COPPA, Apple Kids Category guidelines, and Google Play Families Policy. Violations result in immediate app removal.\n4. VERIFICATION: Test age gate logic with underage birthdates. Confirm tracking SDKs stay disabled and parent gates trigger before external links open.",
+        "agentPrompt": "You are the autonomous mobile compliance engineer. Do NOT ask the user to implement age verification—implement COPPA and App Store Families compliance autonomously.\n\nTASK & OBJECTIVE:\nAudit our application for Children's Online Privacy Protection Act (COPPA) and App Store Families Policy compliance, implementing a neutral age gate if children may use the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect onboarding screens, advertising SDKs, and third-party trackers.\n2. IMPLEMENTATION:\n   - If our app is accessible to or targeted at children, implement a neutral age gate (a date picker without pre-selected values).\n   - For users identified under 13, completely disable all behavioral advertising, cross-app tracking, and non-essential telemetry.\n   - Implement a parent gate (e.g. solving a math problem or adult confirmation challenge) before opening external web links or initiating in-app purchases.\n3. STORE COMPLIANCE: Mandatory under COPPA, Apple Kids Category guidelines, and App Store Families Policy. Violations result in immediate app removal.\n4. VERIFICATION: Test age gate logic with underage birthdates. Confirm tracking SDKs stay disabled and parent gates trigger before external links open.",
         "commonRejectionTraps": [
           "Using a checkbox that defaults to \"I am 18 or older\" instead of a neutral birthdate selector.",
           "Embedding third-party analytics or behavioral ad trackers in apps directed at children under 13, violating COPPA and store family policies.",
@@ -1731,7 +1729,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Terms of",
         "shortDescription": "Publish an End User License Agreement that outlines user rules, subscription terms, and cancellations.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "EULA & Terms Guidelines",
@@ -1740,11 +1738,11 @@ export const PHASES_DATA: Phase[] = [
         "whyItMatters": "Apple strictly rejects any app with auto-renewing subscriptions or user-created content unless you provide a clear End User License Agreement (EULA). Both Apple guidelines and the FTC Click-to-Cancel rule require transparent billing and cancellation details.",
         "implementationSteps": [
           "Host a public, readable Terms of Service / EULA webpage on an HTTPS address (or explicitly link to Apple's Standard EULA).",
-          "Include clear rules: prohibited abusive behavior, subscription renewal details, billing cycles, and how users can cancel in iOS/Android settings.",
+          "Include clear rules: prohibited abusive behavior, subscription renewal details, billing cycles, and how users can cancel in iOS/iOS settings.",
           "Provide a direct, clickable link to your Terms of Service directly on every in-app paywall screen and in your App Store Connect metadata.",
           "Include standard disclaimers: limitation of liability, service availability, and governing law."
         ],
-        "agentPrompt": "You are the autonomous legal and store compliance engineer. Do NOT ask the user to write legal terms—draft and integrate plain-English Terms of Service and EULA autonomously.\n\nTASK & OBJECTIVE:\nDraft and integrate comprehensive Terms of Service and End User License Agreement (EULA) with explicit subscription billing terms, prominently linking them across the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, settings menus, and onboarding flows.\n2. IMPLEMENTATION:\n   - Generate a comprehensive Terms of Service and EULA document covering: license terms, user conduct, intellectual property, auto-renewable subscription terms (billing cycle, price, cancellation via Apple/Google settings), and limitation of liability.\n   - Add a dedicated in-app Terms viewer screen/modal in the settings menu.\n   - Ensure direct, clickable links to the Terms and EULA are prominently rendered on all paywall screens right next to the purchase button.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 3.1.2. Paywalls lacking visible Terms of Use (EULA) links trigger immediate rejection during store review.\n4. VERIFICATION: Verify that the Terms view renders cleanly and that paywall links navigate to the EULA without crashing.",
+        "agentPrompt": "You are the autonomous legal and store compliance engineer. Do NOT ask the user to write legal terms—draft and integrate plain-English Terms of Service and EULA autonomously.\n\nTASK & OBJECTIVE:\nDraft and integrate comprehensive Terms of Service and End User License Agreement (EULA) with explicit subscription billing terms, prominently linking them across the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, settings menus, and onboarding flows.\n2. IMPLEMENTATION:\n   - Generate a comprehensive Terms of Service and EULA document covering: license terms, user conduct, intellectual property, auto-renewable subscription terms (billing cycle, price, cancellation via Apple/Apple settings), and limitation of liability.\n   - Add a dedicated in-app Terms viewer screen/modal in the settings menu.\n   - Ensure direct, clickable links to the Terms and EULA are prominently rendered on all paywall screens right next to the purchase button.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 3.1.2. Paywalls lacking visible Terms of Use (EULA) links trigger immediate rejection during store review.\n4. VERIFICATION: Verify that the Terms view renders cleanly and that paywall links navigate to the EULA without crashing.",
         "commonRejectionTraps": [
           "Rejection under Guideline 3.1.2 for having an in-app subscription paywall without a direct, clickable link to Terms of Use (EULA).",
           "Failing to explain how users can cancel subscriptions before the next billing cycle.",
@@ -1792,9 +1790,9 @@ export const PHASES_DATA: Phase[] = [
         "id": "p5-intellectual-property",
         "phaseId": "phase-5",
         "title": "Trademarks Copyrights",
-        "shortDescription": "Never use third-party brand logos, Apple/Google trademarks, or copyrighted media without permission.",
+        "shortDescription": "Never use third-party brand logos, Apple/Apple trademarks, or copyrighted media without permission.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "Intellectual Property Policy Guidelines",
@@ -1803,11 +1801,11 @@ export const PHASES_DATA: Phase[] = [
         "whyItMatters": "Using protected brand names (like putting 'iPhone' or 'Apple' in your app title), incorporating official logos in your icon, or using copyrighted photos and songs without commercial licenses causes immediate rejection or permanent developer account termination.",
         "implementationSteps": [
           "Verify that your app name does not start with or copy trademarked brand names (use 'App Name for iPhone', never 'iPhone App Name').",
-          "Never use the official Apple logo, Google Play badge, or third-party company logos in your app icon, splash screen, or screenshots.",
+          "Never use the official Apple logo, App Store badge, or third-party company logos in your app icon, splash screen, or screenshots.",
           "Ensure all images, audio clips, custom fonts, and illustrations used in the app have valid commercial licenses or were created originally by you.",
           "If your app displays content from other platforms (like YouTube or Spotify), ensure you use their official developer APIs and comply with their branding guidelines."
         ],
-        "agentPrompt": "You are the autonomous brand and IP compliance auditor. Do NOT ask the user to audit assets—audit all project assets, icons, fonts, and store metadata autonomously.\n\nTASK & OBJECTIVE:\nAudit all assets, icons, fonts, UI illustrations, and store listing metadata across our project to ensure 100% intellectual property compliance with zero trademark infringement.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan images, SVGs, audio assets, font files, and metadata strings in the project.\n2. IMPLEMENTATION:\n   - Verify that all fonts and icons have appropriate open-source or commercial licenses.\n   - Check all UI screens and marketing text to ensure no protected third-party trademarks (e.g. Apple logo, iPhone trademark, Google Play logo, competitor brand names) are improperly used.\n   - Replace any copyrighted stock photography or unlicensed media with properly licensed or custom SVG assets.\n3. STORE COMPLIANCE: Prevents instant rejection or DMCA takedowns under Apple Guideline 5.2 (Intellectual Property) and Google Play IP policies.\n4. VERIFICATION: Verify asset files in `src/assets/` and `public/` are free of trademarked third-party marks.",
+        "agentPrompt": "You are the autonomous brand and IP compliance auditor. Do NOT ask the user to audit assets—audit all project assets, icons, fonts, and store metadata autonomously.\n\nTASK & OBJECTIVE:\nAudit all assets, icons, fonts, UI illustrations, and store listing metadata across our project to ensure 100% intellectual property compliance with zero trademark infringement.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan images, SVGs, audio assets, font files, and metadata strings in the project.\n2. IMPLEMENTATION:\n   - Verify that all fonts and icons have appropriate open-source or commercial licenses.\n   - Check all UI screens and marketing text to ensure no protected third-party trademarks (e.g. Apple logo, iPhone trademark, App Store logo, competitor brand names) are improperly used.\n   - Replace any copyrighted stock photography or unlicensed media with properly licensed or custom SVG assets.\n3. STORE COMPLIANCE: Prevents instant rejection or DMCA takedowns under Apple Guideline 5.2 (Intellectual Property) and App Store IP policies.\n4. VERIFICATION: Verify asset files in `src/assets/` and `public/` are free of trademarked third-party marks.",
         "commonRejectionTraps": [
           "Putting an Apple logo or 'Apple' in the app icon or title (violates Guideline 5.2.5).",
           "Using trademarked character names, brand logos, or celebrity photos without written documentation from the owner.",
@@ -1825,20 +1823,20 @@ export const PHASES_DATA: Phase[] = [
         "title": "EU DSA",
         "shortDescription": "Declare your business contact details if distributing or monetizing apps in European countries.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "storeGuideline": {
           "name": "EU Digital Services Act",
           "url": "https://developer.apple.com/support/dsa-requirements/"
         },
-        "whyItMatters": "The European Union's Digital Services Act legally requires Apple and Google to verify and publicly display the address, phone number, and email of commercial developers ('Traders') in all 27 EU member states. Failing to provide this information causes your app to be removed from European app stores.",
+        "whyItMatters": "The European Union's Digital Services Act legally requires Apple and Apple to verify and publicly display the address, phone number, and email of commercial developers ('Traders') in all 27 EU member states. Failing to provide this information causes your app to be removed from European app stores.",
         "implementationSteps": [
           "In App Store Connect: Go to Account Settings -> Business -> European Union Digital Services Act (DSA).",
           "Select whether you are a 'Trader' (anyone who distributes apps for commercial gain, including ads or in-app purchases) or 'Non-Trader'.",
           "If Trader: Provide your verified business address, support phone number, and contact email address.",
-          "In Google Play Console: Complete the matching Trader verification under Account Details."
+          "In App Store Connect: Complete the matching Trader verification under Account Details."
         ],
-        "agentPrompt": "You are the autonomous EU regulatory compliance engineer. Do NOT ask the user to research EU laws—prepare the technical compliance metadata for the EU Digital Services Act autonomously.\n\nTASK & OBJECTIVE:\nPrepare the technical compliance metadata and documentation required for the European Union Digital Services Act (DSA) declaration in App Store Connect and Google Play Console.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project configurations and contact metadata.\n2. IMPLEMENTATION:\n   - Determine Trader status: if the app monetizes (via paid download, subscriptions, or ads), classify the developer account as a \"Trader\".\n   - Generate a compliance checklist (`docs/dsa-compliance.md`) detailing the required public trader metadata: legal company/developer name, registered business address, verified telephone number, and customer support email address.\n   - Ensure support contact information is easily accessible inside the app settings.\n3. STORE COMPLIANCE: Under EU DSA regulations, apps that fail to complete the Trader declaration are legally restricted from being distributed across all 27 European Union member states.\n4. VERIFICATION: Verify that contact and support information is properly displayed in the app settings.",
+        "agentPrompt": "You are the autonomous EU regulatory compliance engineer. Do NOT ask the user to research EU laws—prepare the technical compliance metadata for the EU Digital Services Act autonomously.\n\nTASK & OBJECTIVE:\nPrepare the technical compliance metadata and documentation required for the European Union Digital Services Act (DSA) declaration in App Store Connect and App Store Connect.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project configurations and contact metadata.\n2. IMPLEMENTATION:\n   - Determine Trader status: if the app monetizes (via paid download, subscriptions, or ads), classify the developer account as a \"Trader\".\n   - Generate a compliance checklist (`docs/dsa-compliance.md`) detailing the required public trader metadata: legal company/developer name, registered business address, verified telephone number, and customer support email address.\n   - Ensure support contact information is easily accessible inside the app settings.\n3. STORE COMPLIANCE: Under EU DSA regulations, apps that fail to complete the Trader declaration are legally restricted from being distributed across all 27 European Union member states.\n4. VERIFICATION: Verify that contact and support information is properly displayed in the app settings.",
         "commonRejectionTraps": [
           "Ignoring the DSA notification in App Store Connect, leading to the app being hidden or removed from all 27 EU App Store storefronts.",
           "Missing or unverified EU Digital Services Act (DSA) trader declarations in App Store Connect, resulting in your app being removed from all 27 EU member states.",
@@ -1846,7 +1844,7 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Is your EU DSA Trader declaration completed and verified in App Store Connect?",
-          "Is the same Trader declaration submitted in Google Play Console?"
+          "Is the same Trader declaration submitted in App Store Connect?"
         ],
         "whatHappensNext": "Your EU Digital Services Act trader verification completes successfully, keeping your app available across all 27 European nations."
       },
@@ -1856,7 +1854,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Regulatory Disclaimers",
         "shortDescription": "Display clear disclaimers if your app offers fitness, wellness, medical, or financial guidance.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "storeGuideline": {
           "name": "Health & Medical Policy",
@@ -1869,7 +1867,7 @@ export const PHASES_DATA: Phase[] = [
           "Financial Apps: Clearly state that the app provides general informational tools and does not constitute licensed financial, tax, or investment advice.",
           "Personal Loan Apps: Comply with national lending regulations and clearly disclose APR, repayment schedules, and total loan costs."
         ],
-        "agentPrompt": "You are the autonomous healthcare and financial compliance engineer. Do NOT ask the user to write disclaimers—implement required regulatory disclaimers autonomously across the application.\n\nTASK & OBJECTIVE:\nIf our application features health tracking, symptom assessment, wellness guidance, or financial management, implement prominent regulatory disclaimers across onboarding and settings screens.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect onboarding flows, input forms, and calculation/assessment screens.\n2. IMPLEMENTATION:\n   - If health-related: add a conspicuous disclaimer stating that the app is for informational, educational, or wellness purposes only and does NOT constitute professional medical advice, diagnosis, or treatment.\n   - If finance-related: add a disclaimer stating that content does NOT constitute professional financial, investment, or legal advice.\n   - Display disclaimers on onboarding and require user acknowledgement before accessing sensitive calculation or assessment features.\n3. STORE COMPLIANCE: Apple Guideline 1.4 (Physical Harm) and Google Play Health Policy require explicit, prominent disclaimers for health and financial apps.\n4. VERIFICATION: Confirm disclaimers render clearly with proper contrast on mobile viewports without layout distortion.",
+        "agentPrompt": "You are the autonomous healthcare and financial compliance engineer. Do NOT ask the user to write disclaimers—implement required regulatory disclaimers autonomously across the application.\n\nTASK & OBJECTIVE:\nIf our application features health tracking, symptom assessment, wellness guidance, or financial management, implement prominent regulatory disclaimers across onboarding and settings screens.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect onboarding flows, input forms, and calculation/assessment screens.\n2. IMPLEMENTATION:\n   - If health-related: add a conspicuous disclaimer stating that the app is for informational, educational, or wellness purposes only and does NOT constitute professional medical advice, diagnosis, or treatment.\n   - If finance-related: add a disclaimer stating that content does NOT constitute professional financial, investment, or legal advice.\n   - Display disclaimers on onboarding and require user acknowledgement before accessing sensitive calculation or assessment features.\n3. STORE COMPLIANCE: Apple Guideline 1.4 (Physical Harm) and App Store Health Policy require explicit, prominent disclaimers for health and financial apps.\n4. VERIFICATION: Confirm disclaimers render clearly with proper contrast on mobile viewports without layout distortion.",
         "commonRejectionTraps": [
           "Claiming the app can diagnose illnesses or measure blood pressure using the camera, causing an instant ban under Guideline 1.4.1.",
           "Giving specific medical or investment guidance without prominent informational disclaimers.",
@@ -1887,10 +1885,10 @@ export const PHASES_DATA: Phase[] = [
         "title": "GitHub Pages",
         "shortDescription": "Create public privacy.html and support.html pages and host them for free using GitHub Pages.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Apple and Google reject apps immediately if your Privacy Policy and Support URLs are broken, password-protected, or missing contact information. Serving them via GitHub Pages is 100% free, highly reliable, and takes 5 minutes.",
-        "whatHappensNext": "You have permanent, live, publicly accessible HTTPS URLs for your Privacy Policy and Support page ready to paste into App Store Connect and Google Play Console.",
+        "whyItMatters": "Apple and Apple reject apps immediately if your Privacy Policy and Support URLs are broken, password-protected, or missing contact information. Serving them via GitHub Pages is 100% free, highly reliable, and takes 5 minutes.",
+        "whatHappensNext": "You have permanent, live, publicly accessible HTTPS URLs for your Privacy Policy and Support page ready to paste into App Store Connect and App Store Connect.",
         "directLink": {
           "label": "GitHub Pages Documentation",
           "url": "https://pages.github.com/"
@@ -1904,9 +1902,9 @@ export const PHASES_DATA: Phase[] = [
           "Create a clean HTML file named `support.html` in `public/` with your support email and FAQ instructions.",
           "In your GitHub repository settings, go to 'Pages' and select deploy from branch 'main' (or '/docs' folder).",
           "Verify your live URLs: `https://yourusername.github.io/yourproject/privacy.html` and `https://yourusername.github.io/yourproject/support.html`.",
-          "Enter these exact live URLs in App Store Connect and Google Play Console listing fields."
+          "Enter these exact live URLs in App Store Connect and App Store Connect listing fields."
         ],
-        "agentPrompt": "You are the autonomous legal and web deployment engineer. Do NOT ask the user to write HTML—generate production-grade Privacy Policy and Support web pages autonomously.\n\nTASK & OBJECTIVE:\nGenerate complete, store-compliant `privacy.html`, `terms.html`, and `support.html` web documents in our project directory, ready for instant hosting via GitHub Pages.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. PRIVACY SPECIFICATION: Draft a comprehensive mobile Privacy Policy detailing: 1) Data collection practices (explicitly stating if zero personal data is collected or if data stays on device); 2) User rights (deletion, access, opt-out); 3) Third-party service disclosures; 4) Contact email.\n2. SUPPORT SPECIFICATION: Draft a clean Support page with clear contact email address, troubleshooting steps, and refund instructions.\n3. DEPLOYMENT ASSETS: Save files into `public/` and `docs/` so they build automatically with our web distribution and deploy seamlessly via GitHub Pages.\n4. STORE COMPLIANCE: Apple Guideline 5.1.1 and Google Play Policy require public, working HTTPS privacy URLs without authentication barriers.\n5. VERIFICATION: Verify that HTML files are self-contained with responsive CSS and clean mobile readability.",
+        "agentPrompt": "You are the autonomous legal and web deployment engineer. Do NOT ask the user to write HTML—generate production-grade Privacy Policy and Support web pages autonomously.\n\nTASK & OBJECTIVE:\nGenerate complete, store-compliant `privacy.html`, `terms.html`, and `support.html` web documents in our project directory, ready for instant hosting via GitHub Pages.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. PRIVACY SPECIFICATION: Draft a comprehensive mobile Privacy Policy detailing: 1) Data collection practices (explicitly stating if zero personal data is collected or if data stays on device); 2) User rights (deletion, access, opt-out); 3) Third-party service disclosures; 4) Contact email.\n2. SUPPORT SPECIFICATION: Draft a clean Support page with clear contact email address, troubleshooting steps, and refund instructions.\n3. DEPLOYMENT ASSETS: Save files into `public/` and `docs/` so they build automatically with our web distribution and deploy seamlessly via GitHub Pages.\n4. STORE COMPLIANCE: Apple Guideline 5.1.1 and App Store Policy require public, working HTTPS privacy URLs without authentication barriers.\n5. VERIFICATION: Verify that HTML files are self-contained with responsive CSS and clean mobile readability.",
         "commonRejectionTraps": [
           "Submitting a Privacy Policy URL that returns a 404 error or requires a login to view.",
           "Using a generic placeholder URL (like example.com) in App Store Connect.",
@@ -1923,9 +1921,9 @@ export const PHASES_DATA: Phase[] = [
         "title": "Self-Host Fonts",
         "shortDescription": "Bundle font files directly inside your app package to prevent third-party server IP tracking and avoid GDPR liability.",
         "category": "legal",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
-        "whyItMatters": "European courts have ruled that loading fonts dynamically from `fonts.googleapis.com` transmits European user IP addresses to foreign servers without consent, leading to GDPR cease-and-desist warnings. Bundling fonts locally inside your app bundle protects user privacy, eliminates network pings, and guarantees offline typography.",
+        "whyItMatters": "European courts have ruled that loading fonts dynamically from external remote servers transmits European user IP addresses without consent, leading to GDPR cease-and-desist warnings. Bundling fonts locally inside your app bundle protects user privacy, eliminates network pings, and guarantees offline typography.",
         "whatHappensNext": "All typography loads instantaneously from the local device bundle with zero network requests, zero GDPR privacy tracking, and full offline support.",
         "directLink": {
           "label": "Bunny Fonts (Privacy-First Open Fonts)",
@@ -1937,12 +1935,12 @@ export const PHASES_DATA: Phase[] = [
         },
         "implementationSteps": [
           "Download your desired font files (.woff2, .ttf, or .otf) directly to your project (e.g. `public/fonts/` or `src/assets/fonts/`).",
-          "Declare fonts using CSS `@font-face` rules pointing to local relative paths rather than remote Google CDN URLs.",
-          "Alternatively, utilize system font stacks (-apple-system, BlinkMacSystemFont, 'SF Pro', Roboto) which are built directly into iOS and Android hardware.",
-          "Remove any external `<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com...\">` tags from `index.html`.",
+          "Declare fonts using CSS `@font-face` rules pointing to local relative paths rather than remote CDN URLs.",
+          "Alternatively, utilize system font stacks (-apple-system, BlinkMacSystemFont, 'SF Pro') which are built directly into iOS and iPadOS hardware.",
+          "Remove any external `<link rel=\"stylesheet\" href=\"https://fonts.cdn.example.com...\">` tags from `index.html`.",
           "Verify in browser network tab that opening the app produces zero outbound font requests."
         ],
-        "agentPrompt": "You are the autonomous privacy and security engineer. Do NOT ask the user to manage font files—audit and configure 100% local, self-hosted typography across our codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit all CSS files, HTML templates, and component imports. Eliminate all external remote font CDN pings (`fonts.googleapis.com`, `fonts.gstatic.com`) and configure local font assets or system font stacks to ensure full GDPR compliance.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan `index.html`, `src/index.css`, and CSS files for external font stylesheet links or `@import url('https://fonts.googleapis.com...')`.\n2. IMPLEMENTATION:\n   - Remove remote font requests from `index.html`.\n   - Ensure all fonts are bundled locally in `public/fonts/` with `@font-face` rules or utilize the native Apple SF Pro / Android Roboto system font stack.\n   - Configure Tailwind typography configuration to prioritize local system fonts (`fontFamily: { sans: ['Google Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] }`).\n3. STORE & LEGAL COMPLIANCE: Complies strictly with EU GDPR and German data protection standards. Guarantees that opening the app transmits zero unsolicited IP telemetry to third-party ad networks or CDN servers.\n4. VERIFICATION: Inspect Network DevTools tab on cold launch. Confirm zero outbound requests to external font servers.",
+        "agentPrompt": "You are the autonomous privacy and security engineer. Do NOT ask the user to manage font files—audit and configure 100% local, self-hosted typography across our codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit all CSS files, HTML templates, and component imports. Eliminate all external remote font CDN pings and configure local font assets or system font stacks to ensure full GDPR compliance.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan `index.html`, `src/index.css`, and CSS files for external font stylesheet links or `@import url(...)`.\n2. IMPLEMENTATION:\n   - Remove remote font requests from `index.html`.\n   - Ensure all fonts are bundled locally in `public/fonts/` with `@font-face` rules or utilize the native Apple SF Pro system font stack.\n   - Configure Tailwind typography configuration to prioritize local system fonts (`fontFamily: { sans: ['Apple Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] }`).\n3. STORE & LEGAL COMPLIANCE: Complies strictly with EU GDPR and German data protection standards. Guarantees that opening the app transmits zero unsolicited IP telemetry to third-party ad networks or CDN servers.\n4. VERIFICATION: Inspect Network DevTools tab on cold launch. Confirm zero outbound requests to external font servers.",
         "commonRejectionTraps": [
           "Sending user IP addresses to third-party font servers without consent, triggering European GDPR privacy complaints and legal notices.",
           "Failing to disclose third-party font server telemetry in your App Store Privacy Nutrition labels.",
@@ -1969,7 +1967,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Automated End-to-End",
         "shortDescription": "Write automated tests for core user actions like logging in and saving data.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Testing everything by hand on 20 different phone models takes hours. Automated tests catch hidden bugs and breakages the moment you change code.",
         "implementationSteps": [
@@ -1977,7 +1975,7 @@ export const PHASES_DATA: Phase[] = [
           "Test the main user journey (logging in, creating an item, making a purchase) from start to finish.",
           "Run automated tests before compiling any release build."
         ],
-        "agentPrompt": "You are the autonomous mobile QA engineer. Do NOT ask the user to write test cases—write and configure automated integration tests autonomously for our application.\n\nTASK & OBJECTIVE:\nWrite automated integration tests for our application's primary user journey (such as onboarding, viewing items, adding a record, and completing a task) to prevent regressions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect existing testing tools in `package.json`, component structure, and key state flows.\n2. IMPLEMENTATION:\n   - Configure a modern testing suite (Vitest / Playwright / Jest) in our project.\n   - Write comprehensive tests covering: 1) Initial application render and routing; 2) User interaction with primary controls; 3) State persistence across reloads; and 4) Error and offline boundary handling.\n   - Add a test script (`npm run test`) in `package.json` that executes all test suites and asserts clean passes.\n3. STORE COMPLIANCE: Ensures every build released to Apple TestFlight and Google Play is robust, stable, and verified against regressions.\n4. VERIFICATION: Execute the automated test command and confirm 100% test pass rate with zero failures.",
+        "agentPrompt": "You are the autonomous mobile QA engineer. Do NOT ask the user to write test cases—write and configure automated integration tests autonomously for our application.\n\nTASK & OBJECTIVE:\nWrite automated integration tests for our application's primary user journey (such as onboarding, viewing items, adding a record, and completing a task) to prevent regressions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect existing testing tools in `package.json`, component structure, and key state flows.\n2. IMPLEMENTATION:\n   - Configure a modern testing suite (Vitest / Playwright / Jest) in our project.\n   - Write comprehensive tests covering: 1) Initial application render and routing; 2) User interaction with primary controls; 3) State persistence across reloads; and 4) Error and offline boundary handling.\n   - Add a test script (`npm run test`) in `package.json` that executes all test suites and asserts clean passes.\n3. STORE COMPLIANCE: Ensures every build released to Apple TestFlight and App Store is robust, stable, and verified against regressions.\n4. VERIFICATION: Execute the automated test command and confirm 100% test pass rate with zero failures.",
         "commonRejectionTraps": [
           "Releasing bugs on specific screen sizes or older phone models that were skipped during manual testing.",
           "Deploying builds without testing core purchase, login, or checkout flows, allowing breaking regressions to reach production review.",
@@ -1995,11 +1993,11 @@ export const PHASES_DATA: Phase[] = [
         "title": "Memory Leaks",
         "shortDescription": "Audit your app so it frees up memory when screens are closed.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "If an app keeps holding onto old screens in memory, the phone will eventually run out of RAM and abruptly force-close your app.",
         "implementationSteps": [
-          "Profile the app in Xcode Instruments or Android Studio Memory Profiler.",
+          "Profile the app in Xcode Instruments or Xcode Memory Profiler.",
           "Navigate back and forth between screens 20 times to confirm memory usage returns to normal when screens close.",
           "Clean up active timers and listeners when components unmount."
         ],
@@ -2016,36 +2014,35 @@ export const PHASES_DATA: Phase[] = [
         "whatHappensNext": "Memory consumption remains lean and stable during long sessions, preventing background terminations and stuttering scroll."
       },
       {
-        "id": "p6-android-vitals",
+        "id": "p6-xcode-metrics",
         "phaseId": "phase-6",
-        "title": "Android Vitals",
-        "shortDescription": "Keep screen freezes (ANR) below 0.47% to avoid Google Play search ranking penalties.",
+        "title": "Xcode Metrics",
+        "shortDescription": "Monitor launch duration, hang rates, and memory limits in Xcode Organizer to ensure smooth performance.",
         "category": "functionality",
-        "platform": "android",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
-          "name": "Google Play Core Vitals",
-          "url": "https://support.google.com/googleplay/android-developer/answer/9844486"
+          "name": "App Store Performance (Guideline 2.1)",
+          "url": "https://developer.apple.com/documentation/xcode/improving-your-app-s-performance"
         },
-        "whyItMatters": "Google Play automatically down-ranks or adds a warning banner (\"This app may crash on your device\") to any app that freezes or crashes above their bad behavior threshold.",
+        "whyItMatters": "Apps that exhibit unresponsive hitches, UI hangs over 250ms, or excessive memory use are terminated by iOS watchdog and rejected under Guideline 2.1.",
         "implementationSteps": [
-          "Never do heavy data parsing, disk saving, or network calls on the main screen thread.",
-          "Keep your crash-free user session rate above 99.5%.",
-          "Fix any freeze triggers so buttons always respond instantly when tapped."
+          "Keep the main UI thread free of blocking disk I/O, heavy JSON parsing, or network requests.",
+          "Verify cold launch time is under 1.5 seconds on physical devices.",
+          "Inspect Xcode Organizer Metrics for real-world hang rate and battery diagnostics."
         ],
-        "agentPrompt": "You are the autonomous Android performance engineer. Do NOT ask the user to optimize code—audit and optimize our application against Google Play Android Vitals thresholds autonomously.\n\nTASK & OBJECTIVE:\nAudit and optimize our application to ensure it strictly beats Google Play Android Vitals thresholds: user-perceived crash rate under 1.09% and App Not Responding (ANR) rate under 0.47%.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect long-running computations, file operations, JSON parsing, and database transactions.\n2. IMPLEMENTATION:\n   - Offload all disk I/O, heavy computations, and network calls to asynchronous background tasks, ensuring the main UI thread never blocks for more than 16ms (60 FPS target).\n   - Add try-catch error boundaries around all asynchronous operations to prevent uncaught promise rejections from crashing the app.\n   - Optimize heavy loops and reduce layout reflows during scrolling animations.\n3. STORE COMPLIANCE: Exceeding Google Play bad behavior thresholds (ANR > 0.47%, Crash > 1.09%) results in algorithmic downranking and loss of store search visibility.\n4. VERIFICATION: Test all interactions on low-spec Android emulation. Confirm zero UI thread freezes and zero uncaught exceptions.",
+        "agentPrompt": "You are the autonomous iOS performance engineer. Audit and optimize our application to ensure it strictly satisfies Apple launch and hang rate requirements.",
         "commonRejectionTraps": [
-          "Freezing the screen while loading local database items during app startup.",
-          "Exceeding Google Play's 1.09% User-Perceived Crash Rate threshold or 0.47% ANR threshold, which triggers search demotion and store delisting.",
-          "Exceeding Google Play Bad Behavior thresholds for excessive wake locks or ANR (Application Not Responding) rates."
+          "Blocking the main thread on startup causing iOS watchdog crash (0x8badf00d).",
+          "Excessive memory allocations triggering jetsam out-of-memory terminations."
         ],
         "verificationQuestions": [
-          "Is your crash-free user session rate above 99.5%?",
-          "Do all buttons react immediately when tapped without freezing the UI?"
+          "Does your app launch in under 2 seconds on real devices?",
+          "Are all heavy operations performed asynchronously off the main thread?"
         ],
-        "whatHappensNext": "Your Android metrics stay well below Google's 1.09% crash rate and 0.47% ANR thresholds, maximizing search visibility.",
+        "whatHappensNext": "Your iOS performance metrics remain well within Apple tolerances, ensuring fluid 120 FPS interaction.",
         "videoUrl": {
-          "title": "Android Vitals & ANR",
+          "title": "Xcode Metrics & Diagnostics",
           "url": "https://www.youtube.com/watch?v=vj3Y8L5HLdg"
         }
       },
@@ -2055,7 +2052,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Cold Launch",
         "shortDescription": "Optimize startup speed so users aren't staring at a blank screen.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Users abandon slow-loading apps. iOS will terminate an app if it takes too long to launch, and users perceive anything over 2 seconds as sluggish.",
         "implementationSteps": [
@@ -2063,7 +2060,7 @@ export const PHASES_DATA: Phase[] = [
           "Delay initializing non-essential third-party analytics or ad tools until AFTER the first screen is visible.",
           "Load initial screen data efficiently so users see content immediately."
         ],
-        "agentPrompt": "You are the autonomous mobile startup performance engineer. Do NOT ask the user to tune startup performance—optimize our application cold launch sequence autonomously to render in under 2 seconds.\n\nTASK & OBJECTIVE:\nOptimize our application's cold launch sequence to achieve fully interactive screen rendering in under 2.0 seconds on physical mobile devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `index.html`, `main.tsx`, initial imports, bundle chunks, and third-party SDK initializations.\n2. IMPLEMENTATION:\n   - Defer initialization of non-essential SDKs (analytics, error reporting, marketing tools) until after the first screen is rendered and interactive (`requestIdleCallback` or post-mount).\n   - Use dynamic `import()` code-splitting for secondary screens, modals, and heavy libraries to reduce initial JavaScript bundle size.\n   - Pre-cache critical CSS and fonts to prevent layout shift (CLS) during boot.\n   - Measure startup timing using `performance.mark()` and ensure time-to-interactive (TTI) stays strictly under 2.0 seconds.\n3. STORE COMPLIANCE: Apple and Android watchdogs automatically kill apps that take too long to start up, triggering immediate launch crashes.\n4. VERIFICATION: Test launch speed in production build. Confirm instantaneous transition from splash to dashboard.",
+        "agentPrompt": "You are the autonomous mobile startup performance engineer. Do NOT ask the user to tune startup performance—optimize our application cold launch sequence autonomously to render in under 2 seconds.\n\nTASK & OBJECTIVE:\nOptimize our application's cold launch sequence to achieve fully interactive screen rendering in under 2.0 seconds on physical mobile devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `index.html`, `main.tsx`, initial imports, bundle chunks, and third-party SDK initializations.\n2. IMPLEMENTATION:\n   - Defer initialization of non-essential SDKs (analytics, error reporting, marketing tools) until after the first screen is rendered and interactive (`requestIdleCallback` or post-mount).\n   - Use dynamic `import()` code-splitting for secondary screens, modals, and heavy libraries to reduce initial JavaScript bundle size.\n   - Pre-cache critical CSS and fonts to prevent layout shift (CLS) during boot.\n   - Measure startup timing using `performance.mark()` and ensure time-to-interactive (TTI) stays strictly under 2.0 seconds.\n3. STORE COMPLIANCE: Apple and iOS watchdogs automatically kill apps that take too long to start up, triggering immediate launch crashes.\n4. VERIFICATION: Test launch speed in production build. Confirm instantaneous transition from splash to dashboard.",
         "commonRejectionTraps": [
           "Initializing 10 different third-party SDKs at the exact same moment on launch, stalling startup.",
           "Executing heavy synchronous database migrations or blocking network requests on the main UI thread during cold start, exceeding the 2-second launch budget.",
@@ -2085,7 +2082,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Crash Reporting",
         "shortDescription": "Add a crash reporting tool so you can see the exact line number of any bug.",
         "category": "cicd",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Without crash reporting, you have no idea why an app crashed on a user's phone. Proper crash reporting shows you the exact screen, phone model, and code line that caused the issue.",
         "implementationSteps": [
@@ -2115,7 +2112,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Network Throttling",
         "shortDescription": "Prevent app hangs, infinite loaders, and unhandled white screens on slow cellular connections.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Apple App Review and real users test on cellular data with high ping and packet loss. If your app hangs indefinitely on slow requests or throws unhandled white screens, it will be rejected under Guideline 2.1.",
         "implementationSteps": [
@@ -2123,7 +2120,7 @@ export const PHASES_DATA: Phase[] = [
           "Set strict 15-second request timeouts with user-friendly retry banners.",
           "Cache recent GET responses so slow connections render stale data immediately rather than an empty screen."
         ],
-        "agentPrompt": "You are the autonomous mobile network reliability engineer. Do NOT ask the user to test slow networks—implement graceful network degradation, timeouts, and offline banners autonomously.\n\nTASK & OBJECTIVE:\nHarden all application data fetching and mutations against high latency, packet loss, and flaky mobile connections (3G/Edge simulation), ensuring the UI never hangs indefinitely.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect fetch utilities, state loaders, and asynchronous action dispatchers.\n2. IMPLEMENTATION:\n   - Implement an explicit timeout on all network requests (e.g., abort controller timeout after 10 seconds) so queries fail fast rather than hanging indefinitely.\n   - When a network request times out or fails due to poor connectivity, display a non-intrusive floating toast/banner with a prominent \"Retry\" button.\n   - Ensure the UI gracefully renders existing cached data while alerting the user of connectivity issues without destroying visible content.\n   - Prevent blocking the main thread or disabling navigation while background network queries are in flight.\n3. STORE COMPLIANCE: Apple and Google reviewers intentionally test apps behind simulated throttled networks and NAT64 IPv6-only environments; unhandled network hangs cause instant review failure.\n4. VERIFICATION: Test with artificial latency and dropped packets in dev tools. Confirm timeouts trigger friendly retry alerts and cached data persists.",
+        "agentPrompt": "You are the autonomous mobile network reliability engineer. Do NOT ask the user to test slow networks—implement graceful network degradation, timeouts, and offline banners autonomously.\n\nTASK & OBJECTIVE:\nHarden all application data fetching and mutations against high latency, packet loss, and flaky mobile connections (3G/Edge simulation), ensuring the UI never hangs indefinitely.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect fetch utilities, state loaders, and asynchronous action dispatchers.\n2. IMPLEMENTATION:\n   - Implement an explicit timeout on all network requests (e.g., abort controller timeout after 10 seconds) so queries fail fast rather than hanging indefinitely.\n   - When a network request times out or fails due to poor connectivity, display a non-intrusive floating toast/banner with a prominent \"Retry\" button.\n   - Ensure the UI gracefully renders existing cached data while alerting the user of connectivity issues without destroying visible content.\n   - Prevent blocking the main thread or disabling navigation while background network queries are in flight.\n3. STORE COMPLIANCE: Apple and Apple reviewers intentionally test apps behind simulated throttled networks and NAT64 IPv6-only environments; unhandled network hangs cause instant review failure.\n4. VERIFICATION: Test with artificial latency and dropped packets in dev tools. Confirm timeouts trigger friendly retry alerts and cached data persists.",
         "commonRejectionTraps": [
           "App stalling on an infinite spinner when a backend request takes longer than 15 seconds during Apple review.",
           "App UI freezing or locking up when requests take longer than 5 seconds under slow 3G cellular connections instead of gracefully showing skeleton placeholders.",
@@ -2141,7 +2138,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Bundle Size",
         "shortDescription": "Keep over-the-air binary download under Apple's 200MB cellular limit with WebP compression.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Apps over 200MB cannot be downloaded over cellular networks without explicit user confirmation on iOS. Bloated bundles directly harm app download conversion rates by up to 30%.",
         "implementationSteps": [
@@ -2149,14 +2146,14 @@ export const PHASES_DATA: Phase[] = [
           "Enable tree-shaking, dynamic code-splitting, and minification in your bundler config.",
           "Run Xcode Archive analysis to verify the uncompressed universal binary size is well under 100MB."
         ],
-        "agentPrompt": "You are the autonomous mobile performance and bundle optimization engineer. Do NOT ask the user to analyze bundles—audit and compress application assets and JavaScript chunks autonomously.\n\nTASK & OBJECTIVE:\nAnalyze our production build bundle, optimize code-splitting, tree-shake unused dependencies, and compress all image assets to achieve the fastest possible download times on mobile networks.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `vite.config.ts`, `package.json`, and the `public/` and `src/assets/` asset folders.\n2. IMPLEMENTATION:\n   - Configure dynamic imports (`React.lazy` / `import()`) in routing to split secondary routes, modals, and heavy utilities into on-demand chunks.\n   - Audit icon and utility libraries: ensure selective named imports are used (e.g. importing individual icons from `lucide-react`) to enable full tree-shaking and eliminate unused icon bundles.\n   - Compress all PNG/JPEG images into modern WebP format or optimized SVGs, ensuring no single image asset exceeds 200KB.\n   - Configure build minification (Terser / esbuild) with `drop_console: true` in production release builds.\n3. STORE COMPLIANCE: Keeping the initial cellular over-the-air download package compact dramatically improves conversion rates on App Store and Google Play listings.\n4. VERIFICATION: Run `npm run build`. Verify chunk sizes and confirm that the primary bundle stays well within optimal performance thresholds.",
+        "agentPrompt": "You are the autonomous mobile performance and bundle optimization engineer. Do NOT ask the user to analyze bundles—audit and compress application assets and JavaScript chunks autonomously.\n\nTASK & OBJECTIVE:\nAnalyze our production build bundle, optimize code-splitting, tree-shake unused dependencies, and compress all image assets to achieve the fastest possible download times on mobile networks.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `vite.config.ts`, `package.json`, and the `public/` and `src/assets/` asset folders.\n2. IMPLEMENTATION:\n   - Configure dynamic imports (`React.lazy` / `import()`) in routing to split secondary routes, modals, and heavy utilities into on-demand chunks.\n   - Audit icon and utility libraries: ensure selective named imports are used (e.g. importing individual icons from `lucide-react`) to enable full tree-shaking and eliminate unused icon bundles.\n   - Compress all PNG/JPEG images into modern WebP format or optimized SVGs, ensuring no single image asset exceeds 200KB.\n   - Configure build minification (Terser / esbuild) with `drop_console: true` in production release builds.\n3. STORE COMPLIANCE: Keeping the initial cellular over-the-air download package compact dramatically improves conversion rates on Apple App Store listings.\n4. VERIFICATION: Run `npm run build`. Verify chunk sizes and confirm that the primary bundle stays well within optimal performance thresholds.",
         "commonRejectionTraps": [
           "Accidentally bundling raw test video assets or uncompressed 4K images into the application package.",
           "Shipping uncompressed video backgrounds or raw PNG assets that push initial cellular download sizes beyond store Wi-Fi download limits.",
           "Uploading uncompressed image assets and duplicate fonts resulting in bloated download sizes that exceed cellular download limits."
         ],
         "verificationQuestions": [
-          "Is your final production IPA/AAB package download size under 100MB?",
+          "Is your final production IPA package download size under 100MB?",
           "Are all non-vector static images compressed using WebP or modern image formats?"
         ],
         "whatHappensNext": "Download sizes stay compact and well below cellular data limits, maximizing install conversion rates from store listings."
@@ -2177,23 +2174,23 @@ export const PHASES_DATA: Phase[] = [
         "title": "Store Title,",
         "shortDescription": "Follow character limits and avoid forbidden promotional words like \"Free\" or \"#1 App\".",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "Store Listing Metadata Policy",
           "url": "https://developer.apple.com/app-store/review/guidelines/#accurate-metadata"
         },
-        "whyItMatters": "Using prohibited claims (like \"Best App 2026\", \"Free Download\", or mentioning \"Android\" on the Apple App Store) causes instant metadata rejection.",
+        "whyItMatters": "Using prohibited claims (like \"Best App 2026\", \"Free Download\", or mentioning \"iOS\" on the Apple App Store) causes instant metadata rejection.",
         "implementationSteps": [
           "App Store: Name (up to 30 chars), Subtitle (up to 30 chars), Keywords (up to 100 chars comma-separated with NO spaces).",
-          "Google Play: App Title (up to 30 chars), Short Description (up to 80 chars), Full Description (up to 4000 chars).",
-          "Never mention competitor platforms (no \"Android\" on Apple, no \"iPhone\" on Google).",
+          "App Store: App Title (up to 30 chars), Short Description (up to 80 chars), Full Description (up to 4000 chars).",
+          "Never mention competitor platforms (no \"iOS\" on Apple, no \"iPhone\" on Apple).",
           "Never put pricing claims in titles (no \"Free\", \"Sale\", or \"Discount\")."
         ],
-        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to write marketing copy—generate a complete, store-compliant metadata package autonomously.\n\nTASK & OBJECTIVE:\nGenerate a high-converting, fully store-compliant metadata package for Apple App Store and Google Play listings, with zero use of forbidden promotional buzzwords.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our application features, unique selling points, and target user problems.\n2. IMPLEMENTATION:\n   - App Title: under 30 characters, clean, descriptive, and memorable.\n   - Subtitle: under 30 characters, highlighting the core benefit.\n   - Keyword Field: exactly 100 characters of high-relevance, comma-separated keywords without spaces.\n   - Description: formatted with structured paragraphs, feature bullet points, and social proof.\n   - Ensure ZERO use of prohibited promotional claims like \"Free\", \"Best App\", \"#1\", or competitor trademark names.\n   - Save the complete metadata package to `docs/app-store-metadata.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guideline 2.3 and Google Play metadata policy reject submissions containing price references, superlative claims (\"#1\"), or spammy keyword stuffing.\n4. VERIFICATION: Verify character counts of title (<=30), subtitle (<=30), and keyword field (<=100).",
+        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to write marketing copy—generate a complete, store-compliant metadata package autonomously.\n\nTASK & OBJECTIVE:\nGenerate a high-converting, fully store-compliant metadata package for Apple App Store listings, with zero use of forbidden promotional buzzwords.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our application features, unique selling points, and target user problems.\n2. IMPLEMENTATION:\n   - App Title: under 30 characters, clean, descriptive, and memorable.\n   - Subtitle: under 30 characters, highlighting the core benefit.\n   - Keyword Field: exactly 100 characters of high-relevance, comma-separated keywords without spaces.\n   - Description: formatted with structured paragraphs, feature bullet points, and social proof.\n   - Ensure ZERO use of prohibited promotional claims like \"Free\", \"Best App\", \"#1\", or competitor trademark names.\n   - Save the complete metadata package to `docs/app-store-metadata.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guideline 2.3 and App Store metadata policy reject submissions containing price references, superlative claims (\"#1\"), or spammy keyword stuffing.\n4. VERIFICATION: Verify character counts of title (<=30), subtitle (<=30), and keyword field (<=100).",
         "commonRejectionTraps": [
           "Putting \"Free\" or price claims in your app title on either store.",
-          "Writing \"Also available on Android\" in your Apple App Store description.",
+          "Writing \"Also available on iOS\" in your Apple App Store description.",
           "Including competitor brand names, pricing claims ('Free App'), or vulgar keywords in your store title or subtitle."
         ],
         "verificationQuestions": [
@@ -2210,31 +2207,31 @@ export const PHASES_DATA: Phase[] = [
         "id": "p7-screenshots-video",
         "phaseId": "phase-7",
         "title": "Store Screenshot",
-        "shortDescription": "Create templates with AppLaunchpad, then bulk-reformat with BIRME to exact Apple (1320x2868, 2064x2752) and Google (1080x2400) resolutions.",
+        "shortDescription": "Create templates with AppLaunchpad, then bulk-reformat with BIRME to exact Apple (1320x2868, 2064x2752) and Apple (1080x2400) resolutions.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "App Store Connect and Google Play reject any screenshot that differs by even 1 single pixel from required specifications. AppLaunchpad (theapplaunchpad.com) lets you build panoramic screenshot sequences, but exports do not come pre-formatted. You must reformat them with BIRME (birme.net) to guarantee 100% upload compliance.",
+        "whyItMatters": "App Store Connect and App Store reject any screenshot that differs by even 1 single pixel from required specifications. AppLaunchpad (theapplaunchpad.com) lets you build panoramic screenshot sequences, but exports do not come pre-formatted. You must reformat them with BIRME (birme.net) to guarantee 100% upload compliance.",
         "implementationSteps": [
           "Design panoramic screenshot sequences on AppLaunchpad (theapplaunchpad.com) using 3D device frames and bold feature headlines.",
           "Export screenshot cards from AppLaunchpad and drop them directly into BIRME (birme.net) for instant bulk browser-based reformatting.",
           "iPhone Exact Dimensions: Set BIRME to 1320 x 2868 px (6.9\" iPhone 16 Pro Max) or 1290 x 2796 px (6.7\" iPhone 15/14 Pro Max) or 1242 x 2208 px (5.5\").",
           "iPad Exact Dimensions: Set BIRME to 2064 x 2752 px (13\" iPad Pro M4) or 2048 x 2732 px (12.9\" iPad Pro) or 1668 x 2388 px (11\" iPad Pro).",
-          "Google Play Exact Dimensions: Set BIRME to 1080 x 2400 px (or 1080 x 1920 px) for phones, 1200 x 1920 px (7\" tablets), 1600 x 2560 px (10\" tablets), and 1024 x 500 px (Feature Graphic).",
+          "App Store Exact Dimensions: Set BIRME to 1080 x 2400 px (or 1080 x 1920 px) for phones, 1200 x 1920 px (7\" tablets), 1600 x 2560 px (10\" tablets), and 1024 x 500 px (Feature Graphic).",
           "Ensure exported PNG files are 24-bit sRGB with strictly NO transparency / alpha channel (App Store Connect rejects transparent pixels)."
         ],
-        "agentPrompt": "You are the autonomous mobile marketing designer and ASO specialist. Do NOT ask the user to design screenshots—plan and specify high-converting app store screenshot mockups autonomously.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application using AppLaunchpad layout patterns and specify exact BIRME reformatting dimensions for Apple App Store and Google Play.\n\nEXACT RESOLUTION SPECIFICATIONS:\n1. APPLE IPHONE:\n   - 6.9\" Display (iPhone 16 Pro Max): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n   - 6.7\" Display (iPhone 15/14 Pro Max): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n   - 5.5\" Display (iPhone 8 Plus): 1242 x 2208 px (Portrait) / 2208 x 1242 px (Landscape)\n2. APPLE IPAD:\n   - 13\" iPad Pro (M4): 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n   - 12.9\" iPad Pro (6th gen): 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n   - 11\" iPad Pro: 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n3. GOOGLE PLAY:\n   - Phone: 1080 x 2400 px (Portrait) or 1080 x 1920 px (Portrait)\n   - 7\" Tablet: 1200 x 1920 px (Portrait)\n   - 10\" Tablet: 1600 x 2560 px (Portrait)\n   - Feature Graphic: 1024 x 500 px (JPEG or 24-bit PNG, NO alpha)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD:\n   - Card 1: Hook headline with hero product visual.\n   - Card 2: Core interactive workflow solving primary problem.\n   - Card 3: Key differentiator (speed, offline-first, security).\n   - Card 4: Analytics, progress tracking, or detail sheets.\n   - Card 5: Social proof, dark mode, or privacy reassurance.\n2. TOOLCHAIN INTEGRATION: Plan templates on AppLaunchpad (theapplaunchpad.com) and batch-reformat exports via BIRME (birme.net).\n3. STORE COMPLIANCE: Apple Guideline 2.3 strictly requires screenshots to display actual in-app footage rather than generic lifestyle advertisements.\n4. VERIFICATION: Ensure all files are 24-bit RGB with zero alpha channel to avoid ITMS rejection.",
+        "agentPrompt": "You are the autonomous mobile marketing designer and ASO specialist. Do NOT ask the user to design screenshots—plan and specify high-converting app store screenshot mockups autonomously.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application using AppLaunchpad layout patterns and specify exact BIRME reformatting dimensions for Apple App Store.\n\nEXACT RESOLUTION SPECIFICATIONS:\n1. APPLE IPHONE:\n   - 6.9\" Display (iPhone 16 Pro Max): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n   - 6.7\" Display (iPhone 15/14 Pro Max): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n   - 5.5\" Display (iPhone 8 Plus): 1242 x 2208 px (Portrait) / 2208 x 1242 px (Landscape)\n2. APPLE IPAD:\n   - 13\" iPad Pro (M4): 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n   - 12.9\" iPad Pro (6th gen): 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n   - 11\" iPad Pro: 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD:\n   - Card 1: Hook headline with hero product visual.\n   - Card 2: Core interactive workflow solving primary problem.\n   - Card 3: Key differentiator (speed, offline-first, security).\n   - Card 4: Analytics, progress tracking, or detail sheets.\n   - Card 5: Social proof, dark mode, or privacy reassurance.\n2. TOOLCHAIN INTEGRATION: Plan templates on AppLaunchpad (theapplaunchpad.com) and batch-reformat exports via BIRME (birme.net).\n3. STORE COMPLIANCE: Apple Guideline 2.3 strictly requires screenshots to display actual in-app footage rather than generic lifestyle advertisements.\n4. VERIFICATION: Ensure all files are 24-bit RGB with zero alpha channel to avoid ITMS rejection.",
         "commonRejectionTraps": [
           "Uploading AppLaunchpad exports directly without reformatting via BIRME—App Store Connect automatically rejects invalid pixel dimensions with ITMS errors.",
           "Uploading screenshots with transparency (alpha channel)—App Store Connect rejects with error ITMS-90717.",
-          "Showing an Android phone mockup frame in an Apple App Store screenshot, or an iPhone mockup on Google Play."
+          "Showing an iOS phone mockup frame in an Apple App Store screenshot, or an iPhone mockup on App Store."
         ],
         "verificationQuestions": [
-          "Have you reformatted all exported screenshots in BIRME (birme.net) to match Apple and Google's exact pixel dimensions?",
+          "Have you reformatted all exported screenshots in BIRME (birme.net) to match Apple and Apple's exact pixel dimensions?",
           "Are all required screenshot sizes exported at 24-bit sRGB with zero transparency/alpha channels?",
           "Do your screenshots showcase real, working app features rather than generic promotional art?"
         ],
-        "whatHappensNext": "Your store listing displays pixel-perfect screenshot mockups built with AppLaunchpad and formatted with BIRME, meeting all App Store Connect and Google Play upload requirements on the first try.",
+        "whatHappensNext": "Your store listing displays pixel-perfect screenshot mockups built with AppLaunchpad and formatted with BIRME, meeting all App Store Connect and App Store upload requirements on the first try.",
         "directLink": {
           "label": "AppLaunchpad - Screenshot Builder",
           "url": "https://theapplaunchpad.com/"
@@ -2250,7 +2247,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "App Reviewer",
         "shortDescription": "Give the reviewer an active demo account with pre-filled sample data and two-factor bypassed.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
           "name": "App Completeness Review Guidelines",
@@ -2262,7 +2259,7 @@ export const PHASES_DATA: Phase[] = [
           "Pre-fill the demo account with realistic sample items, saved projects, or profile info so they never see a blank screen.",
           "In App Store Connect review notes, provide the username, password, and brief instructions on how to test core features."
         ],
-        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to configure test accounts—configure dedicated app review credentials and sample data autonomously.\n\nTASK & OBJECTIVE:\nConfigure a dedicated test account and realistic sample data for Apple and Google app reviewers, eliminating all onboarding friction and empty states during store review.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication logic, demo data fixtures, and account validation services.\n2. IMPLEMENTATION:\n   - Create a dedicated demo reviewer account with two-factor authentication (2FA) disabled.\n   - Pre-populate the demo account with rich, realistic sample records (e.g. sample tasks, completed items, activity history) so the reviewer never lands on an empty screen.\n   - If the app includes subscriptions, grant full active entitlement status to the reviewer demo account.\n   - Generate exact \"App Review Notes\" documenting the login credentials, test phone number / SMS code, and step-by-step instructions on how to test every feature.\n3. STORE COMPLIANCE: Apple Guideline 2.1 mandates providing functional review credentials; missing or 2FA-blocked reviewer logins trigger immediate review rejection.\n4. VERIFICATION: Verify the demo account logs in seamlessly and displays populated sample data with zero errors.",
+        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to configure test accounts—configure dedicated app review credentials and sample data autonomously.\n\nTASK & OBJECTIVE:\nConfigure a dedicated test account and realistic sample data for Apple and Apple app reviewers, eliminating all onboarding friction and empty states during store review.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication logic, demo data fixtures, and account validation services.\n2. IMPLEMENTATION:\n   - Create a dedicated demo reviewer account with two-factor authentication (2FA) disabled.\n   - Pre-populate the demo account with rich, realistic sample records (e.g. sample tasks, completed items, activity history) so the reviewer never lands on an empty screen.\n   - If the app includes subscriptions, grant full active entitlement status to the reviewer demo account.\n   - Generate exact \"App Review Notes\" documenting the login credentials, test phone number / SMS code, and step-by-step instructions on how to test every feature.\n3. STORE COMPLIANCE: Apple Guideline 2.1 mandates providing functional review credentials; missing or 2FA-blocked reviewer logins trigger immediate review rejection.\n4. VERIFICATION: Verify the demo account logs in seamlessly and displays populated sample data with zero errors.",
         "commonRejectionTraps": [
           "The reviewer attempts to log in and gets blocked by an SMS code sent to a phone number they don't have.",
           "Opening to a blank empty screen that makes the reviewer think the app is broken.",
@@ -2272,7 +2269,7 @@ export const PHASES_DATA: Phase[] = [
           "Have you tested logging into the app using the exact demo credentials you provided?",
           "Is the demo account pre-populated with realistic sample content?"
         ],
-        "whatHappensNext": "App Store and Google Play reviewers log straight into a pre-populated demo account, accelerating review approval.",
+        "whatHappensNext": "Apple App Store reviewers log straight into a pre-populated demo account, accelerating review approval.",
         "videoUrl": {
           "title": "Review Demo Account",
           "url": "https://www.youtube.com/watch?v=85c2oFcWdq0"
@@ -2284,15 +2281,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "Store Age",
         "shortDescription": "Declare any mature themes, gambling, or unrestricted web browsing accurately.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "If your app allows unrestricted web browsing to any website or contains user discussions, it must receive an appropriate age rating. Inaccuracies result in review rejection.",
         "implementationSteps": [
-          "Answer the questionnaire truthfully in App Store Connect and Google Play Console.",
+          "Answer the questionnaire truthfully in App Store Connect and App Store Connect.",
           "Declare if your app includes simulated gambling, mature humor, or user interactions.",
           "Unrestricted Web Browsing: If users can type any URL into an in-app browser, rate the app 17+."
         ],
-        "agentPrompt": "You are the autonomous store compliance specialist. Do NOT ask the user to research questionnaires—audit content and generate accurate age rating questionnaire responses autonomously.\n\nTASK & OBJECTIVE:\nAudit all application features against the International Age Rating Coalition (IARC) and Apple age rating questionnaires, generating exact, truthful declarations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all app content, media, user communication features, and data access.\n2. IMPLEMENTATION:\n   - Audit questions for: violence, adult content, profanity, gambling/simulated gambling, user-generated content, location sharing, and unrestricted internet access.\n   - If users can share content, declare user-to-user interaction truthfully.\n   - Generate a comprehensive age rating declaration document (`docs/age-rating-guide.md`) detailing the exact answers to select in App Store Connect and Google Play Console to receive the appropriate age badge (e.g. 4+, 9+, 12+).\n3. STORE COMPLIANCE: Mismatches between declared age ratings and actual app content trigger immediate review rejection or post-launch removal.\n4. VERIFICATION: Verify that all declared questionnaire responses align strictly with the app's real functionality.",
+        "agentPrompt": "You are the autonomous store compliance specialist. Do NOT ask the user to research questionnaires—audit content and generate accurate age rating questionnaire responses autonomously.\n\nTASK & OBJECTIVE:\nAudit all application features against the International Age Rating Coalition (IARC) and Apple age rating questionnaires, generating exact, truthful declarations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all app content, media, user communication features, and data access.\n2. IMPLEMENTATION:\n   - Audit questions for: violence, adult content, profanity, gambling/simulated gambling, user-generated content, location sharing, and unrestricted internet access.\n   - If users can share content, declare user-to-user interaction truthfully.\n   - Generate a comprehensive age rating declaration document (`docs/age-rating-guide.md`) detailing the exact answers to select in App Store Connect and App Store Connect to receive the appropriate age badge (e.g. 4+, 9+, 12+).\n3. STORE COMPLIANCE: Mismatches between declared age ratings and actual app content trigger immediate review rejection or post-launch removal.\n4. VERIFICATION: Verify that all declared questionnaire responses align strictly with the app's real functionality.",
         "commonRejectionTraps": [
           "Rating an app 4+ when it includes an open in-app browser that can load mature web content.",
           "Marking \"No\" to frequent or intense mature themes when the app features unrestricted user chat or external web browsing, causing review rejection.",
@@ -2313,7 +2310,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "ASO Keywords",
         "shortDescription": "Optimize the 170-character instant-edit promo text and 100-character keyword field for discovery.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Promotional text (up to 170 characters) is the only field in App Store Connect that you can edit at ANY time without submitting a new binary build. Keywords determine search discovery.",
         "implementationSteps": [
@@ -2321,7 +2318,7 @@ export const PHASES_DATA: Phase[] = [
           "Build a 100-character keyword field using comma-separated single words without spaces (e.g. 'fitness,workout,tracker,timer').",
           "Do not repeat words already in your app title or subtitle in the keyword field."
         ],
-        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to draft marketing copy—craft high-converting promotional text and keyword strings autonomously.\n\nTASK & OBJECTIVE:\nGenerate high-converting App Store promotional text and an optimized 100-character keyword string to maximize search discoverability on Apple App Store and Google Play.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE & FEATURE AUDIT: Review our application's core problem-solving features, user benefits, and target market.\n2. IMPLEMENTATION:\n   - Promotional Text (Apple): craft a 170-character marketing hook highlighting the latest update, unique value proposition, or seasonal launch benefit. (Promotional text can be updated anytime without submitting a new binary build).\n   - Keyword String (Apple): craft an exact 100-character keyword field containing high-relevance, single-word search terms separated strictly by commas with ZERO spaces (e.g. `habit,tracker,routine,planner,checklist,goals,focus,daily`). Do not repeat words already in the app title or category name.\n   - Google Play Short Description: craft an engaging, 80-character summary that compels users to tap \"Install\".\n   - Save the complete ASO text assets to `docs/app-store-aso-text.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guideline 2.3 prohibits keyword stuffing, using trademarked competitor names, or including spaces in the keyword string (spaces consume valuable character budget).\n4. VERIFICATION: Validate that the keyword string is <= 100 characters, promotional text is <= 170 characters, and short description is <= 80 characters.",
+        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to draft marketing copy—craft high-converting promotional text and keyword strings autonomously.\n\nTASK & OBJECTIVE:\nGenerate high-converting App Store promotional text and an optimized 100-character keyword string to maximize search discoverability on Apple App Store.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE & FEATURE AUDIT: Review our application's core problem-solving features, user benefits, and target market.\n2. IMPLEMENTATION:\n   - Promotional Text (Apple): craft a 170-character marketing hook highlighting the latest update, unique value proposition, or seasonal launch benefit. (Promotional text can be updated anytime without submitting a new binary build).\n   - Keyword String (Apple): craft an exact 100-character keyword field containing high-relevance, single-word search terms separated strictly by commas with ZERO spaces (e.g. `habit,tracker,routine,planner,checklist,goals,focus,daily`). Do not repeat words already in the app title or category name.\n   - App Store Short Description: craft an engaging, 80-character summary that compels users to tap \"Install\".\n   - Save the complete ASO text assets to `docs/app-store-aso-text.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guideline 2.3 prohibits keyword stuffing, using trademarked competitor names, or including spaces in the keyword string (spaces consume valuable character budget).\n4. VERIFICATION: Validate that the keyword string is <= 100 characters, promotional text is <= 170 characters, and short description is <= 80 characters.",
         "commonRejectionTraps": [
           "Using competitor brand names or trademarked terms in the keyword field, causing metadata rejection under Guideline 2.3.7.",
           "Stuffing competitor brand names or trademarked search queries into promotional text or subtitle fields, violating store metadata policies.",
@@ -2331,7 +2328,7 @@ export const PHASES_DATA: Phase[] = [
           "Is the promotional text under 170 characters and punchy?",
           "Is the keyword field comma-separated without unnecessary spaces, punctuation, or duplicate title words?"
         ],
-        "whatHappensNext": "High-converting keywords and promotional copy optimize your organic App Store and Google Play search discoverability."
+        "whatHappensNext": "High-converting keywords and promotional copy optimize your organic Apple App Store search discoverability."
       },
       {
         "id": "p7-privacy-nutrition-labels",
@@ -2339,7 +2336,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Privacy Nutrition",
         "shortDescription": "Disclose all data types collected by your app code and third-party SDKs in App Store Connect.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Every data type collected by your app OR third-party SDKs (Crashlytics, Mixpanel, Stripe) must be disclosed on App Store Connect. Discrepancies between your app's actual network traffic and your disclosures result in immediate submission rejection.",
         "implementationSteps": [
@@ -2366,7 +2363,7 @@ export const PHASES_DATA: Phase[] = [
     "number": 10,
     "title": "Signing, Beta & CI/CD",
     "shortTitle": "Signing & Testing",
-    "description": "Set up your official developer certificates, create your Android signing key, and test with beta users on TestFlight and Google Play.",
+    "description": "Set up your official developer certificates, create your iOS signing key, and test with beta users on TestFlight and App Store.",
     "iconName": "Wrench",
     "items": [
       {
@@ -2401,68 +2398,71 @@ export const PHASES_DATA: Phase[] = [
         }
       },
       {
-        "id": "p8-android-keystore",
+        "id": "p8-apple-distribution-cert",
         "phaseId": "phase-8",
-        "title": "Android Release",
-        "shortDescription": "Generate your private upload keystore and enroll in Google Play App Signing.",
+        "title": "Distribution Signing",
+        "shortDescription": "Configure Apple Distribution Certificate, App Store Provisioning, and Cloud Signing.",
         "category": "cicd",
-        "platform": "android",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "If you lose your Android private signing key and did not enroll in Google Play App Signing, you can never update your app again and must publish an entirely new listing.",
+        "storeGuideline": {
+          "name": "Apple Code Signing & Certificates",
+          "url": "https://developer.apple.com/help/account/manage-certificates/about-certificates"
+        },
+        "whyItMatters": "Valid Apple Distribution certificates and provisioning profiles are required to sign release archives for App Store submission.",
         "implementationSteps": [
-          "Generate an upload keystore file using the `keytool` command.",
-          "Store your keystore file and passwords in an encrypted password manager (never commit passwords to GitHub).",
-          "Enroll in Google Play App Signing so Google safely manages your master signing key."
+          "In Xcode Settings > Accounts, ensure your Apple Developer account is signed in with valid certificates.",
+          "Set Signing & Capabilities to Automatically manage signing or select your active Apple Distribution Profile.",
+          "Verify that the Bundle Identifier matches the App ID registered in App Store Connect."
         ],
-        "agentPrompt": "You are the autonomous Android DevOps engineer. Do NOT ask the user to run keytool—generate and configure a secure Android release upload keystore autonomously.\n\nTASK & OBJECTIVE:\nGenerate a secure Android release upload keystore using `keytool` and configure Gradle to sign release builds securely without checking secrets into version control.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `android/app/build.gradle`, `.gitignore`, and project environment configs.\n2. IMPLEMENTATION:\n   - Generate a 2048-bit RSA release keystore command with 25-year validity (`-validity 10000`).\n   - Configure `android/app/build.gradle` with a `signingConfigs.release` block that reads keystore path, alias, and passwords securely from local environment variables or an untracked `key.properties` file.\n   - Add `*.keystore`, `*.jks`, and `key.properties` to `.gitignore` so secrets are never committed to public repositories.\n   - Document the secure backup protocol for the upload key (losing the key prevents publishing updates on Google Play).\n3. STORE COMPLIANCE: Android App Bundles (.aab) uploaded to Google Play Console must be signed with a valid release keystore.\n4. VERIFICATION: Verify that release build signing configuration reads environment variables correctly without syntax errors.",
+        "agentPrompt": "You are the autonomous Apple code signing and release engineer configuring our production distribution profiles.",
         "commonRejectionTraps": [
-          "Accidentally committing keystore passwords into a public GitHub repository.",
-          "Losing your keystore file without having a backup.",
-          "Losing the release keystore password or private key, permanently locking you out of updating the app on Google Play."
+          "Expired Apple Distribution certificates or invalid team provisioning profiles.",
+          "Mismatched bundle identifiers between Xcode target and App Store Connect."
         ],
         "verificationQuestions": [
-          "Is your upload keystore file and password backed up in a secure vault?",
-          "Is Google Play App Signing turned on in the Google Play Console?"
+          "Is your Apple Distribution certificate active in Xcode?",
+          "Does your target build cleanly with Automatic Provisioning enabled?"
         ],
-        "whatHappensNext": "A secure release keystore digitally signs production Android App Bundles (AABs) with permanent automated backup.",
+        "whatHappensNext": "Your release archive is digitally signed with an active Apple Distribution certificate, ready for store export.",
         "videoUrl": {
-          "title": "Android Keystore Sign",
+          "title": "Apple Code Signing Guide",
           "url": "https://www.youtube.com/watch?v=s7_oD4SkzU0"
         }
       },
       {
-        "id": "p8-google-20-testers",
+        "id": "p8-storekit-iap-readiness",
         "phaseId": "phase-8",
-        "title": "Google Play",
-        "shortDescription": "Fulfill Google's mandatory closed test requirement for personal developer accounts.",
+        "title": "StoreKit & IAP",
+        "shortDescription": "Configure in-app purchases, verify Paid Apps Agreement, and validate Restore Purchases.",
         "category": "store",
-        "platform": "android",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
-          "name": "Google Play Closed Testing",
-          "url": "https://support.google.com/googleplay/android-developer/answer/14151465"
+          "name": "In-App Purchase (Guideline 3.1.1 & 2.1b)",
+          "url": "https://developer.apple.com/app-store/in-app-purchases/"
         },
-        "whyItMatters": "Personal Google Play accounts created after November 13, 2023 CANNOT release to the public until at least 20 testers remain opted-in for 14 continuous days.",
+        "whyItMatters": "Apple Review checks in-app purchases in the sandbox. If the Paid Apps Agreement is not active, or tapping Unlock displays an error, or there is no distinct Restore Purchases button, the app is rejected.",
         "implementationSteps": [
-          "Publish your build to the \"Closed Testing\" track in Google Play Console.",
-          "Invite at least 20 unique testers using a Google Group or email list.",
-          "Ensure all 20 testers install the app and keep it on their phones for 14 full continuous days.",
-          "Collect tester feedback to answer Google's production readiness questionnaire."
+          "Confirm your Paid Apps Agreement status is Active in App Store Connect > Agreements.",
+          "Verify that product identifiers in App Store Connect match your code exactly.",
+          "Provide a distinct, visible Restore Purchases button that initiates transaction sync.",
+          "Test purchase and restore in the StoreKit sandbox environment with a Sandbox Apple ID."
         ],
-        "agentPrompt": "You are the autonomous Google Play release specialist. Do NOT ask the user to manage beta tracks—configure Google Play's mandatory 20-tester closed testing track autonomously.\n\nTASK & OBJECTIVE:\nConfigure and manage the Google Play closed testing track for new personal developer accounts, meeting the mandatory requirement of 20 testers enrolled for 14 continuous days.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect release build artifacts, versioning, and testing documentation.\n2. IMPLEMENTATION:\n   - Configure the Closed Testing track in Google Play Console with targeted email list or Google Group.\n   - Generate the web opt-in and Android opt-in links for recruited testers.\n   - Prepare a tester engagement kit: clear onboarding instructions, feedback channels (in-app feedback or Google Form), and daily usage prompts to maintain active engagement for 14 continuous days.\n   - Draft the production access questionnaire answers detailing the test feedback received and bug fixes applied during testing.\n3. STORE COMPLIANCE: Mandatory for all personal developer accounts created after November 2023. Google Play will not grant production access without 14 continuous days of testing.\n4. VERIFICATION: Confirm closed testing track configuration and tester engagement documentation are prepared.",
+        "agentPrompt": "You are the autonomous Apple StoreKit 2 and In-App Purchase engineer. Configure StoreKit 2 transaction listeners, sandbox fallback, and restore purchases.",
         "commonRejectionTraps": [
-          "Applying for production before the full 14 days have passed or with fewer than 20 active testers.",
-          "Opening your closed track to fewer than 20 testers or failing to keep them opted in for 14 continuous days before applying for Google Play production access.",
-          "Attempting to apply for Google Play production access before 20 opt-in testers have remained enrolled for 14 continuous days."
+          "Tapping Unlock displays an error alert during review (Guideline 2.1b).",
+          "Missing a distinct, dedicated Restore Purchases button on the paywall (Guideline 3.1.1).",
+          "Pending Paid Apps Agreement in App Store Connect preventing product queries."
         ],
         "verificationQuestions": [
-          "Have at least 20 testers remained opted-in for 14 continuous days?",
-          "Are your responses ready for Google's production access questionnaire?"
+          "Is your Paid Apps Agreement signed and active in App Store Connect?",
+          "Does your paywall have a prominent Restore Purchases button?"
         ],
-        "whatHappensNext": "Your 20 closed beta testers remain engaged for 14 continuous days, unlocking production release permissions in Google Play Console.",
+        "whatHappensNext": "StoreKit 2 in-app purchases and restore flows function flawlessly under Apple Review sandbox conditions.",
         "videoUrl": {
-          "title": "Play 20 Testers Guide",
-          "url": "https://www.youtube.com/watch?v=LugLyL1vmkw"
+          "title": "StoreKit 2 Testing Guide",
+          "url": "https://www.youtube.com/watch?v=SSv--IrWH3c"
         }
       },
       {
@@ -2500,15 +2500,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "Fastlane CI/CD",
         "shortDescription": "Automate compilation, testing, and store uploads using Fastlane or GitHub Actions.",
         "category": "cicd",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Building and uploading manually from a laptop is slow and prone to forgetting steps. Automation ensures every build is compiled cleanly and version numbers increment automatically.",
         "implementationSteps": [
-          "Configure automated build commands for iOS and Android.",
+          "Configure automated build commands for iOS and iPadOS.",
           "Set up automatic build number incrementing so you never accidentally upload duplicate version numbers.",
-          "Use GitHub Actions or local release scripts to upload to TestFlight and Google Play."
+          "Use GitHub Actions or local release scripts to upload to TestFlight and App Store."
         ],
-        "agentPrompt": "You are the autonomous mobile DevOps engineer. Do NOT ask the user to write deployment scripts—implement an automated CI/CD build and upload pipeline autonomously.\n\nTASK & OBJECTIVE:\nImplement an automated continuous integration and deployment pipeline using Fastlane and GitHub Actions to build, test, and upload native bundles autonomously.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project build scripts, dependencies, and deployment workflows.\n2. IMPLEMENTATION:\n   - Create a `fastlane/Fastfile` with automated lanes:\n     - `lane :test`: runs TypeScript checks (`tsc --noEmit`) and unit tests.\n     - `lane :beta`: increments build numbers, builds iOS `.ipa` and Android `.aab`, and uploads directly to TestFlight and Google Play Internal Testing.\n   - Create a `.github/workflows/deploy.yml` workflow file that executes automated lanes on push to the main branch.\n   - Configure secure handling of App Store Connect API keys and Google Play Service Account JSON keys via environment secrets.\n3. STORE COMPLIANCE: Eliminates human error during releases and ensures consistent, reproducible binary builds.\n4. VERIFICATION: Verify Fastlane configuration syntax and ensure build commands execute cleanly.",
+        "agentPrompt": "You are the autonomous mobile DevOps engineer. Do NOT ask the user to write deployment scripts—implement an automated CI/CD build and upload pipeline autonomously.\n\nTASK & OBJECTIVE:\nImplement an automated continuous integration and deployment pipeline using Fastlane and GitHub Actions to build, test, and upload native bundles autonomously.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project build scripts, dependencies, and deployment workflows.\n2. IMPLEMENTATION:\n   - Create a `fastlane/Fastfile` with automated lanes:\n     - `lane :test`: runs TypeScript checks (`tsc --noEmit`) and unit tests.\n     - `lane :beta`: increments build numbers, builds iOS `.ipa` and iOS `.xcarchive`, and uploads directly to TestFlight and App Store Internal Testing.\n   - Create a `.github/workflows/deploy.yml` workflow file that executes automated lanes on push to the main branch.\n   - Configure secure handling of App Store Connect API keys and App Store Service Account JSON keys via environment secrets.\n3. STORE COMPLIANCE: Eliminates human error during releases and ensures consistent, reproducible binary builds.\n4. VERIFICATION: Verify Fastlane configuration syntax and ensure build commands execute cleanly.",
         "commonRejectionTraps": [
           "Trying to upload a build with a version or build number that has already been used.",
           "Storing App Store Connect API keys or signing certificate passwords in plaintext within public CI/CD repository workflows.",
@@ -2518,7 +2518,7 @@ export const PHASES_DATA: Phase[] = [
           "Does your build script automatically increment version numbers?",
           "Can you build and upload to test tracks with a single command?"
         ],
-        "whatHappensNext": "Single-command or CI/CD pipelines automate testing, building, and uploading release binaries directly to Apple and Google.",
+        "whatHappensNext": "Single-command or CI/CD pipelines automate testing, building, and uploading release binaries directly to Apple and Apple.",
         "videoUrl": {
           "title": "Fastlane CI/CD Setup",
           "url": "https://www.youtube.com/watch?v=NCmkL__Mq-I"
@@ -2622,34 +2622,34 @@ export const PHASES_DATA: Phase[] = [
         }
       },
       {
-        "id": "p9-google-play-audit",
+        "id": "p9-app-store-submission-audit",
         "phaseId": "phase-9",
-        "title": "Google Play",
-        "shortDescription": "Verify target Android version, permissions, and policy compliance.",
+        "title": "Store Review Audit",
+        "shortDescription": "Execute a comprehensive pre-submission audit against Apple App Store Review Guidelines.",
         "category": "store",
-        "platform": "android",
+        "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
-          "name": "Google Play Developer Policy",
-          "url": "https://play.google.com/about/developer-content-policy/"
+          "name": "App Store Review Guidelines",
+          "url": "https://developer.apple.com/app-store/review/guidelines/"
         },
-        "whyItMatters": "Google Play uses automated static analyzers that immediately reject builds targeting outdated Android versions or requesting broad permissions without justification.",
+        "whyItMatters": "Conducting a pre-submission review audit against Guidelines 2.1 (Performance), 2.3 (Metadata), 3.1.1 (Payments), and 5.1 (Privacy) prevents delays.",
         "implementationSteps": [
-          "Verify that your app targets modern Android (API 34+).",
-          "If using background foreground services, verify that you provided video proof in your console form.",
-          "Verify that no broad storage permissions are requested if you only need photo picking."
+          "Verify in-app purchases function cleanly in sandbox without error alerts (Guideline 2.1b).",
+          "Verify a distinct Restore Purchases button is clearly visible and initiates restore (Guideline 3.1.1).",
+          "Verify zero references to third-party platforms exist in metadata or binary (Guideline 2.3.10)."
         ],
-        "agentPrompt": "You are the autonomous Google Play policy compliance auditor. Do NOT ask the user to audit policies—execute an exhaustive pre-submission audit against Google Play developer policies autonomously.\n\nTASK & OBJECTIVE:\nExecute an exhaustive pre-submission audit against all Google Play developer policies, verifying technical requirements and store listing declarations autonomously.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect Android manifest, Gradle configurations, SDK versions, and store listing metadata.\n2. IMPLEMENTATION:\n   - Verify Target SDK Version is set to modern Android standards (API 34+).\n   - Verify 64-bit architecture support in release build configurations.\n   - Audit background location permissions: ensure background location is not requested unless strictly justified.\n   - Audit Data Safety declarations against third-party SDK network calls.\n   - Verify in-app account deletion link and public web deletion URL.\n3. STORE COMPLIANCE: Prevents policy strikes, submission rejections, or account suspensions on Google Play.\n4. VERIFICATION: Verify Gradle configurations meet Google Play requirements and that no policy violations exist.",
+        "agentPrompt": "You are the autonomous Apple App Store pre-submission auditor verifying our release readiness against all review guidelines.",
         "commonRejectionTraps": [
-          "Using a background service without providing a video recording proving the service is user-visible.",
-          "Failing to complete mandatory Google Play declaration forms for health, financial, or foreground service permissions before submission.",
-          "Failing to complete Google Play Data Safety declaration forms for third-party analytics libraries."
+          "Tapping Unlock or purchase displays an error message in review sandbox.",
+          "Omitting a prominent Restore Purchases button on paywall screens.",
+          "Mentioning third-party platforms in app UI or metadata."
         ],
         "verificationQuestions": [
-          "Does the app compile against target Android 34 or higher?",
-          "Are all permission justifications filled out in the Play Console?"
+          "Does your paywall have a distinct Restore Purchases button?",
+          "Does purchase test cleanly in sandbox with zero error alerts?"
         ],
-        "whatHappensNext": "Google Play safety declarations and target SDK standards pass automated checks without submission warnings."
+        "whatHappensNext": "Your app strictly satisfies all Apple App Store Review Guidelines for seamless first-pass approval."
       },
       {
         "id": "p9-submission-release-type",
@@ -2657,15 +2657,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "Manual Release",
         "shortDescription": "Select \"Manually release this version\" instead of automatic release to coordinate your launch.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "With automatic release, your app goes live the second the reviewer clicks approve (which could be 3:00 AM on Sunday). Manual release lets you coordinate announcements and marketing.",
         "implementationSteps": [
           "In App Store Connect, set Version Release to \"Manually release this version\".",
-          "In Google Play Console, turn on \"Managed publishing\".",
+          "In App Store Connect, turn on \"Managed publishing\".",
           "Enable a 7-day phased rollout so initial updates roll out to a small percentage of users first."
         ],
-        "agentPrompt": "You are the autonomous mobile release manager. Do NOT ask the user to manage release settings—configure the phased and manual release strategy autonomously.\n\nTASK & OBJECTIVE:\nConfigure the release release strategy in App Store Connect and Google Play Console to \"Manually release this version\" and set up phased rollouts for controlled deployment.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project release configurations and launch deployment documentation.\n2. IMPLEMENTATION:\n   - Configure the version release type in App Store Connect to \"Manually release this version\" (or \"Phased Release over 7 days\").\n   - Configure Google Play Console staged rollout parameters.\n   - Ensure the app does not publish automatically upon review approval, giving our team full control to coordinate marketing campaigns, verify server scalability, and launch during optimal business hours.\n   - Draft the deployment checklist for launch day activation.\n3. STORE COMPLIANCE: Best-practice deployment protocol recommended by Apple and Google release teams.\n4. VERIFICATION: Document manual release procedure and phased release timeline in the release guide.",
+        "agentPrompt": "You are the autonomous mobile release manager. Do NOT ask the user to manage release settings—configure the phased and manual release strategy autonomously.\n\nTASK & OBJECTIVE:\nConfigure the release release strategy in App Store Connect and App Store Connect to \"Manually release this version\" and set up phased rollouts for controlled deployment.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project release configurations and launch deployment documentation.\n2. IMPLEMENTATION:\n   - Configure the version release type in App Store Connect to \"Manually release this version\" (or \"Phased Release over 7 days\").\n   - Configure App Store Connect staged rollout parameters.\n   - Ensure the app does not publish automatically upon review approval, giving our team full control to coordinate marketing campaigns, verify server scalability, and launch during optimal business hours.\n   - Draft the deployment checklist for launch day activation.\n3. STORE COMPLIANCE: Best-practice deployment protocol recommended by Apple and Apple release teams.\n4. VERIFICATION: Document manual release procedure and phased release timeline in the release guide.",
         "commonRejectionTraps": [
           "Releasing to 100% of users immediately, catching an unforeseen server bug that affects all users at once.",
           "Setting automatic release immediately after review approval, causing your app to go live unexpectedly before your backend servers are ready.",
@@ -2683,7 +2683,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Rejection Appeal",
         "shortDescription": "Respond constructively in the Resolution Center with a polite explanation or short demo video.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Getting rejected on your first try is completely normal (over 40% of first submissions are rejected). Responding calmly with a short explanation or video resolves the issue fast.",
         "implementationSteps": [
@@ -2691,7 +2691,7 @@ export const PHASES_DATA: Phase[] = [
           "If the reviewer misunderstood a feature, record a brief, friendly Loom video showing how it works and share the link.",
           "If it was a real bug, fix it, upload a new build number, and politely explain the fix you made."
         ],
-        "agentPrompt": "You are the autonomous App Review communications specialist. Do NOT ask the user to draft appeals—prepare standardized, courteous, and highly effective appeal protocols autonomously.\n\nTASK & OBJECTIVE:\nPrepare standardized, courteous, and highly effective appeal protocols and communication templates for Apple App Review and Google Play appeals in the event of reviewer pushback.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Review common rejection scenarios and prepare structured response frameworks.\n2. IMPLEMENTATION:\n   - Draft courteous, structured appeal templates for Apple App Review and Google Play.\n   - Structure includes: 1) Courteous acknowledgement; 2) Exact technical clarification of how the feature functions; 3) Demonstration video links; 4) Store guideline citations; and 5) Code/documentation references proving compliance.\n   - Document guidelines on when to submit an expedited review request for critical time-sensitive launches or bug fixes.\n3. STORE COMPLIANCE: Prevents confrontational developer replies that prolong review cycles; enables quick resolutions within 24 hours.\n4. VERIFICATION: Ensure appeal response templates are documented and ready for instant use.",
+        "agentPrompt": "You are the autonomous App Review communications specialist. Do NOT ask the user to draft appeals—prepare standardized, courteous, and highly effective appeal protocols autonomously.\n\nTASK & OBJECTIVE:\nPrepare standardized, courteous, and highly effective appeal protocols and communication templates for Apple App Review and App Store appeals in the event of reviewer pushback.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Review common rejection scenarios and prepare structured response frameworks.\n2. IMPLEMENTATION:\n   - Draft courteous, structured appeal templates for Apple App Review and App Store.\n   - Structure includes: 1) Courteous acknowledgement; 2) Exact technical clarification of how the feature functions; 3) Demonstration video links; 4) Store guideline citations; and 5) Code/documentation references proving compliance.\n   - Document guidelines on when to submit an expedited review request for critical time-sensitive launches or bug fixes.\n3. STORE COMPLIANCE: Prevents confrontational developer replies that prolong review cycles; enables quick resolutions within 24 hours.\n4. VERIFICATION: Ensure appeal response templates are documented and ready for instant use.",
         "commonRejectionTraps": [
           "Submitting the exact same unchanged build without answering the reviewer's questions.",
           "Responding aggressively or defensively to App Store reviewers in Resolution Center instead of providing clear clarifying steps and updated video recordings.",
@@ -2713,7 +2713,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Reviewer Demo",
         "shortDescription": "Include an unlisted video link and demo credentials for Apple reviewers in App Store Connect.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "If your app requires special hardware, Bluetooth accessories, or geo-restricted accounts, Apple reviewers will reject under Guideline 2.1 if they cannot immediately use it. A short video walkthrough uploaded to YouTube (unlisted) prevents this.",
         "implementationSteps": [
@@ -2721,7 +2721,7 @@ export const PHASES_DATA: Phase[] = [
           "Upload the video as an unlisted link on YouTube or Vimeo.",
           "Paste the video link into the 'App Review Information > Notes' field in App Store Connect alongside test credentials."
         ],
-        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to write reviewer instructions—create comprehensive App Reviewer Notes and a demonstration walkthrough script autonomously.\n\nTASK & OBJECTIVE:\nDraft comprehensive App Review Information, reviewer credentials, test account instructions, and a video walkthrough demonstration script for Apple and Google app review teams.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication flows, hardware dependencies, permission prompts, and core user actions.\n2. IMPLEMENTATION:\n   - Prepare the \"App Review Information\" notes to paste into App Store Connect and Google Play Console:\n     - Demo Account Username & Password (with 2FA disabled).\n     - Step-by-step instructions guiding the reviewer through the core value path in under 2 minutes.\n     - Clarification on any hardware or external dependencies (Bluetooth, camera, physical accessories) with a link to an unlisted YouTube/Vimeo demonstration video showing the feature on a real physical device.\n     - Direct phone number and email of our release engineer for emergency reviewer questions.\n3. STORE COMPLIANCE: Reviewers who cannot log in or understand hardware features will reject the app under Guideline 2.1 (App Completeness). A clear walkthrough prevents 90%+ of review misunderstandings.\n4. VERIFICATION: Verify that demo account credentials work smoothly and reviewer instructions cover every gated feature.",
+        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to write reviewer instructions—create comprehensive App Reviewer Notes and a demonstration walkthrough script autonomously.\n\nTASK & OBJECTIVE:\nDraft comprehensive App Review Information, reviewer credentials, test account instructions, and a video walkthrough demonstration script for Apple and Apple app review teams.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication flows, hardware dependencies, permission prompts, and core user actions.\n2. IMPLEMENTATION:\n   - Prepare the \"App Review Information\" notes to paste into App Store Connect and App Store Connect:\n     - Demo Account Username & Password (with 2FA disabled).\n     - Step-by-step instructions guiding the reviewer through the core value path in under 2 minutes.\n     - Clarification on any hardware or external dependencies (Bluetooth, camera, physical accessories) with a link to an unlisted YouTube/Vimeo demonstration video showing the feature on a real physical device.\n     - Direct phone number and email of our release engineer for emergency reviewer questions.\n3. STORE COMPLIANCE: Reviewers who cannot log in or understand hardware features will reject the app under Guideline 2.1 (App Completeness). A clear walkthrough prevents 90%+ of review misunderstandings.\n4. VERIFICATION: Verify that demo account credentials work smoothly and reviewer instructions cover every gated feature.",
         "commonRejectionTraps": [
           "Apple reviewer unable to test due to SMS 2FA requiring a real phone number; not providing a universal test bypass code like '000000' leads to rejection.",
           "Submitting an app that requires specialized Bluetooth hardware, GPS geofences, or enterprise credentials without attaching a video demonstration.",
@@ -2743,7 +2743,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Guideline 4.2",
         "shortDescription": "Ensure the app delivers native capabilities and is not rejected as a simple web wrapper.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Guideline 4.2 is the #1 most common Apple rejection rule. Apple specifically rejects apps that are essentially repackaged websites without native capabilities like push notifications, offline support, or haptics.",
         "implementationSteps": [
@@ -2779,11 +2779,11 @@ export const PHASES_DATA: Phase[] = [
         "title": "Production Crash",
         "shortDescription": "Diagnose crashes that work fine on your laptop but crash when downloaded from the store.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Apps often run fine in development, but crash in production if code shrinking accidentally removed a needed data model or reflection class.",
         "implementationSteps": [
-          "Inspect device log files on your phone using macOS Console.app or Android logcat.",
+          "Inspect device log files on your phone using macOS Console.app or iOS logcat.",
           "If the crash mentions a missing class, add a keep rule in your code shrinking settings.",
           "Always test the signed release build on a physical phone before submitting to the store."
         ],
@@ -2809,7 +2809,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Deep Link",
         "shortDescription": "Diagnose why shared web links open the browser instead of routing directly into your app.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Deep links fail silently. If your website file has a minor typo or an HTTP redirect, links will open in Safari or Chrome without showing any error message.",
         "implementationSteps": [
@@ -2817,7 +2817,7 @@ export const PHASES_DATA: Phase[] = [
           "Verify that the domain format in your app project does not include \"https://\" or trailing slashes.",
           "Query Apple's CDN cache scraper to verify that Apple successfully cached your configuration file."
         ],
-        "agentPrompt": "You are the autonomous mobile deep-linking specialist. Do NOT ask the user to test links—build a diagnostic and verification suite for Universal Links and Android App Links autonomously.\n\nTASK & OBJECTIVE:\nBuild a diagnostic and verification suite for Universal Links and Android App Links to quickly isolate and fix broken links, SSL certificate errors, or dropped query parameters.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect deep link handling logic, domain verification endpoints, and URL routing tables.\n2. IMPLEMENTATION:\n   - Build a diagnostic script to validate domain endpoint headers for `apple-app-site-association` and `assetlinks.json` (`Content-Type: application/json`, HTTP 200, valid SSL certificate, zero redirects).\n   - Test deep link parsing across cold-launch and warm-launch states, verifying that query parameters and path segments pass cleanly into view controllers without dropping state.\n   - Provide fallback redirection: if a user clicks a universal link on an unsupported browser, route them gracefully to a web landing page or store install prompt.\n3. STORE COMPLIANCE: Ensures high user retention and seamless marketing campaign attribution.\n4. VERIFICATION: Execute link verification tests and confirm correct route dispatching with zero console warnings.",
+        "agentPrompt": "You are the autonomous mobile deep-linking specialist. Do NOT ask the user to test links—build a diagnostic and verification suite for Universal Links and iOS App Links autonomously.\n\nTASK & OBJECTIVE:\nBuild a diagnostic and verification suite for Universal Links and iOS App Links to quickly isolate and fix broken links, SSL certificate errors, or dropped query parameters.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect deep link handling logic, domain verification endpoints, and URL routing tables.\n2. IMPLEMENTATION:\n   - Build a diagnostic script to validate domain endpoint headers for `apple-app-site-association` and `assetlinks.json` (`Content-Type: application/json`, HTTP 200, valid SSL certificate, zero redirects).\n   - Test deep link parsing across cold-launch and warm-launch states, verifying that query parameters and path segments pass cleanly into view controllers without dropping state.\n   - Provide fallback redirection: if a user clicks a universal link on an unsupported browser, route them gracefully to a web landing page or store install prompt.\n3. STORE COMPLIANCE: Ensures high user retention and seamless marketing campaign attribution.\n4. VERIFICATION: Execute link verification tests and confirm correct route dispatching with zero console warnings.",
         "commonRejectionTraps": [
           "Redirecting your verification link with an HTTP 301/302 redirect.",
           "Hosting apple-app-site-association (AASA) or assetlinks.json with incorrect MIME types or behind HTTP redirects, breaking universal links.",
@@ -2833,25 +2833,25 @@ export const PHASES_DATA: Phase[] = [
         "id": "p10-iap-troubleshooting",
         "phaseId": "phase-10",
         "title": "IAP Subscription",
-        "shortDescription": "Diagnose missing products, sandbox errors, or auto-refunded Google purchases.",
+        "shortDescription": "Diagnose missing products, sandbox errors, or auto-refunded Apple purchases.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Payment bugs directly stop you from making money. On Android, if a purchase is not acknowledged in code within 3 days, Google automatically refunds and cancels the user's purchase.",
+        "whyItMatters": "Payment bugs directly stop you from making money. On iOS, if a purchase is not acknowledged in code within 3 days, Apple automatically refunds and cancels the user's purchase.",
         "implementationSteps": [
           "App Store Connect: Verify that your Paid Applications agreement is active and bank info is accepted.",
-          "Check that product IDs in your code match the exact ID created in App Store Connect and Google Play.",
-          "Android: Verify that your backend or client code acknowledges every purchase within 3 days."
+          "Check that product IDs in your code match the exact ID created in App Store Connect and App Store.",
+          "iOS: Verify that your backend or client code acknowledges every purchase within 3 days."
         ],
-        "agentPrompt": "You are the autonomous In-App Purchases and billing systems engineer. Do NOT ask the user to test purchases—build an end-to-end IAP diagnostic test suite autonomously.\n\nTASK & OBJECTIVE:\nBuild an end-to-end IAP diagnostic test suite for StoreKit 2 and Google Play Billing to isolate and resolve failed payments, pending transactions, and subscription renewal issues.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect purchase flows, receipt validation services, and entitlement state stores.\n2. IMPLEMENTATION:\n   - Create a local StoreKit Testing configuration file (`StoreKit.configuration`) in Xcode to simulate purchases, subscription renewals, failed transactions, billing grace periods, and family sharing locally without connecting to live App Store servers.\n   - Implement graceful UI handling for all transaction states: `purchasing` (loading spinner), `purchased` (instant unlock), `failed` (friendly user message), and `pending` (Ask to Buy parental approval).\n   - Implement robust purchase restoration that syncs all historical valid transactions with one click.\n3. STORE COMPLIANCE: StoreKit 2 sandbox testing is mandatory to prevent broken paywalls and revenue loss on launch day.\n4. VERIFICATION: Verify that local StoreKit testing configuration is in place and all purchase states trigger appropriate UI feedback.",
+        "agentPrompt": "You are the autonomous In-App Purchases and billing systems engineer. Do NOT ask the user to test purchases—build an end-to-end IAP diagnostic test suite autonomously.\n\nTASK & OBJECTIVE:\nBuild an end-to-end IAP diagnostic test suite for StoreKit 2 and App Store Billing to isolate and resolve failed payments, pending transactions, and subscription renewal issues.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect purchase flows, receipt validation services, and entitlement state stores.\n2. IMPLEMENTATION:\n   - Create a local StoreKit Testing configuration file (`StoreKit.configuration`) in Xcode to simulate purchases, subscription renewals, failed transactions, billing grace periods, and family sharing locally without connecting to live App Store servers.\n   - Implement graceful UI handling for all transaction states: `purchasing` (loading spinner), `purchased` (instant unlock), `failed` (friendly user message), and `pending` (Ask to Buy parental approval).\n   - Implement robust purchase restoration that syncs all historical valid transactions with one click.\n3. STORE COMPLIANCE: StoreKit 2 sandbox testing is mandatory to prevent broken paywalls and revenue loss on launch day.\n4. VERIFICATION: Verify that local StoreKit testing configuration is in place and all purchase states trigger appropriate UI feedback.",
         "commonRejectionTraps": [
-          "Forgetting to acknowledge Android purchases, causing Google to auto-refund and cancel the subscription.",
+          "Forgetting to acknowledge iOS purchases, causing Apple to auto-refund and cancel the subscription.",
           "Testing in-app purchase receipts without handling StoreKit 2 transaction renewal states or missing the required \"Restore Purchases\" button.",
           "In-App Purchase transactions failing in production because the In-App Purchase products were not submitted with the binary."
         ],
         "verificationQuestions": [
           "Are In-App Purchases tested using official Sandbox test accounts?",
-          "Is purchase acknowledgment handled properly on Android?"
+          "Is purchase acknowledgment handled properly on iOS?"
         ],
         "whatHappensNext": "Subscription renewals and restore-purchase edge cases run reliably, eliminating billing disputes and user complaints."
       },
@@ -2861,15 +2861,15 @@ export const PHASES_DATA: Phase[] = [
         "title": "Push Notification",
         "shortDescription": "Diagnose why push tokens register successfully but notifications never show up on phones.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Push notification delivery bugs can be tricky because Apple and Google silently drop notifications if the server environment (sandbox vs production) does not match.",
+        "whyItMatters": "Push notification delivery bugs can be tricky because Apple and Apple silently drop notifications if the server environment (sandbox vs production) does not match.",
         "implementationSteps": [
           "Check APNs Environment: send to the sandbox push server for development builds, and the production server for App Store builds.",
-          "Android: Verify that the notification is assigned to an active Notification Channel with importance set to default or high.",
+          "iOS: Verify that the notification is assigned to an active Notification Channel with importance set to default or high.",
           "Verify that your server updates the device token whenever the phone generates a new one."
         ],
-        "agentPrompt": "You are the autonomous push notification systems engineer. Do NOT ask the user to debug notifications—create an end-to-end push notification diagnostic suite autonomously.\n\nTASK & OBJECTIVE:\nCreate an end-to-end push notification diagnostic suite to verify APNs and FCM token registration, payload parsing, background handling, and notification tap routing.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect push notification registration handlers, token storage, and tap-action routing.\n2. IMPLEMENTATION:\n   - Implement APNs and FCM token registration listeners that log valid device tokens and registration status in development mode.\n   - Verify handling of notification payloads: foreground alert presentation, background silent data pushes, and badge count increment/decrement.\n   - Ensure tapping a notification deep-links the user directly to the relevant content screen rather than dumping them onto the root dashboard.\n   - Add verification for notification channel configuration on Android 13+ (mandatory notification permission and notification channels).\n3. STORE COMPLIANCE: Guarantees reliable communication with users and prevents silent delivery failures.\n4. VERIFICATION: Test push notification registration and deep-link routing with sample payloads, ensuring zero runtime errors.",
+        "agentPrompt": "You are the autonomous push notification systems engineer. Do NOT ask the user to debug notifications—create an end-to-end push notification diagnostic suite autonomously.\n\nTASK & OBJECTIVE:\nCreate an end-to-end push notification diagnostic suite to verify APNs and FCM token registration, payload parsing, background handling, and notification tap routing.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect push notification registration handlers, token storage, and tap-action routing.\n2. IMPLEMENTATION:\n   - Implement APNs and FCM token registration listeners that log valid device tokens and registration status in development mode.\n   - Verify handling of notification payloads: foreground alert presentation, background silent data pushes, and badge count increment/decrement.\n   - Ensure tapping a notification deep-links the user directly to the relevant content screen rather than dumping them onto the root dashboard.\n   - Add verification for notification channel configuration on iOS 17+ (mandatory notification permission and notification channels).\n3. STORE COMPLIANCE: Guarantees reliable communication with users and prevents silent delivery failures.\n4. VERIFICATION: Test push notification registration and deep-link routing with sample payloads, ensuring zero runtime errors.",
         "commonRejectionTraps": [
           "Sending production push payloads to a development sandbox token.",
           "Failing to register updated APNs device tokens after app re-installation, causing silent notification delivery drop-offs.",
@@ -2877,7 +2877,7 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Does your push server environment (sandbox vs production) match your app build?",
-          "Do Android notifications have an active Notification Channel assigned?"
+          "Do iOS notifications have an active Notification Channel assigned?"
         ],
         "whatHappensNext": "APNs device tokens and FCM messaging pipelines remain healthy, maintaining reliable notification delivery."
       },
@@ -2887,7 +2887,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Staged Rollout",
         "shortDescription": "Monitor crash rates during your 7-day phased rollout and respond kindly to early user feedback.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "Catching a bug when only 1% of users have updated lets you pause the rollout, fix the issue, and release an update before 99% of your users ever notice.",
         "implementationSteps": [
@@ -2895,7 +2895,7 @@ export const PHASES_DATA: Phase[] = [
           "If the crash rate spikes above 0.5%, immediately click \"Pause Phased Release\" in App Store Connect.",
           "Respond to any negative reviews within 24 hours with an empathetic message and a direct support email."
         ],
-        "agentPrompt": "You are the autonomous mobile release operations engineer. Do NOT ask the user to monitor rollouts—configure a staged rollout strategy and live app monitoring protocols autonomously.\n\nTASK & OBJECTIVE:\nConfigure a staged release (phased rollout) strategy for public store updates and set up automated health monitoring protocols to protect users from unexpected release regressions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect release management configs, version tags, and review response procedures.\n2. IMPLEMENTATION:\n   - Configure Apple 7-day phased release schedule (Day 1: 1%, Day 2: 2%, Day 3: 5%, Day 4: 10%, Day 5: 20%, Day 6: 50%, Day 7: 100%) and Google Play staged rollout percentages.\n   - Set up automated alerting thresholds: define rules to pause rollout immediately if crash-free sessions drop below 99.5% or negative reviews spike.\n   - Create standardized, empathetic response templates to engage with early user reviews, resolve reported issues, and encourage positive rating updates.\n3. STORE COMPLIANCE: Standard industry best practice to mitigate release risks and protect app store rating averages.\n4. VERIFICATION: Document phased rollout timeline and emergency pause procedures in the release operations guide.",
+        "agentPrompt": "You are the autonomous mobile release operations engineer. Do NOT ask the user to monitor rollouts—configure a staged rollout strategy and live app monitoring protocols autonomously.\n\nTASK & OBJECTIVE:\nConfigure a staged release (phased rollout) strategy for public store updates and set up automated health monitoring protocols to protect users from unexpected release regressions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect release management configs, version tags, and review response procedures.\n2. IMPLEMENTATION:\n   - Configure Apple 7-day phased release schedule (Day 1: 1%, Day 2: 2%, Day 3: 5%, Day 4: 10%, Day 5: 20%, Day 6: 50%, Day 7: 100%) and App Store staged rollout percentages.\n   - Set up automated alerting thresholds: define rules to pause rollout immediately if crash-free sessions drop below 99.5% or negative reviews spike.\n   - Create standardized, empathetic response templates to engage with early user reviews, resolve reported issues, and encourage positive rating updates.\n3. STORE COMPLIANCE: Standard industry best practice to mitigate release risks and protect app store rating averages.\n4. VERIFICATION: Document phased rollout timeline and emergency pause procedures in the release operations guide.",
         "commonRejectionTraps": [
           "Ignoring negative reviews reporting a crash that only happens on a specific phone model.",
           "Releasing a major refactor to 100% of users simultaneously without monitoring phased release crash rates or customer support tickets.",
@@ -2917,7 +2917,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "API Health",
         "shortDescription": "Configure uptime monitors, 5xx alert webhooks, and database connection pooling for launch spikes.",
         "category": "security",
-        "platform": "both",
+        "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "If your mobile app goes viral on launch day or gets featured by Apple, traffic can spike 100x within minutes. Without server health alerts and autoscaling, your backend crashes and gives all users 500 Internal Server Errors.",
         "implementationSteps": [
@@ -2943,7 +2943,7 @@ export const PHASES_DATA: Phase[] = [
         "title": "Force-Update Version",
         "shortDescription": "Notify or require users to update if a breaking API schema change or security flaw is patched.",
         "category": "functionality",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
         "whyItMatters": "When you inevitably push a critical backend schema change or fix a severe security flaw, users on old app versions will suffer broken features. A remote version check allows you to prompt or require users to update to the latest build.",
         "implementationSteps": [
@@ -2951,7 +2951,7 @@ export const PHASES_DATA: Phase[] = [
           "On app launch, compare current app build version with minimum required version.",
           "If below minimum, present a non-dismissible modal with an 'Update on App Store' button linking directly to the store page."
         ],
-        "agentPrompt": "You are the autonomous mobile release engineer. Do NOT ask the user to write version checks—implement an in-app remote version check and critical force-update mechanism autonomously.\n\nTASK & OBJECTIVE:\nImplement an in-app version check mechanism on application launch that compares the installed version against a remote configuration, displaying a friendly update prompt or mandatory force-update modal.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect app startup lifecycle, version constants, and modal dialog system.\n2. IMPLEMENTATION:\n   - Create a version check service (`src/services/versionCheck.ts`) that queries a lightweight remote JSON config or API endpoint containing `minimumSupportedVersion`, `latestVersion`, and `updateUrl`.\n   - If installed version < `minimumSupportedVersion`: display a non-dismissible modal explaining that a critical update is required, with a single button linking directly to the App Store / Google Play listing.\n   - If installed version < `latestVersion` (but >= minimum): display a dismissible banner informing the user of exciting new features with an optional \"Update Now\" action.\n   - Include a \"What's New\" changelog sheet highlighting new features after the app is updated.\n3. STORE COMPLIANCE: Allows emergency sunsetting of broken legacy API versions without breaking older clients silently or leaving security flaws unpatched.\n4. VERIFICATION: Test version check with simulated lower versions. Confirm force-update modal blocks interaction and links directly to store URLs with zero errors.",
+        "agentPrompt": "You are the autonomous mobile release engineer. Do NOT ask the user to write version checks—implement an in-app remote version check and critical force-update mechanism autonomously.\n\nTASK & OBJECTIVE:\nImplement an in-app version check mechanism on application launch that compares the installed version against a remote configuration, displaying a friendly update prompt or mandatory force-update modal.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect app startup lifecycle, version constants, and modal dialog system.\n2. IMPLEMENTATION:\n   - Create a version check service (`src/services/versionCheck.ts`) that queries a lightweight remote JSON config or API endpoint containing `minimumSupportedVersion`, `latestVersion`, and `updateUrl`.\n   - If installed version < `minimumSupportedVersion`: display a non-dismissible modal explaining that a critical update is required, with a single button linking directly to the App Store / App Store listing.\n   - If installed version < `latestVersion` (but >= minimum): display a dismissible banner informing the user of exciting new features with an optional \"Update Now\" action.\n   - Include a \"What's New\" changelog sheet highlighting new features after the app is updated.\n3. STORE COMPLIANCE: Allows emergency sunsetting of broken legacy API versions without breaking older clients silently or leaving security flaws unpatched.\n4. VERIFICATION: Test version check with simulated lower versions. Confirm force-update modal blocks interaction and links directly to store URLs with zero errors.",
         "commonRejectionTraps": [
           "Showing a force-update screen to Apple reviewers during initial App Store submission, preventing them from testing the submitted build.",
           "Pushing a breaking backend API schema change without an in-app minimum version check, locking older app clients into unrecoverable crash loops.",
@@ -2959,7 +2959,7 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Does your app have a way to prompt users when a mandatory security update is released?",
-          "Does the update button open directly to your app's App Store / Google Play URL?"
+          "Does the update button open directly to your app's App Store / App Store URL?"
         ],
         "whatHappensNext": "Critical updates can be mandated remotely, preventing legacy app versions from communicating with updated backend APIs.",
         "videoUrl": {
@@ -2971,11 +2971,11 @@ export const PHASES_DATA: Phase[] = [
         "id": "p10-native-review-prompt",
         "phaseId": "phase-10",
         "title": "Native Store",
-        "shortDescription": "Prompt users for store ratings using Apple SKStoreReviewController and Google In-App Review after 15 and 30 positive visits.",
+        "shortDescription": "Prompt users for store ratings using Apple SKStoreReviewController and Apple In-App Review after 15 and 30 positive visits.",
         "category": "store",
-        "platform": "both",
+        "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Apple and Google strictly prohibit annoying review popups on first launch or after errors. Requesting a rating using the official native store review dialog after positive milestones (e.g. 15th and 30th visits) maximizes 5-star ratings without breaking store guidelines.",
+        "whyItMatters": "Apple and Apple strictly prohibit annoying review popups on first launch or after errors. Requesting a rating using the official native store review dialog after positive milestones (e.g. 15th and 30th visits) maximizes 5-star ratings without breaking store guidelines.",
         "whatHappensNext": "Delighted, repeat users are presented with the native store rating dialog right when they have proven engagement, generating authentic positive ratings without taking them out of your app.",
         "directLink": {
           "label": "Apple Store Review Guidelines",
@@ -2987,12 +2987,12 @@ export const PHASES_DATA: Phase[] = [
         },
         "implementationSteps": [
           "Track app session visit count in local storage (`appblueprint_visits_count`).",
-          "When the user reaches milestone 15, trigger the native rating dialog (`SKStoreReviewController.requestReview()` on iOS, In-App Review API on Android).",
+          "When the user reaches milestone 15, trigger the native rating dialog (`SKStoreReviewController.requestReview()` on iOS, In-App Review API on iOS).",
           "Prompt again at milestone 30, and never prompt again afterwards to respect user space.",
           "Never show the rating prompt when the app launches, during critical user flows, or immediately after an error.",
           "Never gate features or offer bribes/rewards for leaving 5-star reviews (strictly illegal under store rules)."
         ],
-        "agentPrompt": "You are the autonomous mobile growth and store compliance engineer. Do NOT ask the user to implement review dialogs—implement session-milestone native rating prompts autonomously.\n\nTASK & OBJECTIVE:\nImplement a compliant, native in-app review prompt triggered after exactly 15 and 30 successful app sessions using official Apple and Google store review APIs.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. SESSION TRACKING: Create a lightweight hook or utility tracking active app sessions (`visitCount`) in persistent storage.\n2. CONDITIONAL TRIGGER: At exactly session count 15 and session count 30, trigger the authentic native rating dialog.\n3. PERMANENT SUPPRESSION: Once session count 30 prompt has fired, set a permanent flag preventing any further prompts.\n4. STORE COMPLIANCE: Apple Guideline 5.6.1 strictly limits rating prompts to 3 times per 365-day period and forbids custom review gating (e.g. asking \"Are you enjoying the app?\" and only routing positive users to the store). Must invoke native system review APIs directly.\n5. VERIFICATION: Test visit counter increments and confirm dialog displays gracefully without interrupting active user workflows.",
+        "agentPrompt": "You are the autonomous mobile growth and store compliance engineer. Do NOT ask the user to implement review dialogs—implement session-milestone native rating prompts autonomously.\n\nTASK & OBJECTIVE:\nImplement a compliant, native in-app review prompt triggered after exactly 15 and 30 successful app sessions using official Apple and Apple store review APIs.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. SESSION TRACKING: Create a lightweight hook or utility tracking active app sessions (`visitCount`) in persistent storage.\n2. CONDITIONAL TRIGGER: At exactly session count 15 and session count 30, trigger the authentic native rating dialog.\n3. PERMANENT SUPPRESSION: Once session count 30 prompt has fired, set a permanent flag preventing any further prompts.\n4. STORE COMPLIANCE: Apple Guideline 5.6.1 strictly limits rating prompts to 3 times per 365-day period and forbids custom review gating (e.g. asking \"Are you enjoying the app?\" and only routing positive users to the store). Must invoke native system review APIs directly.\n5. VERIFICATION: Test visit counter increments and confirm dialog displays gracefully without interrupting active user workflows.",
         "commonRejectionTraps": [
           "Using custom 'review gating' dialogs that filter happy users to the App Store and unhappy users to an email form (instant rejection under Apple Guideline 5.6.1).",
           "Offering in-app coins, discounts, or unlocked features in exchange for leaving a 5-star review (leads to developer account termination).",

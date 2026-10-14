@@ -13,7 +13,9 @@ import {
   ChevronDown,
   Sparkles,
   Info,
-  Layers
+  Layers,
+  RotateCcw,
+  Loader2
 } from 'lucide-react';
 import { 
   canCreateNewProject, 
@@ -25,6 +27,7 @@ import {
   isProjectUnlocked,
   getPaidProjectIds
 } from '../utils/paywall';
+import { restoreWithStoreKit } from '../utils/nativeStoreKit';
 import { triggerHaptic, ImpactStyle } from '../utils/haptics';
 
 interface ProjectsPageProps {
@@ -40,7 +43,29 @@ interface ProjectsPageProps {
   onOpenPaywall?: (targetProjectId?: string) => void;
 }
 
-export const ProjectsPage: React.FC<ProjectsPageProps> = ({
+const formatTrialCountdownFromMs = (ms: number): string => {
+  if (ms <= 0) return 'Tap to unlock';
+
+  const totalSeconds = Math.floor(ms / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+
+  // If there are days left
+  if (days > 0) {
+    return `${days} ${days === 1 ? 'day' : 'days'} left`;
+  }
+
+  // If there are hours left
+  if (hours > 0) {
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'} left`;
+  }
+
+  // Minutes left
+  const mins = Math.max(1, Math.ceil(ms / 60000));
+  return `${mins} ${mins === 1 ? 'minute' : 'minutes'} left`;
+};
+
+export const ProjectsPage: React.FC<ProjectsPageProps> = React.memo(({
   projects,
   activeProjectId,
   onSelectProject,
@@ -53,12 +78,33 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
   onOpenPaywall,
 }) => {
   const [trialDaysRemaining, setTrialDaysRemaining] = useState<number>(getTrialDaysRemaining());
-  const [trialRemainingMs, setTrialRemainingMs] = useState<number>(() => getTrialRemainingMs());
+  const [trialCountdownText, setTrialCountdownText] = useState<string>(() => formatTrialCountdownFromMs(getTrialRemainingMs()));
   const [trialActive, setTrialActive] = useState<boolean>(isTrialActive());
   const [unlimitedUnlocked, setUnlimitedUnlocked] = useState<boolean>(isUnlimitedUnlocked());
+  const [paidProjectsKey, setPaidProjectsKey] = useState<string>(() => getPaidProjectIds().join(','));
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreNotice, setRestoreNotice] = useState<string | null>(null);
 
   const isUnlocked = isPro || unlimitedUnlocked || (trialActive && canCreateNewProject(projects.length));
   const isLocked = !isUnlocked;
+
+  const handleRestorePurchases = async () => {
+    triggerHaptic(ImpactStyle.Light);
+    setIsRestoring(true);
+    setRestoreNotice(null);
+    const res = await restoreWithStoreKit();
+    setIsRestoring(false);
+    if (res.isUnlimited || res.restoredCount > 0) {
+      triggerHaptic(ImpactStyle.Heavy);
+      setUnlimitedUnlocked(isUnlimitedUnlocked());
+      setPaidProjectsKey(getPaidProjectIds().join(','));
+      setRestoreNotice('Purchases restored successfully!');
+      setTimeout(() => setRestoreNotice(null), 3500);
+    } else {
+      setRestoreNotice('No previous purchases found for this Apple ID.');
+      setTimeout(() => setRestoreNotice(null), 3500);
+    }
+  };
 
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
@@ -140,6 +186,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
       setTrialDaysRemaining(getTrialDaysRemaining());
       setTrialActive(isTrialActive());
       setUnlimitedUnlocked(isUnlimitedUnlocked());
+      setPaidProjectsKey(getPaidProjectIds().join(','));
       if (e?.detail?.isPro || isUnlimitedUnlocked()) {
         setIsAddingProject(true);
         setSelectedColor(PROJECT_COLORS[projects.length % PROJECT_COLORS.length]);
@@ -154,11 +201,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
     let wasActive = trialActive;
     const updateCountdown = () => {
       const ms = getTrialRemainingMs();
-      setTrialRemainingMs(ms);
+      setTrialCountdownText(formatTrialCountdownFromMs(ms));
       const active = ms > 0;
       setTrialActive(active);
       setTrialDaysRemaining(getTrialDaysRemaining());
       setUnlimitedUnlocked(isUnlimitedUnlocked());
+      setPaidProjectsKey(getPaidProjectIds().join(','));
 
       // If trial expires right on this screen, open paywall modal automatically!
       if (wasActive && !active && !isUnlimitedUnlocked()) {
@@ -174,33 +222,15 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
     return () => clearInterval(interval);
   }, [trialActive, activeProjectId, onOpenPaywall]);
 
-  const formatTrialCountdown = () => {
-    if (trialRemainingMs <= 0) return 'Tap to unlock';
+  const formatTrialCountdown = () => trialCountdownText;
 
-    const totalSeconds = Math.floor(trialRemainingMs / 1000);
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-
-    // If there are days left
-    if (days > 0) {
-      return `${days} ${days === 1 ? 'day' : 'days'} left`;
-    }
-
-    // If there are hours left
-    if (hours > 0) {
-      return `${hours} ${hours === 1 ? 'hour' : 'hours'} left`;
-    }
-
-    // Minutes left
-    const mins = Math.max(1, Math.ceil(trialRemainingMs / 60000));
-    return `${mins} ${mins === 1 ? 'minute' : 'minutes'} left`;
-  };
+  const paidProjectIdsSet = new Set(paidProjectsKey ? paidProjectsKey.split(',') : []);
 
   return (
     <div className="space-y-3.5 pb-4">
       
       {/* 1. Title at the Top (Exact same style, size, and centering as in project checklist) */}
-      <div className="pt-2.5 pb-3 flex items-center justify-center w-full">
+      <div className="pt-2.5 pb-2 flex flex-col items-center justify-center w-full space-y-2">
         <button
           type="button"
           onClick={() => {
@@ -216,6 +246,28 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
             Select Project
           </h1>
         </button>
+
+        {/* Distinct Restore Purchases Button (Guideline 3.1.1) */}
+        <button
+          type="button"
+          onClick={handleRestorePurchases}
+          disabled={isRestoring}
+          className="apple-press inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200/90 text-slate-600 hover:text-slate-900 text-xs font-semibold shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+          title="Restore previously purchased items"
+        >
+          {isRestoring ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600" />
+          ) : (
+            <RotateCcw className="w-3.5 h-3.5 text-purple-600" />
+          )}
+          <span>Restore Purchases</span>
+        </button>
+
+        {restoreNotice && (
+          <div className="text-xs font-medium text-purple-700 bg-purple-50 px-3.5 py-1 rounded-full border border-purple-200/70 animate-in fade-in duration-200">
+            {restoreNotice}
+          </div>
+        )}
       </div>
 
       {/* 2. List of Projects */}
@@ -229,7 +281,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
           const percent = totalRequirementsCount > 0 
             ? Math.round((completedCount / totalRequirementsCount) * 100) 
             : 0;
-          const isPaidProject = getPaidProjectIds().includes(proj.id);
+          const isPaidProject = paidProjectIdsSet.has(proj.id);
           const isCardUnlocked = isPro || unlimitedUnlocked || trialActive || isPaidProject;
 
           return (
@@ -660,4 +712,4 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({
       />
     </div>
   );
-};
+});

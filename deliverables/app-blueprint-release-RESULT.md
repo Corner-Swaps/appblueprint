@@ -1,6 +1,6 @@
 # Release Result: App Blueprint (Android Google Play & iOS App Store)
 
-**Date**: 2026-10-09  
+**Date**: 2026-10-11  
 **Repository**: `/Users/slava/Downloads/Projects/App Creator`  
 **Brief Reference**: `03-appblueprint-android-build.md` & `00-master-release-prompt.md`  
 **Apple App ID (Adam ID)**: `6815200697`  
@@ -14,14 +14,14 @@
 | :--- | :--- | :--- |
 | **Package / Bundle ID** | `com.slava.appblueprint` | `com.slava.appblueprint` |
 | **Version Name / Marketing Version**| `1.0` | `1.0` |
-| **Version Code / Build Number** | `1` | `10` |
+| **Version Code / Build Number** | `2` | `11` |
 | **targetSdkVersion / SDK** | `36` (Android 16 / Latest Google Play Requirement) | iOS 17+ SDK |
 | **compileSdkVersion / minSdk** | compileSdk: `36`, minSdk: `24` (Android 7.0+) | Target iOS 15.0+ |
 | **Signing Certificate SHA-256** | `B5:59:C7:FB:07:B9:AE:AF:BC:1E:64:61:45:9B:D2:CE:C5:57:82:5A:B4:16:50:9E:38:93:57:2A:83:98:F5:DD` | Cloud-Managed Apple Distribution |
 | **Signing Certificate SHA-1** | `CA:B5:DA:71:32:84:18:BB:73:F8:83:53:41:F6:F0:D1:29:2D:36:34` | `92:E3:E6:1E:7F:85:4F:E3:37:E2:2A:74:01:DB:55:D3:68:9B:F8:9E` |
 | **Key Alias** | `appblueprint` | Apple Distribution Certificate |
-| **Release Artifact** | `appblueprint-release.aab` (10 MB) | `AppBlueprint-v1.0-Build10.ipa` (8.8 MB) |
-| **Release Status** | **Signed Release AAB Delivered to Drive** | **Confirmed in TestFlight & Processing** |
+| **Release Artifact** | `appblueprint-release.aab` (10 MB) | `AppBlueprint-v1.0-Build11.ipa` / Xcode Archive |
+| **Release Status** | **Signed Release AAB Delivered (versionCode 2)** | **Confirmed in TestFlight & Processing (Build 11)** |
 
 ---
 

@@ -24,7 +24,7 @@ export const UnifiedAppHeader: React.FC<UnifiedAppHeaderProps> = ({
 
         {/* Centered Subtext */}
         <p className="mt-2 text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto text-center">
-          10 guided phases, 101 audit-proof requirements, battle-tested store guardrails, and 1-click autonomous AI coding prompts to take your app from day zero to App Store and Google Play approval.
+          10 guided phases, 101 audit-proof requirements, battle-tested store guardrails, and 1-click autonomous AI coding prompts to take your app from day zero to App Store approval.
         </p>
 
         {/* Centered Telemetry / Banner Area */}

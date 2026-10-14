@@ -17,7 +17,7 @@ export const SETUP_STEPS_PHASE: Phase = {
       platform: 'both',
       priority: 'blocker',
       whyItMatters: 'Mobile development tools like Vite, React, TypeScript, and Capacitor run on top of Node.js. Installing the long-term stable (LTS) release of Node.js guarantees that all packages, build scripts, and native compilers run smoothly without mysterious version incompatibilities.',
-      whatHappensNext: 'Your computer has the foundational runtime required to install mobile dependencies, run local test servers, and compile your app for iOS and Android.',
+      whatHappensNext: 'Your computer has the foundational runtime required to install mobile dependencies, run local test servers, and compile your app for iOS and iPadOS.',
       directLink: {
         label: 'Download Node.js',
         url: 'https://nodejs.org/'
@@ -57,22 +57,22 @@ EXECUTION PROTOCOL FOR THE AGENT:
       id: 'setup-model',
       phaseId: 'phase-setup',
       title: 'AI Assistant',
-      shortDescription: 'Select a frontier AI coding assistant (Google Antigravity, Cursor, Windsurf, or Claude Code) and connect it to your project.',
+      shortDescription: 'Select a frontier AI coding assistant (Antigravity, Cursor, Windsurf, or Claude Code) and connect it to your project.',
       category: 'functionality',
       platform: 'both',
       priority: 'blocker',
-      whyItMatters: 'Modern AI coding tools create entire screens, wire up database actions, and debug complex native issues for you. Choosing a frontier model (like Gemini 2.5 Pro / Flash, Claude 3.7 Sonnet, or GPT-4o) ensures your assistant understands full Apple Human Interface Guidelines and store compliance rules.',
+      whyItMatters: 'Modern AI coding tools create entire screens, wire up database actions, and debug complex native issues for you. Choosing a frontier model (like Claude 3.7 Sonnet, GPT-4o, or Gemini 2.5) ensures your assistant understands full Apple Human Interface Guidelines and store compliance rules.',
       whatHappensNext: 'Your AI assistant is connected to your project workspace, ready to turn plain-English descriptions into complete, production-ready screens.',
       directLink: {
-        label: 'Google AI Developer Tools & Antigravity',
-        url: 'https://ai.google.dev/'
+        label: 'Developer AI Tools & Agents',
+        url: 'https://docs.anthropic.com/'
       },
       videoUrl: {
         title: 'AI Coding Agents Setup Guide',
         url: 'https://www.youtube.com/watch?v=2hsHF_RKKWU'
       },
       implementationSteps: [
-        'Select an AI coding environment: Google Antigravity, Cursor, Windsurf, or Claude Code.',
+        'Select an AI coding environment: Antigravity, Cursor, Windsurf, or Claude Code.',
         'Open your project folder in your chosen editor so the AI can read files, inspect configurations, and make edits autonomously.',
         'Select a frontier reasoning model (such as Gemini 2.5 Pro / Flash, Claude 3.7 Sonnet, or GPT-4o) with large context memory.',
         'Provide your AI assistant with the golden instruction: "Always write complete, working code with zero dummy buttons, fake alerts, or unfinished placeholders."'
@@ -85,7 +85,7 @@ Inspect and verify our AI assistant toolchain, workspace folder, and TypeScript 
 EXECUTION PROTOCOL FOR THE AGENT:
 1. WORKSPACE AUDIT: Verify that the project root contains 'package.json', 'tsconfig.json', 'capacitor.config.ts', and valid lockfiles.
 2. STRICT TYPING: Verify that 'tsconfig.json' enforces strict mode ('"strict": true', '"noImplicitAny": true') to catch runtime bugs before device deployment.
-3. CONTEXT INTEGRATION: Ensure the AI agent can inspect both the web application ('src/') and native wrappers ('ios/', 'android/').
+3. CONTEXT INTEGRATION: Ensure the AI agent can inspect both the web application ('src/') and native wrappers ('ios/').
 4. ZERO REGRESSIONS: Confirm that 'npx tsc --noEmit' passes with zero errors.`,
       commonRejectionTraps: [
         'Letting an AI assistant insert fake "Coming Soon" buttons—Apple strictly rejects apps with placeholder features under Guideline 2.1.',
@@ -186,59 +186,60 @@ EXECUTION PROTOCOL FOR THE AGENT:
       ]
     },
     {
-      id: 'setup-android-studio',
+      id: 'setup-storekit-sandbox',
       phaseId: 'phase-setup',
-      title: 'Android Studio',
-      shortDescription: 'Install Google’s official development environment and SDK tools if you plan to launch on Google Play.',
+      title: 'StoreKit Testing',
+      shortDescription: 'Configure Apple In-App Purchases, test StoreKit 2 sandbox transactions, and verify restore purchases.',
       category: 'functionality',
-      platform: 'android',
+      platform: 'ios',
       priority: 'high',
-      whyItMatters: 'Android Studio provides the Android SDK, Google Play emulator images, and the Gradle build system required to compile Android App Bundles (.aab) for Google Play. If you are building for Android, this tool is required.',
-      whatHappensNext: 'Your computer is equipped with the Android SDK (API 34/35) and JDK 17/21 to build, test, and release Android apps.',
+      whyItMatters: 'Apple App Review strictly requires that all In-App Purchases and Restore Purchases work seamlessly in the sandbox environment. Testing with a StoreKit Configuration file or Sandbox Apple ID before submission prevents immediate Guideline 2.1(b) and 3.1.1 rejections.',
+      whatHappensNext: 'Your app offers reliable in-app purchases and restore functionality, verified against Apple StoreKit servers.',
       directLink: {
-        label: 'Download Android Studio',
-        url: 'https://developer.android.com/studio'
+        label: 'Apple StoreKit 2 Testing Documentation',
+        url: 'https://developer.apple.com/documentation/storekit/in-app_purchase/testing_in-app_purchases_with_sandbox'
       },
       videoUrl: {
-        title: 'Android Studio Setup for Beginners',
-        url: 'https://www.youtube.com/watch?v=JMBtuNqy2QI'
+        title: 'StoreKit 2 Testing in Xcode',
+        url: 'https://www.youtube.com/watch?v=SSv--IrWH3c'
       },
       implementationSteps: [
-        'Download and install Android Studio (Ladybug or newer) from developer.android.com/studio.',
-        'Open Android Studio, select "Standard Setup", and let it download the Android SDK platform, Build-Tools, and Android Emulator.',
-        'In Android Studio Settings > Languages & Frameworks > Android SDK, ensure Android 14 (API 34) or Android 15 (API 35) is checked.',
-        'Tell your AI assistant: "Check that our Android project builds cleanly and syncs with Capacitor."'
+        'In App Store Connect, ensure the Paid Apps Agreement is signed and Active under Agreements, Tax, and Banking.',
+        'Configure your in-app purchase products in App Store Connect with identical product IDs in your code.',
+        'Create a Sandbox Apple ID in App Store Connect > Users and Access > Sandbox Testers.',
+        'On your test device, sign in to your Sandbox account in Settings > App Store > Sandbox Account.',
+        'Verify that tapping purchase displays Apple\'s native sandbox payment sheet, and tapping "Restore Purchases" completes successfully.'
       ],
-      agentPrompt: `You are the autonomous Android release engineer configuring our Google Play build pipeline.
+      agentPrompt: `You are the autonomous iOS monetization engineer verifying our StoreKit 2 pipeline.
 
 TASK & OBJECTIVE:
-Inspect and verify our Android build toolchain, Gradle wrapper, Android SDK path, and JDK compatibility.
+Inspect and verify StoreKit 2 product queries, transaction listeners, error handling, and restore purchases.
 
 EXECUTION PROTOCOL FOR THE AGENT:
-1. ENVIRONMENT INSPECTION: Verify 'ANDROID_HOME' or local.properties points to a valid Android SDK directory.
-2. GRADLE & JDK CHECK: Ensure Java version is JDK 17 or 21 (compatible with modern Android Gradle Plugin 8.x+).
-3. 16KB PAGE COMPLIANCE: Ensure native Android configuration is aligned for Android 15+ 16KB page size requirements.
-4. ZERO REGRESSIONS: Verify that 'npx cap sync android' completes and 'cd android && ./gradlew tasks' runs cleanly.`,
+1. STOREKIT CAPABILITY: Verify 'com.apple.InAppPurchase' is enabled in Xcode target attributes.
+2. PRODUCT LOOKUP: Ensure StoreKit queries handle sandbox latency gracefully with automated retries.
+3. RESTORE FLOW: Verify distinct 'Restore Purchases' button initiates AppStore.sync() and unlocks entitlements.
+4. ZERO REGRESSIONS: Ensure zero unhandled error alerts when running under Apple Review sandbox environments.`,
       commonRejectionTraps: [
-        'Targeting an outdated Android SDK—Google Play rejects new app submissions that do not target the latest Android API level.',
-        'Mismatched Java JDK versions (using Java 8 instead of Java 17/21) causing Gradle build failures.',
-        'Forgetting to configure 16KB memory page size alignment for Android 15+ native libraries.'
+        'Missing Paid Apps Agreement in App Store Connect, causing products to fail to load during review.',
+        'Displaying an error alert or banner when the reviewer taps Unlock in the sandbox.',
+        'Omitting a distinct, visible "Restore Purchases" button on the paywall screen (Guideline 3.1.1).'
       ],
       verificationQuestions: [
-        'Is Android Studio installed with Android SDK API 34/35 configured?',
-        'Does your computer have Java JDK 17 or 21 installed for Gradle?'
+        'Is your Paid Apps Agreement active in App Store Connect?',
+        'Does your paywall have a prominent "Restore Purchases" button?'
       ]
     },
     {
       id: 'setup-developer-accounts',
       phaseId: 'phase-setup',
       title: 'Developer Accounts',
-      shortDescription: 'Register official accounts with Apple ($99/yr) and Google ($25 one-time) so you have legal authorization to publish.',
+      shortDescription: 'Register an official Apple Developer account ($99/yr) so you have legal authorization to publish.',
       category: 'store',
-      platform: 'both',
+      platform: 'ios',
       priority: 'blocker',
-      whyItMatters: 'Apple and Google require identity verification before allowing anyone to publish apps or test with external users on TestFlight. This review can take 1 to 2 weeks, so enrolling right away ensures your launch is never blocked waiting for account approval.',
-      whatHappensNext: 'Your developer identity is officially verified. You gain access to App Store Connect, Google Play Console, TestFlight beta testing, and in-app purchase setups.',
+      whyItMatters: 'Apple requires identity verification before allowing anyone to publish apps or test with external users on TestFlight. This review can take 1 to 2 weeks, so enrolling right away ensures your launch is never blocked waiting for account approval.',
+      whatHappensNext: 'Your developer identity is officially verified. You gain access to App Store Connect, TestFlight beta testing, and in-app purchase setups.',
       directLink: {
         label: 'Enroll in the Apple Developer Program',
         url: 'https://developer.apple.com/programs/enroll/'
@@ -249,11 +250,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
       },
       implementationSteps: [
         'Enroll in the Apple Developer Program ($99/year) at developer.apple.com. Individual accounts require government photo ID; Company accounts require a free D-U-N-S business number.',
-        'Create your Google Play Developer Account ($25 one-time fee) at play.google.com/console and complete identity verification.',
         'Choose a store-safe App Name (max 30 characters). Avoid trademarked words (e.g. do NOT include "Apple", "iPhone", or "ChatGPT" in your title to prevent instant Guideline 5.2.5 rejections).',
         'Choose a permanent reverse-DNS Bundle Identifier (e.g. "com.yourname.appname" or "com.yourcompany.appname"). This ID is permanent and cannot be changed once published.',
         'Sign all pending Paid Applications and Tax Agreements in App Store Connect (Agreements, Tax, and Banking).',
-        'Google Play Requirement: Personal developer accounts must recruit 20 testers for a 14-day closed test before requesting production access.'
+        'Configure TestFlight external testing groups and internal testers for pre-release validation.'
       ],
       agentPrompt: `You are the autonomous mobile release engineer responsible for store registrations and identifier mapping.
 
@@ -261,7 +261,7 @@ TASK & OBJECTIVE:
 Standardize our app's unique Bundle Identifier and package name across all native configuration files.
 
 EXECUTION PROTOCOL FOR THE AGENT:
-1. CODEBASE INSPECTION: Inspect 'capacitor.config.ts', 'ios/App/App.xcodeproj/project.pbxproj', and 'android/app/build.gradle'.
+1. CODEBASE INSPECTION: Inspect 'capacitor.config.ts' and 'ios/App/App.xcodeproj/project.pbxproj'.
 2. STANDARDIZATION: Ensure the appId follows canonical reverse-DNS format (e.g. 'com.yourname.appname') with zero reserved or trademarked terms.
 3. CREDENTIAL MAPPING: Document our App Store Team ID, Bundle ID, and SKU in a clean markdown reference for store deployment.
 4. ZERO REGRESSIONS: Verify that 'npx cap sync' runs without identifier mismatch warnings.`,
@@ -272,16 +272,16 @@ EXECUTION PROTOCOL FOR THE AGENT:
       ],
       verificationQuestions: [
         'Does your Apple Developer account show "Active" with your membership confirmed?',
-        'Have you completed identity verification in Google Play Console?'
+        'Have you accepted the Paid Apps Agreement in App Store Connect?'
       ]
     },
     {
       id: 'setup-connect-phone',
       phaseId: 'phase-setup',
       title: 'Phone Testing',
-      shortDescription: 'Plug your real iPhone or Android phone into your computer to test touch gestures, animations, and tactile feel.',
+      shortDescription: 'Plug your real iPhone or iPad into your computer to test touch gestures, animations, and tactile feel.',
       category: 'functionality',
-      platform: 'both',
+      platform: 'ios',
       priority: 'blocker',
       whyItMatters: 'A computer screen can never tell you if a button is too small for a thumb, if text is hard to read in bright sunlight, or if animations drop frames. Testing on your real phone is the single greatest secret to building an app people love.',
       whatHappensNext: 'Your app opens directly on your physical phone screen. You can hold it, tap the buttons, and experience it exactly like your future users will.',
@@ -393,12 +393,12 @@ EXECUTION PROTOCOL FOR THE AGENT:
         'IMPORTANT: Keep corners square (do NOT round the corners yourself) and ensure 100% solid background (NO transparent pixels).',
         'Place your main symbol in the center 80% safe zone so it is never clipped by the OS squircle mask.',
         'Create a native LaunchScreen storyboard or splash asset that matches your app\'s initial background color.',
-        'Tell your AI assistant: "Generate and synchronize our production app icons and splash screens across iOS and Android."'
+        'Tell your AI assistant: "Generate and synchronize our production app icons and splash screens for iOS."'
       ],
       agentPrompt: `You are the autonomous mobile asset optimization engineer.
 
 TASK & OBJECTIVE:
-Inspect, validate, and synchronize production app icons and launch screen assets across iOS and Android native asset catalogs.
+Inspect, validate, and synchronize production app icons and launch screen assets across iOS native asset catalogs.
 
 EXECUTION PROTOCOL FOR THE AGENT:
 1. SPECIFICATION AUDIT:
@@ -406,7 +406,6 @@ EXECUTION PROTOCOL FOR THE AGENT:
    - Verify no alpha channel: Run 'python3 -c "from PIL import Image; im=Image.open(\\"ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png\\"); print(im.mode)"' (must be 'RGB', not 'RGBA').
 2. NATIVE ASSET CATALOGS:
    - iOS: Populate 'ios/App/App/Assets.xcassets/AppIcon.appiconset' and 'Splash.imageset'.
-   - Android: Populate 'android/app/src/main/res/mipmap-*' with adaptive icon foreground and background.
 3. STORYBOARD SYNC: Ensure 'LaunchScreen.storyboard' background color matches WKWebView backgroundColor in 'capacitor.config.ts' for zero-flash launches.
 4. ZERO REGRESSIONS: Ensure 'npx cap sync' completes cleanly and app icon renders sharply on test devices.`,
       commonRejectionTraps: [
@@ -440,7 +439,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
       implementationSteps: [
         'Design and build your screens using clean React components (buttons, cards, navigation bars).',
         'When you want hardware features (like physical vibrations or camera access), ask your AI assistant to import the official Capacitor plugin.',
-        'Whenever you make changes, tell your AI assistant: "Build our web assets and sync them to iOS and Android."',
+        'Whenever you make changes, tell your AI assistant: "Build our web assets and sync them to iOS."',
         'Test on your physical phone to confirm that buttons buzz and page transitions feel native.'
       ],
       agentPrompt: `You are the autonomous senior mobile architect responsible for our native bridge layer.
@@ -451,7 +450,7 @@ Inspect and verify our TypeScript compilation, bundle optimization, and native b
 EXECUTION PROTOCOL FOR THE AGENT:
 1. COMPILE TS: Run 'npx tsc --noEmit' and resolve any remaining type errors.
 2. ASSET BUNDLE: Run 'npm run build' to generate the production web distribution in 'dist/'.
-3. SYNC NATIVE: Run 'npx cap sync ios' and 'npx cap sync android' to copy web assets to native bundles.
+3. SYNC NATIVE: Run 'npx cap sync ios' to copy web assets to native iOS bundles.
 4. VERIFY NATIVE PLUGINS: Ensure all Capacitor plugins (@capacitor/haptics, @capacitor/status-bar) are linked without missing pod warnings.`,
       commonRejectionTraps: [
         'Forgetting to build and sync before opening Xcode, causing an older version of your app to run on the phone.',
@@ -469,7 +468,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
       title: 'Build Commands',
       shortDescription: 'The plain-language prompt cheat sheet you can give your AI assistant to build, test, and release your app automatically.',
       category: 'functionality',
-      platform: 'both',
+      platform: 'ios',
       priority: 'high',
       whyItMatters: 'You never need to memorize complex terminal commands or Xcode menu settings. Whenever you want to test on your phone or prepare a release, just copy and paste these plain-language requests to your AI assistant.',
       whatHappensNext: 'Your AI assistant handles compiling code, synchronizing native files, and deploying the app to your phone without you clicking through technical menus.',
@@ -486,13 +485,12 @@ EXECUTION PROTOCOL FOR THE AGENT:
         'To check for errors: Tell your AI: "Run a type check and verify our codebase has zero errors."',
         'To free up disk space: Tell your AI: "Clear our temporary Xcode build caches and DerivedData, and rebuild."',
         'To add tactile feel: Tell your AI: "Connect subtle tactile vibrations (haptics) to our primary buttons and toggles."',
-        'To prepare for TestFlight: Tell your AI: "Create a release archive in Xcode and get our app ready for App Store Connect."',
-        'To test on Android: Tell your AI: "Build and bundle our app for Android testing."'
+        'To prepare for TestFlight: Tell your AI: "Create a release archive in Xcode and get our app ready for App Store Connect."'
       ],
       agentPrompt: `You are the autonomous build automation engineer for this mobile project.
 
 TASK & OBJECTIVE:
-Execute our end-to-end mobile compilation and native synchronization pipeline for both Apple iOS and Google Play Android.
+Execute our end-to-end mobile compilation and native synchronization pipeline for Apple iOS and App Store Connect.
 
 EXECUTION PROTOCOL FOR THE AGENT:
 1. WEB ASSET BUILD:
@@ -502,20 +500,16 @@ EXECUTION PROTOCOL FOR THE AGENT:
 2. APPLE iOS SYNC & XCODE WORKSPACE:
    Run: npx cap sync ios
    Verify web assets copy cleanly to ios/App/App/public.
-   Automated test build:
-   xcodebuild -workspace ios/App/App.xcworkspace -scheme App -destination 'generic/platform=iOS' build
 
-3. GOOGLE PLAY ANDROID SYNC & PRODUCTION AAB:
-   Run: npx cap sync android
-   Build release Android App Bundle (AAB):
-   cd android && ./gradlew bundleRelease && cd ..
-   Verify release binary is generated in 'android/app/build/outputs/bundle/release/app-release.aab'.
+3. RELEASE ARCHIVE COMPILATION:
+   Run: xcodebuild archive -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' -archivePath build/App.xcarchive
+   Verify release archive generates cleanly for App Store Connect submission.
 
-4. ZERO REGRESSIONS: Confirm zero compilation errors and report readiness to deploy to physical devices and store consoles.`,
+4. ZERO REGRESSIONS: Confirm zero compilation errors and report readiness to deploy to physical devices and App Store Connect.`,
       commonRejectionTraps: [
         'Submitting a test build with debug settings turned on instead of a clean production release.',
         'Forgetting to increment your build number (CFBundleVersion) before uploading a new build to App Store Connect.',
-        'Uploading raw test APKs to Google Play instead of the required Android App Bundle (.aab) format.'
+        'Submitting unoptimized web bundles that increase launch times.'
       ],
       verificationQuestions: [
         'Can your AI assistant successfully build and deploy your app with one prompt?',
@@ -530,7 +524,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
       category: 'functionality',
       platform: 'both',
       priority: 'medium',
-      whyItMatters: 'As you build your app, Xcode, npm, and Gradle create temporary cache files that can consume 20+ gigabytes of disk space. If a build ever acts strange or your Mac is running low on room, a quick cache clean fixes it immediately in 10 seconds.',
+      whyItMatters: 'As you build your app, Xcode and npm create temporary cache files that can consume 20+ gigabytes of disk space. If a build ever acts strange or your Mac is running low on room, a quick cache clean fixes it immediately in 10 seconds.',
       whatHappensNext: 'Your computer reclaims gigabytes of free storage space, and your next build starts completely fresh with no stuck files.',
       directLink: {
         label: 'Xcode DerivedData Storage Management',

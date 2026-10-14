@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   generatePrivacyManifest, 
   generateAASA, 
-  generateAssetLinks, 
+  generateAppEntitlements, 
   generatePrivacyPolicy,
   PrivacyManifestConfig
 } from '../data/generators';
@@ -15,11 +15,11 @@ import {
   ShieldCheck, 
   Link, 
   FileText,
-  Smartphone
+  Key
 } from 'lucide-react';
 
 export const ConfigGenerators: React.FC = () => {
-  const [activeGenerator, setActiveGenerator] = useState<'privacy-manifest' | 'aasa' | 'assetlinks' | 'privacy-policy'>('privacy-manifest');
+  const [activeGenerator, setActiveGenerator] = useState<'privacy-manifest' | 'aasa' | 'entitlements' | 'privacy-policy'>('privacy-manifest');
   const [copied, setCopied] = useState(false);
 
   // Privacy Manifest State
@@ -41,9 +41,8 @@ export const ConfigGenerators: React.FC = () => {
   const [bundleId, setBundleId] = useState('com.yourcompany.app');
   const [pathsInput, setPathsInput] = useState('/invite/*, /product/*, /auth/*');
 
-  // AssetLinks State
-  const [androidPackage, setAndroidPackage] = useState('com.yourcompany.app');
-  const [sha256, setSha256] = useState('14:6D:E9:DE:0F:1F:B1:A7:28:C2:59:E4:05:BF:F3:3D:A1:02:64:14:0F:7B:64:89:12:F1:C9:83:8A:DF:28:D2');
+  // Apple Entitlements State
+  const [associatedDomains, setAssociatedDomains] = useState('example.com, api.example.com');
 
   // Privacy Policy State
   const [policyAppName, setPolicyAppName] = useState('My Awesome App');
@@ -53,7 +52,7 @@ export const ConfigGenerators: React.FC = () => {
 
   const allSdks = [
     'Firebase Analytics',
-    'Google AdMob',
+    'AdAttributionKit / Mobile Ads',
     'RevenueCat In-App Purchases',
     'Sentry Crash Reporting',
     'Stripe Payments',
@@ -68,7 +67,9 @@ export const ConfigGenerators: React.FC = () => {
     bundleId, 
     pathsInput.split(',').map(p => p.trim()).filter(Boolean)
   );
-  const generatedAssetLinks = generateAssetLinks(androidPackage, sha256);
+  const generatedEntitlements = generateAppEntitlements(
+    associatedDomains.split(',').map(d => d.trim()).filter(Boolean)
+  );
   const generatedPolicy = generatePrivacyPolicy(
     policyAppName, 
     policyCompany, 
@@ -80,7 +81,7 @@ export const ConfigGenerators: React.FC = () => {
     switch (activeGenerator) {
       case 'privacy-manifest': return { code: generatedManifest, filename: 'PrivacyInfo.xcprivacy', type: 'application/xml' };
       case 'aasa': return { code: generatedAasa, filename: 'apple-app-site-association', type: 'application/json' };
-      case 'assetlinks': return { code: generatedAssetLinks, filename: 'assetlinks.json', type: 'application/json' };
+      case 'entitlements': return { code: generatedEntitlements, filename: 'App.entitlements', type: 'application/xml' };
       case 'privacy-policy': return { code: generatedPolicy, filename: 'PRIVACY_POLICY.md', type: 'text/markdown' };
     }
   };
@@ -142,7 +143,7 @@ export const ConfigGenerators: React.FC = () => {
               Store Configuration & Policy File Generators
             </h2>
             <p className="text-xs sm:text-sm text-apple-gray-500 dark:text-apple-gray-400">
-              Generate valid Apple Privacy Manifests, Universal Links AASA files, Android AssetLinks, and Store-Compliant Privacy Policies.
+              Generate valid Apple Privacy Manifests, Universal Links AASA files, Apple Entitlements, and Store-Compliant Privacy Policies.
             </p>
           </div>
         </div>
@@ -174,15 +175,15 @@ export const ConfigGenerators: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setActiveGenerator('assetlinks')}
+            onClick={() => setActiveGenerator('entitlements')}
             className={`apple-press p-3 rounded-xl border text-xs font-semibold flex items-center space-x-2 transition-all ${
-              activeGenerator === 'assetlinks'
+              activeGenerator === 'entitlements'
                 ? 'bg-apple-blue text-white border-apple-blue shadow-apple-sm'
                 : 'bg-white dark:bg-apple-gray-900 text-apple-gray-700 dark:text-apple-300 border-apple-gray-200 dark:border-apple-gray-800 hover:border-apple-blue'
             }`}
           >
-            <Smartphone className="w-4 h-4" />
-            <span className="truncate">Android AssetLinks</span>
+            <Key className="w-4 h-4" />
+            <span className="truncate">Apple Entitlements</span>
           </button>
 
           <button
@@ -353,41 +354,27 @@ export const ConfigGenerators: React.FC = () => {
             </div>
           )}
 
-          {/* AssetLinks Form */}
-          {activeGenerator === 'assetlinks' && (
+          {/* Apple Entitlements Form */}
+          {activeGenerator === 'entitlements' && (
             <div className="space-y-4 text-xs">
               <div>
                 <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
-                  Android Package Name:
+                  Associated Domains (Comma separated):
                 </label>
                 <input
                   type="text"
-                  value={androidPackage}
-                  onChange={(e) => setAndroidPackage(e.target.value)}
-                  placeholder="e.g. com.yourcompany.app"
+                  value={associatedDomains}
+                  onChange={(e) => setAssociatedDomains(e.target.value)}
+                  placeholder="e.g. example.com, app.example.com"
                   className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 font-mono"
                 />
-              </div>
-
-              <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
-                  Google Play App Signing SHA-256 Fingerprint:
-                </label>
-                <input
-                  type="text"
-                  value={sha256}
-                  onChange={(e) => setSha256(e.target.value)}
-                  placeholder="14:6D:E9:..."
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 font-mono text-[11px]"
-                />
                 <span className="text-[10px] text-apple-gray-400 mt-1 block">
-                  Find in Google Play Console → Setup → App Signing → App signing key certificate.
+                  Domains will automatically be formatted with the <code>applinks:</code> entitlement prefix.
                 </span>
               </div>
 
               <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-[11px] text-apple-gray-700 dark:text-apple-300 leading-relaxed">
-                Host this file on your server at: <br />
-                <code className="text-apple-blue font-mono font-bold">https://yourdomain.com/.well-known/assetlinks.json</code>
+                Add this <code className="text-apple-blue font-mono font-bold">App.entitlements</code> file to your Xcode target under Signing & Capabilities to enable Universal Links and In-App Purchase capabilities.
               </div>
             </div>
           )}

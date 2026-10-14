@@ -96,10 +96,10 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({
 
             <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-800">
               <span className="font-bold text-slate-800 dark:text-slate-200 block mb-0.5">
-                3. Google Play 20-Tester Rule
+                3. Apple Guideline 3.1.1 (StoreKit Restore Flow)
               </span>
               <span className="text-slate-500 dark:text-slate-400 text-[11px]">
-                Keep 20+ real testers opted into closed track for 14 continuous days before production access.
+                Must provide a distinct "Restore Purchases" button on paywalls and properly handle StoreKit 2 entitlements.
               </span>
             </div>
           </div>

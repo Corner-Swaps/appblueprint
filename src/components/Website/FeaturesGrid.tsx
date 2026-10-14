@@ -16,7 +16,7 @@ interface FeaturesGridProps {
   onLaunchApp: () => void;
 }
 
-export const FeaturesGrid: React.FC<FeaturesGridProps> = ({ onLaunchApp }) => {
+export const FeaturesGrid: React.FC<FeaturesGridProps> = React.memo(({ onLaunchApp }) => {
   const features = [
     {
       icon: Terminal,
@@ -32,7 +32,7 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({ onLaunchApp }) => {
       title: 'Store Review Traps & Playbooks',
       tag: 'Guideline Diagnostics',
       description:
-        'Know the exact rejection traps flagged by Apple and Google review teams before you submit. Includes step-by-step diagnostic playbooks for IPv6 connectivity, IAP bypasses, and account deletion.',
+        'Know the exact rejection traps flagged by the Apple Review team before you submit. Includes step-by-step diagnostic playbooks for StoreKit 2 restore purchases, IAP completeness, and account deletion.',
     },
     {
       icon: FileCode,
@@ -40,7 +40,7 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({ onLaunchApp }) => {
       title: 'Built-in Config & Policy Generators',
       tag: 'Zero-Effort Compliance',
       description:
-        'Instantly generate store-ready Apple Privacy Manifests (PrivacyInfo.xcprivacy XML), Universal Links JSON (apple-app-site-association), Android App Links (assetlinks.json), and GDPR Privacy Policy Markdown.',
+        'Instantly generate store-ready Apple Privacy Manifests (PrivacyInfo.xcprivacy XML), Universal Links JSON (apple-app-site-association), Apple Entitlements (App.entitlements), and Privacy Policy Markdown.',
     },
     {
       icon: GraduationCap,
@@ -306,4 +306,4 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = ({ onLaunchApp }) => {
       </div>
     </section>
   );
-};
+});

@@ -127,7 +127,7 @@ export const ReadinessMeter: React.FC<ReadinessMeterProps> = ({
             <div className="flex items-center space-x-2">
               <Sparkles className="w-5 h-5 stroke-white text-white" />
               <h2 className="text-lg font-bold text-white">
-                App Store & Google Play Pass Probability
+                App Store Review Pass Probability
               </h2>
             </div>
 

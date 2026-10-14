@@ -113,27 +113,25 @@ export function generateAASA(teamId: string, bundleId: string, paths: string[] =
   );
 }
 
-export function generateAssetLinks(packageName: string, sha256Fingerprint: string): string {
-  const cleanPackage = packageName.trim() || 'com.example.app';
-  const cleanFingerprint = sha256Fingerprint.trim() || '14:6D:E9:DE:0F:1F:B1:A7:28:C2:59:E4:05:BF:F3:3D:A1:02:64:14:0F:7B:64:89:12:F1:C9:83:8A:DF:28:D2';
+export function generateAppEntitlements(domains: string[] = ['example.com']): string {
+  const cleanDomains = domains.length > 0 ? domains : ['example.com'];
+  const formattedDomains = cleanDomains.map(d => {
+    const trimmed = d.trim();
+    return trimmed.startsWith('applinks:') ? trimmed : `applinks:${trimmed}`;
+  });
 
-  return JSON.stringify(
-    [
-      {
-        relation: [
-          'delegate_permission/common.handle_all_urls',
-          'delegate_permission/common.get_login_creds'
-        ],
-        target: {
-          namespace: 'android_app',
-          package_name: cleanPackage,
-          sha256_cert_fingerprints: [cleanFingerprint]
-        }
-      }
-    ],
-    null,
-    2
-  );
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.developer.associated-domains</key>
+    <array>
+${formattedDomains.map(d => `        <string>${d}</string>`).join('\n')}
+    </array>
+    <key>com.apple.developer.in-app-payments</key>
+    <array/>
+</dict>
+</plist>`;
 }
 
 export function generatePrivacyPolicy(
@@ -171,12 +169,12 @@ ${sdks.length > 0 ? sdks.map(s => `- **${s}**`).join('\n') : '- Standard analyti
 ---
 
 ### 3. Security of Data
-The security of your data is important to us. All data in transit is encrypted using Transport Layer Security (TLS 1.3). Sensitive credentials and authentication tokens stored on your device are encrypted using hardware-backed keychains (Apple Keychain / Android Keystore). However, no method of transmission over the Internet is 100% secure.
+The security of your data is important to us. All data in transit is encrypted using Transport Layer Security (TLS 1.3). Sensitive credentials and authentication tokens stored on your device are encrypted using hardware-backed keychains (Apple Keychain / Secure Enclave). However, no method of transmission over the Internet is 100% secure.
 
 ---
 
 ### 4. Account & Data Deletion (User Rights)
-In accordance with Apple App Store Guideline 5.1.1(v) and Google Play User Data policies, users have the right to request the permanent deletion of their account and all associated personal data:
+In accordance with Apple App Store Guideline 5.1.1(v), users have the right to request the permanent deletion of their account and all associated personal data:
 - **In-App:** You can initiate permanent account deletion at any time by navigating to **Settings > Account > Delete Account**.
 - **Web Deletion Request:** You can also request complete account deletion by contacting us at [${email}](mailto:${email}).
 
@@ -218,7 +216,7 @@ By downloading, installing, or using the App, you agree to be bound by the terms
 ---
 
 ### 1. License Grant
-${company} grants you a revocable, non-exclusive, non-transferable, limited license to download, install, and use the App solely for your personal, non-commercial purposes strictly in accordance with the terms of this Agreement and applicable App Store / Google Play terms.
+${company} grants you a revocable, non-exclusive, non-transferable, limited license to download, install, and use the App solely for your personal, non-commercial purposes strictly in accordance with the terms of this Agreement and applicable App Store terms.
 
 ---
 
@@ -243,12 +241,11 @@ ${hasSubscriptions ? `---
 ### 4. Subscriptions, Payments & Auto-Renewal Terms
 The App may offer premium features through auto-renewing subscriptions ("Paid Subscriptions"):
 - **Billing & Renewal:** Subscriptions automatically renew at the end of each subscription period (e.g. monthly or annually) unless auto-renewal is canceled at least 24 hours prior to the expiration of the current cycle.
-- **Payment Processing:** Payment is charged to your Apple ID / Google Play account upon purchase confirmation. Pricing is displayed in your local currency on the paywall screen.
-- **How to Cancel Anytime (Click-to-Cancel):** You may manage or cancel your subscription at any time directly through your phone settings:
-  - **iOS:** Open **Settings** > tap your **Apple ID Profile** > **Subscriptions** > tap **${app}** > select **Cancel Subscription**.
-  - **Android:** Open **Google Play Store** > tap your **Profile Icon** > **Payments & subscriptions** > **Subscriptions** > tap **${app}** > **Cancel subscription**.
+- **Payment Processing:** Payment is charged to your Apple ID account upon purchase confirmation. Pricing is displayed in your local currency on the paywall screen.
+- **How to Cancel Anytime (Click-to-Cancel):** You may manage or cancel your subscription at any time directly through your Apple device settings:
+  - Open **Settings** > tap your **Apple ID Profile** > **Subscriptions** > tap **${app}** > select **Cancel Subscription**.
 - **Restore Purchases:** You can restore previously purchased subscriptions on new or existing devices at any time by tapping the "Restore Purchases" button on the paywall screen.
-- **Refunds:** All in-app purchase and subscription transactions are processed directly by Apple or Google under their respective terms. Refund requests must be directed to Apple or Google support.
+- **Refunds:** All in-app purchase and subscription transactions are processed directly by Apple under standard terms. Refund requests must be directed to Apple support.
 ` : ''}
 ---
 
