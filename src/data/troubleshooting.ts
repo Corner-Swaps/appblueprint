@@ -7,7 +7,7 @@ export const TROUBLESHOOTING_DATA: TroubleshootingScenario[] = [
     category: 'rejection',
     platform: 'ios',
     appStoreGuidelineRef: 'Guideline 2.1 - App Completeness',
-    triggerSymptom: 'Reviewer rejected with: "We discovered one or more bugs in your app... Your app crashed on launch or displayed a blank screen when we attempted to review it on iPad/iPhone running iOS 18/26."',
+    triggerSymptom: 'Reviewer rejected with: "We discovered one or more bugs in your app... Your app crashed on launch or displayed a blank screen when we attempted to review it on iPad/iPhone running iOS 26/27 or iPadOS 26/27."',
     rootCauses: [
       'App was tested in an IPv4 environment, but Apple review runs in an isolated IPv6 NAT64 network.',
       'Missing permission description in Info.plist (e.g. NSCameraUsageDescription or NSLocationWhenInUseUsageDescription) causing an unhandled SIGABRT upon access.',

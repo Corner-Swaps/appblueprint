@@ -107,7 +107,7 @@ export const PHASES_DATA: Phase[] = [
           "Fill out your contact, banking, and tax agreements (Paid Apps Agreement) in App Store Connect to offer In-App Purchases.",
           "Configure internal and external TestFlight beta testing groups to validate your build before public submission."
         ],
-        "agentPrompt": "You are the autonomous mobile release engineer for this application. Do NOT ask the user to research store registration parameters—generate and verify the entire technical release specification autonomously.\n\nTASK & OBJECTIVE:\nPrepare and configure our application's exact technical identifiers, bundle ID, versioning scheme, and release metadata required for Apple Developer Program and App Store Connect registrations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `capacitor.config.ts` and `ios/App/App.xcodeproj`.\n2. IMPLEMENTATION:\n   - Standardize our unique Bundle Identifier (e.g. `com.company.appname`) in reverse-DNS format across all native build files.\n   - Set initial production semantic versioning (`version: \"1.0.0\"`, `versionCode: 1`, `CFBundleVersion: \"1\"`).\n   - Generate a dedicated production release profile config (`release-config.json` or markdown spec) documenting the official Bundle ID, SKUs, Team IDs, Privacy Policy URLs, and store entitlement requirements.\n3. STORE COMPLIANCE: Ensure bundle IDs and package names never use protected Apple trademark prefixes. Confirm Paid Apps Agreement is active in App Store Connect.\n4. VERIFICATION: Verify that `capacitor.config.ts` matches Xcode identifiers perfectly with zero mismatches during `npx cap sync`.",
+        "agentPrompt": "You are the autonomous mobile release engineer for this application. Do NOT ask the user to research store registration parameters—generate and verify the entire technical release specification autonomously.\n\nTASK & OBJECTIVE:\nPrepare and configure our application's exact technical identifiers, bundle ID, versioning scheme, and release metadata required for Apple Developer Program and App Store Connect registrations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `capacitor.config.ts` and `ios/App/App.xcodeproj`.\n2. IMPLEMENTATION:\n   - Standardize our unique Bundle Identifier (e.g. `com.company.appname`) in reverse-DNS format across all native build files.\n   - Set initial production semantic versioning (`MARKETING_VERSION` / `CFBundleShortVersionString`: `\"1.0\"`, `CURRENT_PROJECT_VERSION` / `CFBundleVersion`: `\"1\"`).\n   - Generate a dedicated production release profile config (`release-config.json` or markdown spec) documenting the official Bundle ID, SKUs, Team IDs, Privacy Policy URLs, and store entitlement requirements.\n3. STORE COMPLIANCE: Ensure bundle IDs never use protected Apple trademark prefixes. Confirm Paid Apps Agreement is active in App Store Connect.\n4. VERIFICATION: Verify that `capacitor.config.ts` matches Xcode identifiers perfectly with zero mismatches during `npx cap sync`.",
         "commonRejectionTraps": [
           "Waiting until launch week to apply for developer accounts, only to be held up by identity verification for weeks.",
           "Leaving tax and banking agreements unsigned, which prevents In-App Purchases from working.",
@@ -117,7 +117,7 @@ export const PHASES_DATA: Phase[] = [
           "Is your Apple Developer Program membership active and approved?",
           "Is your App Store Connect identity and payment profile verified?"
         ],
-        "whatHappensNext": "You receive authorized developer access to App Store Connect, App Store Connect, and direct hardware testing on your physical phone.",
+        "whatHappensNext": "You receive authorized developer access to App Store Connect, TestFlight, and direct hardware testing on your physical iPhone and iPad.",
         "videoUrl": {
           "title": "Developer Accounts",
           "url": "https://www.youtube.com/watch?v=YpQWcGC6uoE"
@@ -127,27 +127,27 @@ export const PHASES_DATA: Phase[] = [
         "id": "p1-monetization-model",
         "phaseId": "phase-1",
         "title": "Monetization Rules",
-        "shortDescription": "Choose how users pay, following Apple and Apple official payment rules.",
+        "shortDescription": "Choose how users pay, following Apple's official App Store payment rules.",
         "category": "legal",
         "platform": "ios",
         "priority": "high",
-        "whyItMatters": "If you charge for digital features (like subscriptions, extra tools, or premium content), you must use Apple and Apple official In-App Purchases. Putting external links like Stripe or PayPal to unlock digital features in the app will get your app banned.",
+        "whyItMatters": "If you charge for digital features (like subscriptions, extra tools, or premium content), you must use Apple's official In-App Purchases (StoreKit 2). Putting unauthorized external links like Stripe or PayPal to unlock digital features inside your app violates Guideline 3.1.1.",
         "implementationSteps": [
-          "Classify your offerings: Digital features and subscriptions MUST use Apple and Apple In-App Purchases (15% to 30% store fee). Physical goods (like selling clothes or food delivery) can use Stripe.",
-          "Sign up for the Apple Small Business Program to lower Apple's commission from 30% down to 15%.",
-          "Enroll in App Store's 15% tier for your first $1M in annual earnings."
+          "Classify your offerings: Digital features, unlocks, and subscriptions MUST use Apple In-App Purchases via StoreKit 2 (15% to 30% commission). Physical goods or real-world services (like clothing or delivery) can use Apple Pay or Stripe.",
+          "Apply for the Apple App Store Small Business Program to reduce Apple's commission from 30% down to 15% if you earn under $1M per year.",
+          "Ensure your Paid Apps Agreement and banking/tax details are Active in App Store Connect before testing purchases."
         ],
-        "agentPrompt": "You are the autonomous mobile monetization and commerce architect. Do NOT ask the user to write payment logic or research guidelines—implement the store-compliant monetization architecture autonomously in our codebase.\n\nTASK & OBJECTIVE:\nDesign and implement the digital commerce architecture for our mobile application, ensuring 100% compliance with Apple App Store Review Guideline 3.1.1 and App Store Billing policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the app for any payment buttons, checkout flows, subscription paywalls, or external links.\n2. IMPLEMENTATION:\n   - For all digital unlocks, premium features, and recurring subscriptions, wire exclusively to native In-App Purchases (StoreKit 2 / App Store Billing).\n   - Strictly remove any web payment buttons (Stripe checkout, PayPal, external payment web links) for digital goods inside the app.\n   - Implement entitlement state management: create a reactive store/hook (`useSubscription` or `useEntitlements`) that unlocks features instantly upon successful purchase receipt validation.\n3. STORE COMPLIANCE: Digital goods sold inside mobile apps MUST use Apple/Apple IAP. External payment links for digital services will trigger immediate rejection under Guideline 3.1.1.\n4. VERIFICATION: Verify that paywalls clearly display subscription pricing, billing cycle, trial terms, and that feature gates correctly toggle based on entitlement state without build errors.",
+        "agentPrompt": "You are the autonomous mobile monetization and commerce architect. Do NOT ask the user to write payment logic or research guidelines—implement the store-compliant monetization architecture autonomously in our codebase.\n\nTASK & OBJECTIVE:\nDesign and implement the digital commerce architecture for our iOS application, ensuring 100% compliance with Apple App Store Review Guideline 3.1.1.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the app for any payment buttons, checkout flows, subscription paywalls, or external links.\n2. IMPLEMENTATION:\n   - For all digital unlocks, premium features, and recurring subscriptions, wire exclusively to native Apple In-App Purchases (StoreKit 2).\n   - Strictly remove any unauthorized web payment buttons (Stripe checkout, PayPal, external payment links) for digital goods inside the app.\n   - Implement entitlement state management: create a reactive store/hook (`useSubscription` or `useEntitlements`) that unlocks features instantly upon verified StoreKit 2 transaction.\n3. STORE COMPLIANCE: Digital goods sold inside iOS apps MUST use Apple In-App Purchase (StoreKit 2). Unauthorized external payment links for digital services trigger rejection under Guideline 3.1.1.\n4. VERIFICATION: Verify that paywalls clearly display localized pricing, billing cycle, trial terms, and that feature gates correctly toggle based on entitlement state without build errors.",
         "commonRejectionTraps": [
-          "Adding a link that says \"Go to our website to buy a subscription\" inside the mobile app is an instant rejection under Apple Guideline 3.1.1.",
+          "Adding a link that says \"Go to our website to buy a subscription\" inside the mobile app triggers rejection under Apple Guideline 3.1.1.",
           "Attempting to bypass Apple In-App Purchase by directing digital content buyers to external web payment links without authorization (Guideline 3.1.1).",
-          "Using external payment processors (Stripe/PayPal) to unlock digital features instead of Apple/Apple In-App Purchases (Guideline 3.1.1)."
+          "Using external payment processors (Stripe/PayPal) to unlock digital features instead of Apple In-App Purchases (Guideline 3.1.1)."
         ],
         "verificationQuestions": [
-          "Are all digital upgrades and subscriptions set up through official store In-App Purchases?",
+          "Are all digital upgrades and subscriptions set up through official Apple In-App Purchases (StoreKit 2)?",
           "Have you enrolled in the Apple Small Business Program to cut store fees to 15%?"
         ],
-        "whatHappensNext": "Your revenue architecture complies with Apple Guideline 3.1.1 and App Store Billing, avoiding payment rejection and unexpected store delisting."
+        "whatHappensNext": "Your revenue architecture complies with Apple Guideline 3.1.1 and StoreKit 2, avoiding payment rejection and unexpected store delisting."
       },
       {
         "id": "p1-duns-organization",
@@ -157,7 +157,7 @@ export const PHASES_DATA: Phase[] = [
         "category": "legal",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "If you enroll as an organization or company on Apple Developer or App Store Connect, you must provide a Dun & Bradstreet (D-U-N-S) number. Dun & Bradstreet verification takes 14 to 30 days. Waiting until launch week will stall your entire release.",
+        "whyItMatters": "If you enroll as an organization or company in the Apple Developer Program, you must provide a Dun & Bradstreet (D-U-N-S) number. Dun & Bradstreet verification takes 14 to 30 days. Waiting until launch week will stall your entire release.",
         "implementationSteps": [
           "Search the Dun & Bradstreet lookup tool for your legal entity name and exact registered address.",
           "If not found, request a free D-U-N-S number on the Apple Developer D-U-N-S request portal.",
@@ -173,7 +173,7 @@ export const PHASES_DATA: Phase[] = [
           "Do you have an active D-U-N-S number matching your legal company name and address?",
           "Have you verified whether your Apple Developer account is Individual or Organization?"
         ],
-        "whatHappensNext": "Apple and Apple verify your company identity, enabling your legal business name to appear as the public seller on the App Store."
+        "whatHappensNext": "Apple verifies your company identity, enabling your legal business name to appear as the public seller on the App Store."
       },
       {
         "id": "p1-bundle-id-naming",
@@ -191,9 +191,9 @@ export const PHASES_DATA: Phase[] = [
         ],
         "agentPrompt": "You are the autonomous mobile systems architect. Do NOT ask the user to configure identifiers—audit and standardize our application bundle ID and display names autonomously.\n\nTASK & OBJECTIVE:\nAudit and standardize our application's App Bundle ID and user-facing App Display Name across all native and web configuration files to ensure permanent, collision-free naming.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `capacitor.config.ts`, `ios/App/App.xcodeproj/project.pbxproj`, and `ios/App/App/Info.plist`.\n2. IMPLEMENTATION:\n   - Enforce permanent reverse-DNS format (e.g. `com.company.appname`) with zero placeholder prefixes (no `com.example`, `com.test`, or temporary names).\n   - Verify that `CFBundleDisplayName` in `Info.plist` cleanly matches the public marketing title (under 30 characters).\n   - Ensure the Bundle ID is strictly synchronized between Capacitor and Xcode.\n3. STORE COMPLIANCE: Bundle IDs cannot be changed once an app is created in App Store Connect. Collisions or dummy identifiers require recreating the store entry from scratch.\n4. VERIFICATION: Run `npx cap sync` and confirm that bundle identifiers and display names synchronize with zero mismatches or warnings.",
         "commonRejectionTraps": [
-          "Uploading a binary with 'com.example' or 'test' in the bundle ID, which Apple Connect rejects automatically.",
-          "Including trademarked brand names (such as \"Apple\", \"iPhone\", \"Apple\", or third-party brands) inside your Bundle Identifier or app display name.",
-          "Using protected trademark terms (e.g. 'iPhone', 'Apple', 'Apple') in your application's reverse-DNS package identifier."
+          "Uploading a binary with 'com.example' or 'test' in the bundle ID, which App Store Connect rejects automatically.",
+          "Including trademarked brand names (such as \"Apple\", \"iPhone\", \"App Store\", or third-party brands) inside your Bundle Identifier or app display name.",
+          "Using protected trademark terms (e.g. 'iPhone', 'Apple', 'AppStore') in your application's reverse-DNS bundle identifier."
         ],
         "verificationQuestions": [
           "Is your bundle ID unique and registered in Apple Developer Certificates & Identifiers?",
@@ -226,8 +226,8 @@ export const PHASES_DATA: Phase[] = [
         "whyItMatters": "Jumping straight into button styling without a clear screen flow results in dead-end paths, missing back navigation, disjointed modal states, and user confusion that triggers Apple Guideline 4.0/4.2 rejection.",
         "whatHappensNext": "You will have a definitive blueprint of every screen, route, and transition in your app, ensuring users can navigate freely without encountering dead ends or trapped views.",
         "directLink": {
-          "label": "Apple HIG - Navigation & Architecture",
-          "url": "https://developer.apple.com/design/human-interface-guidelines/navigation"
+          "label": "Apple HIG - Navigation & Search",
+          "url": "https://developer.apple.com/design/human-interface-guidelines/navigation-and-search"
         },
         "videoUrl": {
           "title": "UX Wireframing Guide",
@@ -294,7 +294,7 @@ export const PHASES_DATA: Phase[] = [
         "platform": "ios",
         "priority": "blocker",
         "whyItMatters": "Irregular margins (like 7px here, 23px there) make interfaces look messy and unprofessional. An 8pt grid guarantees visual harmony across phone screens from iPhone SE to iPad.",
-        "whatHappensNext": "Your interface acquires pixel-perfect proportional spacing and structured card depth that matches premier Apple and Apple design benchmarks.",
+        "whatHappensNext": "Your interface acquires pixel-perfect proportional spacing and structured card depth that matches premier Apple Human Interface Guidelines benchmarks.",
         "directLink": {
           "label": "The 8-Point Grid System in Mobile Design",
           "url": "https://spec.fm/specifics/8-pt-grid"
@@ -455,7 +455,7 @@ export const PHASES_DATA: Phase[] = [
         },
         "implementationSteps": [
           "Visit developer.apple.com/design to study Apple's official interface guidelines, component anatomy, and motion standards.",
-          "Download official Apple Design Resources including Figma UI kits, SF Symbols 6, and Apple system fonts.",
+          "Download official Apple Design Resources including Figma UI kits, SF Symbols 7, and Apple system fonts.",
           "Verify that all interactive controls meet Apple's minimum 44x44pt touch target standard.",
           "Ensure layout boundaries and navigation bars respect device safe areas (notch, Dynamic Island, home indicator).",
           "Tell your AI assistant: 'Audit our mobile screens against Apple Developer Design standards to ensure authentic iOS feel.'"
@@ -557,11 +557,11 @@ export const PHASES_DATA: Phase[] = [
         },
         "whyItMatters": "Cramped, tiny buttons frustrate users who accidentally tap the wrong thing. Reviewers test apps on physical phones and reject apps that feel clumsy or hard to navigate.",
         "implementationSteps": [
-          "Ensure all buttons, close icons (\"X\"), and list items have a tappable area of at least 44x44 points on iOS and 48x48 dp on iOS.",
+          "Ensure all buttons, close icons (\"X\"), and list items have a tappable area of at least 44x44 points across iPhone and iPad.",
           "If an icon looks visually small, expand its invisible touch padding so it remains easy to hit.",
           "Keep at least 8 points of breathing room between adjacent buttons so users do not tap both at once."
         ],
-        "agentPrompt": "You are the autonomous mobile UI/UX engineer. Do NOT ask the user to adjust button dimensions—audit and refactor touch targets across the entire codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit every interactive button, icon button, tab bar item, checkbox, and list row across all screens to guarantee a minimum tappable touch target area of at least 44x44 points on Apple iOS and 48x48 dp on iOS.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all button and clickable icon elements across all components. Identify any small icons (e.g., 16px-24px close icons, back buttons, disclosure arrows) that lack sufficient tap padding.\n2. IMPLEMENTATION:\n   - Apply minimum touch target constraints: ensure all interactive elements enforce at least `min-w-[44px] min-h-[44px]` or generous invisible padding (`p-2.5` or `-m-2 p-2`) around small icons.\n   - Enforce at least 8 points of spacing between neighboring interactive buttons to prevent accidental mis-taps.\n   - Add Apple-grade fluid touch feedback to every clickable element (`active:scale-[0.97] transition-transform duration-100`).\n3. STORE COMPLIANCE: Complies with Apple Human Interface Guidelines and Apple Material 3 touch target standards. Prevents user frustration and reviewer rejection under Apple Guideline 4.0 (Design).\n4. VERIFICATION: Test touch responsiveness across mobile viewports. Ensure `tsc --noEmit` passes with zero errors.",
+        "agentPrompt": "You are the autonomous mobile UI/UX engineer. Do NOT ask the user to adjust button dimensions—audit and refactor touch targets across the entire codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit every interactive button, icon button, tab bar item, checkbox, and list row across all screens to guarantee a minimum tappable touch target area of at least 44x44 points on iOS and iPadOS.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all button and clickable icon elements across all components. Identify any small icons (e.g., 16px-24px close icons, back buttons, disclosure arrows) that lack sufficient tap padding.\n2. IMPLEMENTATION:\n   - Apply minimum touch target constraints: ensure all interactive elements enforce at least `min-w-[44px] min-h-[44px]` or generous invisible padding (`p-2.5` or `-m-2 p-2`) around small icons.\n   - Enforce at least 8 points of spacing between neighboring interactive buttons to prevent accidental mis-taps.\n   - Add Apple-grade fluid touch feedback to every clickable element (`active:scale-[0.97] transition-transform duration-100`).\n3. STORE COMPLIANCE: Complies with Apple Human Interface Guidelines touch target standards. Prevents user frustration and reviewer rejection under Apple Guideline 4.0 (Design).\n4. VERIFICATION: Test touch responsiveness across mobile viewports. Ensure `tsc --noEmit` passes with zero errors.",
         "commonRejectionTraps": [
           "Tiny close buttons (\"X\") in modal popups that take multiple frustrated taps to close.",
           "Interactive icons or list row chevron buttons smaller than 44x44 points, causing repeated mis-taps during manual human testing by App Store reviewers.",
@@ -667,30 +667,30 @@ export const PHASES_DATA: Phase[] = [
         "id": "p2-app-icon",
         "phaseId": "phase-2",
         "title": "Master App",
-        "shortDescription": "Generate 1024x1024px PNG for iOS AppIcon.appiconset (no alpha) and 512x512px icon for App Store.",
+        "shortDescription": "Generate a crisp opaque 1024x1024px PNG (no alpha) for iOS AppIcon.appiconset plus Dark and Tinted variants.",
         "category": "design",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Your app icon is the first thing users see on the store and their home screen. Format mistakes (like transparent backgrounds or pre-curved corners) cause build errors in Xcode.",
+        "whyItMatters": "Your app icon is the first thing users see on the App Store and their Home Screen. Format mistakes (like transparent alpha pixels or pre-rounded corners) trigger automated ITMS validation errors in Xcode.",
         "implementationSteps": [
-          "iOS: Create a crisp 1024x1024px PNG image with NO transparency and sharp square corners (iOS rounds the corners automatically).",
-          "iOS: Create an Adaptive Icon with a separate background layer and foreground artwork inside the central safe circle.",
-          "Provide a clean monochrome variant so iOS 17+ can tint your icon with the user's wallpaper theme."
+          "Create a crisp 1024x1024px sRGB/Display P3 PNG with NO transparency (opaque RGB) and sharp 90-degree square corners (iOS applies the squircle mask automatically).",
+          "Place your core brand mark inside the central 80% safe zone so nothing clips around the rounded edges.",
+          "Optionally add Dark, Tinted, and Liquid Glass layered variants in Xcode's AppIcon asset catalog (or Icon Composer) for modern iOS 18–26+ Home Screen themes."
         ],
-        "agentPrompt": "You are the autonomous mobile production engineer. Do NOT ask the user to format icon layers—configure production-grade icon assets for both Apple and iOS platforms autonomously.\n\nTASK & OBJECTIVE:\nGenerate, format, and configure production-ready app icon asset catalogs for Apple iOS and adaptive icon resources for iOS.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Assets.xcassets/AppIcon.appiconset` and `ios/app/src/main/res/mipmap-*`.\n2. IMPLEMENTATION:\n   - For Apple iOS: Configure a crisp 1024x1024px PNG icon with zero alpha transparency (no transparent background) and sharp 90-degree square corners. (Xcode rejects icons with transparent pixels or pre-rounded corners).\n   - For iOS: Configure modern adaptive icons with distinct foreground layer (432x432px centered within a 108dp safe zone), background layer (color or pattern), and a monochrome vector icon for iOS 17+ Material You themed launchers.\n   - Configure `Contents.json` in Xcode asset catalog and `ic_launcher.xml` in iOS res folder.\n3. STORE COMPLIANCE: Apple App Store upload will fail validation with \"Invalid App Store Icon\" if transparency exists. App Store requires adaptive icon format.\n4. VERIFICATION: Verify that icon configuration files exist in native folders and that asset catalogs pass Xcode validation.",
+        "agentPrompt": "You are the autonomous iOS production asset engineer. Do NOT ask the user to format icon layers—configure production-grade Apple app icon assets autonomously.\n\nTASK & OBJECTIVE:\nGenerate, validate, and configure production-ready app icon asset catalogs for Apple iOS and iPadOS in Xcode.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json` and the bundled icon PNGs.\n2. IMPLEMENTATION:\n   - Configure a single-size 1024x1024px PNG icon with zero alpha transparency (24-bit RGB, no transparent pixels) and sharp 90-degree square corners (Xcode rejects icons with alpha channels or pre-rounded corners).\n   - Optionally configure Dark and Tinted 1024x1024px appearances in `AppIcon.appiconset/Contents.json` (or `.icon` layered assets via Apple Icon Composer for iOS 26 Liquid Glass).\n   - Verify `Contents.json` maps cleanly to `AppIcon` referenced by `ASSETCATALOG_COMPILER_APPICON_NAME` in `project.pbxproj`.\n3. STORE COMPLIANCE: App Store Connect upload fails validation (ITMS-90717) if the 1024x1024 icon has an alpha channel or transparency.\n4. VERIFICATION: Run a Python PIL/sips check to confirm mode is `RGB` (no alpha), dimensions are `1024x1024`, and Xcode archive validates cleanly.",
         "commonRejectionTraps": [
-          "Uploading an iOS icon with transparent edges (Xcode rejects with \"Invalid App Store Icon\").",
-          "Pre-rounding the corners of your icon before uploading.",
-          "Pre-rounding icon corners or uploading an icon with alpha transparency channels, causing Xcode archive validation rejection."
+          "Uploading an iOS icon with transparent edges or an alpha channel (App Store Connect rejects with ITMS-90717).",
+          "Pre-rounding the corners of your icon before uploading, creating ugly black borders around the squircle mask.",
+          "Using low-resolution artwork scaled up to 1024x1024 or placing text too close to the edge."
         ],
         "verificationQuestions": [
-          "Is your iOS icon a solid square 1024x1024px PNG with zero transparent pixels?",
-          "Does your iOS adaptive icon look sharp without clipping edges?"
+          "Is your iOS master icon a solid opaque square 1024x1024px PNG with zero transparent pixels?",
+          "Does your icon render crisply across Light, Dark, and Tinted iOS Home Screen appearances without clipping?"
         ],
-        "whatHappensNext": "Your app displays a crisp, memorable icon on user home screens, in notifications, in Xcode archives, and in the Apple App Store storefronts.",
+        "whatHappensNext": "Your app displays a crisp, memorable icon on iPhone and iPad Home Screens, in notifications, in Xcode archives, and on the Apple App Store.",
         "directLink": {
-          "label": "IconKitchen - App Icon Generator",
-          "url": "https://iconkitchen.com/"
+          "label": "Apple HIG - App Icons Guidelines",
+          "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons"
         },
         "videoUrl": {
           "title": "App Icons & Assets",
@@ -707,11 +707,11 @@ export const PHASES_DATA: Phase[] = [
         "priority": "high",
         "whyItMatters": "The launch screen bridges the brief fraction of a second while the phone loads your code. Adding artificial 3-second delays or marketing popups annoys users and violates guidelines.",
         "implementationSteps": [
-          "iOS: Use a simple launch screen matching your app background color and logo.",
-          "iOS: Use the official system Splash Screen API.",
+          "Configure `LaunchScreen.storyboard` (or `UILaunchScreen` in `Info.plist`) matching your app's exact first-screen background color.",
+          "Hide the native splash screen immediately once your first interactive view mounts via Capacitor `SplashScreen.hide()`.",
           "Never put ads, progress bars, or fake multi-second delays on the launch screen."
         ],
-        "agentPrompt": "You are the autonomous mobile performance engineer. Do NOT ask the user to design splash screens—configure a native, instantaneous launch screen autonomously in our mobile project.\n\nTASK & OBJECTIVE:\nConfigure a clean, native launch screen for our application that matches the app's first screen background color and transitions instantly without artificial sleep delays or fake loading spinners.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Base.lproj/LaunchScreen.storyboard`, iOS splash screen styles in `styles.xml`, and `capacitor.config.ts`.\n2. IMPLEMENTATION:\n   - Configure the native iOS launch storyboard and iOS Splash theme with a solid background color identical to the first rendered screen background.\n   - Center our application logo cleanly without stretching or distortion across different device aspect ratios.\n   - Eliminate any artificial delay in JavaScript initialization: remove any `setTimeout` artificial splash delays. Hide the native splash screen immediately when the first interactive DOM element renders using `SplashScreen.hide()`.\n3. STORE COMPLIANCE: Apple Guideline 4.0 discourages artificial splash delays. Launch screens should convey instant responsiveness rather than an advertising billboard.\n4. VERIFICATION: Test app cold launch. Confirm the launch screen transitions seamlessly into the first screen with zero flicker and zero artificial delays.",
+        "agentPrompt": "You are the autonomous iOS performance engineer. Do NOT ask the user to design splash screens—configure a native, instantaneous launch screen autonomously in our project.\n\nTASK & OBJECTIVE:\nConfigure a clean, native iOS launch screen that matches the app's first screen background color and transitions instantly without artificial sleep delays or fake loading spinners.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Base.lproj/LaunchScreen.storyboard`, `ios/App/App/Info.plist`, and `capacitor.config.ts`.\n2. IMPLEMENTATION:\n   - Configure `LaunchScreen.storyboard` and `WKWebView` background color with a solid color identical to the first rendered screen background.\n   - Center our application logo cleanly without stretching or distortion across iPhone and iPad aspect ratios.\n   - Eliminate any artificial delay in JavaScript initialization: remove any `setTimeout` artificial splash delays. Hide the native splash screen immediately when the first interactive DOM element renders using `SplashScreen.hide()`.\n3. STORE COMPLIANCE: Apple Guideline 4.0 discourages artificial splash delays. Launch screens should convey instant responsiveness rather than an advertising billboard.\n4. VERIFICATION: Test app cold launch. Confirm the launch screen transitions seamlessly into the first screen with zero flicker and zero artificial delays.",
         "commonRejectionTraps": [
           "Adding a forced 3-second timer before showing the main screen.",
           "Displaying marketing popups, splash screen advertisements, or unbranded static screens during cold launch instead of an authentic launch storyboard.",
@@ -859,7 +859,7 @@ export const PHASES_DATA: Phase[] = [
         "id": "p4-state-restoration",
         "phaseId": "phase-data",
         "title": "Lifecycle State",
-        "shortDescription": "Restore the user's active tab, current screen route, and scroll position when iOS or iOS resumes the app from memory purge.",
+        "shortDescription": "Restore the user's active tab, current screen route, and scroll position when iOS or iPadOS resumes the app from memory purge.",
         "category": "functionality",
         "platform": "ios",
         "priority": "high",
@@ -930,7 +930,7 @@ export const PHASES_DATA: Phase[] = [
   {
     "id": "phase-3",
     "number": 5,
-    "title": "Performance & Data Safety",
+    "title": "Performance & Data Reliability",
     "shortTitle": "Performance & Data",
     "description": "Ensure fast launch times under 2 seconds, smooth 60fps scrolling, offline mode, safe data encryption, and secure network calls.",
     "iconName": "Cpu",
@@ -1029,17 +1029,17 @@ export const PHASES_DATA: Phase[] = [
           "name": "Sign in with Apple",
           "url": "https://developer.apple.com/app-store/review/guidelines/#sign-in-with-apple"
         },
-        "whyItMatters": "If your iOS app lets users log in with Apple, Facebook, or other social buttons, Apple strictly requires that you also offer \"Sign in with Apple\" with equal visual prominence.",
+        "whyItMatters": "If your iOS app lets users log in with Google, Facebook, or other third-party social buttons, Apple strictly requires that you also offer \"Sign in with Apple\" with equal visual prominence.",
         "implementationSteps": [
           "Enable \"Sign in with Apple\" in your Apple Developer Portal and Xcode project.",
-          "Place the official Apple Sign-in button right next to or above your other social login buttons.",
+          "Place the official Sign in with Apple button right next to or above your other social login buttons.",
           "Properly handle users who choose to hide their email address using Apple's private relay email."
         ],
-        "agentPrompt": "You are the autonomous authentication security engineer. Do NOT ask the user to implement authentication—implement native \"Sign in with Apple\" autonomously in our application.\n\nTASK & OBJECTIVE:\nInspect our login and registration system. If third-party social login buttons (Apple, Facebook, etc.) are offered, implement native \"Sign in with Apple\" with equal visual prominence strictly adhering to Apple Guideline 4.8.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Check login screens, signup modals, and authentication services for social login providers.\n2. IMPLEMENTATION:\n   - Place the official \"Sign in with Apple\" button alongside other social login options with equal visual prominence, size, and styling.\n   - Integrate native Apple Sign In via Capacitor / Apple Authentication services: handle the authentication credential response (Apple user ID, identity token, authorization code, full name, and private relay email address).\n   - Ensure the backend securely validates Apple's JWT identity token with Apple's public key.\n   - Properly support user accounts created with Apple's \"Hide My Email\" private relay service.\n   - Implement account revocation handling via Apple's `/auth/revoke` endpoint when an account is deleted.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 4.8. Offering Apple or Facebook login without Sign in with Apple triggers an immediate store rejection.\n4. VERIFICATION: Verify Apple ID button rendering and credential response handling with zero TypeScript errors.",
+        "agentPrompt": "You are the autonomous authentication security engineer. Do NOT ask the user to implement authentication—implement native \"Sign in with Apple\" autonomously in our application.\n\nTASK & OBJECTIVE:\nInspect our login and registration system. If third-party social login buttons (Google, Facebook, etc.) are offered, implement native \"Sign in with Apple\" with equal visual prominence strictly adhering to Apple Guideline 4.8.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Check login screens, signup modals, and authentication services for social login providers.\n2. IMPLEMENTATION:\n   - Place the official \"Sign in with Apple\" button alongside other social login options with equal visual prominence, size, and styling.\n   - Integrate native Sign in with Apple via `AuthenticationServices` / Capacitor: handle the authentication credential response (Apple user ID, identity token, authorization code, full name, and private relay email address).\n   - Ensure the backend securely validates Apple's JWT identity token with Apple's public key.\n   - Properly support user accounts created with Apple's \"Hide My Email\" private relay service.\n   - Implement account revocation handling via Apple's `/auth/revoke` endpoint when an account is deleted.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 4.8. Offering Google or Facebook login without Sign in with Apple triggers an immediate store rejection.\n4. VERIFICATION: Verify Apple ID button rendering and credential response handling with zero TypeScript errors.",
         "commonRejectionTraps": [
-          "Offering Apple or Facebook login on iOS without Sign in with Apple is an instant rejection under Guideline 4.8.",
-          "Hiding the Apple button at the bottom while featuring Apple at the top.",
-          "Offering third-party social logins (Apple/Facebook) without providing Sign in with Apple as an equal primary option (Guideline 4.8)."
+          "Offering Google or Facebook login on iOS without Sign in with Apple is an instant rejection under Guideline 4.8.",
+          "Hiding the Sign in with Apple button at the bottom while featuring Google or Facebook at the top.",
+          "Offering third-party social logins (Google/Facebook) without providing Sign in with Apple as an equal primary option (Guideline 4.8)."
         ],
         "verificationQuestions": [
           "Is Sign in with Apple offered with equal prominence to other social logins?",
@@ -1063,24 +1063,24 @@ export const PHASES_DATA: Phase[] = [
           "name": "Account Deletion Policy Guidelines",
           "url": "https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage"
         },
-        "whyItMatters": "Both Apple and Apple strictly mandate that if an app allows users to create an account, it MUST allow them to delete their account and data entirely inside the app without having to email support.",
+        "whyItMatters": "Apple strictly mandates under Guideline 5.1.1(v) that if an app allows users to create an account, it MUST allow them to initiate permanent deletion of their account and data directly inside the app without having to email support.",
         "implementationSteps": [
           "Add a clear \"Delete Account\" button in your Account Settings screen.",
           "Ask for a quick confirmation so users don't delete their account by accident.",
           "Permanently delete their entire record and database data on your backend server (Apple rejects apps that merely soft-delete or deactivate).",
           "If using \"Sign in with Apple\", call Apple's `/auth/revoke` REST API endpoint using your server secret to revoke their authorization grant.",
-          "Provide a public web link for account deletion for users who already uninstalled the app (mandated by App Store)."
+          "Optionally publish a web account-deletion link on your support page for users who have already uninstalled the app."
         ],
-        "agentPrompt": "You are the autonomous mobile security engineer. Do NOT ask the user to write account deletion logic—implement a complete in-app Account Deletion flow autonomously.\n\nTASK & OBJECTIVE:\nImplement an easily accessible, fully functional in-app \"Delete Account\" button in the account/profile settings as strictly mandated by Apple Guideline 5.1.1(v) and App Store policy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect user profile screens, account settings components, and authentication stores.\n2. IMPLEMENTATION:\n   - Add a clearly labeled \"Delete Account\" button in the Account / Profile settings section. It must be accessible directly within the app (not forcing the user to send an email or visit a separate web browser page).\n   - Implement a two-step confirmation modal with clear warning explaining that deletion is permanent and irrecoverable.\n   - Upon confirmation: call the backend deletion API to permanently wipe personal user records, revoke OAuth / Apple login tokens, clear all local Keychain/Keystore credentials, and route the user cleanly back to the logged-out welcome screen.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1(v) and App Store account deletion requirement. Missing this flow causes instant app rejection.\n4. VERIFICATION: Test deletion flow in test mode. Confirm tokens and local storage are purged and user is returned to the logged-out state with zero errors.",
+        "agentPrompt": "You are the autonomous mobile security engineer. Do NOT ask the user to write account deletion logic—implement a complete in-app Account Deletion flow autonomously.\n\nTASK & OBJECTIVE:\nImplement an easily accessible, fully functional in-app \"Delete Account\" button in the account/profile settings as strictly mandated by Apple Guideline 5.1.1(v).\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect user profile screens, account settings components, and authentication stores.\n2. IMPLEMENTATION:\n   - Add a clearly labeled \"Delete Account\" button in the Account / Profile settings section. It must be accessible directly within the app (not forcing the user to send an email or visit a separate web browser page).\n   - Implement a two-step confirmation modal with clear warning explaining that deletion is permanent and irrecoverable.\n   - Upon confirmation: call the backend deletion API to permanently wipe personal user records, revoke OAuth / Sign in with Apple tokens, clear all local iOS Keychain credentials, and route the user cleanly back to the logged-out welcome screen.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1(v). Missing this flow causes instant app rejection.\n4. VERIFICATION: Test deletion flow in test mode. Confirm tokens and local storage are purged and user is returned to the logged-out state with zero errors.",
         "commonRejectionTraps": [
           "Telling users to \"email support to delete your account\" instead of providing an in-app button is an instant rejection.",
           "Merely disabling or marking the account \"inactive\" instead of completely purging the user's stored personal data from backend servers.",
-          "Failing to revoke Apple Sign-in tokens during account deletion."
+          "Failing to revoke Sign in with Apple tokens via `/auth/revoke` during account deletion."
         ],
         "verificationQuestions": [
           "Can a user initiate account deletion directly inside the app in 2 or 3 taps?",
           "Are all user records and database rows permanently erased on your backend server?",
-          "Is a public web link for account deletion ready for your App Store Data Safety form?"
+          "Are Sign in with Apple tokens revoked via Apple's REST API upon deletion?"
         ],
         "whatHappensNext": "Users can delete their account and associated data directly within the app, fulfilling Apple Guideline 5.1.1(v) without manual support emails.",
         "videoUrl": {
@@ -1102,24 +1102,24 @@ export const PHASES_DATA: Phase[] = [
         },
         "whyItMatters": "Over 40% of first-time rejections involve subscription screens: missing a \"Restore Purchases\" button, hiding the subscription renewal terms, or missing clickable links to Terms of Use.",
         "implementationSteps": [
-          "Use modern StoreKit 2 on iOS and App Store Billing on iOS.",
+          "Use modern Apple StoreKit 2 (or RevenueCat wrapping StoreKit 2) on iOS and iPadOS.",
           "Put a prominent, clickable \"Restore Purchases\" button on every paywall screen so returning users can reclaim past purchases.",
-          "Display clear pricing: price with local currency symbol, renewal duration, billing frequency, and how to cancel in phone settings (FTC Click-to-Cancel transparency).",
+          "Display clear pricing: localized price returned by StoreKit, renewal duration, billing frequency, and how to cancel in Apple Account settings (Apple Guideline 3.1.2 & US ROSCA transparency).",
           "Include visible, clickable links to your Privacy Policy and Terms of Use (EULA) directly on the paywall screen itself."
         ],
-        "agentPrompt": "You are the autonomous mobile monetization engineer. Do NOT ask the user to build paywalls or billing logic—implement native In-App Purchases and auto-renewable subscriptions autonomously.\n\nTASK & OBJECTIVE:\nImplement native in-app subscriptions and digital purchases using StoreKit 2 (iOS) and App Store Billing (iOS), ensuring 100% compliance with Apple Guideline 3.1.2.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, pricing tables, subscription models, and entitlement stores.\n2. IMPLEMENTATION:\n   - Integrate StoreKit 2 / App Store Billing native plugins to fetch live product pricing from App Store Connect / App Store Connect.\n   - On the paywall UI, clearly render: subscription title, localized price, billing duration (e.g. \"$4.99 / month\"), trial period length, and auto-renewal notice.\n   - Add a prominent, fully functional \"Restore Purchases\" button that queries previous transactions and restores entitlements with one tap without re-billing.\n   - Add direct, clickable links on the paywall screen to our Privacy Policy and Terms of Use (EULA).\n   - Implement server-side verification using signed JWS transactions and App Store Server Notifications V2.\n3. STORE COMPLIANCE: Paywalls lacking pricing terms, EULA links, or a functional Restore Purchases button trigger instant rejection under Apple Guideline 3.1.2.\n4. VERIFICATION: Test purchase and restore flows in sandbox mode. Verify state transitions and confirm `tsc --noEmit` passes cleanly.",
+        "agentPrompt": "You are the autonomous iOS monetization engineer. Do NOT ask the user to build paywalls or billing logic—implement native In-App Purchases and auto-renewable subscriptions autonomously.\n\nTASK & OBJECTIVE:\nImplement native in-app subscriptions and digital purchases using Apple StoreKit 2, ensuring 100% compliance with Apple Guidelines 3.1.1 & 3.1.2.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, pricing tables, subscription models, and entitlement stores.\n2. IMPLEMENTATION:\n   - Integrate Apple StoreKit 2 to fetch live localized product pricing directly from App Store Connect.\n   - On the paywall UI, clearly render: subscription title, localized price, billing duration (e.g. \"$4.99 / month\"), trial period length, and auto-renewal notice.\n   - Add a prominent, fully functional \"Restore Purchases\" button that calls `AppStore.sync()` / queries `Transaction.currentEntitlements` and restores entitlements with one tap without re-billing.\n   - Add direct, clickable links on the paywall screen to our Privacy Policy and Terms of Use (EULA).\n   - Use `product.purchase(confirmIn:)` with the active view controller/window scene on iOS 17+/iPadOS 26+ so purchases present cleanly on iPad.\n3. STORE COMPLIANCE: Paywalls lacking pricing terms, EULA links, or a functional Restore Purchases button trigger instant rejection under Apple Guideline 3.1.2.\n4. VERIFICATION: Test purchase and restore flows in Xcode StoreKit Testing & Sandbox mode. Verify state transitions and confirm `tsc --noEmit` passes cleanly.",
         "commonRejectionTraps": [
           "Paywall missing a working \"Restore Purchases\" button.",
           "Paywall missing direct, clickable links to Terms of Use (EULA) and Privacy Policy.",
           "Hiding subscription renewal frequency or not explaining how users can cancel before billing.",
-          "Hardcoding a \"$\" sign instead of showing the user's local currency returned by the store."
+          "Hardcoding a \"$\" sign instead of showing the user's local currency returned by StoreKit."
         ],
         "verificationQuestions": [
           "Does the \"Restore Purchases\" button work for previously subscribed users?",
           "Are Terms of Use and Privacy Policy links clickable on every paywall screen?",
-          "Does the paywall explain how users can cancel their subscription in phone settings?"
+          "Does the paywall explain how users can cancel their subscription in iOS Settings?"
         ],
-        "whatHappensNext": "Digital purchases unlock instantly and survive device restores via StoreKit 2 and App Store Billing, protecting customer entitlements.",
+        "whatHappensNext": "Digital purchases unlock instantly and survive device restores via Apple StoreKit 2, protecting customer entitlements.",
         "videoUrl": {
           "title": "RevenueCat Subs",
           "url": "https://www.youtube.com/watch?v=-QcZOwsHvBI"
@@ -1165,11 +1165,11 @@ export const PHASES_DATA: Phase[] = [
         "priority": "high",
         "whyItMatters": "When a user taps an email verification link, invite code, or product link, they should land straight on the right screen inside your app instead of getting stuck in a mobile web browser.",
         "implementationSteps": [
-          "Ask your AI assistant: 'Set up Universal Links so shared links open directly in our app instead of a mobile browser.'",
-          "Your AI assistant will create the two small link-matching verification files required for Apple and Apple.",
+          "Ask your AI assistant: 'Set up Apple Universal Links so shared links open directly in our app instead of Safari.'",
+          "Host your `apple-app-site-association` (AASA) JSON file at `https://yourdomain.com/.well-known/apple-app-site-association` and enable Associated Domains in Xcode.",
           "Test by sending a link to your phone via Notes or Messages and tapping it—it should open right into your app."
         ],
-        "agentPrompt": "You are the autonomous mobile linking specialist. Do NOT ask the user to configure web routes—implement Universal Links and iOS App Links autonomously.\n\nTASK & OBJECTIVE:\nConfigure Universal Links for Apple iOS and App Links for iOS so that web URLs matching our domain open directly inside the mobile app without opening the browser.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect routing configuration, URL scheme settings, and deep link event listeners.\n2. IMPLEMENTATION:\n   - Create domain verification files:\n     - `apple-app-site-association` for iOS with `applinks` configuration, App ID, and path patterns.\n     - `assetlinks.json` for iOS with package name and SHA-256 certificate fingerprint.\n   - Configure deep link listeners in Capacitor (`App.addListener('appUrlOpen')`): parse incoming URLs, validate and sanitize path and query parameters, and route the user directly to the target screen.\n   - Handle cold launch deep links (when the app is opened via a link from a closed state).\n3. STORE COMPLIANCE: Complies with Apple and Apple modern mobile linking specifications, ensuring seamless user experience.\n4. VERIFICATION: Test opening sample deep links. Verify parameter parsing and ensure proper navigation routing with zero crashes.",
+        "agentPrompt": "You are the autonomous iOS linking specialist. Do NOT ask the user to configure web routes—implement Apple Universal Links autonomously.\n\nTASK & OBJECTIVE:\nConfigure Apple Universal Links for iOS and iPadOS so that web URLs matching our domain open directly inside the mobile app without launching Safari.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect routing configuration, `App.entitlements`, and deep link event listeners.\n2. IMPLEMENTATION:\n   - Create the Apple App Site Association file (`/.well-known/apple-app-site-association`) with `applinks.details` containing `appIDs: [\"<TEAM_ID>.<BUNDLE_ID>\"]` and exact `components` path patterns.\n   - Add the `com.apple.developer.associated-domains` entitlement (`applinks:yourdomain.com`) in Xcode Signing & Capabilities.\n   - Configure deep link listeners in Capacitor (`App.addListener('appUrlOpen')`): parse incoming URLs, validate and sanitize path and query parameters, and route the user directly to the target screen.\n   - Handle cold launch deep links (when the app is opened via a link from a closed state).\n3. STORE COMPLIANCE: Complies with Apple's Universal Links specification, ensuring seamless user experience.\n4. VERIFICATION: Test opening sample deep links. Verify parameter parsing and ensure proper navigation routing with zero crashes.",
         "commonRejectionTraps": [
           "Serving your verification file with an HTTP redirect (Apple's verification crawler will fail).",
           "Deep links redirecting to broken 404 views or requiring users to log in repeatedly when clicking universal links from emails or social media.",
@@ -1177,11 +1177,11 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Does tapping a link to your domain open the app directly on your phone?",
-          "Does your domain host the verification files over secure HTTPS without redirects?"
+          "Does your domain host the `apple-app-site-association` file over secure HTTPS without redirects?"
         ],
-        "whatHappensNext": "Marketing emails, shared links, and web banners route directly to the intended in-app screen via Universal Links and iOS App Links.",
+        "whatHappensNext": "Marketing emails, shared links, and web banners route directly to the intended in-app screen via Apple Universal Links.",
         "videoUrl": {
-          "title": "Universal & App Links",
+          "title": "Apple Universal Links",
           "url": "https://www.youtube.com/watch?v=kNbEEYlFIPs"
         }
       },
@@ -1199,7 +1199,7 @@ export const PHASES_DATA: Phase[] = [
           "Make sure the vibrations are gentle and rewarding—like a soft tap rather than a jarring buzz.",
           "Test on your real phone to ensure the vibrations feel crisp and natural in your palm."
         ],
-        "agentPrompt": "You are the autonomous mobile interaction engineer. Do NOT ask the user to write vibration logic—implement Apple-grade tactile haptics autonomously across all primary interactive controls.\n\nTASK & OBJECTIVE:\nIntegrate subtle, authentic tactile haptic feedback across all primary touch interactions, switches, completions, and gestures using the Capacitor Haptics API.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect buttons, checkboxes, modal openers, tabs, switches, and completion triggers across the app.\n2. IMPLEMENTATION:\n   - Integrate `@capacitor/haptics`:\n     - Light Impact (`ImpactStyle.Light`): on tab navigation, button taps, and pill toggles.\n     - Medium Impact (`ImpactStyle.Medium`): on copying code/prompts, opening sheets, and modal confirmations.\n     - Notification Success (`NotificationType.Success`): when marking an item complete, saving a project, or finishing a checklist.\n     - Notification Warning (`NotificationType.Warning`): when triggering a destructive action (like deleting a project).\n   - Ensure haptic triggers are wrapped in try-catch blocks to run silently on desktop web environments without throwing errors.\n3. STORE COMPLIANCE: Follows Apple Human Interface Guidelines for tactile response, giving the application the authentic feel of a premium native iOS app.\n4. VERIFICATION: Test on a physical iOS/iOS device. Confirm crisp haptic vibrations occur on taps and completions without performance overhead.",
+        "agentPrompt": "You are the autonomous mobile interaction engineer. Do NOT ask the user to write vibration logic—implement Apple-grade tactile haptics autonomously across all primary interactive controls.\n\nTASK & OBJECTIVE:\nIntegrate subtle, authentic tactile haptic feedback across all primary touch interactions, switches, completions, and gestures using the Capacitor Haptics API.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect buttons, checkboxes, modal openers, tabs, switches, and completion triggers across the app.\n2. IMPLEMENTATION:\n   - Integrate `@capacitor/haptics`:\n     - Light Impact (`ImpactStyle.Light`): on tab navigation, button taps, and pill toggles.\n     - Medium Impact (`ImpactStyle.Medium`): on copying code/prompts, opening sheets, and modal confirmations.\n     - Notification Success (`NotificationType.Success`): when marking an item complete, saving a project, or finishing a checklist.\n     - Notification Warning (`NotificationType.Warning`): when triggering a destructive action (like deleting a project).\n   - Ensure haptic triggers are wrapped in try-catch blocks to run silently on desktop web environments without throwing errors.\n3. STORE COMPLIANCE: Follows Apple Human Interface Guidelines for tactile response, giving the application the authentic feel of a premium native iOS app.\n4. VERIFICATION: Test on a physical iPhone or iPad. Confirm crisp haptic vibrations occur on taps and completions without performance overhead.",
         "commonRejectionTraps": [
           "Overusing continuous heavy vibrations on every minor scroll event, causing user irritation and excessive battery drain.",
           "Overusing heavy haptic patterns on routine scrolling actions rather than reserving subtle tactile feedback for meaningful user confirmations.",
@@ -1229,7 +1229,7 @@ export const PHASES_DATA: Phase[] = [
           "Apple rejects apps that ask to run in the background (like continuous GPS or audio) if the app doesn't actually need them.",
           "Ensure your app goes to sleep properly when closed so it never drains your users' phone batteries."
         ],
-        "agentPrompt": "You are the autonomous mobile background execution specialist. Do NOT ask the user to edit Plist keys—audit and configure background modes autonomously in our project files.\n\nTASK & OBJECTIVE:\nAudit `Info.plist` and `iOSManifest.xml` for background execution modes, removing any unnecessary background declarations and ensuring legitimate background tasks finish within strict OS limits.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Info.plist` for `UIBackgroundModes` array and `iOSManifest.xml` for background services.\n2. IMPLEMENTATION:\n   - Audit `UIBackgroundModes`: remove any unused entries (such as `audio`, `location`, `voip`, or `external-accessory`) unless the core feature genuinely requires continuous background operation.\n   - For legitimate background operations (like silent push data sync or periodic background fetch), ensure handlers strictly complete within Apple's 30-second execution window and call the completion handler promptly (`UIBackgroundFetchResultNewData`).\n   - On iOS, ensure WorkManager is utilized for deferrable background jobs instead of lingering foreground services.\n3. STORE COMPLIANCE: Apple Guideline 2.5.4 strictly rejects apps that declare background modes without using them actively or that fail to justify why continuous background execution is needed.\n4. VERIFICATION: Confirm `Info.plist` contains only justified background modes and all background handlers invoke completion callbacks cleanly.",
+        "agentPrompt": "You are the autonomous iOS background execution specialist. Do NOT ask the user to edit Plist keys—audit and configure background modes autonomously in our project files.\n\nTASK & OBJECTIVE:\nAudit `ios/App/App/Info.plist` for background execution modes, removing any unnecessary background declarations and ensuring legitimate background tasks finish within strict iOS limits.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Info.plist` for the `UIBackgroundModes` array and `BGTaskSchedulerPermittedIdentifiers`.\n2. IMPLEMENTATION:\n   - Audit `UIBackgroundModes`: remove any unused entries (such as `audio`, `location`, `voip`, or `external-accessory`) unless the core feature genuinely requires continuous background operation.\n   - For legitimate background operations (like silent push sync or periodic refresh), use Apple's `BGTaskScheduler` (`BGAppRefreshTask` / `BGProcessingTask`) and call `setTaskCompleted(success:)` promptly within Apple's execution budget.\n   - Ensure background fetch completion handlers invoke promptly so iOS does not throttle your app's background runtime.\n3. STORE COMPLIANCE: Apple Guideline 2.5.4 strictly rejects apps that declare background modes without using them actively or that fail to justify why continuous background execution is needed.\n4. VERIFICATION: Confirm `Info.plist` contains only justified background modes and all background handlers invoke completion callbacks cleanly.",
         "commonRejectionTraps": [
           "Including 'audio' or 'location' in UIBackgroundModes without an active media player or navigation feature triggers instant rejection under Guideline 2.5.4.",
           "Enabling background audio, location, or VoIP capabilities in Info.plist without providing an active, user-facing feature that requires them (Guideline 2.5.4).",
@@ -1248,14 +1248,14 @@ export const PHASES_DATA: Phase[] = [
     "number": 6,
     "title": "Privacy & Security Checks",
     "shortTitle": "Privacy & Security",
-    "description": "Keep user data secure, declare required privacy manifests for Apple and Apple, and ask only for permissions your app actually needs.",
+    "description": "Keep user data secure, declare required Apple Privacy Manifests, and ask only for permissions your app actually needs.",
     "iconName": "ShieldCheck",
     "items": [
       {
         "id": "p4-privacy-manifest",
         "phaseId": "phase-4",
         "title": "Apple Privacy",
-        "shortDescription": "Declare common APIs and third-party SDKs as mandated by Apple for iOS 17 and newer.",
+        "shortDescription": "Declare Required Reason APIs and third-party SDKs in PrivacyInfo.xcprivacy as mandated for all App Store builds.",
         "category": "security",
         "platform": "ios",
         "priority": "blocker",
@@ -1321,32 +1321,32 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p4-keychain-keystore",
         "phaseId": "phase-4",
-        "title": "Keychain Keystore",
+        "title": "Keychain & Enclave",
         "shortDescription": "Never save login tokens, passwords, or personal details in plain text files.",
         "category": "security",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Standard settings files (like UserDefaults on iOS or SharedPreferences on iOS) are stored as unencrypted text files on disk. Passwords, biometric keys, and login tokens must be saved in the phone's encrypted hardware vault.",
+        "whyItMatters": "Standard settings files (like `UserDefaults` or WebView `localStorage`) are stored as unencrypted data on disk. Passwords, biometric keys, and login tokens must be stored in Apple's hardware-encrypted iOS Keychain and Secure Enclave.",
         "implementationSteps": [
-          "iOS: Store login tokens and sensitive credentials in the iOS Keychain using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.",
-          "If offering Face ID / Touch ID, use Keychain access control flags with `kSecAccessControlBiometryAny` and always provide a device passcode fallback.",
-          "iOS: Use EncryptedSharedPreferences backed by the hardware iOS Keystore, paired with `BiometricPrompt` for fingerprint or face unlock.",
-          "Never store raw user passwords or secret API keys in plain text files or unencrypted local storage on the device."
+          "Store login tokens and sensitive credentials in Apple Keychain Services using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` so secrets are never included in unencrypted backups.",
+          "If offering Face ID or Touch ID, protect Keychain items with `SecAccessControlCreateWithFlags` (`.biometryCurrentSet` / `.userPresence`) and `LocalAuthentication` (`LAContext`) with device passcode fallback.",
+          "Use Capacitor Secure Storage (backed natively by iOS Keychain) for web-layer token read/write wrappers.",
+          "Never store raw user passwords or secret API keys in `localStorage`, `UserDefaults`, or plain text SQLite files."
         ],
-        "agentPrompt": "You are the autonomous mobile security engineer. Do NOT ask the user to store tokens—implement secure hardware-backed storage for all credentials and tokens autonomously.\n\nTASK & OBJECTIVE:\nAudit and refactor all local data storage across the application to ensure sensitive credentials, passwords, JWT tokens, and private keys are stored strictly in hardware-backed secure storage.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the codebase for any sensitive tokens or passwords stored in standard `localStorage`, `UserDefaults`, or `SharedPreferences`.\n2. IMPLEMENTATION:\n   - Integrate native secure storage (Apple Keychain on iOS using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` and EncryptedSharedPreferences / iOS Keystore on iOS).\n   - Store all authentication access tokens, refresh tokens, encryption keys, and user credentials in secure storage.\n   - If biometric authentication (Face ID / Fingerprint) is supported, configure hardware-backed access control with device passcode fallback.\n   - Purge any legacy plaintext credentials from standard preferences upon upgrade.\n3. STORE COMPLIANCE: Meets OWASP Mobile Security Standard MASVS-STORAGE and prevents extraction of user credentials from unencrypted backups.\n4. VERIFICATION: Verify all token read/write operations use secure storage wrappers and confirm `tsc --noEmit` passes with zero errors.",
+        "agentPrompt": "You are the autonomous iOS security engineer. Do NOT ask the user to store tokens—implement secure hardware-backed Keychain storage for all credentials and tokens autonomously.\n\nTASK & OBJECTIVE:\nAudit and refactor all local data storage across the application to ensure sensitive credentials, passwords, JWT tokens, and private keys are stored strictly in Apple Keychain Services & Secure Enclave.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan the codebase for any sensitive tokens or passwords stored in standard `localStorage` or `UserDefaults`.\n2. IMPLEMENTATION:\n   - Integrate native Apple Keychain storage using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` (via native Swift Keychain Services or `capacitor-secure-storage-plugin`).\n   - Store all authentication access tokens, refresh tokens, encryption keys, and user credentials in the Keychain.\n   - If Face ID / Touch ID is supported, tie token retrieval to hardware-backed `SecAccessControl` + `LAContext` with device passcode fallback.\n   - Purge any legacy plaintext credentials from `localStorage` / `UserDefaults` upon upgrade.\n3. STORE COMPLIANCE: Meets OWASP Mobile Security Standard MASVS-STORAGE and prevents extraction of user credentials from unencrypted backups.\n4. VERIFICATION: Verify all token read/write operations use Keychain wrappers and confirm `tsc --noEmit` passes with zero errors.",
         "commonRejectionTraps": [
-          "Saving login tokens or user passwords inside plain UserDefaults or local storage files.",
-          "Using a naive client-side boolean flag for biometric unlock without tying the authentication token to the hardware Keychain/Keystore.",
+          "Saving login tokens or user passwords inside plain UserDefaults or localStorage files.",
+          "Using a naive client-side boolean flag for Face ID unlock without tying the authentication token to the hardware iOS Keychain.",
           "Storing user authentication tokens or passwords in unencrypted localStorage or plain text SQLite tables."
         ],
         "verificationQuestions": [
-          "Are authentication tokens and credentials stored in Keychain or EncryptedSharedPreferences?",
-          "If biometric login is enabled, does it use hardware-backed access controls with passcode fallback?",
+          "Are authentication tokens and credentials stored in Apple Keychain Services?",
+          "If Face ID / Touch ID login is enabled, does it use hardware-backed Keychain access controls with passcode fallback?",
           "Is any sensitive user data left unencrypted in plain text files?"
         ],
-        "whatHappensNext": "User auth tokens and secrets reside inside hardware-backed secure enclaves, protecting accounts even if an unauthorized backup is extracted.",
+        "whatHappensNext": "User auth tokens and secrets reside inside Apple's hardware-backed Keychain and Secure Enclave, protecting accounts even if an unauthorized backup is extracted.",
         "videoUrl": {
-          "title": "Keychain & Keystore",
+          "title": "iOS Keychain & Secure Enclave",
           "url": "https://www.youtube.com/watch?v=ada9vgB70fw"
         }
       },
@@ -1358,13 +1358,13 @@ export const PHASES_DATA: Phase[] = [
         "category": "security",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Unencrypted HTTP connections expose user data to being intercepted on public Wi-Fi networks. Apple and Apple block unencrypted traffic by default.",
+        "whyItMatters": "Unencrypted HTTP connections expose user data to interception on public Wi-Fi networks. Apple's App Transport Security (ATS) blocks unencrypted traffic by default.",
         "implementationSteps": [
-          "Verify that all server API endpoints and image links use secure `https://`.",
-          "Keep Apple App Transport Security (ATS) enabled with no broad exceptions.",
-          "Configure iOS Network Security Config to disallow cleartext HTTP traffic."
+          "Verify that all server API endpoints and image links use secure `https://` with TLS 1.2 or TLS 1.3.",
+          "Keep Apple App Transport Security (ATS) enabled in `Info.plist` with zero broad `NSAllowsArbitraryLoads` exceptions.",
+          "Test network endpoints with SSL Labs or `curl -v` to confirm valid TLS certificates and modern cipher suites."
         ],
-        "agentPrompt": "You are the autonomous network security engineer. Do NOT ask the user to configure transport security—harden all network configurations and connections autonomously.\n\nTASK & OBJECTIVE:\nAudit all network calls and mobile configurations to ensure 100% of communication uses secure HTTPS with modern TLS encryption, removing any insecure cleartext bypasses.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `Info.plist`, `iOSManifest.xml`, network configuration XMLs, and all API endpoint URLs in the codebase.\n2. IMPLEMENTATION:\n   - Ensure all API endpoints, image URLs, and asset links strictly use `https://` protocols.\n   - In `Info.plist`, verify that Apple App Transport Security (ATS) exceptions like `NSAllowsArbitraryLoads: true` are completely removed.\n   - In iOS, configure `res/xml/network_security_config.xml` with `cleartextTrafficPermitted=\"false\"` and reference it in `iOSManifest.xml`.\n3. STORE COMPLIANCE: Apple and Apple reject apps that permit arbitrary unencrypted HTTP traffic without strict, proven justifications.\n4. VERIFICATION: Confirm that zero `http://` endpoints exist in source code and that ATS/network security configurations disallow cleartext.",
+        "agentPrompt": "You are the autonomous iOS network security engineer. Do NOT ask the user to configure transport security—harden all network configurations and connections autonomously.\n\nTASK & OBJECTIVE:\nAudit all network calls and `Info.plist` settings to ensure 100% of communication uses secure HTTPS with modern TLS encryption, removing any insecure cleartext bypasses.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Info.plist` and all API/asset endpoint URLs across the codebase.\n2. IMPLEMENTATION:\n   - Ensure all API endpoints, image URLs, and asset links strictly use `https://` protocols.\n   - In `Info.plist`, verify that broad Apple App Transport Security (ATS) exceptions like `NSAllowsArbitraryLoads: true` are completely removed.\n   - Confirm zero hardcoded `http://` URLs or local development hosts remain in production source code.\n3. STORE COMPLIANCE: Apple flags and rejects apps that disable App Transport Security without a strict, justified exception.\n4. VERIFICATION: Confirm that zero `http://` endpoints exist in source code and ATS enforces HTTPS cleanly.",
         "commonRejectionTraps": [
           "Enabling `NSAllowsArbitraryLoads: true` in your iOS settings without a strict, proven justification causes review rejections.",
           "Disabling App Transport Security (ATS) with broad NSAllowsArbitraryLoads exemptions instead of securing backend APIs with TLS 1.3 HTTPS endpoints.",
@@ -1423,7 +1423,7 @@ export const PHASES_DATA: Phase[] = [
           "Use modern zero-permission photo pickers so users can pick an avatar without granting access to their entire photo library.",
           "Only ask for permissions when the user actually taps a feature that requires them."
         ],
-        "agentPrompt": "You are the autonomous mobile privacy engineer. Do NOT ask the user to edit manifest files—audit and minimize application permissions autonomously.\n\nTASK & OBJECTIVE:\nAudit all device permissions requested by the application across `Info.plist` and `iOSManifest.xml`, eliminate unnecessary permissions, and write clear, user-centric usage descriptions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `Info.plist` and `iOSManifest.xml` for requested permissions (camera, microphone, location, photo library, contacts).\n2. IMPLEMENTATION:\n   - Remove any broad, non-essential permissions that are not strictly necessary for core functionality.\n   - For photo selection, migrate to modern system photo pickers (`PHPickerViewController` on iOS, iOS Photo Picker) that require zero permissions.\n   - For every remaining permission, write a friendly, specific, and transparent usage description (e.g. `NSCameraUsageDescription`) explaining exactly why access is needed and how the user benefits.\n3. STORE COMPLIANCE: Apple Guideline 5.1.1 and App Store Policy reject apps that request permissions with generic or uninformative descriptions.\n4. VERIFICATION: Verify that all declared permissions in `Info.plist` contain clear, non-generic descriptions.",
+        "agentPrompt": "You are the autonomous iOS privacy engineer. Do NOT ask the user to edit plist files—audit and minimize application permissions autonomously.\n\nTASK & OBJECTIVE:\nAudit all device permissions requested by the application in `ios/App/App/Info.plist`, eliminate unnecessary permissions, and write clear, user-centric usage descriptions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App/Info.plist` for requested permissions (camera, microphone, location, photo library, contacts).\n2. IMPLEMENTATION:\n   - Remove any broad, non-essential permissions that are not strictly necessary for core functionality.\n   - For photo selection, use Apple's system photo picker (`PHPickerViewController`) which requires zero broad photo library permissions.\n   - For every remaining permission, write a friendly, specific, and transparent usage description (e.g. `NSCameraUsageDescription`) explaining exactly why access is needed and how the user benefits.\n3. STORE COMPLIANCE: Apple Guideline 5.1.1 rejects apps that request permissions with generic or uninformative descriptions.\n4. VERIFICATION: Verify that all declared permissions in `Info.plist` contain clear, non-generic descriptions.",
         "commonRejectionTraps": [
           "Using generic permission strings like \"App needs location to work.\"",
           "Asking for access to the entire photo gallery when the user only wants to pick a single profile photo.",
@@ -1480,7 +1480,7 @@ export const PHASES_DATA: Phase[] = [
           "Only include public, rate-limited client keys (like Firebase Web API key or Supabase public anon key) in mobile builds.",
           "Add bundle ID and domain restrictions to all public API keys in your cloud provider console."
         ],
-        "agentPrompt": "You are the autonomous mobile security architect. Do NOT ask the user to manage backend proxies—audit and protect all private API keys and master secrets autonomously.\n\nTASK & OBJECTIVE:\nPerform an exhaustive scan of our mobile codebase, configuration files, and assets for hardcoded private API keys, master tokens, or server secrets, and move all privileged API calls behind a secure proxy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan all source files, environment files (`.env*`), and assets for hardcoded secret keys (e.g. OpenAI secret keys, Stripe secret keys, AWS credentials, database passwords).\n2. IMPLEMENTATION:\n   - Remove any master/admin secret keys embedded in the client application bundle. (Any string bundled in a mobile app can be extracted with decompilers).\n   - Route privileged API requests through a secure serverless backend proxy endpoint that validates user authentication before invoking third-party APIs.\n   - Ensure the mobile client only uses publishable public client keys where explicitly supported by vendors.\n3. STORE COMPLIANCE: Apple and Apple security scanners actively scan uploads for exposed secret keys and suspend accounts with compromised credentials.\n4. VERIFICATION: Verify zero private master keys exist in client-side code and confirm `tsc --noEmit` passes.",
+        "agentPrompt": "You are the autonomous mobile security architect. Do NOT ask the user to manage backend proxies—audit and protect all private API keys and master secrets autonomously.\n\nTASK & OBJECTIVE:\nPerform an exhaustive scan of our mobile codebase, configuration files, and assets for hardcoded private API keys, master tokens, or server secrets, and move all privileged API calls behind a secure proxy.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan all source files, environment files (`.env*`), and assets for hardcoded secret keys (e.g. OpenAI secret keys, Stripe secret keys, AWS credentials, database passwords).\n2. IMPLEMENTATION:\n   - Remove any master/admin secret keys embedded in the client application bundle. (Any string bundled in a mobile app can be extracted with decompilers).\n   - Route privileged API requests through a secure serverless backend proxy endpoint that validates user authentication before invoking third-party APIs.\n   - Ensure the mobile client only uses publishable public client keys where explicitly supported by vendors.\n3. STORE COMPLIANCE: Automated security scanners and App Store reviewers reject builds containing exposed private secret keys and compromised credentials.\n4. VERIFICATION: Verify zero private master keys exist in client-side code and confirm `tsc --noEmit` passes.",
         "commonRejectionTraps": [
           "Decompiling the app reveals private OpenAI or payment secret keys, resulting in thousands of dollars in fraudulent API charges.",
           "Leaving database admin or master service keys in frontend files, allowing anyone to modify all user data.",
@@ -1507,11 +1507,11 @@ export const PHASES_DATA: Phase[] = [
         "whyItMatters": "If login tokens never expire or aren't completely erased upon logout, anyone who later touches the phone, buys a used device, or intercepts an old token can access the user's private messages and personal account.",
         "implementationSteps": [
           "Use short-lived access tokens (e.g. 15 to 60 minutes) combined with secure refresh token rotation.",
-          "When the user taps 'Log Out', immediately clear all authentication tokens from Keychain / Keystore and purge all cached user data and profile files from memory and local storage.",
+          "When the user taps 'Log Out', immediately clear all authentication tokens from the iOS Keychain and purge all cached user data and profile files from memory and local storage.",
           "Notify your backend server on logout so the refresh token is instantly invalidated and cannot be reused.",
           "Automatically log the user out and prompt for sign-in if their session is expired or revoked on the server."
         ],
-        "agentPrompt": "You are the autonomous authentication security architect. Do NOT ask the user to handle auth lifecycles—implement a secure session lifecycle autonomously.\n\nTASK & OBJECTIVE:\nImplement an ironclad session lifecycle for our mobile authentication system, including token expiration, automatic silent token refresh, and clean session wipe upon logout.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication store, session management, and HTTP client interceptors.\n2. IMPLEMENTATION:\n   - Implement short-lived access tokens paired with secure refresh tokens stored in Keychain/Keystore.\n   - Implement an HTTP client interceptor that detects 401 Unauthorized responses, queues pending requests, silently refreshes the access token using the refresh token, and replays failed requests.\n   - Implement a thorough \"Log Out\" routine: call the server logout endpoint to invalidate tokens, wipe all stored tokens, credentials, cached files, and local state from the device, and reset navigation to the login view.\n3. STORE COMPLIANCE: Required by enterprise security standards and prevents unauthorized session hijacking.\n4. VERIFICATION: Test token expiration and refresh flow. Confirm session logout thoroughly clears local state with zero memory leaks.",
+        "agentPrompt": "You are the autonomous authentication security architect. Do NOT ask the user to handle auth lifecycles—implement a secure session lifecycle autonomously.\n\nTASK & OBJECTIVE:\nImplement an ironclad session lifecycle for our mobile authentication system, including token expiration, automatic silent token refresh, and clean session wipe upon logout.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication store, session management, and HTTP client interceptors.\n2. IMPLEMENTATION:\n   - Implement short-lived access tokens paired with secure refresh tokens stored in the iOS Keychain.\n   - Implement an HTTP client interceptor that detects 401 Unauthorized responses, queues pending requests, silently refreshes the access token using the refresh token, and replays failed requests.\n   - Implement a thorough \"Log Out\" routine: call the server logout endpoint to invalidate tokens, wipe all stored tokens, credentials, cached files, and local state from the device, and reset navigation to the login view.\n3. STORE COMPLIANCE: Required by enterprise security standards and prevents unauthorized session hijacking.\n4. VERIFICATION: Test token expiration and refresh flow. Confirm session logout thoroughly clears local state with zero memory leaks.",
         "commonRejectionTraps": [
           "Tapping 'Log Out' only dismisses the UI, leaving sensitive user data, cached images, or active auth tokens stored in local files.",
           "Tokens that never expire, allowing permanently hijacked sessions if a device is lost or compromised.",
@@ -1576,14 +1576,14 @@ export const PHASES_DATA: Phase[] = [
           "name": "App Store Privacy Policy",
           "url": "https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage"
         },
-        "whyItMatters": "An invalid, broken, or redirecting privacy policy link causes immediate rejection in both App Store Connect and App Store Connect.",
+        "whyItMatters": "An invalid, broken, or redirecting privacy policy link causes immediate rejection in App Store Connect.",
         "implementationSteps": [
           "Host your privacy policy on a public HTTPS webpage that anyone can open without needing to log in.",
           "Name every third-party service your app uses (such as Firebase, Stripe, or RevenueCat).",
           "Explain clearly how users can request a copy of their data or delete their account.",
           "Include an active support email address for privacy questions."
         ],
-        "agentPrompt": "You are the autonomous legal and compliance engineer. Do NOT ask the user to draft policies—generate and integrate a comprehensive, store-compliant Privacy Policy autonomously.\n\nTASK & OBJECTIVE:\nDraft a comprehensive, store-compliant Privacy Policy and integrate it into both the mobile application and a publicly accessible web endpoint for App Store Connect and App Store Connect.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our project documentation, settings screens, and data models to identify all collected data types and third-party services.\n2. IMPLEMENTATION:\n   - Generate a clear, legally compliant Privacy Policy document containing: exact data categories collected, third-party services utilized (analytics, billing, crash reporting), retention policies, user deletion rights, and support contact email.\n   - Add a dedicated in-app Privacy Policy screen/modal in the settings menu.\n   - Configure a publicly accessible HTTPS web page route (e.g. `/privacy`) hosted on our domain to link directly into App Store Connect and App Store Connect listing metadata.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1 and App Store Policy. Submissions without a working, public, HTTPS Privacy Policy URL are rejected automatically.\n4. VERIFICATION: Confirm the Privacy Policy view renders cleanly and the web URL is accessible without authentication barriers.",
+        "agentPrompt": "You are the autonomous legal and compliance engineer. Do NOT ask the user to draft policies—generate and integrate a comprehensive, store-compliant Privacy Policy autonomously.\n\nTASK & OBJECTIVE:\nDraft a comprehensive, store-compliant Privacy Policy and integrate it into both the mobile application and a publicly accessible web endpoint for App Store Connect.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our project documentation, settings screens, and data models to identify all collected data types and third-party services.\n2. IMPLEMENTATION:\n   - Generate a clear, legally compliant Privacy Policy document containing: exact data categories collected, third-party services utilized (analytics, billing, crash reporting), retention policies, user deletion rights, and support contact email.\n   - Add a dedicated in-app Privacy Policy screen/modal in the settings menu.\n   - Configure a publicly accessible HTTPS web page route (e.g. `/privacy`) hosted on our domain to link directly into App Store Connect listing metadata.\n3. STORE COMPLIANCE: Mandated by Apple Guideline 5.1.1. Submissions without a working, public, HTTPS Privacy Policy URL are rejected automatically.\n4. VERIFICATION: Confirm the Privacy Policy view renders cleanly and the web URL is accessible without authentication barriers.",
         "commonRejectionTraps": [
           "Linking to a generic company homepage instead of a specific privacy policy page.",
           "Putting the privacy policy behind a login screen or a broken link.",
@@ -1611,7 +1611,7 @@ export const PHASES_DATA: Phase[] = [
           "name": "User-Generated Content Guidelines",
           "url": "https://developer.apple.com/app-store/review/guidelines/#user-generated-content"
         },
-        "whyItMatters": "Apple and Apple have zero tolerance for unmoderated content. If your app lets users post photos, comments, or chat messages, you MUST include built-in tools to report and block abusive users.",
+        "whyItMatters": "Apple has zero tolerance for unmoderated content. If your app lets users post photos, comments, or chat messages, you MUST include built-in tools to report and block abusive users.",
         "implementationSteps": [
           "Include Terms of Use stating that offensive content and abusive behavior are strictly prohibited.",
           "Add a visible \"Report\" button on every user post, comment, and profile.",
@@ -1644,7 +1644,7 @@ export const PHASES_DATA: Phase[] = [
         "priority": "high",
         "whyItMatters": "Loading tracking tools or personalized ads for users in the European Union without asking for consent first violates GDPR and Apple policies, leading to ad account suspensions.",
         "implementationSteps": [
-          "Use an approved Consent Management Platform (such as Apple UMP SDK) if showing ads.",
+          "Use an IAB TCF-certified Consent Management Platform (such as Google UMP SDK or Usercentrics) if showing personalized ads in Europe.",
           "Show the consent banner before initializing ad or tracking SDKs for users in Europe.",
           "Let users review or change their privacy choices anytime from your app settings."
         ],
@@ -1660,7 +1660,7 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "European and international users receive transparent data consent controls that protect your company from regulatory privacy fines.",
         "videoUrl": {
-          "title": "Apple UMP Consent",
+          "title": "GDPR Consent & UMP",
           "url": "https://www.youtube.com/watch?v=SysASyh9XKo"
         }
       },
@@ -1735,14 +1735,14 @@ export const PHASES_DATA: Phase[] = [
           "name": "EULA & Terms Guidelines",
           "url": "https://developer.apple.com/app-store/review/guidelines/#subscriptions"
         },
-        "whyItMatters": "Apple strictly rejects any app with auto-renewing subscriptions or user-created content unless you provide a clear End User License Agreement (EULA). Both Apple guidelines and the FTC Click-to-Cancel rule require transparent billing and cancellation details.",
+        "whyItMatters": "Apple strictly rejects any app with auto-renewing subscriptions or user-created content unless you provide a clear End User License Agreement (EULA). Apple Guideline 3.1.2, US ROSCA, and state auto-renewal laws require transparent billing and cancellation details.",
         "implementationSteps": [
           "Host a public, readable Terms of Service / EULA webpage on an HTTPS address (or explicitly link to Apple's Standard EULA).",
-          "Include clear rules: prohibited abusive behavior, subscription renewal details, billing cycles, and how users can cancel in iOS/iOS settings.",
+          "Include clear rules: prohibited abusive behavior, subscription renewal details, billing cycles, and how users can cancel in iOS Settings > Apple Account > Subscriptions.",
           "Provide a direct, clickable link to your Terms of Service directly on every in-app paywall screen and in your App Store Connect metadata.",
           "Include standard disclaimers: limitation of liability, service availability, and governing law."
         ],
-        "agentPrompt": "You are the autonomous legal and store compliance engineer. Do NOT ask the user to write legal terms—draft and integrate plain-English Terms of Service and EULA autonomously.\n\nTASK & OBJECTIVE:\nDraft and integrate comprehensive Terms of Service and End User License Agreement (EULA) with explicit subscription billing terms, prominently linking them across the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, settings menus, and onboarding flows.\n2. IMPLEMENTATION:\n   - Generate a comprehensive Terms of Service and EULA document covering: license terms, user conduct, intellectual property, auto-renewable subscription terms (billing cycle, price, cancellation via Apple/Apple settings), and limitation of liability.\n   - Add a dedicated in-app Terms viewer screen/modal in the settings menu.\n   - Ensure direct, clickable links to the Terms and EULA are prominently rendered on all paywall screens right next to the purchase button.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 3.1.2. Paywalls lacking visible Terms of Use (EULA) links trigger immediate rejection during store review.\n4. VERIFICATION: Verify that the Terms view renders cleanly and that paywall links navigate to the EULA without crashing.",
+        "agentPrompt": "You are the autonomous legal and store compliance engineer. Do NOT ask the user to write legal terms—draft and integrate plain-English Terms of Service and EULA autonomously.\n\nTASK & OBJECTIVE:\nDraft and integrate comprehensive Terms of Service and End User License Agreement (EULA) with explicit subscription billing terms, prominently linking them across the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, settings menus, and onboarding flows.\n2. IMPLEMENTATION:\n   - Generate a comprehensive Terms of Service and EULA document covering: license terms, user conduct, intellectual property, auto-renewable subscription terms (billing cycle, price, cancellation via Apple Account settings), and limitation of liability.\n   - Add a dedicated in-app Terms viewer screen/modal in the settings menu.\n   - Ensure direct, clickable links to the Terms and EULA are prominently rendered on all paywall screens right next to the purchase button.\n3. STORE COMPLIANCE: Mandatory under Apple Guideline 3.1.2. Paywalls lacking visible Terms of Use (EULA) links trigger immediate rejection during store review.\n4. VERIFICATION: Verify that the Terms view renders cleanly and that paywall links navigate to the EULA without crashing.",
         "commonRejectionTraps": [
           "Rejection under Guideline 3.1.2 for having an in-app subscription paywall without a direct, clickable link to Terms of Use (EULA).",
           "Failing to explain how users can cancel subscriptions before the next billing cycle.",
@@ -1790,7 +1790,7 @@ export const PHASES_DATA: Phase[] = [
         "id": "p5-intellectual-property",
         "phaseId": "phase-5",
         "title": "Trademarks Copyrights",
-        "shortDescription": "Never use third-party brand logos, Apple/Apple trademarks, or copyrighted media without permission.",
+        "shortDescription": "Never use third-party brand logos, Apple trademarks, or copyrighted media without permission.",
         "category": "legal",
         "platform": "ios",
         "priority": "blocker",
@@ -1829,14 +1829,13 @@ export const PHASES_DATA: Phase[] = [
           "name": "EU Digital Services Act",
           "url": "https://developer.apple.com/support/dsa-requirements/"
         },
-        "whyItMatters": "The European Union's Digital Services Act legally requires Apple and Apple to verify and publicly display the address, phone number, and email of commercial developers ('Traders') in all 27 EU member states. Failing to provide this information causes your app to be removed from European app stores.",
+        "whyItMatters": "The European Union's Digital Services Act legally requires Apple to verify and publicly display the address, phone number, and email of commercial developers ('Traders') across all 27 EU member states. Failing to complete this declaration causes your app to be removed from European App Store storefronts.",
         "implementationSteps": [
-          "In App Store Connect: Go to Account Settings -> Business -> European Union Digital Services Act (DSA).",
-          "Select whether you are a 'Trader' (anyone who distributes apps for commercial gain, including ads or in-app purchases) or 'Non-Trader'.",
-          "If Trader: Provide your verified business address, support phone number, and contact email address.",
-          "In App Store Connect: Complete the matching Trader verification under Account Details."
+          "In App Store Connect: Go to Business -> Compliance -> Digital Services Act (DSA).",
+          "Select whether you are a 'Trader' (anyone who distributes apps for commercial gain, including paid apps, ads, or in-app purchases) or 'Non-Trader'.",
+          "If Trader: Provide and verify your physical business address, support phone number, and contact email address for public display on EU App Store pages."
         ],
-        "agentPrompt": "You are the autonomous EU regulatory compliance engineer. Do NOT ask the user to research EU laws—prepare the technical compliance metadata for the EU Digital Services Act autonomously.\n\nTASK & OBJECTIVE:\nPrepare the technical compliance metadata and documentation required for the European Union Digital Services Act (DSA) declaration in App Store Connect and App Store Connect.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project configurations and contact metadata.\n2. IMPLEMENTATION:\n   - Determine Trader status: if the app monetizes (via paid download, subscriptions, or ads), classify the developer account as a \"Trader\".\n   - Generate a compliance checklist (`docs/dsa-compliance.md`) detailing the required public trader metadata: legal company/developer name, registered business address, verified telephone number, and customer support email address.\n   - Ensure support contact information is easily accessible inside the app settings.\n3. STORE COMPLIANCE: Under EU DSA regulations, apps that fail to complete the Trader declaration are legally restricted from being distributed across all 27 European Union member states.\n4. VERIFICATION: Verify that contact and support information is properly displayed in the app settings.",
+        "agentPrompt": "You are the autonomous EU regulatory compliance engineer. Do NOT ask the user to research EU laws—prepare the technical compliance metadata for the EU Digital Services Act autonomously.\n\nTASK & OBJECTIVE:\nPrepare the technical compliance metadata and documentation required for the European Union Digital Services Act (DSA) declaration in App Store Connect.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project configurations and contact metadata.\n2. IMPLEMENTATION:\n   - Determine Trader status: if the app monetizes (via paid download, subscriptions, or ads), classify the developer account as a \"Trader\".\n   - Generate a compliance checklist (`docs/dsa-compliance.md`) detailing the required public trader metadata: legal company/developer name, registered business address, verified telephone number, and customer support email address.\n   - Ensure support contact information is easily accessible inside the app settings.\n3. STORE COMPLIANCE: Under EU DSA regulations, apps that fail to complete the Trader declaration are legally restricted from being distributed across all 27 European Union member states.\n4. VERIFICATION: Verify that contact and support information is properly displayed in the app settings.",
         "commonRejectionTraps": [
           "Ignoring the DSA notification in App Store Connect, leading to the app being hidden or removed from all 27 EU App Store storefronts.",
           "Missing or unverified EU Digital Services Act (DSA) trader declarations in App Store Connect, resulting in your app being removed from all 27 EU member states.",
@@ -1887,8 +1886,8 @@ export const PHASES_DATA: Phase[] = [
         "category": "legal",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Apple and Apple reject apps immediately if your Privacy Policy and Support URLs are broken, password-protected, or missing contact information. Serving them via GitHub Pages is 100% free, highly reliable, and takes 5 minutes.",
-        "whatHappensNext": "You have permanent, live, publicly accessible HTTPS URLs for your Privacy Policy and Support page ready to paste into App Store Connect and App Store Connect.",
+        "whyItMatters": "Apple rejects apps immediately if your Privacy Policy and Support URLs are broken, password-protected, or missing contact information. Serving them via GitHub Pages is 100% free, highly reliable, and takes 5 minutes.",
+        "whatHappensNext": "You have permanent, live, publicly accessible HTTPS URLs for your Privacy Policy and Support page ready to paste into App Store Connect.",
         "directLink": {
           "label": "GitHub Pages Documentation",
           "url": "https://pages.github.com/"
@@ -1900,9 +1899,9 @@ export const PHASES_DATA: Phase[] = [
         "implementationSteps": [
           "Create a clean HTML file named `privacy.html` in your `public/` directory disclosing what data your app collects (or confirming zero personal data collected).",
           "Create a clean HTML file named `support.html` in `public/` with your support email and FAQ instructions.",
-          "In your GitHub repository settings, go to 'Pages' and select deploy from branch 'main' (or '/docs' folder).",
+          "In your GitHub repository settings, go to 'Pages' and select deploy from branch 'main' (or 'gh-pages').",
           "Verify your live URLs: `https://yourusername.github.io/yourproject/privacy.html` and `https://yourusername.github.io/yourproject/support.html`.",
-          "Enter these exact live URLs in App Store Connect and App Store Connect listing fields."
+          "Enter these exact live URLs in App Store Connect listing fields."
         ],
         "agentPrompt": "You are the autonomous legal and web deployment engineer. Do NOT ask the user to write HTML—generate production-grade Privacy Policy and Support web pages autonomously.\n\nTASK & OBJECTIVE:\nGenerate complete, store-compliant `privacy.html`, `terms.html`, and `support.html` web documents in our project directory, ready for instant hosting via GitHub Pages.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. PRIVACY SPECIFICATION: Draft a comprehensive mobile Privacy Policy detailing: 1) Data collection practices (explicitly stating if zero personal data is collected or if data stays on device); 2) User rights (deletion, access, opt-out); 3) Third-party service disclosures; 4) Contact email.\n2. SUPPORT SPECIFICATION: Draft a clean Support page with clear contact email address, troubleshooting steps, and refund instructions.\n3. DEPLOYMENT ASSETS: Save files into `public/` and `docs/` so they build automatically with our web distribution and deploy seamlessly via GitHub Pages.\n4. STORE COMPLIANCE: Apple Guideline 5.1.1 and App Store Policy require public, working HTTPS privacy URLs without authentication barriers.\n5. VERIFICATION: Verify that HTML files are self-contained with responsive CSS and clean mobile readability.",
         "commonRejectionTraps": [
@@ -2090,10 +2089,10 @@ export const PHASES_DATA: Phase[] = [
           "Configure your build scripts to upload symbol files automatically with every release.",
           "Trigger a deliberate test crash in development to verify that full details appear on your dashboard."
         ],
-        "agentPrompt": "You are the autonomous mobile observability engineer. Do NOT ask the user to integrate tracking—integrate real-time crash reporting and diagnostic breadcrumbs autonomously.\n\nTASK & OBJECTIVE:\nIntegrate a real-time crash and error reporting solution (such as Sentry or Firebase Crashlytics) and configure it to capture stack traces, device context, and user breadcrumbs.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect root error boundaries, unhandled promise rejection listeners, and build scripts.\n2. IMPLEMENTATION:\n   - Configure the crash reporting SDK with global unhandled error handlers and unhandled promise rejection hooks.\n   - Implement breadcrumb logging: automatically record route transitions, network requests, and user button taps leading up to any crash.\n   - Configure automated source map and native debug symbol (dSYM / ProGuard mapping) uploads during CI/CD builds so all stack traces display exact source filenames and line numbers.\n   - Ensure user personal data (passwords, tokens, emails) is strictly sanitized and omitted from crash payloads.\n3. STORE COMPLIANCE: Enables immediate hotfix triage within minutes of release rather than waiting for negative store reviews.\n4. VERIFICATION: Trigger a test caught error in development mode. Confirm breadcrumbs and stack traces format cleanly with zero compilation errors.",
+        "agentPrompt": "You are the autonomous mobile observability engineer. Do NOT ask the user to integrate tracking—integrate real-time crash reporting and diagnostic breadcrumbs autonomously.\n\nTASK & OBJECTIVE:\nIntegrate a real-time crash and error reporting solution (such as Sentry or Firebase Crashlytics) and configure it to capture stack traces, device context, and user breadcrumbs.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect root error boundaries, unhandled promise rejection listeners, and build scripts.\n2. IMPLEMENTATION:\n   - Configure the crash reporting SDK with global unhandled error handlers and unhandled promise rejection hooks.\n   - Implement breadcrumb logging: automatically record route transitions, network requests, and user button taps leading up to any crash.\n   - Configure automated source map and native debug symbol (`dSYM`) uploads during CI/CD builds so all stack traces display exact source filenames and line numbers.\n   - Ensure user personal data (passwords, tokens, emails) is strictly sanitized and omitted from crash payloads.\n3. STORE COMPLIANCE: Enables immediate hotfix triage within minutes of release rather than waiting for negative store reviews.\n4. VERIFICATION: Trigger a test caught error in development mode. Confirm breadcrumbs and stack traces format cleanly with zero compilation errors.",
         "commonRejectionTraps": [
           "Launching to production without crash reporting, leaving you completely blind when users report bugs.",
-          "Failing to upload native dSYM symbolication files or ProGuard mapping files to Sentry or Crashlytics, leaving production crash stacks unreadable.",
+          "Failing to upload native dSYM symbolication files and web JS source maps to Sentry or Crashlytics, leaving production crash stacks unreadable.",
           "Deploying third-party crash reporters that collect personal identifiers without user consent and privacy declarations."
         ],
         "verificationQuestions": [
@@ -2120,7 +2119,7 @@ export const PHASES_DATA: Phase[] = [
           "Set strict 15-second request timeouts with user-friendly retry banners.",
           "Cache recent GET responses so slow connections render stale data immediately rather than an empty screen."
         ],
-        "agentPrompt": "You are the autonomous mobile network reliability engineer. Do NOT ask the user to test slow networks—implement graceful network degradation, timeouts, and offline banners autonomously.\n\nTASK & OBJECTIVE:\nHarden all application data fetching and mutations against high latency, packet loss, and flaky mobile connections (3G/Edge simulation), ensuring the UI never hangs indefinitely.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect fetch utilities, state loaders, and asynchronous action dispatchers.\n2. IMPLEMENTATION:\n   - Implement an explicit timeout on all network requests (e.g., abort controller timeout after 10 seconds) so queries fail fast rather than hanging indefinitely.\n   - When a network request times out or fails due to poor connectivity, display a non-intrusive floating toast/banner with a prominent \"Retry\" button.\n   - Ensure the UI gracefully renders existing cached data while alerting the user of connectivity issues without destroying visible content.\n   - Prevent blocking the main thread or disabling navigation while background network queries are in flight.\n3. STORE COMPLIANCE: Apple and Apple reviewers intentionally test apps behind simulated throttled networks and NAT64 IPv6-only environments; unhandled network hangs cause instant review failure.\n4. VERIFICATION: Test with artificial latency and dropped packets in dev tools. Confirm timeouts trigger friendly retry alerts and cached data persists.",
+        "agentPrompt": "You are the autonomous mobile network reliability engineer. Do NOT ask the user to test slow networks—implement graceful network degradation, timeouts, and offline banners autonomously.\n\nTASK & OBJECTIVE:\nHarden all application data fetching and mutations against high latency, packet loss, and flaky mobile connections (3G/Edge simulation), ensuring the UI never hangs indefinitely.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect fetch utilities, state loaders, and asynchronous action dispatchers.\n2. IMPLEMENTATION:\n   - Implement an explicit timeout on all network requests (e.g., abort controller timeout after 10 seconds) so queries fail fast rather than hanging indefinitely.\n   - When a network request times out or fails due to poor connectivity, display a non-intrusive floating toast/banner with a prominent \"Retry\" button.\n   - Ensure the UI gracefully renders existing cached data while alerting the user of connectivity issues without destroying visible content.\n   - Prevent blocking the main thread or disabling navigation while background network queries are in flight.\n3. STORE COMPLIANCE: Apple App Review engineers intentionally test apps behind simulated throttled networks and NAT64 IPv6-only environments; unhandled network hangs cause instant review failure.\n4. VERIFICATION: Test with artificial latency and dropped packets in dev tools. Confirm timeouts trigger friendly retry alerts and cached data persists.",
         "commonRejectionTraps": [
           "App stalling on an infinite spinner when a backend request takes longer than 15 seconds during Apple review.",
           "App UI freezing or locking up when requests take longer than 5 seconds under slow 3G cellular connections instead of gracefully showing skeleton placeholders.",
@@ -2207,31 +2206,30 @@ export const PHASES_DATA: Phase[] = [
         "id": "p7-screenshots-video",
         "phaseId": "phase-7",
         "title": "Store Screenshot",
-        "shortDescription": "Create templates with AppLaunchpad, then bulk-reformat with BIRME to exact Apple (1320x2868, 2064x2752) and Apple (1080x2400) resolutions.",
+        "shortDescription": "Create templates with AppLaunchpad, then bulk-reformat with BIRME to exact Apple iPhone (1320x2868) and iPad (2064x2752) dimensions.",
         "category": "store",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "App Store Connect and App Store reject any screenshot that differs by even 1 single pixel from required specifications. AppLaunchpad (theapplaunchpad.com) lets you build panoramic screenshot sequences, but exports do not come pre-formatted. You must reformat them with BIRME (birme.net) to guarantee 100% upload compliance.",
+        "whyItMatters": "App Store Connect rejects any screenshot that differs by even 1 pixel from required specifications, and Guideline 2.3.7 rejects screenshots that include price tags or \"free\" claims. Reformatting exports cleanly via BIRME (birme.net) or sips guarantees 100% upload compliance.",
         "implementationSteps": [
-          "Design panoramic screenshot sequences on AppLaunchpad (theapplaunchpad.com) using 3D device frames and bold feature headlines.",
-          "Export screenshot cards from AppLaunchpad and drop them directly into BIRME (birme.net) for instant bulk browser-based reformatting.",
-          "iPhone Exact Dimensions: Set BIRME to 1320 x 2868 px (6.9\" iPhone 16 Pro Max) or 1290 x 2796 px (6.7\" iPhone 15/14 Pro Max) or 1242 x 2208 px (5.5\").",
-          "iPad Exact Dimensions: Set BIRME to 2064 x 2752 px (13\" iPad Pro M4) or 2048 x 2732 px (12.9\" iPad Pro) or 1668 x 2388 px (11\" iPad Pro).",
-          "App Store Exact Dimensions: Set BIRME to 1080 x 2400 px (or 1080 x 1920 px) for phones, 1200 x 1920 px (7\" tablets), 1600 x 2560 px (10\" tablets), and 1024 x 500 px (Feature Graphic).",
-          "Ensure exported PNG files are 24-bit sRGB with strictly NO transparency / alpha channel (App Store Connect rejects transparent pixels)."
+          "Design panoramic screenshot sequences on AppLaunchpad (theapplaunchpad.com) using authentic iPhone/iPad device frames and bold benefit headlines (NEVER include prices, \"free\", or promotional offer text in screenshots — Guideline 2.3.7).",
+          "Export screenshot cards from AppLaunchpad and drop them into BIRME (birme.net) or run macOS `sips` for exact pixel reformatting.",
+          "iPhone Exact Dimensions: 1320 x 2868 px (6.9\" iPhone 16 Pro Max), 1290 x 2796 px (6.7\"), or 1284 x 2778 px (6.5\").",
+          "iPad Exact Dimensions: 2064 x 2752 px (13\" iPad Pro) or 2048 x 2732 px (12.9\" iPad Pro).",
+          "Ensure all exported PNG files are 24-bit sRGB with strictly NO transparency / alpha channel (App Store Connect rejects transparent pixels)."
         ],
-        "agentPrompt": "You are the autonomous mobile marketing designer and ASO specialist. Do NOT ask the user to design screenshots—plan and specify high-converting app store screenshot mockups autonomously.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application using AppLaunchpad layout patterns and specify exact BIRME reformatting dimensions for Apple App Store.\n\nEXACT RESOLUTION SPECIFICATIONS:\n1. APPLE IPHONE:\n   - 6.9\" Display (iPhone 16 Pro Max): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n   - 6.7\" Display (iPhone 15/14 Pro Max): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n   - 5.5\" Display (iPhone 8 Plus): 1242 x 2208 px (Portrait) / 2208 x 1242 px (Landscape)\n2. APPLE IPAD:\n   - 13\" iPad Pro (M4): 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n   - 12.9\" iPad Pro (6th gen): 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n   - 11\" iPad Pro: 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD:\n   - Card 1: Hook headline with hero product visual.\n   - Card 2: Core interactive workflow solving primary problem.\n   - Card 3: Key differentiator (speed, offline-first, security).\n   - Card 4: Analytics, progress tracking, or detail sheets.\n   - Card 5: Social proof, dark mode, or privacy reassurance.\n2. TOOLCHAIN INTEGRATION: Plan templates on AppLaunchpad (theapplaunchpad.com) and batch-reformat exports via BIRME (birme.net).\n3. STORE COMPLIANCE: Apple Guideline 2.3 strictly requires screenshots to display actual in-app footage rather than generic lifestyle advertisements.\n4. VERIFICATION: Ensure all files are 24-bit RGB with zero alpha channel to avoid ITMS rejection.",
+        "agentPrompt": "You are the autonomous mobile marketing designer and ASO specialist. Do NOT ask the user to design screenshots—plan and specify high-converting App Store screenshot mockups autonomously.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application using AppLaunchpad layout patterns and specify exact BIRME reformatting dimensions for Apple App Store.\n\nEXACT RESOLUTION SPECIFICATIONS:\n1. APPLE IPHONE:\n   - 6.9\" Display (iPhone 16 Pro Max): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n   - 6.5\" Display: 1284 x 2778 px (Portrait) / 2778 x 1284 px (Landscape)\n   - 6.7\" Display (iPhone 15/14 Pro Max): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n2. APPLE IPAD:\n   - 13\" iPad Pro: 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n   - 12.9\" iPad Pro: 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n   - 11\" iPad Pro: 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD (NO PRICING / 'FREE' / PROMO COPY — GUIDELINE 2.3.7):\n   - Card 1: Hook headline with hero product visual.\n   - Card 2: Core interactive workflow solving primary problem.\n   - Card 3: Key differentiator (speed, offline-first, security).\n   - Card 4: Analytics, progress tracking, or detail sheets.\n   - Card 5: Dark mode, privacy reassurance, or completion polish.\n2. TOOLCHAIN INTEGRATION: Plan templates on AppLaunchpad (theapplaunchpad.com) and batch-reformat exports via BIRME (birme.net) or `sips`.\n3. STORE COMPLIANCE: Apple Guideline 2.3.3 requires screenshots of the actual working app, and Guideline 2.3.7 strictly forbids pricing, \"free\", or promotional text in screenshots.\n4. VERIFICATION: Ensure all files are 24-bit RGB with zero alpha channel to avoid ITMS rejection.",
         "commonRejectionTraps": [
-          "Uploading AppLaunchpad exports directly without reformatting via BIRME—App Store Connect automatically rejects invalid pixel dimensions with ITMS errors.",
-          "Uploading screenshots with transparency (alpha channel)—App Store Connect rejects with error ITMS-90717.",
-          "Showing an iOS phone mockup frame in an Apple App Store screenshot, or an iPhone mockup on App Store."
+          "Including prices, dollar amounts, \"free\", or \"free trial\" copy inside App Store screenshots triggers Guideline 2.3.7 rejection.",
+          "Uploading screenshots with transparency (alpha channel) or wrong pixel dimensions causes App Store Connect upload rejection.",
+          "Showing non-Apple hardware frames or mockup screens that do not reflect the real app UI (Guideline 2.3.3)."
         ],
         "verificationQuestions": [
-          "Have you reformatted all exported screenshots in BIRME (birme.net) to match Apple and Apple's exact pixel dimensions?",
-          "Are all required screenshot sizes exported at 24-bit sRGB with zero transparency/alpha channels?",
+          "Have you formatted all screenshots to Apple's exact iPhone (1320x2868) and iPad (2064x2752) pixel dimensions with zero alpha channel?",
+          "Are all screenshots completely free of pricing, \"free\", or promotional offer claims (Guideline 2.3.7)?",
           "Do your screenshots showcase real, working app features rather than generic promotional art?"
         ],
-        "whatHappensNext": "Your store listing displays pixel-perfect screenshot mockups built with AppLaunchpad and formatted with BIRME, meeting all App Store Connect and App Store upload requirements on the first try.",
+        "whatHappensNext": "Your App Store listing displays pixel-perfect, Guideline 2.3 compliant screenshot mockups for iPhone and iPad that pass review on the first try.",
         "directLink": {
           "label": "AppLaunchpad - Screenshot Builder",
           "url": "https://theapplaunchpad.com/"
@@ -2259,7 +2257,7 @@ export const PHASES_DATA: Phase[] = [
           "Pre-fill the demo account with realistic sample items, saved projects, or profile info so they never see a blank screen.",
           "In App Store Connect review notes, provide the username, password, and brief instructions on how to test core features."
         ],
-        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to configure test accounts—configure dedicated app review credentials and sample data autonomously.\n\nTASK & OBJECTIVE:\nConfigure a dedicated test account and realistic sample data for Apple and Apple app reviewers, eliminating all onboarding friction and empty states during store review.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication logic, demo data fixtures, and account validation services.\n2. IMPLEMENTATION:\n   - Create a dedicated demo reviewer account with two-factor authentication (2FA) disabled.\n   - Pre-populate the demo account with rich, realistic sample records (e.g. sample tasks, completed items, activity history) so the reviewer never lands on an empty screen.\n   - If the app includes subscriptions, grant full active entitlement status to the reviewer demo account.\n   - Generate exact \"App Review Notes\" documenting the login credentials, test phone number / SMS code, and step-by-step instructions on how to test every feature.\n3. STORE COMPLIANCE: Apple Guideline 2.1 mandates providing functional review credentials; missing or 2FA-blocked reviewer logins trigger immediate review rejection.\n4. VERIFICATION: Verify the demo account logs in seamlessly and displays populated sample data with zero errors.",
+        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to configure test accounts—configure dedicated app review credentials and sample data autonomously.\n\nTASK & OBJECTIVE:\nConfigure a dedicated test account and realistic sample data for Apple App Review teams, eliminating all onboarding friction and empty states during store review.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication logic, demo data fixtures, and account validation services.\n2. IMPLEMENTATION:\n   - Create a dedicated demo reviewer account with two-factor authentication (2FA) disabled.\n   - Pre-populate the demo account with rich, realistic sample records (e.g. sample tasks, completed items, activity history) so the reviewer never lands on an empty screen.\n   - If the app includes subscriptions, grant full active entitlement status to the reviewer demo account.\n   - Generate exact \"App Review Notes\" documenting the login credentials, test phone number / SMS code, and step-by-step instructions on how to test every feature.\n3. STORE COMPLIANCE: Apple Guideline 2.1 mandates providing functional review credentials; missing or 2FA-blocked reviewer logins trigger immediate review rejection.\n4. VERIFICATION: Verify the demo account logs in seamlessly and displays populated sample data with zero errors.",
         "commonRejectionTraps": [
           "The reviewer attempts to log in and gets blocked by an SMS code sent to a phone number they don't have.",
           "Opening to a blank empty screen that makes the reviewer think the app is broken.",
@@ -2285,11 +2283,11 @@ export const PHASES_DATA: Phase[] = [
         "priority": "high",
         "whyItMatters": "If your app allows unrestricted web browsing to any website or contains user discussions, it must receive an appropriate age rating. Inaccuracies result in review rejection.",
         "implementationSteps": [
-          "Answer the questionnaire truthfully in App Store Connect and App Store Connect.",
+          "Answer the Age Rating questionnaire truthfully in App Store Connect.",
           "Declare if your app includes simulated gambling, mature humor, or user interactions.",
           "Unrestricted Web Browsing: If users can type any URL into an in-app browser, rate the app 17+."
         ],
-        "agentPrompt": "You are the autonomous store compliance specialist. Do NOT ask the user to research questionnaires—audit content and generate accurate age rating questionnaire responses autonomously.\n\nTASK & OBJECTIVE:\nAudit all application features against the International Age Rating Coalition (IARC) and Apple age rating questionnaires, generating exact, truthful declarations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all app content, media, user communication features, and data access.\n2. IMPLEMENTATION:\n   - Audit questions for: violence, adult content, profanity, gambling/simulated gambling, user-generated content, location sharing, and unrestricted internet access.\n   - If users can share content, declare user-to-user interaction truthfully.\n   - Generate a comprehensive age rating declaration document (`docs/age-rating-guide.md`) detailing the exact answers to select in App Store Connect and App Store Connect to receive the appropriate age badge (e.g. 4+, 9+, 12+).\n3. STORE COMPLIANCE: Mismatches between declared age ratings and actual app content trigger immediate review rejection or post-launch removal.\n4. VERIFICATION: Verify that all declared questionnaire responses align strictly with the app's real functionality.",
+        "agentPrompt": "You are the autonomous store compliance specialist. Do NOT ask the user to research questionnaires—audit content and generate accurate age rating questionnaire responses autonomously.\n\nTASK & OBJECTIVE:\nAudit all application features against Apple's App Store Connect age rating questionnaire, generating exact, truthful declarations.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect all app content, media, user communication features, and data access.\n2. IMPLEMENTATION:\n   - Audit questions for: violence, adult content, profanity, gambling/simulated gambling, user-generated content, location sharing, and unrestricted internet access.\n   - If users can share content, declare user-to-user interaction truthfully.\n   - Generate a comprehensive age rating declaration document (`docs/age-rating-guide.md`) detailing the exact answers to select in App Store Connect to receive the appropriate age badge (e.g. 4+, 9+, 12+, 17+).\n3. STORE COMPLIANCE: Mismatches between declared age ratings and actual app content trigger immediate review rejection or post-launch removal.\n4. VERIFICATION: Verify that all declared questionnaire responses align strictly with the app's real functionality.",
         "commonRejectionTraps": [
           "Rating an app 4+ when it includes an open in-app browser that can load mature web content.",
           "Marking \"No\" to frequent or intense mature themes when the app features unrestricted user chat or external web browsing, causing review rejection.",
@@ -2440,18 +2438,18 @@ export const PHASES_DATA: Phase[] = [
         "priority": "blocker",
         "storeGuideline": {
           "name": "In-App Purchase (Guideline 3.1.1 & 2.1b)",
-          "url": "https://developer.apple.com/app-store/in-app-purchases/"
+          "url": "https://developer.apple.com/in-app-purchase/"
         },
-        "whyItMatters": "Apple Review checks in-app purchases in the sandbox. If the Paid Apps Agreement is not active, or tapping Unlock displays an error, or there is no distinct Restore Purchases button, the app is rejected.",
+        "whyItMatters": "Apple Review tests In-App Purchases in the sandbox (often on iPad). If the Paid Apps Agreement is not Active, if `product.purchase(confirmIn:)` lacks a valid foreground window scene on iPadOS, or if there is no distinct Restore Purchases button, the app is rejected.",
         "implementationSteps": [
-          "Confirm your Paid Apps Agreement status is Active in App Store Connect > Agreements.",
+          "Confirm your Paid Apps Agreement status is Active in App Store Connect > Business > Agreements.",
           "Verify that product identifiers in App Store Connect match your code exactly.",
-          "Provide a distinct, visible Restore Purchases button that initiates transaction sync.",
-          "Test purchase and restore in the StoreKit sandbox environment with a Sandbox Apple ID."
+          "Use StoreKit 2 `product.purchase(confirmIn: viewController)` (or active `UIWindowScene`) on iOS 17+/iPadOS 26+ and avoid creating duplicate `UIWindow` instances in `SceneDelegate`.",
+          "Provide a distinct, visible Restore Purchases button that initiates `AppStore.sync()` and tests cleanly with a Sandbox Apple Account on both iPhone and iPad."
         ],
-        "agentPrompt": "You are the autonomous Apple StoreKit 2 and In-App Purchase engineer. Configure StoreKit 2 transaction listeners, sandbox fallback, and restore purchases.",
+        "agentPrompt": "You are the autonomous Apple StoreKit 2 and In-App Purchase engineer. Configure StoreKit 2 `Transaction.updates` listeners, `@MainActor`-isolated product caching, `product.purchase(confirmIn:)` presentation context for iPhone & iPad, sandbox retry fallback, and Restore Purchases.",
         "commonRejectionTraps": [
-          "Tapping Unlock displays an error alert during review (Guideline 2.1b).",
+          "Tapping Unlock displays an error alert during review (Guideline 2.1b), often caused by `StoreKitError.invalidPresentationContext` on iPadOS when calling deprecated `product.purchase()` without an explicit scene/viewController.",
           "Missing a distinct, dedicated Restore Purchases button on the paywall (Guideline 3.1.1).",
           "Pending Paid Apps Agreement in App Store Connect preventing product queries."
         ],
@@ -2518,7 +2516,7 @@ export const PHASES_DATA: Phase[] = [
           "Does your build script automatically increment version numbers?",
           "Can you build and upload to test tracks with a single command?"
         ],
-        "whatHappensNext": "Single-command or CI/CD pipelines automate testing, building, and uploading release binaries directly to Apple and Apple.",
+        "whatHappensNext": "Single-command or CI/CD pipelines automate testing, building, and uploading release binaries directly to App Store Connect and TestFlight.",
         "videoUrl": {
           "title": "Fastlane CI/CD Setup",
           "url": "https://www.youtube.com/watch?v=NCmkL__Mq-I"
@@ -2662,10 +2660,10 @@ export const PHASES_DATA: Phase[] = [
         "whyItMatters": "With automatic release, your app goes live the second the reviewer clicks approve (which could be 3:00 AM on Sunday). Manual release lets you coordinate announcements and marketing.",
         "implementationSteps": [
           "In App Store Connect, set Version Release to \"Manually release this version\".",
-          "In App Store Connect, turn on \"Managed publishing\".",
-          "Enable a 7-day phased rollout so initial updates roll out to a small percentage of users first."
+          "For updates after v1.0, enable \"Phased Release for Automatic Updates\" so Apple gradually rolls out over 7 days (1% -> 2% -> 5% -> 10% -> 20% -> 50% -> 100%).",
+          "Monitor crash metrics in Xcode Organizer during early rollout and pause immediately if an issue spikes."
         ],
-        "agentPrompt": "You are the autonomous mobile release manager. Do NOT ask the user to manage release settings—configure the phased and manual release strategy autonomously.\n\nTASK & OBJECTIVE:\nConfigure the release release strategy in App Store Connect and App Store Connect to \"Manually release this version\" and set up phased rollouts for controlled deployment.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project release configurations and launch deployment documentation.\n2. IMPLEMENTATION:\n   - Configure the version release type in App Store Connect to \"Manually release this version\" (or \"Phased Release over 7 days\").\n   - Configure App Store Connect staged rollout parameters.\n   - Ensure the app does not publish automatically upon review approval, giving our team full control to coordinate marketing campaigns, verify server scalability, and launch during optimal business hours.\n   - Draft the deployment checklist for launch day activation.\n3. STORE COMPLIANCE: Best-practice deployment protocol recommended by Apple and Apple release teams.\n4. VERIFICATION: Document manual release procedure and phased release timeline in the release guide.",
+        "agentPrompt": "You are the autonomous iOS release manager. Do NOT ask the user to manage release settings—configure the phased and manual release strategy autonomously.\n\nTASK & OBJECTIVE:\nDocument and prepare the release strategy in App Store Connect using \"Manually release this version\" and 7-day \"Phased Release for Automatic Updates\" for controlled deployment.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project release configurations and launch deployment documentation.\n2. IMPLEMENTATION:\n   - Configure the version release type in App Store Connect to \"Manually release this version\" for controlled launch timing.\n   - Document App Store Connect's 7-day Phased Release cadence (1%, 2%, 5%, 10%, 20%, 50%, 100%) and pause/resume protocol.\n   - Ensure the app does not publish automatically upon review approval, giving our team full control to coordinate marketing campaigns, verify server scalability, and launch during optimal business hours.\n   - Draft the deployment checklist for launch day activation.\n3. STORE COMPLIANCE: Best-practice deployment protocol supported natively in App Store Connect.\n4. VERIFICATION: Document manual release procedure and phased release timeline in the release guide.",
         "commonRejectionTraps": [
           "Releasing to 100% of users immediately, catching an unforeseen server bug that affects all users at once.",
           "Setting automatic release immediately after review approval, causing your app to go live unexpectedly before your backend servers are ready.",
@@ -2721,7 +2719,7 @@ export const PHASES_DATA: Phase[] = [
           "Upload the video as an unlisted link on YouTube or Vimeo.",
           "Paste the video link into the 'App Review Information > Notes' field in App Store Connect alongside test credentials."
         ],
-        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to write reviewer instructions—create comprehensive App Reviewer Notes and a demonstration walkthrough script autonomously.\n\nTASK & OBJECTIVE:\nDraft comprehensive App Review Information, reviewer credentials, test account instructions, and a video walkthrough demonstration script for Apple and Apple app review teams.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication flows, hardware dependencies, permission prompts, and core user actions.\n2. IMPLEMENTATION:\n   - Prepare the \"App Review Information\" notes to paste into App Store Connect and App Store Connect:\n     - Demo Account Username & Password (with 2FA disabled).\n     - Step-by-step instructions guiding the reviewer through the core value path in under 2 minutes.\n     - Clarification on any hardware or external dependencies (Bluetooth, camera, physical accessories) with a link to an unlisted YouTube/Vimeo demonstration video showing the feature on a real physical device.\n     - Direct phone number and email of our release engineer for emergency reviewer questions.\n3. STORE COMPLIANCE: Reviewers who cannot log in or understand hardware features will reject the app under Guideline 2.1 (App Completeness). A clear walkthrough prevents 90%+ of review misunderstandings.\n4. VERIFICATION: Verify that demo account credentials work smoothly and reviewer instructions cover every gated feature.",
+        "agentPrompt": "You are the autonomous store release coordinator. Do NOT ask the user to write reviewer instructions—create comprehensive App Reviewer Notes and a demonstration walkthrough script autonomously.\n\nTASK & OBJECTIVE:\nDraft comprehensive App Review Information, reviewer credentials, test account instructions, and a video walkthrough demonstration script for Apple App Review teams.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect authentication flows, hardware dependencies, permission prompts, and core user actions.\n2. IMPLEMENTATION:\n   - Prepare the \"App Review Information\" notes to paste into App Store Connect:\n     - Demo Account Username & Password (with 2FA disabled).\n     - Step-by-step instructions guiding the reviewer through the core value path in under 2 minutes.\n     - Clarification on any hardware or external dependencies (Bluetooth, camera, physical accessories) with a link to an unlisted YouTube/Vimeo demonstration video showing the feature on a real physical device.\n     - Direct phone number and email of our release engineer for emergency reviewer questions.\n3. STORE COMPLIANCE: Reviewers who cannot log in or understand hardware features will reject the app under Guideline 2.1 (App Completeness). A clear walkthrough prevents 90%+ of review misunderstandings.\n4. VERIFICATION: Verify that demo account credentials work smoothly and reviewer instructions cover every gated feature.",
         "commonRejectionTraps": [
           "Apple reviewer unable to test due to SMS 2FA requiring a real phone number; not providing a universal test bypass code like '000000' leads to rejection.",
           "Submitting an app that requires specialized Bluetooth hardware, GPS geofences, or enterprise credentials without attaching a video demonstration.",
@@ -2783,19 +2781,19 @@ export const PHASES_DATA: Phase[] = [
         "priority": "blocker",
         "whyItMatters": "Apps often run fine in development, but crash in production if code shrinking accidentally removed a needed data model or reflection class.",
         "implementationSteps": [
-          "Inspect device log files on your phone using macOS Console.app or iOS logcat.",
-          "If the crash mentions a missing class, add a keep rule in your code shrinking settings.",
-          "Always test the signed release build on a physical phone before submitting to the store."
+          "Inspect device crash logs on your iPhone/iPad using Xcode > Window > Devices and Simulators > Open Recent Logs, Xcode Organizer > Crashes, or macOS Console.app.",
+          "Check Release-only failure causes: missing `Info.plist` usage descriptions, missing bundle resources, or Swift concurrency/optimization race conditions.",
+          "Always test a TestFlight or Release-configuration build on a physical iPhone and iPad before submitting to the App Store."
         ],
-        "agentPrompt": "You are the autonomous mobile production diagnostics engineer. Do NOT ask the user to debug crashes—set up production crash triage and automated hotfix protocols autonomously.\n\nTASK & OBJECTIVE:\nSet up a production crash triage and debugging protocol to automatically isolate, symbolicate, and diagnose fatal crashes that only occur on released physical devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect error handling, logging utilities, and native crash symbol configuration.\n2. IMPLEMENTATION:\n   - Configure automatic crash symbolication using uploaded dSYM and ProGuard mapping files.\n   - Implement diagnostic state capture: upon an unhandled crash, serialize device model, OS version, free disk space, network connectivity, and user breadcrumb history.\n   - Create a hotfix workflow: reproduce the crash with an automated regression test, apply the targeted fix, bump the patch version (`1.0.1`), and generate a release build ready for emergency submission.\n3. STORE COMPLIANCE: Enables immediate response to production regressions, preventing low App Store ratings and high uninstall rates.\n4. VERIFICATION: Test symbolication and error boundary recovery with a simulated crash in development mode.",
+        "agentPrompt": "You are the autonomous iOS production diagnostics engineer. Do NOT ask the user to debug crashes—set up production crash triage and automated hotfix protocols autonomously.\n\nTASK & OBJECTIVE:\nSet up a production crash triage and debugging protocol to automatically isolate, symbolicate, and diagnose fatal crashes that only occur on released physical iOS/iPadOS devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect error handling, logging utilities, and Xcode dSYM build settings (`DEBUG_INFORMATION_FORMAT = dwarf-with-dsym`).\n2. IMPLEMENTATION:\n   - Configure automatic crash symbolication using uploaded dSYM files and web JS source maps.\n   - Implement diagnostic state capture: upon an unhandled crash, serialize device model, OS version, free disk space, network connectivity, and user breadcrumb history.\n   - Create a hotfix workflow: reproduce the crash with an automated regression test, apply the targeted fix, bump the patch version (`1.0.1`), and generate a release archive ready for App Store Connect.\n3. STORE COMPLIANCE: Enables immediate response to production regressions, preventing low App Store ratings and high uninstall rates.\n4. VERIFICATION: Test symbolication and error boundary recovery with a simulated crash in development mode.",
         "commonRejectionTraps": [
-          "Assuming a build works because it worked in debug mode, without testing the signed release build.",
+          "Assuming a build works because it worked in debug mode, without testing a signed Release / TestFlight build.",
           "Releasing hotfix builds without symbolicated crash reports, resulting in duplicate crashes and emergency rollback cycles.",
           "Pushing a hotfix without symbolicated crash log analysis, replacing one crash with an even worse regression."
         ],
         "verificationQuestions": [
-          "Have you installed and tested the final signed release build on a physical phone?",
-          "Are code shrinking keep rules configured for all saved data models?"
+          "Have you installed and tested the final signed Release / TestFlight build on a physical iPhone and iPad?",
+          "Is `DWARF with dSYM File` enabled for Release builds so Xcode Organizer and Sentry show readable stack traces?"
         ],
         "whatHappensNext": "Production issues are diagnosed rapidly using symbolicated crash reports and breadcrumbs, minimizing downtime for users.",
         "videoUrl": {
@@ -2817,11 +2815,11 @@ export const PHASES_DATA: Phase[] = [
           "Verify that the domain format in your app project does not include \"https://\" or trailing slashes.",
           "Query Apple's CDN cache scraper to verify that Apple successfully cached your configuration file."
         ],
-        "agentPrompt": "You are the autonomous mobile deep-linking specialist. Do NOT ask the user to test links—build a diagnostic and verification suite for Universal Links and iOS App Links autonomously.\n\nTASK & OBJECTIVE:\nBuild a diagnostic and verification suite for Universal Links and iOS App Links to quickly isolate and fix broken links, SSL certificate errors, or dropped query parameters.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect deep link handling logic, domain verification endpoints, and URL routing tables.\n2. IMPLEMENTATION:\n   - Build a diagnostic script to validate domain endpoint headers for `apple-app-site-association` and `assetlinks.json` (`Content-Type: application/json`, HTTP 200, valid SSL certificate, zero redirects).\n   - Test deep link parsing across cold-launch and warm-launch states, verifying that query parameters and path segments pass cleanly into view controllers without dropping state.\n   - Provide fallback redirection: if a user clicks a universal link on an unsupported browser, route them gracefully to a web landing page or store install prompt.\n3. STORE COMPLIANCE: Ensures high user retention and seamless marketing campaign attribution.\n4. VERIFICATION: Execute link verification tests and confirm correct route dispatching with zero console warnings.",
+        "agentPrompt": "You are the autonomous iOS deep-linking specialist. Do NOT ask the user to test links—build a diagnostic and verification suite for Apple Universal Links autonomously.\n\nTASK & OBJECTIVE:\nBuild a diagnostic and verification suite for Apple Universal Links to quickly isolate and fix broken links, SSL certificate errors, CDN cache mismatches, or dropped query parameters.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect deep link handling logic, `App.entitlements` Associated Domains, and URL routing tables.\n2. IMPLEMENTATION:\n   - Build a diagnostic script to validate `/.well-known/apple-app-site-association` (`Content-Type: application/json`, HTTP 200, valid SSL certificate, zero redirects) and query Apple's CDN cache (`https://app-site-association.cdn-apple.com/a/v1/<domain>`).\n   - Test deep link parsing across cold-launch and warm-launch states, verifying that query parameters and path segments pass cleanly into views without dropping state.\n   - Provide fallback redirection: if a user clicks a universal link without the app installed, route them gracefully to a web landing page or App Store install prompt.\n3. STORE COMPLIANCE: Ensures high user retention and seamless marketing campaign attribution.\n4. VERIFICATION: Execute link verification tests and confirm correct route dispatching with zero console warnings.",
         "commonRejectionTraps": [
           "Redirecting your verification link with an HTTP 301/302 redirect.",
-          "Hosting apple-app-site-association (AASA) or assetlinks.json with incorrect MIME types or behind HTTP redirects, breaking universal links.",
-          "Universal Links failing because apple-app-site-association file is served without correct JSON mime-type or has invalid SSL."
+          "Hosting `apple-app-site-association` (AASA) with incorrect MIME types or behind HTTP redirects, breaking Universal Links.",
+          "Universal Links failing because `apple-app-site-association` is served without `application/json` or has invalid SSL."
         ],
         "verificationQuestions": [
           "Does your verification file return HTTP 200 without redirects?",
@@ -2833,25 +2831,25 @@ export const PHASES_DATA: Phase[] = [
         "id": "p10-iap-troubleshooting",
         "phaseId": "phase-10",
         "title": "IAP Subscription",
-        "shortDescription": "Diagnose missing products, sandbox errors, or auto-refunded Apple purchases.",
+        "shortDescription": "Diagnose missing StoreKit products, iPadOS presentation errors, or unfinished transactions.",
         "category": "store",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Payment bugs directly stop you from making money. On iOS, if a purchase is not acknowledged in code within 3 days, Apple automatically refunds and cancels the user's purchase.",
+        "whyItMatters": "Payment bugs directly stop revenue and trigger Guideline 2.1(b) rejections. On iOS StoreKit 2, if you fail to call `await transaction.finish()` after unlocking entitlements or fail to listen to `Transaction.updates` on launch, purchases stay stuck pending and repeat purchases fail.",
         "implementationSteps": [
-          "App Store Connect: Verify that your Paid Applications agreement is active and bank info is accepted.",
-          "Check that product IDs in your code match the exact ID created in App Store Connect and App Store.",
-          "iOS: Verify that your backend or client code acknowledges every purchase within 3 days."
+          "App Store Connect: Verify that your Paid Apps Agreement is Active and banking/tax info is approved.",
+          "Check that Product IDs in your code match App Store Connect exactly and the `In-App Purchase` capability is enabled on your Xcode target.",
+          "Ensure you call `await transaction.finish()` after verifying and unlocking every StoreKit 2 transaction, and pass an active viewController/UIWindowScene to `product.purchase(confirmIn:)` on iPadOS."
         ],
-        "agentPrompt": "You are the autonomous In-App Purchases and billing systems engineer. Do NOT ask the user to test purchases—build an end-to-end IAP diagnostic test suite autonomously.\n\nTASK & OBJECTIVE:\nBuild an end-to-end IAP diagnostic test suite for StoreKit 2 and App Store Billing to isolate and resolve failed payments, pending transactions, and subscription renewal issues.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect purchase flows, receipt validation services, and entitlement state stores.\n2. IMPLEMENTATION:\n   - Create a local StoreKit Testing configuration file (`StoreKit.configuration`) in Xcode to simulate purchases, subscription renewals, failed transactions, billing grace periods, and family sharing locally without connecting to live App Store servers.\n   - Implement graceful UI handling for all transaction states: `purchasing` (loading spinner), `purchased` (instant unlock), `failed` (friendly user message), and `pending` (Ask to Buy parental approval).\n   - Implement robust purchase restoration that syncs all historical valid transactions with one click.\n3. STORE COMPLIANCE: StoreKit 2 sandbox testing is mandatory to prevent broken paywalls and revenue loss on launch day.\n4. VERIFICATION: Verify that local StoreKit testing configuration is in place and all purchase states trigger appropriate UI feedback.",
+        "agentPrompt": "You are the autonomous Apple StoreKit 2 billing systems engineer. Do NOT ask the user to test purchases—build an end-to-end StoreKit 2 diagnostic test suite autonomously.\n\nTASK & OBJECTIVE:\nBuild an end-to-end IAP diagnostic test suite for Apple StoreKit 2 to isolate and resolve failed payments, iPadOS presentation errors, unfinished transactions, and subscription renewal issues.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect purchase flows, StoreKit 2 Swift plugins, and entitlement state stores.\n2. IMPLEMENTATION:\n   - Create a local StoreKit Testing configuration file (`.storekit`) in Xcode to simulate purchases, subscription renewals, failed transactions, billing grace periods, and Family Sharing locally.\n   - Verify `Transaction.updates` runs from app boot and every verified transaction calls `await transaction.finish()` after unlocking entitlements.\n   - Implement graceful UI handling for all transaction states: `purchasing` (loading spinner), `purchased` (instant unlock), `userCancelled` (clean dismiss with zero error alert), and `pending` (Ask to Buy parental approval).\n   - Implement robust Restore Purchases (`AppStore.sync()` + `Transaction.currentEntitlements`) with one click.\n3. STORE COMPLIANCE: StoreKit 2 sandbox testing on both iPhone and iPad prevents Guideline 2.1(b) rejections and launch-day revenue loss.\n4. VERIFICATION: Verify that local StoreKit testing configuration is in place and all purchase states trigger appropriate UI feedback.",
         "commonRejectionTraps": [
-          "Forgetting to acknowledge iOS purchases, causing Apple to auto-refund and cancel the subscription.",
-          "Testing in-app purchase receipts without handling StoreKit 2 transaction renewal states or missing the required \"Restore Purchases\" button.",
-          "In-App Purchase transactions failing in production because the In-App Purchase products were not submitted with the binary."
+          "Forgetting to call `await transaction.finish()` or listen to `Transaction.updates` on launch, leaving StoreKit 2 transactions stuck pending.",
+          "Calling deprecated `product.purchase()` without `confirmIn: viewController` on iPadOS, causing `StoreKitError.invalidPresentationContext` during Apple Review.",
+          "In-App Purchase products failing to load in review because the Paid Apps Agreement is not Active or products were not submitted with the app version."
         ],
         "verificationQuestions": [
-          "Are In-App Purchases tested using official Sandbox test accounts?",
-          "Is purchase acknowledgment handled properly on iOS?"
+          "Are In-App Purchases tested on both iPhone and iPad using StoreKit Sandbox accounts?",
+          "Does your StoreKit 2 handler call `await transaction.finish()` and observe `Transaction.updates` from launch?"
         ],
         "whatHappensNext": "Subscription renewals and restore-purchase edge cases run reliably, eliminating billing disputes and user complaints."
       },
@@ -2863,23 +2861,23 @@ export const PHASES_DATA: Phase[] = [
         "category": "functionality",
         "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Push notification delivery bugs can be tricky because Apple and Apple silently drop notifications if the server environment (sandbox vs production) does not match.",
+        "whyItMatters": "Push notification delivery bugs can be tricky because Apple Push Notification service (APNs) silently drops notifications if the server environment (sandbox vs production) or `aps-environment` entitlement does not match the signed build.",
         "implementationSteps": [
-          "Check APNs Environment: send to the sandbox push server for development builds, and the production server for App Store builds.",
-          "iOS: Verify that the notification is assigned to an active Notification Channel with importance set to default or high.",
-          "Verify that your server updates the device token whenever the phone generates a new one."
+          "Check APNs Environment: send to `api.sandbox.push.apple.com` for Xcode Debug builds, and `api.push.apple.com` for TestFlight / App Store builds.",
+          "Verify `UNUserNotificationCenter.current().getNotificationSettings()` reports `.authorized` (or `.provisional`) and `Push Notifications` capability is enabled in `App.entitlements` (`aps-environment`).",
+          "Verify that your server updates the APNs device token whenever `didRegisterForRemoteNotificationsWithDeviceToken` provides a refreshed token, and authenticate via a `.p8` APNs Auth Key."
         ],
-        "agentPrompt": "You are the autonomous push notification systems engineer. Do NOT ask the user to debug notifications—create an end-to-end push notification diagnostic suite autonomously.\n\nTASK & OBJECTIVE:\nCreate an end-to-end push notification diagnostic suite to verify APNs and FCM token registration, payload parsing, background handling, and notification tap routing.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect push notification registration handlers, token storage, and tap-action routing.\n2. IMPLEMENTATION:\n   - Implement APNs and FCM token registration listeners that log valid device tokens and registration status in development mode.\n   - Verify handling of notification payloads: foreground alert presentation, background silent data pushes, and badge count increment/decrement.\n   - Ensure tapping a notification deep-links the user directly to the relevant content screen rather than dumping them onto the root dashboard.\n   - Add verification for notification channel configuration on iOS 17+ (mandatory notification permission and notification channels).\n3. STORE COMPLIANCE: Guarantees reliable communication with users and prevents silent delivery failures.\n4. VERIFICATION: Test push notification registration and deep-link routing with sample payloads, ensuring zero runtime errors.",
+        "agentPrompt": "You are the autonomous Apple APNs push notification engineer. Do NOT ask the user to debug notifications—create an end-to-end iOS push notification diagnostic suite autonomously.\n\nTASK & OBJECTIVE:\nCreate an end-to-end push notification diagnostic suite to verify Apple APNs device token registration, `UNUserNotificationCenter` permissions, payload parsing, background silent pushes, and tap deep-link routing.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `AppDelegate.swift`, `App.entitlements` (`aps-environment`), push notification registration listeners, and tap-action routing.\n2. IMPLEMENTATION:\n   - Implement APNs token registration listeners (`didRegisterForRemoteNotificationsWithDeviceToken`) that log valid hex device tokens and registration errors in development mode.\n   - Verify handling of APNs payloads: foreground presentation via `UNUserNotificationCenterDelegate` (`willPresent`), background silent pushes (`content-available: 1`), `UNNotificationCategory` actions, and badge count updates.\n   - Ensure tapping a notification deep-links the user directly to the relevant content screen rather than dumping them onto the root dashboard.\n   - Verify `UNUserNotificationCenter` authorization status and provide a clear settings link if the user previously denied notifications.\n3. STORE COMPLIANCE: Guarantees reliable communication with users and prevents silent APNs delivery failures.\n4. VERIFICATION: Test push delivery using Xcode's Push Notification Console or `.apns` simulator payloads, ensuring zero runtime errors.",
         "commonRejectionTraps": [
-          "Sending production push payloads to a development sandbox token.",
+          "Sending production push payloads to a development sandbox APNs token (or vice versa).",
           "Failing to register updated APNs device tokens after app re-installation, causing silent notification delivery drop-offs.",
-          "Push notification tokens expiring after iOS updates because the app does not listen for didRegisterForRemoteNotifications."
+          "Missing `UNUserNotificationCenterDelegate` foreground presentation handler, making notifications invisible while the app is open."
         ],
         "verificationQuestions": [
-          "Does your push server environment (sandbox vs production) match your app build?",
-          "Do iOS notifications have an active Notification Channel assigned?"
+          "Does your push server APNs environment (sandbox vs production) match your app build (`aps-environment`)?",
+          "Are `UNUserNotificationCenter` authorization and foreground presentation delegates properly configured?"
         ],
-        "whatHappensNext": "APNs device tokens and FCM messaging pipelines remain healthy, maintaining reliable notification delivery."
+        "whatHappensNext": "APNs device tokens, `.p8` auth keys, and notification tap routes remain healthy, maintaining reliable iOS & iPadOS delivery."
       },
       {
         "id": "p10-staged-rollout-ops",
@@ -2951,7 +2949,7 @@ export const PHASES_DATA: Phase[] = [
           "On app launch, compare current app build version with minimum required version.",
           "If below minimum, present a non-dismissible modal with an 'Update on App Store' button linking directly to the store page."
         ],
-        "agentPrompt": "You are the autonomous mobile release engineer. Do NOT ask the user to write version checks—implement an in-app remote version check and critical force-update mechanism autonomously.\n\nTASK & OBJECTIVE:\nImplement an in-app version check mechanism on application launch that compares the installed version against a remote configuration, displaying a friendly update prompt or mandatory force-update modal.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect app startup lifecycle, version constants, and modal dialog system.\n2. IMPLEMENTATION:\n   - Create a version check service (`src/services/versionCheck.ts`) that queries a lightweight remote JSON config or API endpoint containing `minimumSupportedVersion`, `latestVersion`, and `updateUrl`.\n   - If installed version < `minimumSupportedVersion`: display a non-dismissible modal explaining that a critical update is required, with a single button linking directly to the App Store / App Store listing.\n   - If installed version < `latestVersion` (but >= minimum): display a dismissible banner informing the user of exciting new features with an optional \"Update Now\" action.\n   - Include a \"What's New\" changelog sheet highlighting new features after the app is updated.\n3. STORE COMPLIANCE: Allows emergency sunsetting of broken legacy API versions without breaking older clients silently or leaving security flaws unpatched.\n4. VERIFICATION: Test version check with simulated lower versions. Confirm force-update modal blocks interaction and links directly to store URLs with zero errors.",
+        "agentPrompt": "You are the autonomous mobile release engineer. Do NOT ask the user to write version checks—implement an in-app remote version check and critical force-update mechanism autonomously.\n\nTASK & OBJECTIVE:\nImplement an in-app version check mechanism on application launch that compares the installed version against a remote configuration, displaying a friendly update prompt or mandatory force-update modal.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect app startup lifecycle, version constants, and modal dialog system.\n2. IMPLEMENTATION:\n   - Create a version check service (`src/services/versionCheck.ts`) that queries a lightweight remote JSON config or API endpoint containing `minimumSupportedVersion`, `latestVersion`, and `updateUrl`.\n   - If installed version < `minimumSupportedVersion`: display a non-dismissible modal explaining that a critical update is required, with a single button linking directly to the App Store listing.\n   - If installed version < `latestVersion` (but >= minimum): display a dismissible banner informing the user of exciting new features with an optional \"Update Now\" action.\n   - Include a \"What's New\" changelog sheet highlighting new features after the app is updated.\n3. STORE COMPLIANCE: Allows emergency sunsetting of broken legacy API versions without breaking older clients silently or leaving security flaws unpatched.\n4. VERIFICATION: Test version check with simulated lower versions. Confirm force-update modal blocks interaction and links directly to the App Store URL with zero errors.",
         "commonRejectionTraps": [
           "Showing a force-update screen to Apple reviewers during initial App Store submission, preventing them from testing the submitted build.",
           "Pushing a breaking backend API schema change without an in-app minimum version check, locking older app clients into unrecoverable crash loops.",
@@ -2959,7 +2957,7 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Does your app have a way to prompt users when a mandatory security update is released?",
-          "Does the update button open directly to your app's App Store / App Store URL?"
+          "Does the update button open directly to your app's App Store URL?"
         ],
         "whatHappensNext": "Critical updates can be mandated remotely, preventing legacy app versions from communicating with updated backend APIs.",
         "videoUrl": {
@@ -2971,14 +2969,14 @@ export const PHASES_DATA: Phase[] = [
         "id": "p10-native-review-prompt",
         "phaseId": "phase-10",
         "title": "Native Store",
-        "shortDescription": "Prompt users for store ratings using Apple SKStoreReviewController and Apple In-App Review after 15 and 30 positive visits.",
+        "shortDescription": "Prompt users for App Store ratings using StoreKit 2 AppStore.requestReview(in:) after 15 and 30 positive visits.",
         "category": "store",
         "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Apple and Apple strictly prohibit annoying review popups on first launch or after errors. Requesting a rating using the official native store review dialog after positive milestones (e.g. 15th and 30th visits) maximizes 5-star ratings without breaking store guidelines.",
-        "whatHappensNext": "Delighted, repeat users are presented with the native store rating dialog right when they have proven engagement, generating authentic positive ratings without taking them out of your app.",
+        "whyItMatters": "Apple strictly prohibits annoying review popups on first launch or after errors. Requesting a rating using Apple's official StoreKit review dialog after positive milestones (e.g. 15th and 30th visits) maximizes 5-star ratings while respecting Guideline 5.6.1.",
+        "whatHappensNext": "Delighted, repeat users are presented with the native App Store rating dialog right when they have proven engagement, generating authentic positive ratings without taking them out of your app.",
         "directLink": {
-          "label": "Apple Store Review Guidelines",
+          "label": "Apple HIG - Ratings and Reviews",
           "url": "https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews"
         },
         "videoUrl": {
@@ -2986,13 +2984,13 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://www.youtube.com/watch?v=krp3yDDVa70"
         },
         "implementationSteps": [
-          "Track app session visit count in local storage (`appblueprint_visits_count`).",
-          "When the user reaches milestone 15, trigger the native rating dialog (`SKStoreReviewController.requestReview()` on iOS, In-App Review API on iOS).",
+          "Track app session visit count in local storage (e.g. `app_session_count`).",
+          "When the user reaches milestone 15, trigger Apple's native rating dialog via StoreKit 2 `AppStore.requestReview(in: scene)` (replacing the legacy `SKStoreReviewController.requestReview(in:)` deprecated in iOS 18).",
           "Prompt again at milestone 30, and never prompt again afterwards to respect user space.",
           "Never show the rating prompt when the app launches, during critical user flows, or immediately after an error.",
-          "Never gate features or offer bribes/rewards for leaving 5-star reviews (strictly illegal under store rules)."
+          "Never gate features or offer bribes/rewards for leaving 5-star reviews (strictly prohibited under Guideline 5.6.1)."
         ],
-        "agentPrompt": "You are the autonomous mobile growth and store compliance engineer. Do NOT ask the user to implement review dialogs—implement session-milestone native rating prompts autonomously.\n\nTASK & OBJECTIVE:\nImplement a compliant, native in-app review prompt triggered after exactly 15 and 30 successful app sessions using official Apple and Apple store review APIs.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. SESSION TRACKING: Create a lightweight hook or utility tracking active app sessions (`visitCount`) in persistent storage.\n2. CONDITIONAL TRIGGER: At exactly session count 15 and session count 30, trigger the authentic native rating dialog.\n3. PERMANENT SUPPRESSION: Once session count 30 prompt has fired, set a permanent flag preventing any further prompts.\n4. STORE COMPLIANCE: Apple Guideline 5.6.1 strictly limits rating prompts to 3 times per 365-day period and forbids custom review gating (e.g. asking \"Are you enjoying the app?\" and only routing positive users to the store). Must invoke native system review APIs directly.\n5. VERIFICATION: Test visit counter increments and confirm dialog displays gracefully without interrupting active user workflows.",
+        "agentPrompt": "You are the autonomous iOS growth and store compliance engineer. Do NOT ask the user to implement review dialogs—implement session-milestone native rating prompts autonomously.\n\nTASK & OBJECTIVE:\nImplement a compliant, native in-app review prompt triggered after exactly 15 and 30 successful app sessions using Apple's StoreKit 2 `AppStore.requestReview(in:)` API.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. SESSION TRACKING: Create a lightweight hook or utility tracking active app sessions (`visitCount`) in persistent storage.\n2. CONDITIONAL TRIGGER: At exactly session count 15 and session count 30, invoke StoreKit 2 `AppStore.requestReview(in:)` (or SwiftUI `@Environment(\\.requestReview)`).\n3. PERMANENT SUPPRESSION: Once session count 30 prompt has fired, set a permanent flag preventing any further prompts.\n4. STORE COMPLIANCE: Apple Guideline 5.6.1 strictly limits rating prompts to 3 times per 365-day period and forbids custom review gating (e.g. asking \"Are you enjoying the app?\" and only routing positive users to the App Store). Must invoke Apple's native system review API directly.\n5. VERIFICATION: Test visit counter increments and confirm dialog displays gracefully without interrupting active user workflows.",
         "commonRejectionTraps": [
           "Using custom 'review gating' dialogs that filter happy users to the App Store and unhappy users to an email form (instant rejection under Apple Guideline 5.6.1).",
           "Offering in-app coins, discounts, or unlocked features in exchange for leaving a 5-star review (leads to developer account termination).",

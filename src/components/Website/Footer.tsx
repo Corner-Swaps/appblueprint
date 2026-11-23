@@ -1,5 +1,10 @@
 import React from 'react';
 import { Rocket, ShieldCheck, Heart, Mail } from 'lucide-react';
+import { PHASES_DATA } from '../../data/phases';
+import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
+
+const FOOTER_TOTAL_COUNT =
+  SETUP_STEPS_PHASE.items.length + PHASES_DATA.reduce((sum, p) => sum + p.items.length, 0);
 
 interface FooterProps {
   onLaunchApp: () => void;
@@ -71,8 +76,8 @@ export const Footer: React.FC<FooterProps> = React.memo(({ onLaunchApp }) => {
             </div>
             <ul className="space-y-2 text-sm">
               <li><a href="#overview" onClick={(e) => handleScrollTo(e, '#overview')} className="hover:text-white transition-colors cursor-pointer">Overview</a></li>
-              <li><a href="#explorer" onClick={(e) => handleScrollTo(e, '#explorer')} className="hover:text-white transition-colors cursor-pointer">Screens &amp; 101 Rules</a></li>
-              <li><a href="#phases" onClick={(e) => handleScrollTo(e, '#phases')} className="hover:text-white transition-colors cursor-pointer">10 Production Phases</a></li>
+              <li><a href="#explorer" onClick={(e) => handleScrollTo(e, '#explorer')} className="hover:text-white transition-colors cursor-pointer">Screens &amp; {FOOTER_TOTAL_COUNT} Rules</a></li>
+              <li><a href="#phases" onClick={(e) => handleScrollTo(e, '#phases')} className="hover:text-white transition-colors cursor-pointer">{PHASES_DATA.length} Production Phases</a></li>
               <li><a href="#calculator" onClick={(e) => handleScrollTo(e, '#calculator')} className="hover:text-white transition-colors cursor-pointer">Pass Readiness Calculator</a></li>
               <li><a href="#why-apps-fail" onClick={(e) => handleScrollTo(e, '#why-apps-fail')} className="hover:text-white transition-colors cursor-pointer">Why Apps Fail Review</a></li>
               <li><a href="#features" onClick={(e) => handleScrollTo(e, '#features')} className="hover:text-white transition-colors cursor-pointer">AI Coding Prompts</a></li>

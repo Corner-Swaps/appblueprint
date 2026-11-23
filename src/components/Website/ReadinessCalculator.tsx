@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { ShieldCheck, AlertTriangle, CheckCircle2, ArrowRight, Activity, Sparkles } from 'lucide-react';
+import { PHASES_DATA } from '../../data/phases';
+import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
+
+const CALC_TOTAL_COUNT =
+  SETUP_STEPS_PHASE.items.length + PHASES_DATA.reduce((sum, p) => sum + p.items.length, 0);
 
 interface ReadinessCalculatorProps {
   onLaunchApp: () => void;
@@ -225,7 +230,7 @@ export const ReadinessCalculator: React.FC<ReadinessCalculatorProps> = React.mem
               onClick={onLaunchApp}
               className="apple-press w-full inline-flex items-center justify-center space-x-2 bg-[#0B0F17] hover:bg-slate-800 text-white font-bold text-xs sm:text-sm py-3.5 px-4 rounded-xl shadow-lg transition-all cursor-pointer"
             >
-              <span>Audit All 101 Rules in App</span>
+              <span>Audit All {CALC_TOTAL_COUNT} Rules in App</span>
               <ArrowRight className="w-4 h-4 stroke-[2.2]" />
             </button>
           </div>

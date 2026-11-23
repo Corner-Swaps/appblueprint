@@ -87,7 +87,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
     new Set(['p1-problem-solution', 'p2-safe-areas', 'p4-keychain-keystore'])
   );
 
-  // Flatten all items from setup phase + 10 phases
+  // Flatten all items from setup phase + all 12 production phases
   const allItems = ALL_CATALOG_ITEMS;
 
   // Filtered items based on query, platform, and category using precomputed lowercase index
@@ -916,7 +916,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
               </div>
 
               <div className="mt-4 flex items-center space-x-2">
-                <span className="text-[11px] text-slate-400">Tested on iOS 18 &amp; iPadOS 18</span>
+                <span className="text-[11px] text-slate-400">Tested on iOS 26 &amp; iPadOS 26</span>
               </div>
             </div>
 

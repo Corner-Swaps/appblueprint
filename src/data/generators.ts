@@ -82,25 +82,21 @@ ${apiTypes.join('\n')}
 </plist>`;
 }
 
-export function generateAASA(teamId: string, bundleId: string, paths: string[] = ['*']): string {
+export function generateAASA(teamId: string, bundleId: string, paths: string[] = ['/*']): string {
   const cleanTeam = teamId.trim() || 'TEAM_ID';
   const cleanBundle = bundleId.trim() || 'com.example.app';
-  const formattedPaths = paths.length > 0 ? paths : ['*'];
+  const formattedPaths = paths.length > 0 ? paths : ['/*'];
 
   return JSON.stringify(
     {
       applinks: {
-        apps: [],
         details: [
           {
-            appID: `${cleanTeam}.${cleanBundle}`,
-            paths: formattedPaths,
-            components: [
-              {
-                '/': '/*',
-                comment: 'Universal Links route mapping'
-              }
-            ]
+            appIDs: [`${cleanTeam}.${cleanBundle}`],
+            components: formattedPaths.map(pathPattern => ({
+              '/': pathPattern,
+              comment: `Matches Universal Links for ${pathPattern}`
+            }))
           }
         ]
       },
@@ -113,23 +109,49 @@ export function generateAASA(teamId: string, bundleId: string, paths: string[] =
   );
 }
 
-export function generateAppEntitlements(domains: string[] = ['example.com']): string {
-  const cleanDomains = domains.length > 0 ? domains : ['example.com'];
+export interface AppleEntitlementsConfig {
+  domains: string[];
+  signInWithApple?: boolean;
+  pushNotifications?: boolean;
+}
+
+export function generateAppEntitlements(
+  domainsOrConfig: string[] | AppleEntitlementsConfig = ['example.com']
+): string {
+  const config: AppleEntitlementsConfig = Array.isArray(domainsOrConfig)
+    ? { domains: domainsOrConfig, signInWithApple: false, pushNotifications: false }
+    : domainsOrConfig;
+
+  const cleanDomains = config.domains.length > 0 ? config.domains : ['example.com'];
   const formattedDomains = cleanDomains.map(d => {
     const trimmed = d.trim();
     return trimmed.startsWith('applinks:') ? trimmed : `applinks:${trimmed}`;
   });
 
+  const blocks: string[] = [
+    `    <key>com.apple.developer.associated-domains</key>
+    <array>
+${formattedDomains.map(d => `        <string>${d}</string>`).join('\n')}
+    </array>`
+  ];
+
+  if (config.signInWithApple) {
+    blocks.push(`    <key>com.apple.developer.applesignin</key>
+    <array>
+        <string>Default</string>
+    </array>`);
+  }
+
+  if (config.pushNotifications) {
+    blocks.push(`    <key>aps-environment</key>
+    <string>production</string>`);
+  }
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>com.apple.developer.associated-domains</key>
-    <array>
-${formattedDomains.map(d => `        <string>${d}</string>`).join('\n')}
-    </array>
-    <key>com.apple.developer.in-app-payments</key>
-    <array/>
+${blocks.join('\n')}
 </dict>
 </plist>`;
 }
@@ -242,7 +264,7 @@ ${hasSubscriptions ? `---
 The App may offer premium features through auto-renewing subscriptions ("Paid Subscriptions"):
 - **Billing & Renewal:** Subscriptions automatically renew at the end of each subscription period (e.g. monthly or annually) unless auto-renewal is canceled at least 24 hours prior to the expiration of the current cycle.
 - **Payment Processing:** Payment is charged to your Apple ID account upon purchase confirmation. Pricing is displayed in your local currency on the paywall screen.
-- **How to Cancel Anytime (Click-to-Cancel):** You may manage or cancel your subscription at any time directly through your Apple device settings:
+- **How to Cancel Anytime:** You may manage or cancel your subscription at any time directly through your Apple device settings:
   - Open **Settings** > tap your **Apple ID Profile** > **Subscriptions** > tap **${app}** > select **Cancel Subscription**.
 - **Restore Purchases:** You can restore previously purchased subscriptions on new or existing devices at any time by tapping the "Restore Purchases" button on the paywall screen.
 - **Refunds:** All in-app purchase and subscription transactions are processed directly by Apple under standard terms. Refund requests must be directed to Apple support.

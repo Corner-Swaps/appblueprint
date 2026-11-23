@@ -1,5 +1,7 @@
 import React from 'react';
 import { GraduationCap } from 'lucide-react';
+import { PHASES_DATA } from '../data/phases';
+import { RESOURCES_DATA } from '../data/resources';
 
 interface UnifiedAppHeaderProps {
   overallPercent: number;
@@ -24,7 +26,7 @@ export const UnifiedAppHeader: React.FC<UnifiedAppHeaderProps> = ({
 
         {/* Centered Subtext */}
         <p className="mt-2 text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto text-center">
-          10 guided phases, 101 audit-proof requirements, battle-tested store guardrails, and 1-click autonomous AI coding prompts to take your app from day zero to App Store approval.
+          {PHASES_DATA.length} guided phases, {totalItems} audit-proof requirements, battle-tested store guardrails, and 1-click autonomous AI coding prompts to take your app from day zero to App Store approval.
         </p>
 
         {/* Centered Telemetry / Banner Area */}
@@ -37,7 +39,7 @@ export const UnifiedAppHeader: React.FC<UnifiedAppHeaderProps> = ({
               </span>
               <span className="text-xs text-purple-400">•</span>
               <span className="text-xs font-semibold text-purple-600">
-                10 Categories · 80 Verified Tools &amp; AI Prompts
+                10 Categories · {RESOURCES_DATA.length} Verified Tools &amp; AI Prompts
               </span>
             </div>
           ) : (

@@ -43,12 +43,14 @@ export const ConfigGenerators: React.FC = () => {
 
   // Apple Entitlements State
   const [associatedDomains, setAssociatedDomains] = useState('example.com, api.example.com');
+  const [enableSignInWithApple, setEnableSignInWithApple] = useState(false);
+  const [enablePushNotifications, setEnablePushNotifications] = useState(false);
 
   // Privacy Policy State
   const [policyAppName, setPolicyAppName] = useState('My Awesome App');
   const [policyCompany, setPolicyCompany] = useState('Acme Software Inc.');
-  const [policyEmail, setPolicyEmail] = useState('privacy@acme.com');
-  const [selectedSdks, setSelectedSdks] = useState<string[]>(['Firebase Analytics', 'RevenueCat', 'Sentry Crash Reporting']);
+  const [policyEmail, setPolicyEmail] = useState('privacy@example.com');
+  const [selectedSdks, setSelectedSdks] = useState<string[]>(['Firebase Analytics', 'RevenueCat In-App Purchases', 'Sentry Crash Reporting']);
 
   const allSdks = [
     'Firebase Analytics',
@@ -67,9 +69,11 @@ export const ConfigGenerators: React.FC = () => {
     bundleId, 
     pathsInput.split(',').map(p => p.trim()).filter(Boolean)
   );
-  const generatedEntitlements = generateAppEntitlements(
-    associatedDomains.split(',').map(d => d.trim()).filter(Boolean)
-  );
+  const generatedEntitlements = generateAppEntitlements({
+    domains: associatedDomains.split(',').map(d => d.trim()).filter(Boolean),
+    signInWithApple: enableSignInWithApple,
+    pushNotifications: enablePushNotifications,
+  });
   const generatedPolicy = generatePrivacyPolicy(
     policyAppName, 
     policyCompany, 
@@ -130,101 +134,87 @@ export const ConfigGenerators: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      
-      {/* Header */}
-      <div className="liquid-glass-card rounded-2xl p-6 sm:p-8">
-        <div className="flex items-center space-x-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-apple-indigo to-apple-purple flex items-center justify-center text-white shadow-apple-md">
-            <FileCode className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold text-apple-gray-900 dark:text-white">
-              Store Configuration & Policy File Generators
-            </h2>
-            <p className="text-xs sm:text-sm text-apple-gray-500 dark:text-apple-gray-400">
-              Generate valid Apple Privacy Manifests, Universal Links AASA files, Apple Entitlements, and Store-Compliant Privacy Policies.
-            </p>
-          </div>
-        </div>
+    <div className="space-y-4">
+      {/* Generator Selector Tabs */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <button
+          type="button"
+          onClick={() => setActiveGenerator('privacy-manifest')}
+          className={`apple-press px-3 py-2.5 rounded-xl border text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+            activeGenerator === 'privacy-manifest'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+              : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-400'
+          }`}
+        >
+          <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Privacy Manifest</span>
+        </button>
 
-        {/* Generator Selector Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6">
-          <button
-            onClick={() => setActiveGenerator('privacy-manifest')}
-            className={`apple-press p-3 rounded-xl border text-xs font-semibold flex items-center space-x-2 transition-all ${
-              activeGenerator === 'privacy-manifest'
-                ? 'bg-apple-blue text-white border-apple-blue shadow-apple-sm'
-                : 'bg-white dark:bg-apple-gray-900 text-apple-gray-700 dark:text-apple-300 border-apple-gray-200 dark:border-apple-gray-800 hover:border-apple-blue'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span className="truncate">Privacy Manifest</span>
-          </button>
+        <button
+          type="button"
+          onClick={() => setActiveGenerator('aasa')}
+          className={`apple-press px-3 py-2.5 rounded-xl border text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+            activeGenerator === 'aasa'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+              : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-400'
+          }`}
+        >
+          <Link className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Apple AASA</span>
+        </button>
 
-          <button
-            onClick={() => setActiveGenerator('aasa')}
-            className={`apple-press p-3 rounded-xl border text-xs font-semibold flex items-center space-x-2 transition-all ${
-              activeGenerator === 'aasa'
-                ? 'bg-apple-blue text-white border-apple-blue shadow-apple-sm'
-                : 'bg-white dark:bg-apple-gray-900 text-apple-gray-700 dark:text-apple-300 border-apple-gray-200 dark:border-apple-gray-800 hover:border-apple-blue'
-            }`}
-          >
-            <Link className="w-4 h-4" />
-            <span className="truncate">Apple AASA (Links)</span>
-          </button>
+        <button
+          type="button"
+          onClick={() => setActiveGenerator('entitlements')}
+          className={`apple-press px-3 py-2.5 rounded-xl border text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+            activeGenerator === 'entitlements'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+              : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-400'
+          }`}
+        >
+          <Key className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Entitlements</span>
+        </button>
 
-          <button
-            onClick={() => setActiveGenerator('entitlements')}
-            className={`apple-press p-3 rounded-xl border text-xs font-semibold flex items-center space-x-2 transition-all ${
-              activeGenerator === 'entitlements'
-                ? 'bg-apple-blue text-white border-apple-blue shadow-apple-sm'
-                : 'bg-white dark:bg-apple-gray-900 text-apple-gray-700 dark:text-apple-300 border-apple-gray-200 dark:border-apple-gray-800 hover:border-apple-blue'
-            }`}
-          >
-            <Key className="w-4 h-4" />
-            <span className="truncate">Apple Entitlements</span>
-          </button>
-
-          <button
-            onClick={() => setActiveGenerator('privacy-policy')}
-            className={`apple-press p-3 rounded-xl border text-xs font-semibold flex items-center space-x-2 transition-all ${
-              activeGenerator === 'privacy-policy'
-                ? 'bg-apple-blue text-white border-apple-blue shadow-apple-sm'
-                : 'bg-white dark:bg-apple-gray-900 text-apple-gray-700 dark:text-apple-300 border-apple-gray-200 dark:border-apple-gray-800 hover:border-apple-blue'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span className="truncate">Privacy Policy</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setActiveGenerator('privacy-policy')}
+          className={`apple-press px-3 py-2.5 rounded-xl border text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
+            activeGenerator === 'privacy-policy'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+              : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-400'
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Privacy Policy</span>
+        </button>
       </div>
 
-      {/* Two Column Form & Live Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Form & Live Preview */}
+      <div className="space-y-4">
         
-        {/* Form Inputs (Left) */}
-        <div className="lg:col-span-5 liquid-glass-card rounded-2xl p-6 space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-apple-gray-400">
+        {/* Form Inputs */}
+        <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-4 space-y-3.5">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-google">
             Configure Parameters
           </h3>
 
           {/* Privacy Manifest Form */}
           {activeGenerator === 'privacy-manifest' && (
-            <div className="space-y-4 text-xs">
-              <div className="p-3 rounded-xl bg-apple-blue/5 border border-apple-blue/15 text-apple-gray-700 dark:text-apple-300">
-                Mandatory for iOS 17+. Declare which Required Reason APIs your app or libraries call.
+            <div className="space-y-3.5 text-xs text-slate-700">
+              <div className="p-3 rounded-xl bg-blue-50/80 border border-blue-200/80 text-slate-700">
+                Required for all App Store submissions (introduced in iOS 17+). Declare which Required Reason APIs your app or SDKs call.
               </div>
 
               <div className="space-y-2">
-                <span className="font-bold text-apple-gray-900 dark:text-white block">Required-Reason APIs:</span>
+                <span className="font-bold text-slate-900 block">Required-Reason APIs:</span>
                 
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={manifestConfig.useUserDefaults}
                     onChange={(e) => setManifestConfig({ ...manifestConfig, useUserDefaults: e.target.checked })}
-                    className="rounded text-apple-blue"
+                    className="rounded text-blue-600"
                   />
                   <span>NSUserDefaults (CA92.1 - App Data Storage)</span>
                 </label>
@@ -234,7 +224,7 @@ export const ConfigGenerators: React.FC = () => {
                     type="checkbox"
                     checked={manifestConfig.useFileTimestamp}
                     onChange={(e) => setManifestConfig({ ...manifestConfig, useFileTimestamp: e.target.checked })}
-                    className="rounded text-apple-blue"
+                    className="rounded text-blue-600"
                   />
                   <span>File Timestamps (C617.1 - File Management)</span>
                 </label>
@@ -244,7 +234,7 @@ export const ConfigGenerators: React.FC = () => {
                     type="checkbox"
                     checked={manifestConfig.useDiskSpace}
                     onChange={(e) => setManifestConfig({ ...manifestConfig, useDiskSpace: e.target.checked })}
-                    className="rounded text-apple-blue"
+                    className="rounded text-blue-600"
                   />
                   <span>Disk Space (E174.1 - Caching & Storage Limits)</span>
                 </label>
@@ -254,36 +244,37 @@ export const ConfigGenerators: React.FC = () => {
                     type="checkbox"
                     checked={manifestConfig.useSystemBootTime}
                     onChange={(e) => setManifestConfig({ ...manifestConfig, useSystemBootTime: e.target.checked })}
-                    className="rounded text-apple-blue"
+                    className="rounded text-blue-600"
                   />
                   <span>System Boot Time (35F9.1 - Internal Diagnostics)</span>
                 </label>
               </div>
 
-              <div className="pt-2 border-t border-apple-gray-200 dark:border-apple-gray-800 space-y-2">
+              <div className="pt-2 border-t border-slate-200 space-y-2">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={manifestConfig.tracking}
                     onChange={(e) => setManifestConfig({ ...manifestConfig, tracking: e.target.checked })}
-                    className="rounded text-apple-blue"
+                    className="rounded text-blue-600"
                   />
-                  <span className="font-bold text-apple-gray-900 dark:text-white">Collects Data for Tracking (ATT)</span>
+                  <span className="font-bold text-slate-900">Collects Data for Tracking (ATT)</span>
                 </label>
 
                 <div>
-                  <span className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">Tracking Domains:</span>
+                  <span className="font-bold text-slate-700 block mb-1">Tracking Domains:</span>
                   <div className="flex space-x-2">
                     <input
                       type="text"
                       value={domainInput}
                       onChange={(e) => setDomainInput(e.target.value)}
                       placeholder="e.g. analytics.example.com"
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 outline-none"
+                      className="flex-1 min-w-0 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-900 outline-none focus:ring-2 focus:ring-slate-900/15"
                     />
                     <button
+                      type="button"
                       onClick={handleAddDomain}
-                      className="apple-press px-3 py-1.5 bg-apple-blue text-white rounded-lg font-semibold"
+                      className="apple-press px-3 py-1.5 bg-slate-900 text-white rounded-lg font-semibold shrink-0 cursor-pointer"
                     >
                       Add
                     </button>
@@ -292,9 +283,9 @@ export const ConfigGenerators: React.FC = () => {
                   {manifestConfig.trackingDomains.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {manifestConfig.trackingDomains.map(d => (
-                        <span key={d} className="px-2 py-0.5 rounded bg-apple-gray-200 dark:bg-apple-gray-800 text-[11px] flex items-center space-x-1">
+                        <span key={d} className="px-2 py-0.5 rounded bg-slate-200 text-slate-800 text-[11px] flex items-center space-x-1">
                           <span>{d}</span>
-                          <button onClick={() => handleRemoveDomain(d)} className="text-apple-red ml-1">×</button>
+                          <button type="button" onClick={() => handleRemoveDomain(d)} className="text-rose-600 ml-1 font-bold" aria-label={`Remove ${d}`}>×</button>
                         </span>
                       ))}
                     </div>
@@ -306,9 +297,9 @@ export const ConfigGenerators: React.FC = () => {
 
           {/* AASA Form */}
           {activeGenerator === 'aasa' && (
-            <div className="space-y-4 text-xs">
+            <div className="space-y-3 text-xs text-slate-700">
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   Apple Developer Team ID (10 chars):
                 </label>
                 <input
@@ -316,12 +307,12 @@ export const ConfigGenerators: React.FC = () => {
                   value={teamId}
                   onChange={(e) => setTeamId(e.target.value)}
                   placeholder="e.g. ABCDE12345"
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 font-mono"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 font-mono"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   iOS Bundle Identifier:
                 </label>
                 <input
@@ -329,12 +320,12 @@ export const ConfigGenerators: React.FC = () => {
                   value={bundleId}
                   onChange={(e) => setBundleId(e.target.value)}
                   placeholder="e.g. com.yourcompany.app"
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 font-mono"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 font-mono"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   URL Paths to Handle (comma-separated):
                 </label>
                 <input
@@ -342,84 +333,104 @@ export const ConfigGenerators: React.FC = () => {
                   value={pathsInput}
                   onChange={(e) => setPathsInput(e.target.value)}
                   placeholder="/invite/*, /product/*"
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 font-mono"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 font-mono"
                 />
               </div>
 
-              <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 text-[11px] text-apple-gray-700 dark:text-apple-300 leading-relaxed">
-                Host this file on your server at: <br />
-                <code className="text-apple-purple font-mono font-bold">https://yourdomain.com/.well-known/apple-app-site-association</code>
-                <br />Must return HTTP 200 without redirects and `application/json` MIME type.
+              <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 text-[11px] text-slate-700 leading-relaxed break-words">
+                Host this file at <code className="text-purple-700 font-mono font-bold break-all">https://yourdomain.com/.well-known/apple-app-site-association</code> — must return HTTP 200 without redirects and <code>application/json</code>.
               </div>
             </div>
           )}
 
           {/* Apple Entitlements Form */}
           {activeGenerator === 'entitlements' && (
-            <div className="space-y-4 text-xs">
+            <div className="space-y-3 text-xs text-slate-700">
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
-                  Associated Domains (Comma separated):
+                <label className="font-bold text-slate-700 block mb-1">
+                  Associated Domains (comma-separated):
                 </label>
                 <input
                   type="text"
                   value={associatedDomains}
                   onChange={(e) => setAssociatedDomains(e.target.value)}
                   placeholder="e.g. example.com, app.example.com"
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800 font-mono"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 font-mono"
                 />
-                <span className="text-[10px] text-apple-gray-400 mt-1 block">
-                  Domains will automatically be formatted with the <code>applinks:</code> entitlement prefix.
+                <span className="text-[11px] text-slate-500 mt-1 block">
+                  Domains are automatically prefixed with <code>applinks:</code>.
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-[11px] text-apple-gray-700 dark:text-apple-300 leading-relaxed">
-                Add this <code className="text-apple-blue font-mono font-bold">App.entitlements</code> file to your Xcode target under Signing & Capabilities to enable Universal Links and In-App Purchase capabilities.
+              <div className="space-y-2 pt-1">
+                <span className="font-bold text-slate-900 block">Optional Entitlements:</span>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableSignInWithApple}
+                    onChange={(e) => setEnableSignInWithApple(e.target.checked)}
+                    className="rounded text-blue-600"
+                  />
+                  <span>Sign in with Apple (<code>com.apple.developer.applesignin</code>)</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enablePushNotifications}
+                    onChange={(e) => setEnablePushNotifications(e.target.checked)}
+                    className="rounded text-blue-600"
+                  />
+                  <span>Push Notifications (<code>aps-environment</code>)</span>
+                </label>
+              </div>
+
+              <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-[11px] text-slate-700 leading-relaxed">
+                Add this <code className="text-blue-700 font-mono font-bold">App.entitlements</code> file to your Xcode target under Signing &amp; Capabilities. Note: Standard StoreKit In-App Purchases are enabled via Xcode Capabilities and do not require an entitlements key.
               </div>
             </div>
           )}
 
           {/* Privacy Policy Form */}
           {activeGenerator === 'privacy-policy' && (
-            <div className="space-y-4 text-xs">
+            <div className="space-y-3 text-xs text-slate-700">
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   App Name:
                 </label>
                 <input
                   type="text"
                   value={policyAppName}
                   onChange={(e) => setPolicyAppName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   Company / Developer Legal Name:
                 </label>
                 <input
                   type="text"
                   value={policyCompany}
                   onChange={(e) => setPolicyCompany(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   Contact / Privacy Email:
                 </label>
                 <input
                   type="email"
                   value={policyEmail}
                   onChange={(e) => setPolicyEmail(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-apple-gray-100 dark:bg-apple-gray-900 border border-apple-gray-200 dark:border-apple-gray-800"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-apple-gray-700 dark:text-apple-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   Active Third-Party SDKs:
                 </label>
                 <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
@@ -429,7 +440,7 @@ export const ConfigGenerators: React.FC = () => {
                         type="checkbox"
                         checked={selectedSdks.includes(sdk)}
                         onChange={() => toggleSdk(sdk)}
-                        className="rounded text-apple-blue"
+                        className="rounded text-blue-600"
                       />
                       <span>{sdk}</span>
                     </label>
@@ -441,22 +452,23 @@ export const ConfigGenerators: React.FC = () => {
 
         </div>
 
-        {/* Live Code Preview (Right) */}
-        <div className="lg:col-span-7 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono font-bold text-apple-gray-400">
+        {/* Live Code Preview */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <span className="text-xs font-mono font-bold text-slate-500 truncate">
               Live Preview: {current.filename}
             </span>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 shrink-0">
               <button
+                type="button"
                 onClick={handleCopy}
-                className="apple-press px-3 py-1.5 bg-apple-gray-200 dark:bg-apple-gray-800 hover:bg-apple-blue hover:text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors"
+                className="apple-press px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
               >
                 {copied ? (
                   <>
-                    <CheckCheck className="w-3.5 h-3.5 text-apple-green" />
-                    <span>Copied</span>
+                    <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-700">Copied</span>
                   </>
                 ) : (
                   <>
@@ -467,24 +479,24 @@ export const ConfigGenerators: React.FC = () => {
               </button>
 
               <button
+                type="button"
                 onClick={handleDownload}
-                className="apple-press px-3 py-1.5 bg-apple-blue text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-apple-sm"
+                className="apple-press px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-2xs cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Download File</span>
+                <span>Download</span>
               </button>
             </div>
           </div>
 
-          <div className="rounded-2xl overflow-hidden bg-apple-gray-950 border border-apple-gray-800 font-mono text-xs shadow-apple-lg max-h-[500px] flex flex-col">
-            <pre className="p-5 overflow-auto leading-relaxed text-apple-gray-200 flex-1">
+          <div className="rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 font-mono text-[11px] sm:text-xs shadow-sm max-h-[340px] flex flex-col">
+            <pre className="p-4 overflow-auto leading-relaxed text-slate-200 flex-1 select-text">
               <code>{current.code}</code>
             </pre>
           </div>
         </div>
 
       </div>
-
     </div>
   );
 };

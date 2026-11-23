@@ -38,6 +38,7 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
   onOpenManagePhases,
 }) => {
   const allPhasesWithSetup = [setupPhase, ...phases];
+  const totalChecklistCount = allPhasesWithSetup.reduce((sum, p) => sum + p.items.length, 0);
 
   return (
     <aside className="space-y-3.5">
@@ -75,7 +76,7 @@ export const PhaseRoadmapSidebar: React.FC<PhaseRoadmapSidebarProps> = ({
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
-          All (101)
+          All ({totalChecklistCount})
         </button>
 
         {/* Apple iOS Button */}

@@ -101,6 +101,7 @@ import { triggerHaptic } from '../utils/haptics';
 import { ImpactStyle } from '@capacitor/haptics';
 import { fluidScrollTo } from '../utils/fluidScroll';
 import { getCategoryGlowRgb } from '../utils/phaseThemes';
+import { ConfigGenerators } from './ConfigGenerators';
 
 interface ResourcesPageProps {
   onBackToChecklist?: () => void;
@@ -129,7 +130,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'design',
     title: 'Design Systems & UI/UX',
     badge: 'Interface Systems',
-    description: 'Great design makes your app feel natural and effortless to use from the very first tap. Learn proven layout structures from Apple and Google so your buttons are comfortable and your screens look clean. Study successful apps to gain design inspiration without copying copyrighted artwork or brand trademarks.',
+    description: 'Great design makes your app feel natural and effortless to use from the very first tap. Learn proven layout structures from Apple\'s Human Interface Guidelines so your buttons are comfortable and your screens look clean. Study successful apps to gain design inspiration without copying copyrighted artwork or brand trademarks.',
     iconBg: 'bg-rose-500',
     icon: <Layout className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -939,6 +940,92 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = React.memo(({ onBackT
 
       {/* 2. Section Cards */}
       <div className="space-y-4 pt-1">
+        {/* Built-in Interactive Config Generators Card */}
+        <div
+          id="config-generators"
+          style={{
+            '--glow-rgb': '79, 70, 229',
+            backgroundColor: '#ffffff',
+          } as React.CSSProperties}
+          className="rounded-3xl border border-slate-200/90 bg-white transition-all duration-300 shadow-xs overflow-hidden"
+        >
+          <div
+            role="button"
+            tabIndex={0}
+            aria-expanded={expandedSectionId === 'config-generators'}
+            onClick={() => handleToggleSection('config-generators')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleToggleSection('config-generators');
+              }
+            }}
+            className="p-5 pb-3 sm:p-6 sm:pb-3.5 space-y-2.5 select-none cursor-pointer focus:outline-none"
+          >
+            <div className="w-full flex items-center justify-between select-none">
+              <div className="flex items-center space-x-3.5 pr-2 select-none flex-1 min-w-0">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shrink-0 shadow-xs text-white">
+                  <FileCode className="w-6 h-6 text-white stroke-[1.8]" />
+                </div>
+                <div className="space-y-1 select-none flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap select-none mt-0.5">
+                    <span className="h-[18px] px-2 rounded-full text-[10px] font-bold uppercase tracking-wider font-google bg-indigo-600 text-white shadow-xs select-none shrink-0 inline-flex items-center justify-center pt-[1px] leading-none">
+                      Interactive Tools
+                    </span>
+                  </div>
+                  <h2 className="text-[18px] sm:text-[20px] font-medium text-slate-900 tracking-tight leading-snug select-none font-google break-words">
+                    Config Generators
+                  </h2>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-600 leading-[22px] select-none pt-0.5">
+              Generate store-ready Apple Privacy Manifests (<code>PrivacyInfo.xcprivacy</code>), Universal Links (<code>apple-app-site-association</code>), <code>App.entitlements</code>, and Markdown Privacy Policies 100% locally on your device.
+            </p>
+
+            <div className="space-y-1 pt-1 select-none">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-700 select-none font-google tracking-tight">
+                <span>Built-in Generators</span>
+                <span className="tabular-nums">4 Available</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-black/5 select-none">
+                <div className="h-full bg-indigo-600 rounded-full" style={{ width: '100%' }} />
+              </div>
+            </div>
+
+            <div className="flex justify-center pt-0.5 pb-0 -mb-1 select-none">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleSection('config-generators');
+                }}
+                className="apple-press transition-all duration-200 flex items-center justify-center w-7 h-7 shrink-0 text-slate-400 hover:text-slate-700"
+                aria-label={expandedSectionId === 'config-generators' ? 'Collapse Config Generators' : 'Expand Config Generators'}
+                title={expandedSectionId === 'config-generators' ? 'Collapse Config Generators' : 'Expand Config Generators'}
+              >
+                <ChevronDown
+                  strokeWidth={2.5}
+                  className={`w-4 h-4 stroke-[2.5] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                    expandedSectionId === 'config-generators' ? 'rotate-180 text-slate-800' : 'text-slate-400'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className={`apple-drawer-collapse apple-unified-drawer ${expandedSectionId === 'config-generators' ? 'expanded' : '!mt-0 !mb-0 !h-0 overflow-hidden'}`}>
+            <div className="apple-drawer-content">
+              {expandedSectionId === 'config-generators' && (
+                <div className="p-4 sm:p-5 border-t border-slate-200/60">
+                  <ConfigGenerators />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {sectionOrder.map((secId, secIdx) => {
           const sec = SECTION_CONFIG_MAP.get(secId);
           if (!sec) return null;

@@ -132,3 +132,43 @@
 | 098 | Wave 10 | StoreKit 2 Product IDs match across JS, Swift & .storekit config | **PASS** | `com.slava.appblueprint.keep_this_project, com.slava.appblueprint.unlimited_projects` |
 | 099 | Wave 10 | Automated StoreKit 2 test suite passes cleanly | **PASS** | `[1m================================================================ \| [0m` |
 | 100 | Wave 10 | Cumulative hard runtime telemetry: 0 page/console/network/HTTP>=400 errors | **PASS** | `pageErr=0, consoleErr=0, reqFail=0, badHttp=0` |
+
+
+---
+
+## Factual Accuracy, URL & Config Generator Audit Addendum (2026-11-23)
+
+Following the initial 100/100 live functional audit, a complete line-by-line factual accuracy, URL liveness (199 unique external URLs + 59 YouTube oEmbed checks), and feature-truthfulness audit was executed across all data modules (`src/data/phases.ts`, `src/data/resources.ts`, `src/data/setupSteps.ts`, `src/data/generators.ts`, `src/data/habits.ts`, `src/data/troubleshooting.ts`), React components, and static legal pages.
+
+### Root Issues Found & Fixed
+1. **Blind Find-and-Replace Technical Corruptions Eliminated (`0` remaining):**
+   - Fixed third-party brand misattributions (`Apple Flutter SDK` → `Google Flutter SDK`, `Apple Firebase Suite` → `Google Firebase Suite`, `Apple Gemini` → `Google Gemini & Antigravity`, `Apple Fonts` → `Google Fonts`, `Apple AdMob` → `Google AdMob`, `Apple UMP` → `Google UMP`, `Fastlane owned by Apple` → `open-source / Google`).
+   - Eliminated all duplicated phrases (`Apple and Apple`, `iOS or iOS`, `App Store Connect and App Store Connect`, `Xcode and Xcode`, `App Store / App Store`, `Apple Apple App Store`).
+   - Replaced Android-only APIs falsely attributed to iOS with accurate Apple APIs across all 12 phases:
+     - App Icon (`p2-app-icon`): Replaced Android Adaptive Icons / `432x432` / `mipmap-*` / `Material You` / `512x512` with opaque `1024x1024px` PNG (`AppIcon.appiconset`), Dark/Tinted & iOS 26 Liquid Glass Icon Composer layers.
+     - Keychain (`p4-keychain-keystore`): Replaced `EncryptedSharedPreferences` / `iOS Keystore` / `BiometricPrompt` with Apple Keychain Services (`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`) & `LocalAuthentication` (`LAContext`).
+     - Push Diagnostics (`p10-push-troubleshooting`): Replaced nonexistent iOS Notification Channels with APNs environment (sandbox vs production), `.p8` Auth Key, `aps-environment`, and `UNUserNotificationCenter`.
+     - IAP Diagnostics (`p10-iap-troubleshooting` & `p8-storekit-iap-readiness`): Replaced false Android 3-day auto-refund claim with StoreKit 2 `await transaction.finish()`, `Transaction.updates`, and `product.purchase(confirmIn:)` iPadOS presentation context guidance.
+     - Background Modes (`p3-background-modes`), Transit Security (`p4-transit-security`), Deep Linking (`p3-deep-linking`, `p10-deep-link-troubleshooting`), Crash Debugging (`p6-crash-reporting`, `p10-crash-debugging`), Release Type (`p9-submission-release-type`), Native Review Prompt (`p10-native-review-prompt`): Removed `iOSManifest.xml`, `WorkManager`, `res/xml/network_security_config.xml`, `assetlinks.json`, `ProGuard`, `logcat`, `Managed publishing`, and deprecated `SKStoreReviewController` (updated to `AppStore.requestReview(in:)`).
+     - Screenshots (`p7-screenshots-video`, `launch-applaunchpad`, `launch-birme`): Removed Google Play `1080x2400` / `1024x500 Feature Graphic` dimensions and added Apple Guideline 2.3.7 warning (no pricing/"free" copy in screenshots).
+2. **Dead 404 External URLs Replaced (5/5 → verified HTTP 200) & Duplicate Resource URLs Deduplicated (3/3 → 83 unique resources):**
+   - Replaced `managing-storage-in-xcode` → `https://developer.apple.com/documentation/xcode`
+   - Replaced `hig/navigation` → `https://developer.apple.com/design/human-interface-guidelines/navigation-and-search`
+   - Replaced `app-store/in-app-purchases/` → `https://developer.apple.com/in-app-purchase/`
+   - Replaced `privado.ai/apple-privacy-manifest` → `https://www.privado.ai/`
+   - Replaced vacated FTC Click-to-Cancel 2024 press release (vacated July 8, 2025) → accurate **Subscription Transparency & ROSCA (3.1.2)** guide linking `https://developer.apple.com/app-store/subscriptions/`
+   - Updated `Windsurf by Codeium` → **Devin Desktop (formerly Windsurf)** (`https://devin.ai/desktop`), `SF Symbols 6` → `SF Symbols 7`, Xcode 26+ (April 28, 2026 App Store SDK mandate, macOS Sequoia 15.6+ / Tahoe 26+), and current 2026 frontier AI models.
+   - Replaced 3 duplicate resource URLs with distinct official resources (`Fontsource`, `Apple Accessibility & Dynamic Type`, `Apple Account Deletion 5.1.1v`) and fixed double-escaped `\\n` prompts.
+3. **Mounted & Fixed Config Generators (`src/components/ConfigGenerators.tsx`, `src/data/generators.ts`, `src/components/ResourcesPage.tsx`):**
+   - Mounted interactive **Config Generators** inside **Academy & Resources** (matching claims in `FAQSection`, `FeaturesGrid`, `support.html`, and `privacy.html`).
+   - Fixed `generateAppEntitlements` by removing erroneous `<key>com.apple.developer.in-app-payments</key>` (Apple Pay, not StoreKit IAP) and adding opt-in Sign in with Apple & Push Notifications entitlements.
+   - Fixed `generateAASA` to emit modern Apple `appIDs` + per-path `components` (no longer overridden by wildcard `"/*"`).
+4. **Copy, Counts & Placeholder Hygiene:**
+   - Synchronized all hardcoded `10 Phases` / `101` counts across Website, App headers, and static legal HTMLs to dynamic **12 Production Phases** and **106 Requirements**.
+   - Replaced stale `Corner Swaps: App Creator` & `slava@icloud.com` in `PaywallModal.tsx` with `App Blueprint` & `demo@example.com`, and replaced hardcoded `com.slava.appblueprint` in generic user-facing `setupSteps.ts` prompt with `<BUNDLE_ID>`.
+
+### Re-Verification Results
+- **Content Defect & Dead-Link Static Audit:** `0` mangled strings, `0` duplicate resource URLs, `0` dead 404 URLs, `0` forbidden hosts in `src/` & `dist/`.
+- **Live Accuracy & Config Generators Browser Suite (`verify_content_and_generators_live.cjs`):** **11/11 PASS** (Desktop `1440×900` + Mobile `390×844`, `0` overflow, `0` runtime errors).
+- **Full 100-Check Live E2E Browser Suite (`run_100_checks.cjs`):** **100/100 PASS**, `pageErr=0`, `consoleErr=0`, `reqFail=0`, `badHttp=0`.
+- **StoreKit 2 10x Verification Suite (`scripts/test_storekit_flow_10x.cjs`):** **21/21 PASS**.

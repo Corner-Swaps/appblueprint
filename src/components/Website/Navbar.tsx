@@ -43,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navLinks = [
     { label: 'Screens & Rules', shortLabel: 'Rules', href: '#explorer' },
-    { label: '10 Phases', shortLabel: 'Phases', href: '#phases' },
+    { label: `${PHASES_DATA.length} Phases`, shortLabel: 'Phases', href: '#phases' },
     { label: 'Pass Calculator', shortLabel: 'Calculator', href: '#calculator' },
     { label: 'Why Apps Fail', shortLabel: 'Traps', href: '#why-apps-fail' },
     { label: 'App Flows', shortLabel: 'Flows', href: '#screenshots' },

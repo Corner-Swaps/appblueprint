@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { Smartphone, ChevronLeft, ChevronRight, Sparkles, Layers, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { PHASES_DATA } from '../../data/phases';
+import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
+
+const GALLERY_TOTAL_COUNT =
+  SETUP_STEPS_PHASE.items.length + PHASES_DATA.reduce((sum, p) => sum + p.items.length, 0);
 
 interface ScreenshotGalleryProps {
   onLaunchApp?: () => void;
@@ -9,13 +14,13 @@ const FLOW_SCREENS = [
   {
     src: './screenshots/02_production_checklist.png',
     title: 'Production Checklist & Audit',
-    subtitle: '101 store requirements with deep-dive guidance, traps, and 1-click AI prompts',
+    subtitle: `${GALLERY_TOTAL_COUNT} store requirements with deep-dive guidance, traps, and 1-click AI prompts`,
     tag: 'Checklist Flow',
     flowStep: 'Step 1 of 5',
     highlights: [
       'Real-time verification progress tracking',
       'Store Review Blocker priority filters',
-      '1-Click AI Coding Prompts for Cursor & Claude',
+      '1-Click AI Coding Prompts for Antigravity, Cursor & Claude',
     ],
   },
   {
@@ -37,7 +42,7 @@ const FLOW_SCREENS = [
     tag: 'Roadmap Flow',
     flowStep: 'Step 3 of 5',
     highlights: [
-      '10 guided phases with step-by-step deliverables',
+      `${PHASES_DATA.length} guided phases with step-by-step deliverables`,
       'Tactile reorderable milestone cards',
       'Completion badges and velocity tracking',
     ],
@@ -143,7 +148,7 @@ export const ScreenshotGallery: React.FC<ScreenshotGalleryProps> = React.memo(({
                 {flowScreens[activeIdx].tag}
               </span>
               <span className="text-xs font-semibold text-slate-400">
-                iOS 18 &amp; iPadOS 18
+                iOS 26 &amp; iPadOS 26
               </span>
             </div>
 

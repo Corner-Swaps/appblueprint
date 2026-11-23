@@ -63,7 +63,7 @@ export const LegalConsentModal: React.FC<LegalConsentModalProps> = ({ isOpen, on
                   <span>1. Scaffolding &amp; Educational Guidance</span>
                 </h3>
                 <p className="text-slate-600 text-xs leading-normal">
-                  Provided strictly as an educational developer guide and blueprint. App Store approval by Apple or Google is never guaranteed.
+                  Provided strictly as an educational developer guide and blueprint. App Store approval by Apple is never guaranteed.
                 </p>
               </div>
 

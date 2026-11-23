@@ -22,9 +22,9 @@ export const FeaturesGrid: React.FC<FeaturesGridProps> = React.memo(({ onLaunchA
       icon: Terminal,
       color: 'from-blue-600 to-indigo-600',
       title: '1-Click AI Coding Agent Prompts',
-      tag: 'Cursor • Claude • ChatGPT',
+      tag: 'Antigravity • Cursor • Claude',
       description:
-        'Every single production requirement includes an autonomous, battle-tested prompt. Copy and paste directly into Cursor or Claude Code to audit safe areas, dark mode contrast, or keychain encryption.',
+        'Every single production requirement includes an autonomous, battle-tested prompt. Copy and paste directly into Google Antigravity, Cursor, or Claude Code to audit safe areas, dark mode contrast, or keychain encryption.',
     },
     {
       icon: ShieldAlert,

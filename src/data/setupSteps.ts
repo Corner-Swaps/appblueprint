@@ -57,11 +57,11 @@ EXECUTION PROTOCOL FOR THE AGENT:
       id: 'setup-model',
       phaseId: 'phase-setup',
       title: 'AI Assistant',
-      shortDescription: 'Select a frontier AI coding assistant (Antigravity, Cursor, Windsurf, or Claude Code) and connect it to your project.',
+      shortDescription: 'Select a frontier AI coding assistant (Antigravity, Cursor, Devin Desktop, or Claude Code) and connect it to your project.',
       category: 'functionality',
       platform: 'both',
       priority: 'blocker',
-      whyItMatters: 'Modern AI coding tools create entire screens, wire up database actions, and debug complex native issues for you. Choosing a frontier model (like Claude 3.7 Sonnet, GPT-4o, or Gemini 2.5) ensures your assistant understands full Apple Human Interface Guidelines and store compliance rules.',
+      whyItMatters: 'Modern AI coding tools create entire screens, wire up database actions, and debug complex native issues for you. Choosing a frontier model (such as Google Gemini, Anthropic Claude, or OpenAI GPT) ensures your assistant understands full Apple Human Interface Guidelines and store compliance rules.',
       whatHappensNext: 'Your AI assistant is connected to your project workspace, ready to turn plain-English descriptions into complete, production-ready screens.',
       directLink: {
         label: 'Developer AI Tools & Agents',
@@ -72,9 +72,9 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=2hsHF_RKKWU'
       },
       implementationSteps: [
-        'Select an AI coding environment: Antigravity, Cursor, Windsurf, or Claude Code.',
+        'Select an AI coding environment: Google Antigravity, Cursor, Devin Desktop (formerly Windsurf), or Claude Code.',
         'Open your project folder in your chosen editor so the AI can read files, inspect configurations, and make edits autonomously.',
-        'Select a frontier reasoning model (such as Gemini 2.5 Pro / Flash, Claude 3.7 Sonnet, or GPT-4o) with large context memory.',
+        'Select a frontier reasoning model (such as Google Gemini, Anthropic Claude Opus/Sonnet, or OpenAI GPT) with large context memory.',
         'Provide your AI assistant with the golden instruction: "Always write complete, working code with zero dummy buttons, fake alerts, or unfinished placeholders."'
       ],
       agentPrompt: `You are the autonomous senior mobile software architect configuring our development environment.
@@ -160,10 +160,10 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://www.youtube.com/watch?v=yvp1_-dc7qc'
       },
       implementationSteps: [
-        'Open the Mac App Store, search for "Xcode", and click Get / Install (requires macOS 14+ and ~25 GB free disk space).',
+        'Open the Mac App Store, search for "Xcode", and click Get / Install (Xcode 26+ requires macOS Sequoia 15.6+ or macOS Tahoe 26+, with ~25 GB free disk space).',
         'Open Xcode once after downloading, agree to the Apple License Agreement, and let it install its background components.',
-        'In Xcode, go to Settings > Platforms and ensure at least one iOS Simulator runtime is installed.',
-        'Tell your AI assistant: "Verify that Xcode and command-line tools are linked and ready to build our iOS project."'
+        'In Xcode, go to Settings > Components (or Platforms) and ensure the latest iOS Simulator runtime is installed.',
+        'Tell your AI assistant: "Verify that Xcode 26+ (required for App Store submissions since April 28, 2026) and command-line tools are linked and ready to build our iOS project."'
       ],
       agentPrompt: `You are the autonomous mobile systems engineer verifying Apple native compilation toolchains.
 
@@ -298,7 +298,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
         'Unlock your phone and tap "Trust This Computer" on the popup.',
         'On your iPhone, go to Settings > Privacy & Security, scroll down to "Developer Mode", turn it ON, and restart your phone.',
         'After restarting, unlock your phone and tap "Turn On" in the confirmation prompt.',
-        'In Xcode: Open ios/App/App.xcworkspace, select the blue "App" target on the left, go to "Signing & Capabilities", and select your Personal Team or Apple Developer Team under "Team" (check "Automatically manage signing").',
+        'In Xcode: Open ios/App/App.xcodeproj (for Swift Package Manager projects) or ios/App/App.xcworkspace (for CocoaPods projects), select the blue "App" target on the left, go to "Signing & Capabilities", and select your Personal Team or Apple Developer Team under "Team" (check "Automatically manage signing").',
         'Tell your AI assistant: "Build our app and install it onto my connected physical iPhone."'
       ],
       agentPrompt: `You are the autonomous mobile release engineer configuring physical device deployment.
@@ -312,7 +312,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
 3. BUILD & DEPLOY: Execute the standard build command:
    xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination "id=<DEVICE_ID>" -derivedDataPath ios/DerivedData build
    xcrun devicectl device install app --device <DEVICE_ID> "ios/DerivedData/Build/Products/Debug-iphoneos/App.app"
-   xcrun devicectl device process launch --device <DEVICE_ID> com.slava.appblueprint
+   xcrun devicectl device process launch --device <DEVICE_ID> <BUNDLE_ID>
 4. ZERO REGRESSIONS: Ensure app launches cleanly on the physical phone screen with zero runtime crashes.`,
       commonRejectionTraps: [
         'Only testing in a browser simulator and missing buttons that collide with the phone home bar, notch, or Dynamic Island.',
@@ -345,7 +345,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
       implementationSteps: [
         'Visit Apple\'s official design portal at developer.apple.com/design to explore Human Interface Guidelines (HIG).',
         'Study Apple\'s core design principles: 44x44pt minimum touch targets, 8pt layout grid, and fluid spring animations.',
-        'Download official Apple Design Resources (Figma UI kits, SF Symbols 6, and Apple system fonts).',
+        'Download official Apple Design Resources (Figma UI kits, SF Symbols 7, and Apple system fonts).',
         'Inspect your screen layouts to ensure safe area insets (Dynamic Island, notch, and home bar) are fully respected.',
         'Tell your AI assistant: "Audit our application screens against Apple Developer Design guidelines to ensure native feel and touch ergonomics."'
       ],
@@ -426,8 +426,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
       category: 'design',
       platform: 'both',
       priority: 'high',
-      whyItMatters: 'You do not need to learn Swift or Kotlin to build world-class mobile apps. You build your user interface using friendly, modern web building blocks (TypeScript, React, Tailwind CSS), and Capacitor automatically translates them into native phone features like tactile vibrations, camera, and secure storage.',
-      whatHappensNext: 'You understand how your screens communicate with your phone\'s hardware, giving you native 120fps performance without writing complex Swift or Kotlin.',
+      whyItMatters: 'You do not need to learn Swift or Objective-C to build world-class iOS apps. You build your user interface using friendly, modern web building blocks (TypeScript, React, Tailwind CSS), and Capacitor automatically translates them into native phone features like tactile vibrations, camera, and secure storage.',
+      whatHappensNext: 'You understand how your screens communicate with your phone\'s hardware, giving you native 120fps performance without writing complex Swift or Objective-C.',
       directLink: {
         label: 'Capacitor Native Bridge Architecture',
         url: 'https://capacitorjs.com/docs/core-apis'
@@ -527,8 +527,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
       whyItMatters: 'As you build your app, Xcode and npm create temporary cache files that can consume 20+ gigabytes of disk space. If a build ever acts strange or your Mac is running low on room, a quick cache clean fixes it immediately in 10 seconds.',
       whatHappensNext: 'Your computer reclaims gigabytes of free storage space, and your next build starts completely fresh with no stuck files.',
       directLink: {
-        label: 'Xcode DerivedData Storage Management',
-        url: 'https://developer.apple.com/documentation/xcode/managing-storage-in-xcode'
+        label: 'Apple Xcode Documentation',
+        url: 'https://developer.apple.com/documentation/xcode'
       },
       videoUrl: {
         title: 'Clear Xcode DerivedData & Fix Bugs',

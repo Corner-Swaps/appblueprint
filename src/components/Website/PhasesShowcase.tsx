@@ -23,7 +23,7 @@ const ALL_SHOWCASE_PHASES = [SETUP_STEPS_PHASE, ...PHASES_DATA];
 export const PhasesShowcase: React.FC<PhasesShowcaseProps> = React.memo(({ onLaunchApp }) => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>(PHASES_DATA[0].id);
 
-  // Combine Setup Steps + 10 Phases for the showcase
+  // Combine Setup Steps + 12 Production Phases for the showcase
   const allPhases = ALL_SHOWCASE_PHASES;
 
   const currentPhase = allPhases.find((p) => p.id === selectedPhaseId) || allPhases[0];
@@ -40,7 +40,7 @@ export const PhasesShowcase: React.FC<PhasesShowcaseProps> = React.memo(({ onLau
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B0F17] tracking-tight font-google">
-          10 Guided Production Phases
+          {PHASES_DATA.length} Guided Production Phases
         </h2>
 
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">

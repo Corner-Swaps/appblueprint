@@ -207,7 +207,7 @@ export const INITIAL_HABITS: HabitTask[] = [
   {
     id: 'task-store-assets',
     title: 'App Store Connect & Media Assets',
-    subtitle: '6.7" Screenshots & 1024x1024 Icon',
+    subtitle: '6.9" Screenshots & 1024x1024 Icon',
     badgeText: 'Assets Ready',
     category: 'store',
     currentValue: 4,
@@ -221,10 +221,10 @@ export const INITIAL_HABITS: HabitTask[] = [
     isCompleted: true,
     phaseId: 'phase-8',
     priority: 'high',
-    whyItMatters: 'Upload failure occurs if icon has transparency alpha channel or screenshots do not match required pixel dimensions (1290x2796 for 6.7").',
+    whyItMatters: 'Upload failure occurs if icon has transparency alpha channel or screenshots do not match required pixel dimensions (1320x2868 for 6.9" iPhone 16 Pro Max).',
     implementationSteps: [
       'Generate 1024x1024 app icon with zero alpha transparency',
-      'Capture 6.7" iPhone 16 Pro Max and 6.5" iPhone Plus screenshots',
+      'Capture 6.9" iPhone 16 Pro Max and 13" iPad Pro screenshots',
       'Write compelling subtitle and keywords under 100 characters'
     ],
     commonRejectionTraps: [
@@ -254,7 +254,7 @@ export const INITIAL_HABITS: HabitTask[] = [
     implementationSteps: [
       'Provide dedicated reviewer test credentials with pre-populated demo data',
       'Include OTP / SMS 2FA bypass code in App Review Notes',
-      'Complete Data Safety and Privacy Nutrition declaration matching code reality'
+      'Complete App Store Connect Privacy Nutrition Label declaration matching code reality'
     ],
     commonRejectionTraps: [
       'Submitting without reviewer login credentials triggers instant 2.1 rejection.'
@@ -282,7 +282,7 @@ export const INITIAL_HABITS: HabitTask[] = [
     whyItMatters: 'Monitoring crash-free user rate and prompting reviews at optimal moments drives app store ranking and retention.',
     implementationSteps: [
       'Set up Crashlytics alert thresholds for crash-free sessions (>99.5%)',
-      'Implement SKStoreReviewController after positive user milestones',
+      'Implement StoreKit 2 AppStore.requestReview(in:) after positive user milestones',
       'Establish staged phased rollout (1% -> 2% -> 5% -> 10% -> 20% -> 50% -> 100%)'
     ],
     commonRejectionTraps: [

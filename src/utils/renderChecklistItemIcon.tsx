@@ -250,7 +250,7 @@ const computeChecklistItemIcon = (id: string): React.ReactNode => {
     return <Workflow className="w-5 h-5 text-indigo-600 stroke-[2.2]" />;
   }
 
-  // 6. Phase 3: Performance & Data Safety
+  // 6. Phase 5: Performance & Data Reliability
   if (id === 'p3-process-death') {
     return <Activity className="w-5 h-5 text-rose-600 stroke-[2.2]" />;
   }

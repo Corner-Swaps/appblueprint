@@ -7,7 +7,7 @@ export const FAQSection: React.FC = React.memo(() => {
   const faqs = [
     {
       q: 'What is App Blueprint?',
-      a: 'App Blueprint is an interactive production operating system designed to guide mobile developers and indie hackers through all 10 phases required to successfully launch an app on the Apple App Store without rejections.',
+      a: 'App Blueprint is an interactive production operating system designed to guide mobile developers and indie hackers through Set Up plus all 12 production phases required to successfully launch an app on the Apple App Store without rejections.',
     },
     {
       q: 'Which platforms does it support?',

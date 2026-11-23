@@ -444,7 +444,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
               <div className="flex-1 min-w-0 space-y-0.5">
                 <h4 className="text-sm font-bold text-slate-900 font-google truncate">
-                  Corner Swaps: App Creator
+                  App Blueprint
                 </h4>
                 <p className="text-xs text-slate-500 font-medium">
                   {currentTitle}
@@ -467,7 +467,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
                 Account
               </span>
               <span className="font-semibold text-slate-800 font-mono text-[11px]">
-                Apple ID (slava@icloud.com)
+                Apple ID (demo@example.com)
               </span>
             </div>
 

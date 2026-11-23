@@ -93,7 +93,7 @@ export const Website: React.FC<WebsiteProps> = ({ onLaunchApp }) => {
           onSelectCategory={setActiveCategory}
         />
 
-        {/* 10 Guided Production Phases */}
+        {/* 12 Guided Production Phases */}
         <PhasesShowcase onLaunchApp={onLaunchApp} />
 
         {/* Store Approval Probability Calculator */}

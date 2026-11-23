@@ -17,7 +17,7 @@ export interface ResourceItem {
   categoryLabel: string;
   badge: 'Free' | 'Open Source' | 'Official' | 'AI Model' | 'Free Tier';
   badgeColor: string; // Tailwind color classes
-  platform?: 'ios' | 'ios' | 'both';
+  platform?: 'ios' | 'both';
   shortDescription: string;
   whyItMatters: string;
   keyFeatures: string[];
@@ -102,11 +102,11 @@ export const RESOURCES_DATA: ResourceItem[] = [
     badge: "Free",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "A privacy-friendly alternative to Apple Fonts that doesn't track users or log their IP addresses.",
+    shortDescription: "A privacy-friendly alternative to Google Fonts that doesn't track users or log their IP addresses.",
     whyItMatters: "European privacy laws regulate loading fonts from third-party servers that log user IP addresses. Bunny Fonts eliminates all IP logging and makes it easy to download font files directly.",
     keyFeatures: [
           "Strict zero-logging privacy policy ensures 100% compliance with EU GDPR and global privacy laws.",
-          "Drop-in replacement for every open-source Apple Font family (Inter, Poppins, Roboto, Outfit).",
+          "Drop-in replacement for every open-source Google Font family (Inter, Poppins, Roboto, Outfit).",
           "Provides direct download bundles so you can self-host font files locally inside your app package."
     ],
     bestUsedFor: "Privacy-first apps that need standard open-source typefaces without transmitting user IP addresses to third-party ad networks.",
@@ -144,27 +144,27 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "type-open-fonts-local",
-    title: "Open Font Library (Bunny Fonts)",
+    title: "Fontsource Self-Hosted npm Fonts",
     category: "typography",
-    categoryLabel: "Open Font Library",
-    badge: "Free",
-    badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    categoryLabel: "Self-Hosted npm Font Packages",
+    badge: "Open Source",
+    badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     platform: "both",
-    shortDescription: "An open, privacy-preserving font catalog with popular fonts like Inter, Plus Jakarta Sans, and Outfit.",
-    whyItMatters: "Downloading open-source font files directly into your project keeps your app offline-ready and 100% privacy-compliant.",
+    shortDescription: "Install open-source fonts like Inter, Plus Jakarta Sans, and Outfit directly as versioned npm packages bundled offline inside your app.",
+    whyItMatters: "Bundling fonts through Fontsource packages guarantees zero external CDN requests, instant offline rendering in airplane mode, and full EU GDPR privacy compliance.",
     keyFeatures: [
-          "Extensive catalog of free, open-source font families with full commercial rights.",
-          "Search and filter by category (Sans Serif, Serif, Display, Monospace) and character set.",
-          "Download full font family packages directly to bundle into your mobile app assets folder."
+          "1,500+ open-source font families installable via standard npm packages (`@fontsource-variable/inter`).",
+          "Variable font support packs all weights (100–900) into a single tiny WOFF2 file.",
+          "Zero third-party server connections or IP logging, bundled directly by Vite/Webpack."
     ],
-    bestUsedFor: "Finding modern open-source typefaces and downloading the raw font files to embed locally in your mobile project.",
-    freeTierInfo: "100% free and open-source under SIL Open Font License or Apache 2.0.",
-    quickStart: "Find a font you like, then tell your AI assistant: \"Download Inter from open font library into our project assets and apply it to our app.\"",
-    reviewTraps: "Stay on track: Don't load fonts using a web URL (@import url(...)). Ask your AI to download the font files directly into your project so your app stays fast and works offline.",
-    url: "https://fonts.bunny.net/",
+    bestUsedFor: "Self-hosting modern open-source typefaces cleanly in React, Capacitor, and Vite projects with zero manual font file management.",
+    freeTierInfo: "100% free and open-source under MIT / SIL Open Font License.",
+    quickStart: "Tell your AI assistant: \"Install @fontsource-variable/inter with npm and import it in src/main.tsx so our typography works 100% offline.\"",
+    reviewTraps: "Stay on track: Don't load fonts using a web URL (@import url(...)). Installing Fontsource bundles the WOFF2 files directly inside your iOS app so fonts never break in airplane mode.",
+    url: "https://fontsource.org/",
     iconName: "Globe",
-    promptOrCommand: "You are the autonomous frontend asset optimization engineer.\n\nTASK & OBJECTIVE:\nLocally bundle modern open fonts (such as Inter, Plus Jakarta Sans, or Outfit) to ensure lightning-fast cold launches and offline resilience.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. ASSET PACKAGING: Place optimized WOFF2 font files directly inside 'public/fonts/'.\n2. LOCAL IMPORT: Define '@font-face' in 'src/index.css' referencing local relative paths ('url(\"/fonts/...\")').\n3. SUBSETTING: Strip unused character glyphs to minimize font file size under 40 KB per weight.\n4. ZERO REGRESSIONS: Run 'npm run build' and inspect network tab to confirm zero external font requests are made.",
-    promptLabel: "AI Prompt for Local Open Font"
+    promptOrCommand: "You are the autonomous frontend asset optimization engineer.\n\nTASK & OBJECTIVE:\nLocally bundle modern open-source fonts using Fontsource variable packages to ensure lightning-fast cold launches and 100% offline resilience.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. PACKAGE INSTALL: Install the variable font package (e.g. 'npm install @fontsource-variable/inter') and import it in 'src/main.tsx'.\n2. REMOVE REMOTE CDNS: Remove any external stylesheet '<link>' or '@import' font requests from 'index.html' and CSS files.\n3. FALLBACK STACK: Configure clean system font fallbacks ('-apple-system, BlinkMacSystemFont, sans-serif') to prevent layout shifts.\n4. ZERO REGRESSIONS: Run 'npm run build' and inspect the network tab to confirm zero external font requests are made.",
+    promptLabel: "AI Prompt for Fontsource Offline Fonts"
   },
   {
     id: "type-geist-vercel",
@@ -216,21 +216,21 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "ai-gemini-antigravity",
-    title: "Apple Gemini & Antigravity Studio",
+    title: "Google Gemini & Antigravity",
     category: "ai_models",
-    categoryLabel: "Multimodal AI & Reasoning Model",
+    categoryLabel: "Multimodal AI & Agentic IDE",
     badge: "Free Tier",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "Apple's powerful multimodal AI model with huge memory, able to read your whole project and fix issues across multiple files at once.",
-    whyItMatters: "Its massive context allows feeding entire multi-package mobile repositories, native Xcode projects, and documentation simultaneously for end-to-end coding loops and rapid prototyping.",
+    shortDescription: "Google's flagship multimodal AI models and Antigravity agentic coding studio, built to inspect entire repositories and fix issues across multiple files at once.",
+    whyItMatters: "Its 1M+ token context window allows feeding entire multi-package mobile repositories, native Xcode projects, and documentation simultaneously for autonomous end-to-end coding and live browser/device verification.",
     keyFeatures: [
-          "Native multimodal reasoning with image, video, audio, and code understanding.",
-          "Massive 2,000,000 token context window ingests entire full-stack mobile codebases.",
-          "Fast real-time responses with Gemini 2.0 Flash for coding assistance, debugging, and drafting architectures."
+          "Native multimodal reasoning with UI screenshot, video, audio, and repository-wide code understanding.",
+          "Massive 1,000,000+ token context window ingests full-stack mobile codebases without losing context.",
+          "Powers Google Antigravity's autonomous coding, terminal execution, and multi-file refactoring workflows."
     ],
-    bestUsedFor: "End-to-end coding, debugging mobile apps, analyzing UI screenshots, large-scale codebase refactoring, and technical questions.",
-    freeTierInfo: "Free to use on web and mobile at gemini.google.com with access to Gemini 2.0 Flash.",
+    bestUsedFor: "End-to-end coding, debugging mobile apps, analyzing UI screenshots, large-scale codebase refactoring, and technical architecture.",
+    freeTierInfo: "Free tier available on web and mobile at gemini.google.com, with expanded developer quotas in Google AI Studio and Antigravity.",
     quickStart: "Open your app folder in your AI editor and tell Gemini: \"Inspect our app structure, build our screens, and make sure all buttons and features work without dummy placeholders.\"",
     reviewTraps: "Stay on track: Give your AI one focused task at a time (e.g. \"Build the settings screen\") rather than asking it to build 10 features at once. Test each change on your phone right away.",
     url: "https://gemini.google.com",
@@ -240,22 +240,22 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "ai-openai-astra",
-    title: "OpenAI o3-mini & GPT-4o",
+    title: "OpenAI ChatGPT & Codex",
     category: "ai_models",
-    categoryLabel: "STEM Reasoning & Interactive Canvas",
+    categoryLabel: "Frontier Reasoning & Coding Agents",
     badge: "Free Tier",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "OpenAI's advanced reasoning models, excellent for solving tricky logic puzzles, complex math, and state calculations.",
-    whyItMatters: "o3-mini provides deep step-by-step mathematical reasoning to solve complex state transitions, cryptographic logic, and difficult algorithmic bugs.",
+    shortDescription: "OpenAI's frontier GPT reasoning and coding models, built for solving complex state logic, code security audits, and multi-step engineering.",
+    whyItMatters: "OpenAI's reasoning models provide step-by-step architectural analysis for complex state machines, cryptographic verification, and tricky algorithmic bugs.",
     keyFeatures: [
-          "Interactive Canvas interface allows line-by-line co-editing and targeted code improvements.",
-          "High-tier benchmark reasoning for tricky concurrency, state machines, and mathematical formulas.",
-          "Broad ecosystem integration across web, terminal, and IDE extensions."
+          "Interactive Canvas and Codex workflows allow targeted multi-file edits and automated PR verification.",
+          "Deep step-by-step reasoning for concurrency, state machines, and mathematical calculations.",
+          "Broad ecosystem integration across web, terminal CLI, and desktop IDE extensions."
     ],
-    bestUsedFor: "Algorithmic problem solving, complex regex & state-machine logic, and interactive line-by-line refactoring in Canvas.",
-    freeTierInfo: "Free on ChatGPT web and mobile with daily quotas for GPT-4o and o3-mini; free developer playground credits upon onboarding.",
-    quickStart: "When you have a tricky problem (like calculating user scores or handling complex rules), ask GPT-4o or o3-mini: \"Write the logic for this rule and explain how to connect it to our screen.\"",
+    bestUsedFor: "Algorithmic problem solving, complex state-machine logic, code security reviews, and interactive refactoring.",
+    freeTierInfo: "Free tier on ChatGPT web and mobile with recurring daily quotas; paid Plus/Pro and pay-as-you-go API tiers for heavy coding.",
+    quickStart: "When you have a tricky problem (like calculating user scores or handling complex rules), ask ChatGPT or Codex: \"Write the logic for this rule and explain how to connect it to our screen.\"",
     reviewTraps: "Stay on track: Don't paste entire files into web chat manually if you have an AI agent editor—use your editor's built-in assistant so it applies changes directly to your files.",
     url: "https://chatgpt.com",
     iconName: "Cpu",
@@ -264,21 +264,21 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "ai-claude-sonnet",
-    title: "Claude 3.7 Sonnet",
+    title: "Anthropic Claude (Opus & Sonnet)",
     category: "ai_models",
-    categoryLabel: "Hybrid Reasoning & Terminal Agent",
+    categoryLabel: "Agentic Reasoning & Terminal Coding",
     badge: "Free Tier",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "Anthropic's flagship coding model, renowned for writing clean, production-grade mobile code that respects Apple and Apple guidelines.",
-    whyItMatters: "Claude leads coding benchmarks for deep architectural understanding, adhering strictly to complex guidelines, and generating production-ready code with minimal human intervention.",
+    shortDescription: "Anthropic's flagship coding models, renowned for writing clean, production-grade mobile code that respects Apple Human Interface Guidelines.",
+    whyItMatters: "Claude excels at long-horizon agentic coding, deep architectural understanding, adhering strictly to complex store guidelines, and generating production-ready code across massive repositories.",
     keyFeatures: [
-          "Unmatched multi-file code refactoring and project-wide context awareness.",
-          "Powers leading terminal and desktop coding agents (Claude Code, Cursor, Windsurf).",
+          "Long-context (1M token) multi-file code refactoring and project-wide architectural awareness.",
+          "Powers leading terminal and desktop coding agents (Claude Code, Cursor, Devin Desktop).",
           "Understands mobile UI screenshots and accurately translates visual designs into clean code."
     ],
-    bestUsedFor: "Multi-file architecture, comprehensive code audits, terminal-driven test fixing, and writing strict TypeScript schemas.",
-    freeTierInfo: "Free web tier on Claude.ai with generous recurring quota; pay-as-you-go developer API.",
+    bestUsedFor: "Multi-file architecture, comprehensive code audits, terminal-driven test fixing, and writing strict TypeScript & Swift code.",
+    freeTierInfo: "Free web tier on Claude.ai with recurring quota; Pro/Max plans and pay-as-you-go developer API for Claude Code.",
     quickStart: "Tell Claude: \"Review our mobile screens against Apple Human Interface Guidelines and fix any cramped margins, small touch targets, or missing back buttons.\"",
     reviewTraps: "Stay on track: Whenever Claude creates a new screen, always test it on your physical phone to verify that the buttons are easy to tap and text is readable.",
     url: "https://claude.ai",
@@ -326,7 +326,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
           "Instant inline Tab completion predicts your next cursor location and code edits."
     ],
     bestUsedFor: "Daily rapid mobile & web development, repository-wide feature additions, and interactive AI pair programming.",
-    freeTierInfo: "Permanent Free plan with 2,000 completions and 50 slow premium requests every month; compatible with all VS Code extensions.",
+    freeTierInfo: "Free Hobby tier with limited Tab completions and agent usage; Pro tiers expand frontier model quotas. Compatible with all VS Code extensions.",
     quickStart: "Open your project folder in Cursor, press Cmd+K or open Composer, and type what you want to build in plain English.",
     reviewTraps: "Stay on track: Review the AI's suggested file changes before accepting them. Check that it didn't accidentally delete working features or change files you didn't ask it to touch.",
     url: "https://cursor.com",
@@ -336,24 +336,24 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "ai-windsurf",
-    title: "Windsurf by Codeium",
+    title: "Devin Desktop (formerly Windsurf)",
     category: "ai_models",
-    categoryLabel: "Collaborative Agentic IDE",
+    categoryLabel: "Agent Command Center & IDE",
     badge: "Free Tier",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "An intelligent AI editor by Codeium that tracks your terminal commands and fixes errors automatically as you code.",
-    whyItMatters: "Combines deep codebase awareness with real-time terminal execution monitoring to catch and fix compilation errors automatically.",
+    shortDescription: "Cognition's AI code editor and multi-agent command center (formerly Windsurf) that tracks terminal commands and fixes errors automatically as you code.",
+    whyItMatters: "Combines a fast VS Code-based editor with local and cloud agent orchestration (Devin Local) to inspect compiler outputs and fix build errors automatically.",
     keyFeatures: [
-          "Cascade Flow provides collaborative agentic execution with full developer oversight.",
+          "Devin Local and Agent Command Center coordinate multi-file edits with full developer oversight.",
           "Deep context engine analyzes real-time terminal outputs and compiler diagnostics.",
-          "Super-fast context retrieval across local files and external web documentation."
+          "Supports third-party agents via the Agent Client Protocol (ACP) alongside fast inline Tab completions."
     ],
-    bestUsedFor: "Building complex features where AI inspects compiler warnings and automatically writes unit test suites.",
-    freeTierInfo: "Permanent Free plan with unlimited single-line autocompletes and recurring free Cascade credits every day.",
-    quickStart: "Open your project in Windsurf and tell Cascade: \"Build our project, detect any TypeScript or styling errors, and fix them automatically.\"",
+    bestUsedFor: "Building complex features where AI inspects compiler warnings, runs tests, and coordinates parallel coding tasks.",
+    freeTierInfo: "Free starter tier with inline completions and recurring agent credits; paid plans expand autonomous agent capacity.",
+    quickStart: "Open your project in Devin Desktop and tell your local agent: \"Build our project, detect any TypeScript or styling errors, and fix them automatically.\"",
     reviewTraps: "Stay on track: Keep your feature list tight for version 1. Don't let your AI prompt you into adding complex backend databases before your basic screens work.",
-    url: "https://codeium.com/windsurf",
+    url: "https://devin.ai/desktop",
     iconName: "Terminal",
     promptOrCommand: "You are the autonomous mobile DevOps build engineer.\n\nTASK & OBJECTIVE:\nInspect, diagnose, and resolve all TypeScript compiler warnings, circular imports, and package dependency conflicts.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. RUN DIAGNOSTICS: Execute 'npx tsc --noEmit' and inspect terminal logs for type errors.\n2. RESOLVE ISSUES: Fix any implicit 'any', missing property definitions, or outdated interface types.\n3. DEPENDENCY AUDIT: Run 'npm audit' and verify package versions in 'package.json' resolve cleanly without peer collisions.\n4. ZERO REGRESSIONS: Confirm that 'npm run build' produces a clean production distribution in 'dist/'.",
     promptLabel: "AI Prompt to Fix Build Errors"
@@ -466,7 +466,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     shortDescription: "Official Apple Figma design kits containing Apple's real iOS buttons, switches, keyboards, and phone frames for designing mockups.",
     whyItMatters: "Designing with official components guarantees that your buttons, segmented controls, sheets, and pickers match native iOS pixel-for-pixel.",
     keyFeatures: [
-          "Comprehensive libraries of native iOS 18 system controls, keyboards, status bars, and widgets.",
+          "Comprehensive libraries of native iOS 26+ & iPadOS 26+ system controls, Liquid Glass surfaces, keyboards, and widgets.",
           "Pre-configured dark mode color styles, dynamic type text styles, and SF Pro variants.",
           "Official Apple Device Frames for creating stunning App Store marketing screenshots."
     ],
@@ -481,23 +481,23 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "design-sf-symbols",
-    title: "SF Symbols 6",
+    title: "SF Symbols 7",
     category: "design",
     categoryLabel: "System Icon Library",
     badge: "Official",
     badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     platform: "both",
-    shortDescription: "Over 6,000 official Apple icons built specifically for iOS, matching Apple's font styles and weights.",
-    whyItMatters: "Supports multicolor rendering, hierarchical opacity, and built-in Apple spring animations (bounce, pulse, scale) that make native interfaces feel alive.",
+    shortDescription: "Over 7,000 official Apple icons built specifically for iOS and iPadOS, matching Apple's San Francisco font styles and weights.",
+    whyItMatters: "Supports multicolor rendering, hierarchical opacity, and built-in Apple animations (Draw On/Off, bounce, pulse, wiggle) that make native interfaces feel alive.",
     keyFeatures: [
-          "6,000+ vector symbols designed to align optically with text baselines at all weights.",
-          "Native support for Apple Spring Animations (Wiggle, Pulse, Bounce, Rotate) in iOS 17 & 18.",
-          "Exportable to custom vector SVGs for cross-platform web and mobile use."
+          "7,000+ vector symbols designed to align optically with text baselines at all weights.",
+          "Native support for Apple Symbol Animations (Draw On/Off, Wiggle, Pulse, Bounce, Rotate) on iOS 17–26+.",
+          "Mac companion app lets you preview rendering modes, weights, and animations before implementing."
     ],
     bestUsedFor: "Tab bar icons, navigation bar buttons, status indicators, and subtle tactile UI animations in iOS apps.",
     freeTierInfo: "Free native macOS app download for all registered Apple developers.",
     quickStart: "Download the free SF Symbols Mac app to browse icons, or ask your AI assistant: \"Use standard Apple-style icons for our tab bar and header buttons.\"",
-    reviewTraps: "Stay on track: SF Symbols are officially licensed for Apple platforms. If you are also launching on iOS or web, ask your AI to use Lucide icons for 100% cross-platform compatibility.",
+    reviewTraps: "Stay on track: SF Symbols are licensed strictly for Apple platforms (and prohibited in app icons or logos). If you also ship a web edition, use Lucide icons for cross-platform compatibility.",
     url: "https://developer.apple.com/sf-symbols",
     iconName: "CheckCircle2",
     promptOrCommand: "You are the autonomous iconography and visual consistency engineer.\n\nTASK & OBJECTIVE:\nStandardize all icon sizing, stroke weights, and bounding boxes across our mobile interface.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. UNIFORM BOUNDS: Enforce fixed 20x20 or 24x24 point icon containers with centered flex alignment to prevent layout shifts.\n2. STROKE HARMONY: Standardize stroke weights to 2.0 or 2.2 points across all Lucide and SF Symbols vector elements.\n3. COLOR INHERITANCE: Ensure icons inherit 'currentColor' for seamless active, hover, and disabled state styling.\n4. ZERO REGRESSIONS: Add descriptive 'aria-label' or 'aria-hidden=\"true\"' attributes to prevent accessibility warnings.",
@@ -505,27 +505,27 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "design-apple-resources",
-    title: "Apple Design Resources & SF Symbols",
+    title: "Apple Accessibility & Dynamic Type",
     category: "design",
-    categoryLabel: "Official Apple Design Assets",
+    categoryLabel: "Official iOS Accessibility Standards",
     badge: "Official",
     badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
     platform: "ios",
-    shortDescription: "Official Apple UI design templates, Figma libraries, and over 6,000 SF Symbols for iOS.",
-    whyItMatters: "Using official Apple design assets and SF Symbols ensures authentic typography, iconography, and HIG compliance on iPhone and iPad.",
+    shortDescription: "Official Apple accessibility engineering guides for VoiceOver, Dynamic Type text scaling, Reduce Motion, and WCAG color contrast.",
+    whyItMatters: "Supporting Dynamic Type, VoiceOver labels, and high contrast expands your addressable audience and helps your app qualify for App Store Accessibility Nutrition Labels and editorial features.",
     keyFeatures: [
-      "Over 6,000 SF Symbols designed to integrate seamlessly with the San Francisco system font.",
-      "Official Apple UI kits and Figma component libraries for iOS 18 and iPadOS.",
-      "Comprehensive guidelines for dynamic type scaling, accessibility, and color hierarchy."
+      "Dynamic Type scaling ensures layouts reflow cleanly without clipping when users enlarge system text.",
+      "VoiceOver and Switch Control guidelines for meaningful ARIA / accessibilityLabel descriptions.",
+      "Reduce Motion and Increase Contrast media query and UIKit/SwiftUI adaptation standards."
     ],
-    bestUsedFor: "Designing pixel-perfect iOS user interfaces with native iconography and components.",
-    freeTierInfo: "100% free official design resources published by Apple Developer.",
-    quickStart: "Tell your AI assistant: \"Integrate Apple SF Symbols and verify layout aligns with Apple HIG spacing standards.\"",
-    reviewTraps: "Stay on track: Always maintain 44x44pt touch targets and respect safe area insets to avoid review rejections.",
-    url: "https://developer.apple.com/design/resources/",
-    iconName: "Palette",
-    promptOrCommand: "You are the autonomous Apple UI/UX design specialist.\\n\\nTASK & OBJECTIVE:\\nAudit our mobile application screens against Apple Human Interface Guidelines and integrate authentic Apple SF Symbols.\\n\\nEXECUTION PROTOCOL FOR THE AGENT:\\n1. HIG COMPLIANCE: Verify 44x44pt touch hit areas and safe area insets on iPhone and iPad.\\n2. ACCESSIBILITY: Ensure dynamic type scaling and high-contrast color ratios.\\n3. ZERO REGRESSIONS: Ensure crisp rendering in light and dark mode.",
-    promptLabel: "AI Prompt for Apple Design Compliance"
+    bestUsedFor: "Auditing VoiceOver navigation, contrast ratios, Large Text scaling, and App Store Accessibility Nutrition Labels.",
+    freeTierInfo: "100% free official engineering documentation published by Apple Developer.",
+    quickStart: "Tell your AI assistant: \"Audit our app for VoiceOver aria-labels, 4.5:1 WCAG contrast, and prefers-reduced-motion support.\"",
+    reviewTraps: "Stay on track: Never use fixed pixel heights on buttons or cards containing text—if a user enables Larger Accessibility Sizes in iOS Settings, fixed heights clip text and break usability.",
+    url: "https://developer.apple.com/accessibility/",
+    iconName: "Eye",
+    promptOrCommand: "You are the autonomous Apple accessibility and Dynamic Type engineer.\n\nTASK & OBJECTIVE:\nAudit our iOS application for VoiceOver support, Dynamic Type text scaling, WCAG AA 4.5:1 contrast, and Reduce Motion compliance.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. SEMANTIC LABELS: Ensure every icon-only button has an accurate 'aria-label' and decorative icons have 'aria-hidden=\"true\"'.\n2. TEXT SCALING: Replace rigid fixed-height text containers with flexible min-heights so large Dynamic Type text wraps cleanly without clipping.\n3. REDUCE MOTION: Respect 'prefers-reduced-motion: reduce' by disabling non-essential spring or parallax animations.\n4. ZERO REGRESSIONS: Verify keyboard/focus order and contrast ratios in both light and dark themes.",
+    promptLabel: "AI Prompt for iOS Accessibility Audit"
   },
   {
     id: "design-lucide-icons",
@@ -644,7 +644,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: App Store screenshots must accurately show your actual working app in action. Apple rejects mockups that show fake features, imaginary awards, or omit real UI screens (Guideline 2.3.3).",
     url: "https://app-mockup.com/",
     iconName: "Smartphone",
-    promptOrCommand: "You are the autonomous mobile App Store Optimization (ASO) and visual designer.\n\nTASK & OBJECTIVE:\nInspect our application screens and capture high-resolution screenshot views optimized for App Store Connect (6.9\" iPhone 16 Pro Max: 1320x2868) and Apple App Store (1080x2400).\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. SCREEN CAPTURE AUDIT: Select our 5 most compelling user workflows (e.g. Hero onboarding, Core interactive canvas, Phase breakdown, Detail drawer, Achievement celebration).\n2. REAL DATA POPULATION: Ensure test mock data looks realistic, complete, and polished with zero placeholder text or \"lorem ipsum\".\n3. STATUS BAR CLEANING: Ensure native status bars show full battery, 9:41 time, and full Wi-Fi signal.\n4. ZERO REGRESSIONS: Ensure exported PNG assets are uncompressed 24-bit sRGB with zero transparency.",
+    promptOrCommand: "You are the autonomous mobile App Store Optimization (ASO) and visual designer.\n\nTASK & OBJECTIVE:\nInspect our application screens and capture high-resolution screenshot views optimized for App Store Connect (6.9\" iPhone 16 Pro Max: 1320x2868, 6.5\" iPhone: 1284x2778, and 13\" iPad Pro: 2064x2752).\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. SCREEN CAPTURE AUDIT: Select our 5 most compelling user workflows (e.g. Hero onboarding, Core interactive canvas, Phase breakdown, Detail drawer, Achievement celebration).\n2. REAL DATA POPULATION: Ensure test mock data looks realistic, complete, and polished with zero placeholder text or \"lorem ipsum\" — and NEVER include prices, \"free\", or promotional offer copy in screenshots (Guideline 2.3.7).\n3. STATUS BAR CLEANING: Ensure native status bars show full battery, 9:41 time, and full Wi-Fi signal.\n4. ZERO REGRESSIONS: Ensure exported PNG assets are uncompressed 24-bit sRGB with zero transparency.",
     promptLabel: "AI Prompt for App Store Screenshots"
   },
   {
@@ -658,7 +658,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     shortDescription: "The magic bridge that turns your simple web app into a real native iPhone and iPad app with camera, haptics, and notifications.",
     whyItMatters: "Provides 100% access to native iOS and iPadOS SDKs while letting you build your UI with modern web tools and AI coding assistants.",
     keyFeatures: [
-          "Zero proprietary abstractions: generates genuine Xcode and Xcode projects.",
+          "Zero proprietary abstractions: generates a genuine native Xcode project for iOS and iPadOS.",
           "Extensive official plugin library: Haptics, Camera, Push Notifications, Storage, Biometrics.",
           "Hot reload and fast live-syncing to physical devices in under 2 seconds."
     ],
@@ -668,7 +668,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: Always remember to ask your AI to build your web app (npm run build) before syncing to iOS (npx cap sync), otherwise you'll be testing an older version.",
     url: "https://github.com/ionic-team/capacitor",
     iconName: "Smartphone",
-    promptOrCommand: "You are the autonomous senior mobile architect responsible for our native bridge layer.\n\nTASK & OBJECTIVE:\nInspect, verify, and synchronize the Capacitor native runtime for iOS and iPadOS platforms.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. RUN DIAGNOSTICS: Execute 'npx cap doctor' to detect missing native dependencies, plugin mismatches, or outdated SDK versions.\n2. ASSET BUNDLE: Execute 'npm run build' to generate the production web distribution in 'dist/'.\n3. PLATFORM SYNC: Execute 'npx cap sync ios' and 'npx cap sync ios' to update native configurations, plugins, and web assets.\n4. ZERO REGRESSIONS: Ensure all native plugins (@capacitor/haptics, @capacitor/status-bar) link cleanly with zero missing CocoaPods or Gradle warnings.",
+    promptOrCommand: "You are the autonomous senior mobile architect responsible for our native bridge layer.\n\nTASK & OBJECTIVE:\nInspect, verify, and synchronize the Capacitor native runtime for iOS and iPadOS platforms.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. RUN DIAGNOSTICS: Execute 'npx cap doctor' to detect missing native dependencies, plugin mismatches, or outdated SDK versions.\n2. ASSET BUNDLE: Execute 'npm run build' to generate the production web distribution in 'dist/'.\n3. PLATFORM SYNC: Execute 'npx cap sync ios' to update native configurations, Swift Package Manager / CocoaPods plugins, and web assets.\n4. ZERO REGRESSIONS: Ensure all native plugins (@capacitor/haptics, @capacitor/status-bar) link cleanly with zero Xcode build warnings.",
     promptLabel: "AI Prompt for Capacitor Health Check"
   },
   {
@@ -684,7 +684,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     keyFeatures: [
           "Expo Go app allows testing on physical iOS and iPadOS devices simply by scanning a QR code.",
           "File-based routing with Expo Router mirroring modern Next.js architecture conventions.",
-          "EAS Build compiles production IPA and AAB binaries in the cloud without needing a Mac."
+          "EAS Build compiles production signed iOS IPA binaries in the cloud without needing a local Mac."
     ],
     bestUsedFor: "Building React Native mobile apps, cross-platform prototyping, and teams without dedicated Mac hardware.",
     freeTierInfo: "100% free open-source framework; free EAS cloud build tier with 30 monthly builds.",
@@ -704,10 +704,10 @@ export const RESOURCES_DATA: ResourceItem[] = [
     badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     platform: "both",
     shortDescription: "The easiest way to add subscriptions and in-app purchases to mobile apps without dealing with complex store receipts.",
-    whyItMatters: "Handles StoreKit 2 and Apple App Store Billing receipt validation, subscription churn, cross-platform paywalls, and customer management out of the box.",
+    whyItMatters: "Handles Apple StoreKit 2 receipt validation, subscription churn analytics, remote paywalls, and customer entitlement management out of the box.",
     keyFeatures: [
-          "Cross-platform SDK for iOS, iOS, React Native, Flutter, and Capacitor.",
-          "Server-side receipt verification eliminates store receipt fraud automatically.",
+          "Native SDKs for iOS, iPadOS, Swift, React Native, Flutter, and Capacitor.",
+          "Server-side receipt verification validates StoreKit 2 JWS transactions automatically.",
           "Pre-built Paywall UI components with remote pricing updates and A/B test capabilities."
     ],
     bestUsedFor: "Implementing auto-renewable subscriptions, paid digital upgrades, and handling store paywall compliance.",
@@ -716,7 +716,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: Apple strictly requires a working \"Restore Purchases\" button on your paywall. RevenueCat handles this in one simple function call.",
     url: "https://github.com/RevenueCat/purchases-capacitor",
     iconName: "CreditCard",
-    promptOrCommand: "You are the autonomous mobile monetization and in-app purchase engineer.\n\nTASK & OBJECTIVE:\nConfigure, verify, and harden RevenueCat Purchases SDK integration for Apple StoreKit 2 and Apple App Store Billing, ensuring full compliance with Apple Guideline 3.1.1 and FTC Click-to-Cancel rules.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. SDK INITIALIZATION: Verify '@revenuecat/purchases-capacitor' is initialized on app boot with public API keys ('appl_...' and 'goog_...').\n2. STOREKIT COMPLIANCE: Ensure subscription paywalls clearly display price, billing duration, auto-renewal terms, and direct links to Privacy Policy and Terms of Use (EULA).\n3. RESTORE PURCHASES: Add a dedicated, highly visible \"Restore Purchases\" button on the paywall and account settings screen (Apple Guideline 3.1.1).\n4. SUBSCRIPTION CANCELLATION: Provide a \"Manage Subscription\" button that directly opens the native store subscription settings ('https://apps.apple.com/account/subscriptions').\n5. ZERO REGRESSIONS: Test sandbox purchase flows and verify entitlement state unlocks features immediately upon transaction.",
+    promptOrCommand: "You are the autonomous mobile monetization and in-app purchase engineer.\n\nTASK & OBJECTIVE:\nConfigure, verify, and harden RevenueCat Purchases SDK integration for Apple StoreKit 2, ensuring full compliance with Apple Guidelines 3.1.1 & 3.1.2 and US ROSCA cancellation transparency.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. SDK INITIALIZATION: Verify '@revenuecat/purchases-capacitor' is initialized on app boot with your public Apple API key ('appl_...').\n2. STOREKIT COMPLIANCE: Ensure subscription paywalls clearly display price, billing duration, auto-renewal terms, and direct links to Privacy Policy and Terms of Use (EULA).\n3. RESTORE PURCHASES: Add a dedicated, highly visible \"Restore Purchases\" button on the paywall and account settings screen (Apple Guideline 3.1.1).\n4. SUBSCRIPTION CANCELLATION: Provide a \"Manage Subscription\" button that directly opens Apple's native subscription settings ('https://apps.apple.com/account/subscriptions').\n5. ZERO REGRESSIONS: Test sandbox purchase flows and verify entitlement state unlocks features immediately upon transaction.",
     promptLabel: "AI Prompt for In-App Subscriptions"
   },
   {
@@ -783,7 +783,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
           "Deliver: uploads screenshots, descriptions, and production binary packages to App Store Connect in one command."
     ],
     bestUsedFor: "Automating TestFlight uploads, continuous integration (CI) pipelines, and localized store screenshot capture.",
-    freeTierInfo: "100% free and open source under permissive MIT license; owned by Apple.",
+    freeTierInfo: "100% free and open source under permissive MIT license (originally created by Felix Krause and supported by Google).",
     quickStart: "When you're ready to automate your beta releases, tell your AI: \"Set up Fastlane to upload new builds directly to TestFlight.\"",
     reviewTraps: "Stay on track: For your first launch, uploading manually through Xcode's \"Archive > Distribute App\" is very easy and takes only 2 minutes. Set up Fastlane later when you update frequently.",
     url: "https://github.com/fastlane/fastlane",
@@ -793,26 +793,26 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "repo-flutter",
-    title: "Apple Flutter SDK",
+    title: "Google Flutter SDK",
     category: "github_repos",
     categoryLabel: "Multi-Platform UI Toolkit",
     badge: "Open Source",
     badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     platform: "both",
-    shortDescription: "Apple's cross-platform UI framework using the Dart programming language to compile native apps for iOS, iOS, and web.",
-    whyItMatters: "Renders pixel-perfect UIs with its own custom graphics engine (Impeller), guaranteeing identical visual appearance across iOS and iPadOS.",
+    shortDescription: "Google's open-source cross-platform UI framework using the Dart programming language to compile native apps for iOS, iPadOS, and web.",
+    whyItMatters: "Renders pixel-perfect UIs with its own Metal-backed graphics engine (Impeller), delivering smooth 60/120fps animations across iPhone and iPad.",
     keyFeatures: [
           "Fast stateful Hot Reload speeds up UI experimentation without restarting the app.",
-          "Complete catalogs of Cupertino (Apple iOS) and Material (iOS) widgets.",
+          "Includes a full catalog of Cupertino widgets styled for authentic Apple iOS conventions.",
           "Compiles directly to native ARM machine code for 60fps and 120fps buttery performance."
     ],
     bestUsedFor: "Building cross-platform apps with bespoke custom animations and high-performance canvas graphics.",
-    freeTierInfo: "100% free and open source under BSD license; supported by Apple.",
-    quickStart: "Browse Flutter widgets for inspiration on animations and responsive layouts.",
+    freeTierInfo: "100% free and open source under BSD license; created and maintained by Google.",
+    quickStart: "Browse Flutter's Cupertino widget catalog for inspiration on animations and responsive layouts.",
     reviewTraps: "Stay on track: Flutter uses Dart, which is different from TypeScript/React. If you're building a web/Capacitor app, stick with your current stack.",
     url: "https://github.com/flutter/flutter",
     iconName: "Layers",
-    promptOrCommand: "You are the autonomous mobile architecture and cross-platform specialist.\n\nTASK & OBJECTIVE:\nBenchmark our application rendering performance, asset bundles, and layout engine against Apple Flutter mobile standards.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. FRAME RATE AUDIT: Profile interface animations to verify consistent 60/120Hz refresh rates without frame drops (jank).\n2. GESTURE RECOGNITION: Ensure interactive drag, swipe, and scroll gestures respond within 16ms of initial touch contact.\n3. ADAPTIVE WIDGETS: Verify that interactive components adapt seamlessly to iOS (Cupertino) and iOS (Material) conventions.\n4. ZERO REGRESSIONS: Confirm that memory usage remains lean and battery consumption is minimized during backgrounding.",
+    promptOrCommand: "You are the autonomous mobile architecture and performance specialist.\n\nTASK & OBJECTIVE:\nBenchmark our application rendering performance, asset bundles, and layout engine against native 120Hz mobile animation standards.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. FRAME RATE AUDIT: Profile interface animations to verify consistent 60/120Hz refresh rates without frame drops (jank).\n2. GESTURE RECOGNITION: Ensure interactive drag, swipe, and scroll gestures respond within 16ms of initial touch contact.\n3. ADAPTIVE WIDGETS: Verify that interactive components follow authentic iOS and iPadOS Cupertino navigation and touch conventions.\n4. ZERO REGRESSIONS: Confirm that memory usage remains lean and battery consumption is minimized during backgrounding.",
     promptLabel: "AI Prompt for Native Performance"
   },
   {
@@ -852,7 +852,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     keyFeatures: [
           "Full Postgres database with complete SQL capabilities, extensions (pgvector), and triggers.",
           "Row Level Security (RLS) policies enforce security directly at the database engine level.",
-          "Built-in social authentication (Sign in with Apple, Apple) and S3-compatible file storage."
+          "Built-in social authentication (Sign in with Apple, Google, GitHub) and S3-compatible file storage."
     ],
     bestUsedFor: "Mobile app backends, real-time sync, user authentication, and secure relational database storage.",
     freeTierInfo: "Free plan includes 2 projects, 500MB database storage, 1GB file storage, and 50,000 monthly active users.",
@@ -865,26 +865,26 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "backend-firebase",
-    title: "Apple Firebase Suite",
+    title: "Google Firebase Suite",
     category: "backend",
     categoryLabel: "Mobile App Backend Suite",
     badge: "Free Tier",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "Apple's mobile backend platform offering free push notifications, user authentication, and cloud database.",
-    whyItMatters: "Firebase Cloud Messaging (FCM) is the industry standard for sending push notifications reliably to millions of iOS and iPadOS devices for free.",
+    shortDescription: "Google's mobile backend platform offering push notification routing (via APNs), user authentication, and Cloud Firestore.",
+    whyItMatters: "Firebase Cloud Messaging (FCM) connects cleanly to Apple Push Notification service (APNs) via a single .p8 Auth Key to deliver notifications reliably to iOS and iPadOS devices for free.",
     keyFeatures: [
           "Cloud Firestore real-time NoSQL database with automatic offline synchronization.",
-          "Firebase Cloud Messaging (FCM) delivers unlimited free push notifications.",
+          "Firebase Cloud Messaging (FCM) relays unlimited free push notifications through Apple APNs.",
           "Remote Config enables updating app behavior and conducting A/B tests without app updates."
     ],
-    bestUsedFor: "Push notification delivery, real-time collaborative feeds, and rapid mobile authentication.",
-    freeTierInfo: "Generous Spark plan is 100% free with 1GB storage, 50k reads/day, and unlimited FCM push notifications.",
-    quickStart: "Use Firebase Cloud Messaging (FCM) to send free push notifications to your users' phones.",
-    reviewTraps: "Stay on track: Make sure to configure Firestore Security Rules so unauthorized users cannot overwrite your database.",
+    bestUsedFor: "Push notification delivery (via APNs), real-time collaborative feeds, and rapid mobile authentication.",
+    freeTierInfo: "Generous Spark plan is 100% free with 1GB storage, 50k reads/day, and unlimited push messaging.",
+    quickStart: "Upload your Apple APNs .p8 Auth Key in the Firebase console to send free push notifications to your iOS users.",
+    reviewTraps: "Stay on track: Make sure to configure Firestore Security Rules so unauthorized users cannot overwrite your database, and ensure Firebase's Privacy Manifest is included in Xcode.",
     url: "https://firebase.google.com",
     iconName: "Flame",
-    promptOrCommand: "You are the autonomous mobile cloud systems engineer.\n\nTASK & OBJECTIVE:\nConfigure Apple Firebase Authentication and Firestore real-time database with strict security rules.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. INITIALIZATION: Configure Firebase SDK with public project configuration in 'src/utils/firebase.ts'.\n2. FIRESTORE SECURITY RULES: Write declarative security rules: 'allow read, write: if request.auth != null && request.auth.uid == userId;'.\n3. OFFLINE PERSISTENCE: Enable Firestore offline persistence ('enableIndexedDbPersistence') for seamless offline usability.\n4. ZERO REGRESSIONS: Verify that database queries execute with zero security rule rejections for authenticated users.",
+    promptOrCommand: "You are the autonomous mobile cloud systems engineer.\n\nTASK & OBJECTIVE:\nConfigure Google Firebase Authentication and Firestore real-time database with strict security rules.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. INITIALIZATION: Configure Firebase SDK with public project configuration in 'src/utils/firebase.ts'.\n2. FIRESTORE SECURITY RULES: Write declarative security rules: 'allow read, write: if request.auth != null && request.auth.uid == userId;'.\n3. OFFLINE PERSISTENCE: Enable Firestore offline persistence for seamless offline usability.\n4. ZERO REGRESSIONS: Verify that database queries execute with zero security rule rejections for authenticated users.",
     promptLabel: "AI Prompt for Firebase Security Rules"
   },
   {
@@ -1043,16 +1043,16 @@ export const RESOURCES_DATA: ResourceItem[] = [
     whyItMatters: "Provides actionable security controls covering storage, cryptography, authentication, network communication, and platform interaction.",
     keyFeatures: [
           "MASVS-STORAGE: Guidelines to prevent sensitive data leaks in logs, backups, and caches.",
-          "MASVS-CRYPTO: Verifies that only proven cryptographic algorithms and hardware keystores are used.",
+          "MASVS-CRYPTO: Verifies that only proven cryptographic algorithms and hardware-backed vaults (Apple Secure Enclave) are used.",
           "MASVS-NETWORK: Standards for TLS certificate pinning, forward secrecy, and secure transports."
     ],
     bestUsedFor: "Pre-launch security audits, compliance verification, and building enterprise-grade security guardrails.",
     freeTierInfo: "100% free open documentation and checklists published by the OWASP Foundation.",
     quickStart: "Tell your AI assistant: \"Audit our app against OWASP mobile security guidelines: ensure tokens are encrypted and no private keys are exposed.\"",
-    reviewTraps: "Stay on track: Never store user passwords or login tokens in plain text in browser localStorage. Always use the device's secure hardware vault (Keychain on iOS, Keystore on iOS).",
+    reviewTraps: "Stay on track: Never store user passwords or login tokens in plain text in browser localStorage. Always use the device's secure hardware vault (Apple Keychain & Secure Enclave on iOS/iPadOS).",
     url: "https://mas.owasp.org",
     iconName: "Shield",
-    promptOrCommand: "You are the autonomous mobile application security auditor.\n\nTASK & OBJECTIVE:\nPerform an exhaustive security verification against OWASP MASVS (Mobile Application Security Verification Standard).\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. STORAGE SECURITY: Verify that zero sensitive auth tokens, passwords, or personal data are stored in unencrypted SharedPreferences or localStorage.\n2. CRYPTOGRAPHY: Ensure all cryptographic operations utilize standard algorithms (AES-GCM-256, SHA-256) with securely generated nonces.\n3. NETWORK SECURITY: Enforce HTTPS/TLS 1.3 across all endpoints and verify that cleartext HTTP traffic is disabled in native iOS/iOS plists.\n4. ZERO REGRESSIONS: Confirm that zero debug logs or credentials are output to console in production release builds.",
+    promptOrCommand: "You are the autonomous mobile application security auditor.\n\nTASK & OBJECTIVE:\nPerform an exhaustive security verification against OWASP MASVS (Mobile Application Security Verification Standard).\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. STORAGE SECURITY: Verify that zero sensitive auth tokens, passwords, or personal data are stored in unencrypted UserDefaults or localStorage.\n2. CRYPTOGRAPHY: Ensure all cryptographic operations utilize standard algorithms (AES-GCM-256, SHA-256) with securely generated nonces.\n3. NETWORK SECURITY: Enforce HTTPS/TLS 1.3 across all endpoints and verify that cleartext HTTP traffic is disabled in Info.plist (App Transport Security).\n4. ZERO REGRESSIONS: Confirm that zero debug logs or credentials are output to console in production release builds.",
     promptLabel: "AI Prompt for OWASP MASVS Audit"
   },
   {
@@ -1135,11 +1135,11 @@ export const RESOURCES_DATA: ResourceItem[] = [
     badge: "Open Source",
     badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     platform: "both",
-    shortDescription: "A simple plugin that lets your mobile app save sensitive data directly into the iPhone Keychain and iOS Keychain.",
-    whyItMatters: "Provides a clean, cross-platform key-value API that maps to Apple Keychain on iOS and iPadOS Keystore with AES-256 GCM encryption.",
+    shortDescription: "A simple Capacitor plugin that saves sensitive tokens directly into the hardware-encrypted iPhone & iPad Keychain.",
+    whyItMatters: "Provides a clean, TypeScript key-value API that maps directly to Apple Keychain Services on iOS and iPadOS with hardware-backed AES-256 encryption.",
     keyFeatures: [
-          "Native iOS Keychain storage using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.",
-          "Native iOS Keychain integration using AES-256 encryption.",
+          "Native iOS & iPadOS Keychain storage using `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.",
+          "Protected by the Apple Secure Enclave and excluded from unencrypted device backups.",
           "Simple async API (`get`, `set`, `remove`, `clear`) matching standard storage interfaces."
     ],
     bestUsedFor: "Storing OAuth refresh tokens, user passwords, encryption keys, and private session credentials.",
@@ -1148,7 +1148,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: Use standard storage (like Preferences) for simple things like theme mode or onboarding status, and save Secure Storage for passwords and tokens.",
     url: "https://github.com/martinkasa/capacitor-secure-storage-plugin",
     iconName: "Lock",
-    promptOrCommand: "You are the autonomous mobile storage encryption engineer.\n\nTASK & OBJECTIVE:\nImplement AES-256 encrypted local storage for client session state, user tokens, and sensitive offline preferences.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. PLUGIN SETUP: Install and configure 'capacitor-secure-storage-plugin' for hardware-backed keystore encryption.\n2. STORAGE MIGRATION: Migrate sensitive user state from standard 'localStorage' to encrypted secure storage.\n3. ERROR RECOVERY: Add fallback error handling in case user clears hardware credentials or biometric state changes.\n4. ZERO REGRESSIONS: Verify that sensitive data is unreadable in raw device backups and is preserved across app updates.",
+    promptOrCommand: "You are the autonomous mobile storage encryption engineer.\n\nTASK & OBJECTIVE:\nImplement hardware-backed encrypted local storage using Apple Keychain Services for client session state, user tokens, and sensitive offline credentials.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. PLUGIN SETUP: Install and configure 'capacitor-secure-storage-plugin' backed by Apple Keychain Services.\n2. STORAGE MIGRATION: Migrate sensitive user state from standard 'localStorage' to encrypted Keychain storage.\n3. ERROR RECOVERY: Add fallback error handling in case user clears hardware credentials or biometric state changes.\n4. ZERO REGRESSIONS: Verify that sensitive data is unreadable in raw device backups and is preserved across app updates.",
     promptLabel: "AI Prompt for Encrypted Storage"
   },
   {
@@ -1227,7 +1227,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     id: "priv-apple-manifest",
     title: "Apple Privacy Manifests",
     category: "privacy",
-    categoryLabel: "Mandatory iOS 17+ Requirement",
+    categoryLabel: "Mandatory App Store Requirement",
     badge: "Official",
     badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     platform: "ios",
@@ -1262,7 +1262,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
           "Clear definition of what constitutes 'tracking' versus allowed first-party fraud prevention.",
           "Rules for configuring NSUserTrackingUsageDescription with a transparent, clear user rationale."
     ],
-    bestUsedFor: "Apps integrating advertising SDKs (Meta, Apple AdMob) or cross-app analytics trackers.",
+    bestUsedFor: "Apps integrating advertising SDKs (Meta, Google AdMob) or cross-app analytics trackers.",
     freeTierInfo: "Official native iOS framework included free in the iOS SDK.",
     quickStart: "If your app does NOT track users for advertising (which is true for most indie apps), you do NOT need ATT! Simply declare \"No Tracking\" in App Store Connect.",
     reviewTraps: "Stay on track: The easiest way to avoid privacy rejections is to simply not use third-party ad tracking SDKs. Apps without tracking get approved much faster.",
@@ -1314,9 +1314,9 @@ export const RESOURCES_DATA: ResourceItem[] = [
     freeTierInfo: "Free web scanner and open-source command line tool.",
     quickStart: "Run a privacy scan before submitting to the App Store to ensure all plugin data collection is accounted for.",
     reviewTraps: "Stay on track: Only collect data your app fundamentally needs. Asking for user location or contacts when your app doesn't need them triggers instant rejection.",
-    url: "https://www.privado.ai/apple-privacy-manifest",
+    url: "https://www.privado.ai/",
     iconName: "Search",
-    promptOrCommand: "You are the autonomous SDK privacy and compliance auditor.\n\nTASK & OBJECTIVE:\nScan all third-party dependencies in our application to detect undisclosed tracking code, data flows, and required-reason APIs.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. DEPENDENCY SCAN: Inspect all installed npm packages, CocoaPods, and Gradle libraries for data collection behaviors.\n2. SDK REASON VERIFICATION: Check that every third-party SDK includes its own official 'PrivacyInfo.xcprivacy' file.\n3. DATA FLOW REPORT: Generate a compliance report showing all external network endpoints contacted by our app.\n4. ZERO REGRESSIONS: Ensure zero unapproved analytics or advertising SDKs exist in production release builds.",
+    promptOrCommand: "You are the autonomous SDK privacy and compliance auditor.\n\nTASK & OBJECTIVE:\nScan all third-party dependencies in our application to detect undisclosed tracking code, data flows, and required-reason APIs.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. DEPENDENCY SCAN: Inspect all installed npm packages, Swift Packages, and CocoaPods libraries for data collection behaviors.\n2. SDK REASON VERIFICATION: Check that every third-party SDK includes its own official 'PrivacyInfo.xcprivacy' file.\n3. DATA FLOW REPORT: Generate a compliance report showing all external network endpoints contacted by our app.\n4. ZERO REGRESSIONS: Ensure zero unapproved analytics or advertising SDKs exist in production release builds.",
     promptLabel: "AI Prompt to Scan Trackers"
   },
   {
@@ -1328,19 +1328,19 @@ export const RESOURCES_DATA: ResourceItem[] = [
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
     shortDescription: "A guided web tool that creates a legal Privacy Policy for your mobile app in 5 minutes.",
-    whyItMatters: "Both Apple and Apple require every published app to provide a publicly accessible, live URL to an active Privacy Policy.",
+    whyItMatters: "Apple requires every published app on the App Store to provide a publicly accessible, live HTTPS URL to an active Privacy Policy.",
     keyFeatures: [
           "Guided questionnaire tailored to mobile apps, in-app purchases, and analytics.",
           "Compliant with GDPR (Europe), CCPA/CPRA (California), and CalOPPA requirements.",
           "Provides a free permanently hosted HTTPS URL you can paste directly into App Store Connect."
     ],
-    bestUsedFor: "Generating your app's official public Privacy Policy URL required for App Store and Play Store review.",
+    bestUsedFor: "Generating your app's official public Privacy Policy URL required for App Store review.",
     freeTierInfo: "Free plan generates standard privacy policy with free permanent HTTPS hosting.",
     quickStart: "Generate a free privacy policy, put the link on a public website (like free GitHub Pages), and paste the link into App Store Connect.",
-    reviewTraps: "Stay on track: Apple and Apple require a live, clickable Privacy Policy link. If the link leads to a 404 error or broken page, your app is rejected immediately.",
+    reviewTraps: "Stay on track: Apple requires a live, clickable Privacy Policy link. If the link leads to a 404 error or broken page, your app is rejected immediately.",
     url: "https://www.termsfeed.com/privacy-policy-generator/",
     iconName: "FileText",
-    promptOrCommand: "You are the autonomous legal and compliance engineer.\n\nTASK & OBJECTIVE:\nGenerate, host, and link a comprehensive, lawyer-grade Privacy Policy covering GDPR, CCPA, Apple App Store, and Apple App Store policies.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. POLICY GENERATION: Create a detailed Privacy Policy specifying data collected, storage duration, user deletion rights, and contact information.\n2. IN-APP LINKING: Add direct, working links to the Privacy Policy in Account Settings, Onboarding, and any Paywall screens.\n3. STORE URL INTEGRATION: Update the public Privacy Policy URL in App Store Connect Console app metadata.\n4. ZERO REGRESSIONS: Verify that opening the privacy policy link loads immediately with zero 404 errors.",
+    promptOrCommand: "You are the autonomous legal and compliance engineer.\n\nTASK & OBJECTIVE:\nGenerate, host, and link a comprehensive Privacy Policy covering GDPR, CCPA, and Apple App Store Guideline 5.1.1.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. POLICY GENERATION: Create a detailed Privacy Policy specifying data collected, storage duration, user deletion rights, and contact information.\n2. IN-APP LINKING: Add direct, working links to the Privacy Policy in Account Settings, Onboarding, and any Paywall screens.\n3. STORE URL INTEGRATION: Update the public Privacy Policy URL in App Store Connect app metadata.\n4. ZERO REGRESSIONS: Verify that opening the privacy policy link loads immediately with zero 404 errors.",
     promptLabel: "AI Prompt for Privacy Policy"
   },
   {
@@ -1369,27 +1369,27 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "priv-apple-privacy-nutrition",
-    title: "App Store Privacy Nutrition Labels",
+    title: "Apple Account Deletion (Guideline 5.1.1v)",
     category: "privacy",
-    categoryLabel: "Official Apple App Store Requirements",
+    categoryLabel: "Mandatory Account Deletion Guide",
     badge: "Official",
     badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     platform: "ios",
-    shortDescription: "Apple App Store's mandatory questionnaire declaring data collection, tracking, and privacy practices.",
-    whyItMatters: "Failure to submit accurate Privacy Nutrition Labels or missing mandatory privacy disclosures results in immediate Guideline 5.1.2 rejection.",
+    shortDescription: "Apple's official technical guide for offering self-service account and personal data deletion inside your iOS app.",
+    whyItMatters: "Under Guideline 5.1.1(v), any app that supports account creation MUST also let users initiate permanent account deletion inside the app—and revoke Sign in with Apple tokens via Apple's REST API.",
     keyFeatures: [
-      "Mandatory declarations for personal data collection, data linked to user, and tracking.",
-      "Requirement to declare third-party SDK telemetry and analytics data collection.",
-      "Verification of data encryption in transit using modern TLS protocols."
+      "Mandates permanent account deletion (merely deactivating or disabling an account triggers rejection).",
+      "Requires calling Apple's `/auth/revoke` endpoint when deleting accounts linked to Sign in with Apple.",
+      "Explains how to handle active auto-renewing subscriptions cleanly alongside account deletion."
     ],
-    bestUsedFor: "Completing App Store Connect Privacy Details before submitting your iOS app for review.",
-    freeTierInfo: "Official developer guidelines provided free by Apple Developer.",
-    quickStart: "Fill out App Privacy Details in App Store Connect, declaring data types collected by your app and embedded SDKs.",
-    reviewTraps: "Stay on track: Apple strictly audits SDK network calls against your declared privacy labels to avoid Guideline 5.1.2 rejections.",
-    url: "https://developer.apple.com/app-store/app-privacy-details/",
+    bestUsedFor: "Implementing compliant in-app account deletion flows and Sign in with Apple token revocation before App Review.",
+    freeTierInfo: "Official developer documentation provided free by Apple Developer.",
+    quickStart: "Add a clearly labeled \"Delete Account\" button in Settings with a confirmation modal that permanently wipes user records and revokes auth tokens.",
+    reviewTraps: "Stay on track: Requiring users to email support or fill out an external web form to delete their account triggers an automatic Guideline 5.1.1(v) rejection.",
+    url: "https://developer.apple.com/support/offering-account-deletion-in-your-app/",
     iconName: "Shield",
-    promptOrCommand: "You are the autonomous Apple App Store Privacy Details compliance specialist.\\n\\nTASK & OBJECTIVE:\\nPerform an audit of data collection across our iOS codebase and complete the App Store Connect Privacy Details questionnaire.\\n\\nEXECUTION PROTOCOL FOR THE AGENT:\\n1. DATA INVENTORY: Document all data collected or shared by our app and third-party SDKs (Contact Info, Identifiers, Diagnostics, Usage Data).\\n2. TRACKING TRANSPARENCY: Confirm whether any data is used for tracking and ensure ATT prompt is displayed if applicable.\\n3. POLICY CONSISTENCY: Ensure answers in App Store Connect match our public Privacy Policy verbatim.\\n4. ZERO REGRESSIONS: Verify that no undeclared telemetry or tracking domains exist in 'PrivacyInfo.xcprivacy'.",
-    promptLabel: "AI Prompt for Privacy Nutrition Labels"
+    promptOrCommand: "You are the autonomous Apple privacy and account lifecycle engineer.\n\nTASK & OBJECTIVE:\nImplement a complete in-app Account Deletion flow complying with Apple App Store Review Guideline 5.1.1(v).\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. IN-APP ENTRY POINT: Add a visible \"Delete Account\" button in Account Settings with a clear two-step destructive confirmation dialog.\n2. BACKEND PURGE: Wire confirmation to permanently delete user profile records, associated PII, and stored sessions (never soft-deactivate only).\n3. TOKEN REVOCATION: If Sign in with Apple is enabled, revoke the user's authorization token via Apple's '/auth/revoke' REST endpoint.\n4. ZERO REGRESSIONS: Clear local iOS Keychain tokens and return the user cleanly to the signed-out onboarding screen.",
+    promptLabel: "AI Prompt for Account Deletion (5.1.1v)"
   },
   {
     id: "priv-duckduckgo-tracker",
@@ -1460,7 +1460,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: Never try to trick or bypass Apple's review team. Be transparent about what your app does and provide working demo login details.",
     url: "https://developer.apple.com/app-store/review/guidelines/#legal",
     iconName: "Scale",
-    promptOrCommand: "You are the autonomous App Store Review Guidelines Section 5 (Legal) compliance auditor.\n\nTASK & OBJECTIVE:\nPerform an exhaustive legal compliance audit across our mobile application before submission to App Store Connect.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. INTELLECTUAL PROPERTY: Ensure zero Apple, Apple, or competitor trademarks, logos, or copyrighted assets are used without authorization.\n2. USER PRIVACY: Confirm that account creation requires only the minimum necessary data (Apple Guideline 5.1.1 Data Minimization).\n3. ACCOUNT DELETION: Verify an obvious, working \"Delete Account\" button exists inside the app that permanently purges user data (Guideline 5.1.1v).\n4. ZERO REGRESSIONS: Ensure complete compliance with all sub-clauses of Section 5 to guarantee immediate legal approval.",
+    promptOrCommand: "You are the autonomous App Store Review Guidelines Section 5 (Legal) compliance auditor.\n\nTASK & OBJECTIVE:\nPerform an exhaustive legal compliance audit across our mobile application before submission to App Store Connect.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. INTELLECTUAL PROPERTY: Ensure zero Apple or third-party competitor trademarks, logos, or copyrighted assets are used without authorization.\n2. USER PRIVACY: Confirm that account creation requires only the minimum necessary data (Apple Guideline 5.1.1 Data Minimization).\n3. ACCOUNT DELETION: Verify an obvious, working \"Delete Account\" button exists inside the app that permanently purges user data (Guideline 5.1.1v).\n4. ZERO REGRESSIONS: Ensure complete compliance with all sub-clauses of Section 5 to guarantee immediate legal approval.",
     promptLabel: "AI Prompt for Legal Section 5"
   },
   {
@@ -1489,27 +1489,27 @@ export const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "legal-ftc-click-to-cancel",
-    title: "US FTC Click-to-Cancel Rule",
+    title: "Subscription Transparency & ROSCA (3.1.2)",
     category: "legal",
-    categoryLabel: "Mandatory Subscription Cancellation Rule",
+    categoryLabel: "Subscription Compliance & Auto-Renewal",
     badge: "Official",
     badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     platform: "both",
-    shortDescription: "Federal rule requiring that canceling a subscription must be just as easy as signing up, with clear pricing terms upfront.",
-    whyItMatters: "Mandates that businesses cannot force users through phone calls, complex chat trees, or dark patterns to cancel recurring billing.",
+    shortDescription: "Apple Guideline 3.1.2, US ROSCA, and state auto-renewal laws requiring clear upfront pricing and effortless cancellation via Apple Account settings.",
+    whyItMatters: "While the FTC's 2024 Click-to-Cancel rule was vacated in July 2025, federal ROSCA (15 U.S.C. § 8403), state Auto-Renewal Laws (CA/NY), and Apple Guideline 3.1.2 strictly enforce upfront disclosure, express consent, and simple cancellation without dark patterns.",
     keyFeatures: [
-          "Cancellation mechanism must be as easy to use as the enrollment mechanism.",
-          "Requires clear, conspicuous disclosure of all subscription terms prior to obtaining billing consent.",
-          "Applies directly to mobile in-app subscriptions, web checkouts, and recurring SaaS billing."
+          "Requires clear, conspicuous display of localized price, billing cycle, and auto-renewal terms before purchase.",
+          "Mandates simple cancellation—on iOS, provide a direct 'Manage Subscription' link opening Apple Account Subscriptions.",
+          "Enforced continuously by Apple App Review (Guideline 3.1.2), the FTC under ROSCA, and state attorneys general."
     ],
-    bestUsedFor: "Designing compliant subscription paywalls, renewal confirmation emails, and account management settings.",
-    freeTierInfo: "Official federal regulation published by the United States Federal Trade Commission.",
-    quickStart: "Explain clearly on your paywall: \"You can cancel anytime in your iPhone Settings > Apple ID > Subscriptions.\"",
-    reviewTraps: "Stay on track: Never hide the price, renewal date, or cancellation instructions. Being 100% upfront builds user trust and avoids refund disputes.",
-    url: "https://www.ftc.gov/news-events/news/press-releases/2024/10/federal-trade-commission-announces-final-click-cancel-rule",
+    bestUsedFor: "Designing compliant subscription paywalls, trial disclosures, and account subscription management settings.",
+    freeTierInfo: "Official Apple App Store subscription guidelines and compliance documentation.",
+    quickStart: "Explain clearly on your paywall: \"You can manage or cancel anytime in iPhone Settings > Apple Account > Subscriptions.\"",
+    reviewTraps: "Stay on track: Never hide the price, renewal frequency, Terms of Use (EULA), or cancellation instructions. Being 100% upfront prevents Guideline 3.1.2 rejections and refund disputes.",
+    url: "https://developer.apple.com/app-store/subscriptions/",
     iconName: "AlertCircle",
-    promptOrCommand: "You are the autonomous subscription compliance engineer.\n\nTASK & OBJECTIVE:\nImplement 1-click subscription cancellation in compliance with the US FTC Click-to-Cancel rule and Apple Guideline 3.1.2.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. SETTINGS BUTTON: Add a prominent \"Manage Subscription\" / \"Cancel Subscription\" button in user settings and paywall screens.\n2. DIRECT STORE LINK: Wire the button to open Apple's native subscription management screen: 'https://apps.apple.com/account/subscriptions'.\n3. CLEAR INSTRUCTIONS: Display simple text explaining: \"You can cancel anytime in your Apple ID Settings with one tap.\"\n4. ZERO REGRESSIONS: Verify tapping the button on a physical device opens the native iOS subscription management sheet seamlessly.",
-    promptLabel: "AI Prompt for 1-Click Cancellation"
+    promptOrCommand: "You are the autonomous subscription compliance engineer.\n\nTASK & OBJECTIVE:\nImplement transparent subscription disclosures and 1-tap subscription management complying with Apple Guideline 3.1.2 and US ROSCA.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. PAYWALL DISCLOSURES: Clearly display localized price, billing duration, free-trial conversion terms, and clickable Terms (EULA) & Privacy Policy links.\n2. DIRECT MANAGE LINK: Add a \"Manage Subscription\" button in settings wired to Apple's native management sheet ('https://apps.apple.com/account/subscriptions' or StoreKit 2 'AppStore.showManageSubscriptions').\n3. RESTORE PURCHASES: Ensure a prominent, functional \"Restore Purchases\" button sits on every paywall.\n4. ZERO REGRESSIONS: Verify tapping the button on a physical device opens the native iOS subscription management sheet seamlessly.",
+    promptLabel: "AI Prompt for Subscription Compliance"
   },
   {
     id: "legal-eu-dsa",
@@ -1520,13 +1520,13 @@ export const RESOURCES_DATA: ResourceItem[] = [
     badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     platform: "both",
     shortDescription: "European law requiring developers selling in the EU to declare whether they are a \"trader\" (business) or personal developer.",
-    whyItMatters: "Apple and Apple will remove your app from the European Union App Stores if you do not complete trader status verification in App Store Connect.",
+    whyItMatters: "Apple is legally required to remove your app from all 27 European Union App Store storefronts if you do not complete trader status verification in App Store Connect.",
     keyFeatures: [
           "Mandatory disclosure of business address, phone number, and email on App Store product pages for traders.",
           "Distinguishes commercial traders from non-commercial individual hobbyist developers.",
           "Enforces transparent content recommendation algorithms and user reporting channels."
     ],
-    bestUsedFor: "Completing mandatory compliance declarations in App Store Connect Console.",
+    bestUsedFor: "Completing mandatory compliance declarations in App Store Connect.",
     freeTierInfo: "Official European Commission regulation and developer compliance guide.",
     quickStart: "In App Store Connect, complete the Trader Status declaration so your app remains available in European countries.",
     reviewTraps: "Stay on track: If you register as a trader, Apple displays your business address and phone number on your App Store page. Register as non-trader if you are an individual hobbyist.",
@@ -1546,7 +1546,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     shortDescription: "Strict federal rules protecting children under 13 from data collection, behavioral tracking, and open social chat.",
     whyItMatters: "Apps directed at children under 13 that collect personal info or use behavioral advertising without verifiable parental consent face million-dollar fines.",
     keyFeatures: [
-          "Strict prohibition on collecting persistent device identifiers (IDFA/GAID) for targeted advertising to kids.",
+          "Strict prohibition on collecting persistent device identifiers (IDFA) for targeted advertising to kids.",
           "Mandates verifiable parental consent before collecting personal data or enabling user-to-user chat.",
           "Enforces Apple's strict 'Kids' category requirements (no third-party analytics, parental gates on links)."
     ],
@@ -1556,7 +1556,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: Apps in Apple's \"Kids\" category face intense scrutiny—no third-party analytics, no tracking, and parental gates on all external links. If your app is for adults, make sure to set the age rating accordingly.",
     url: "https://www.ftc.gov/legal-library/browse/rules/childrens-online-privacy-protection-rule-coppa",
     iconName: "ShieldAlert",
-    promptOrCommand: "You are the autonomous child privacy and COPPA compliance auditor.\n\nTASK & OBJECTIVE:\nAudit application features and third-party SDKs to ensure strict compliance with the Children's Online Privacy Protection Act (COPPA).\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. AGE DECLARATION: Confirm whether our app targets children under 13 in the App Store Connect Age Rating questionnaire.\n2. TRACKER AUDIT: If targeting children or general audience, verify that zero behavioral ad SDKs or third-party trackers are initialized for minors.\n3. PARENTAL GATES: Ensure any external links or commercial purchase actions include a parental gate (e.g. math challenge).\n4. ZERO REGRESSIONS: Confirm that age rating is configured accurately in App Store Connect Console.",
+    promptOrCommand: "You are the autonomous child privacy and COPPA compliance auditor.\n\nTASK & OBJECTIVE:\nAudit application features and third-party SDKs to ensure strict compliance with the Children's Online Privacy Protection Act (COPPA).\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. AGE DECLARATION: Confirm whether our app targets children under 13 in the App Store Connect Age Rating questionnaire.\n2. TRACKER AUDIT: If targeting children or general audience, verify that zero behavioral ad SDKs or third-party trackers are initialized for minors.\n3. PARENTAL GATES: Ensure any external links or commercial purchase actions include a parental gate (e.g. math challenge).\n4. ZERO REGRESSIONS: Confirm that age rating is configured accurately in App Store Connect.",
     promptLabel: "AI Prompt for Child Privacy & COPPA"
   },
   {
@@ -1797,7 +1797,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: Launch on Product Hunt only after your app is live and tested on the App Store, so interested visitors can download it immediately.",
     url: "https://www.producthunt.com",
     iconName: "Rocket",
-    promptOrCommand: "You are the autonomous mobile product launch and marketing coordinator.\n\nTASK & OBJECTIVE:\nPrepare a high-impact Product Hunt launch kit for our mobile application.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. LAUNCH ASSETS: Create an animated GIF gallery preview, 240x240 logo icon, and 5 high-resolution screenshot cards.\n2. TAGLINE & COPY: Craft a compelling 60-character Tagline and a punchy 2-sentence description of the problem solved.\n3. MAKER COMMENT: Draft the initial Maker's Comment explaining the backstory, core mission, and a special launch perk.\n4. ZERO REGRESSIONS: Verify all external links (App Store, Apple App Store, website) are live and tracking with UTM parameters.",
+    promptOrCommand: "You are the autonomous mobile product launch and marketing coordinator.\n\nTASK & OBJECTIVE:\nPrepare a high-impact Product Hunt launch kit for our mobile application.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. LAUNCH ASSETS: Create an animated GIF gallery preview, 240x240 logo icon, and 5 high-resolution screenshot cards.\n2. TAGLINE & COPY: Craft a compelling 60-character Tagline and a punchy 2-sentence description of the problem solved.\n3. MAKER COMMENT: Draft the initial Maker's Comment explaining the backstory, core mission, and a special launch perk.\n4. ZERO REGRESSIONS: Verify all external links (App Store, TestFlight, website) are live and tracking with UTM parameters.",
     promptLabel: "AI Prompt for Product Hunt Launch"
   },
   {
@@ -1811,18 +1811,18 @@ export const RESOURCES_DATA: ResourceItem[] = [
     shortDescription: "Design panoramic Apple App Store screenshot templates with device frames, bold captions, and custom layouts.",
     whyItMatters: "Your screenshots drive over 70% of user install decisions on the App Store. AppLaunchpad provides hundreds of ready-to-use screenshot templates, 3D device frames, and caption styles to create high-converting promotional galleries.",
     keyFeatures: [
-      "1,000+ pre-designed templates for iPhone, iPad, and iOS phones with customizable device mockups.",
+      "1,000+ pre-designed templates for iPhone and iPad with customizable 3D device mockups.",
       "Panoramic continuous-flow screenshot backgrounds that span seamlessly across multiple screen cards.",
-      "REFORMATTING NOTICE: AppLaunchpad exports do NOT come pre-formatted to Apple & Apple's exact pixel requirements. You MUST use BIRME (birme.net) to bulk-resize exports before uploading.",
-      "EXACT PIXEL REQUIREMENTS: iPhone 16 Pro Max (1320x2868px), iPhone 15/14 Pro Max (1290x2796px), iPad Pro 13\" (2064x2752px), iPad 12.9\" (2048x2732px), Apple App Store Phone (1080x2400px), Feature Graphic (1024x500px)."
+      "REFORMATTING NOTICE: AppLaunchpad exports do NOT always come pre-formatted to Apple's exact pixel requirements. Use BIRME (birme.net) or sips to bulk-resize exports before uploading.",
+      "EXACT APPLE PIXEL REQUIREMENTS: iPhone 6.9\" (1320x2868px), iPhone 6.5\" (1284x2778px), iPhone 6.7\" (1290x2796px), iPad Pro 13\" (2064x2752px), iPad 12.9\" (2048x2732px)."
     ],
     bestUsedFor: "Creating multi-screen promotional screenshot templates, adding 3D device mockups, and drafting bold marketing headlines before reformatting with BIRME.",
     freeTierInfo: "Generous free tier with standard templates; premium plans unlock advanced device frames and unlimited exports.",
-    quickStart: "1. Create your screenshot cards on theapplaunchpad.com and export them. 2. Drop the exported PNGs into birme.net. 3. Enter exact target dimensions: 1320x2868 for iPhone 16 Pro Max, 2064x2752 for iPad, or 1080x2400 for Apple App Store.",
-    reviewTraps: "Stay on track: App Store Connect rejects screenshots if they differ by even 1 single pixel from Apple's required specs (1320x2868 or 1290x2796 for iPhone, 2064x2752 or 2048x2732 for iPad). Always run exports through BIRME (birme.net) before uploading.",
+    quickStart: "1. Create your screenshot cards on theapplaunchpad.com and export them. 2. Drop the exported PNGs into birme.net. 3. Enter exact target dimensions: 1320x2868 for 6.9\" iPhone, 1284x2778 for 6.5\" iPhone, or 2064x2752 for 13\" iPad Pro.",
+    reviewTraps: "Stay on track: App Store Connect rejects screenshots if they differ by even 1 pixel from Apple's required specs, AND Guideline 2.3.7 rejects any screenshot containing prices, \"free\", or promotional offer copy!",
     url: "https://theapplaunchpad.com/",
     iconName: "Smartphone",
-    promptOrCommand: "You are the autonomous App Store Optimization (ASO) and visual designer.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application following AppLaunchpad layout conventions.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD:\n   - Card 1 (The Hook): Hero value proposition with punchy 3-word title.\n   - Card 2 (Core Action): Interactive main screen showing primary workflow.\n   - Card 3 (Key Differentiator): Standout feature (offline mode, speed, AI).\n   - Card 4 (Insights & Data): Charts, progress, or detail view.\n   - Card 5 (Social Proof & Privacy): Zero-tracking pledge, dark mode, or celebration.\n2. EXACT RESOLUTION TARGETS:\n   - iPhone 6.9\" (iPhone 16 Pro Max): 1320 x 2868 px\n   - iPhone 6.7\" (iPhone 15/14 Pro Max): 1290 x 2796 px\n   - iPad 13\" Pro (M4): 2064 x 2752 px\n   - iPad 12.9\" Pro: 2048 x 2732 px\n   - Apple App Store Phone: 1080 x 2400 px\n   - Apple App Store Feature Graphic: 1024 x 500 px\n3. BIRME REFORMATTING STEP: Remind user to batch-resize exported cards through birme.net to guarantee 100% pixel-perfect compliance with zero store rejection.",
+    promptOrCommand: "You are the autonomous App Store Optimization (ASO) and visual designer.\n\nTASK & OBJECTIVE:\nPlan a high-converting 5-card panoramic screenshot sequence for our application following AppLaunchpad layout conventions and Apple Guidelines 2.3.3 & 2.3.7.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. 5-CARD STORYBOARD (NO PRICING / 'FREE' / PROMO COPY IN SCREENSHOTS — GUIDELINE 2.3.7):\n   - Card 1 (The Hook): Hero value proposition with punchy 3-word title.\n   - Card 2 (Core Action): Interactive main screen showing primary workflow.\n   - Card 3 (Key Differentiator): Standout feature (offline mode, speed, AI).\n   - Card 4 (Insights & Data): Charts, progress, or detail view.\n   - Card 5 (Privacy & Polish): Zero-tracking pledge, dark mode, or completion state.\n2. EXACT APPLE RESOLUTION TARGETS:\n   - iPhone 6.9\" (iPhone 16 Pro Max): 1320 x 2868 px\n   - iPhone 6.5\" (Fallback): 1284 x 2778 px\n   - iPad 13\" Pro (M4): 2064 x 2752 px\n   - iPad 12.9\" Pro: 2048 x 2732 px\n3. BIRME REFORMATTING STEP: Batch-resize exported cards through birme.net (or macOS sips) to guarantee 100% pixel-perfect 24-bit RGB PNG compliance with zero transparency.",
     promptLabel: "AI Prompt for Screenshot Storyboard"
   },
   {
@@ -1833,21 +1833,21 @@ export const RESOURCES_DATA: ResourceItem[] = [
     badge: "Free",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "Free bulk image resizer to reformat AppLaunchpad screenshots into exact Apple Apple App Store pixel dimensions.",
-    whyItMatters: "App Store Connect strictly reject screenshots with incorrect pixel dimensions. AppLaunchpad exports do NOT come pre-formatted for Apple's exact Retina specs. BIRME lets you bulk drag-and-drop all your screenshots and resize them in seconds directly in your browser with zero data upload.",
+    shortDescription: "Free bulk image resizer to reformat AppLaunchpad screenshots into exact Apple App Store Connect pixel dimensions.",
+    whyItMatters: "App Store Connect strictly rejects screenshots with incorrect pixel dimensions. AppLaunchpad exports do not always match Apple's exact Retina specs. BIRME lets you bulk drag-and-drop all your screenshots and resize them in seconds directly in your browser with zero data upload.",
     keyFeatures: [
       "Bulk crop and resize multiple images simultaneously directly in your browser with zero server uploads.",
-      "iPhone exact formatting: 1320x2868 (6.9\" iPhone 16 Pro Max), 1290x2796 (6.7\" iPhone 15/14 Pro Max), 1284x2778, 1242x2208 (5.5\").",
-      "iPad exact formatting: 2064x2752 (13\" iPad Pro M4), 2048x2732 (12.9\" iPad Pro), 1668x2388 (11\" iPad Pro).",
-      "Apple App Store exact formatting: 1080x2400 or 1080x1920 (Phones), 1200x1920 (7\" Tablets), 1600x2560 (10\" Tablets), 1024x500 (Feature Graphic)."
+      "iPhone exact formatting: 1320x2868 (6.9\" iPhone 16 Pro Max), 1290x2796 (6.7\" iPhone 15/14 Pro Max), 1284x2778 (6.5\"), 1242x2208 (5.5\").",
+      "iPad exact formatting: 2064x2752 (13\" iPad Pro), 2048x2732 (12.9\" iPad Pro), 1668x2388 (11\" iPad Pro).",
+      "Exports clean 24-bit RGB images ready for direct upload into App Store Connect."
     ],
     bestUsedFor: "Batch-resizing and cropping AppLaunchpad screenshot exports to 100% compliant App Store Connect pixel dimensions.",
     freeTierInfo: "100% free web tool with unlimited bulk processing and no account required.",
-    quickStart: "1. Open birme.net in your browser. 2. Drag & drop all screenshot images. 3. Enter target width & height (e.g. 1320 x 2868 for iPhone 16 Pro Max, or 2064 x 2752 for iPad Pro). 4. Click 'Save As Zip'.",
-    reviewTraps: "Stay on track: App Store Connect throws automated error ITMS-90111 / ITMS-90112 if your screenshot is off by even 1 pixel. Use BIRME to force exact pixel dimensions before uploading.",
+    quickStart: "1. Open birme.net in your browser. 2. Drag & drop all screenshot images. 3. Enter target width & height (e.g. 1320 x 2868 for 6.9\" iPhone, or 2064 x 2752 for 13\" iPad Pro). 4. Click 'Save As Zip'.",
+    reviewTraps: "Stay on track: App Store Connect rejects screenshots that are off by even 1 pixel or contain an alpha transparency channel. Use BIRME or sips to enforce exact opaque RGB dimensions before uploading.",
     url: "https://www.birme.net/",
     iconName: "Sliders",
-    promptOrCommand: "You are the autonomous mobile asset automation engineer.\n\nTASK & OBJECTIVE:\nInspect and format all exported mobile screenshot assets to meet exact App Store Connect pixel dimensions.\n\nEXACT RESOLUTION AUDIT TABLE:\n- Apple iPhone 16 Pro Max (6.9\"): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n- Apple iPhone 15/14 Pro Max (6.7\"): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n- Apple iPhone 8 Plus (5.5\"): 1242 x 2208 px (Portrait) / 2208 x 1242 px (Landscape)\n- Apple iPad Pro 13\" (M4): 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n- Apple iPad Pro 12.9\" (6th gen): 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n- Apple iPad Pro 11\": 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n- Apple App Store Phones: 1080 x 2400 px (Portrait) or 1080 x 1920 px (Portrait)\n- Apple App Store 7\" Tablets: 1200 x 1920 px (Portrait)\n- Apple App Store 10\" Tablets: 1600 x 2560 px (Portrait)\n- Apple App Store Feature Graphic: 1024 x 500 px (JPEG or 24-bit PNG, no alpha)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. Check exported image files with 'sips -g pixelWidth -g pixelHeight <image.png>'.\n2. If dimensions do not match the exact targets above, reformat using BIRME (birme.net) or run local Pillow/sips resizing scripts.\n3. Ensure images are 24-bit RGB with zero alpha channel to avoid ITMS rejection.",
+    promptOrCommand: "You are the autonomous mobile asset automation engineer.\n\nTASK & OBJECTIVE:\nInspect and format all exported iOS & iPadOS screenshot assets to meet exact App Store Connect pixel dimensions.\n\nEXACT APPLE RESOLUTION AUDIT TABLE:\n- Apple iPhone 6.9\" (iPhone 16 Pro Max): 1320 x 2868 px (Portrait) / 2868 x 1320 px (Landscape)\n- Apple iPhone 6.7\" (iPhone 15/14 Pro Max): 1290 x 2796 px (Portrait) / 2796 x 1290 px (Landscape)\n- Apple iPhone 6.5\": 1284 x 2778 px (Portrait) / 2778 x 1284 px (Landscape)\n- Apple iPad Pro 13\": 2064 x 2752 px (Portrait) / 2752 x 2064 px (Landscape)\n- Apple iPad Pro 12.9\": 2048 x 2732 px (Portrait) / 2732 x 2048 px (Landscape)\n- Apple iPad Pro 11\": 1668 x 2388 px (Portrait) / 2388 x 1668 px (Landscape)\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. Check exported image files with 'sips -g pixelWidth -g pixelHeight <image.png>'.\n2. If dimensions do not match the exact targets above, reformat using BIRME (birme.net) or local Pillow/sips resizing scripts.\n3. Ensure images are 24-bit RGB with zero alpha channel and zero pricing/promo copy (Guideline 2.3.7).",
     promptLabel: "AI Prompt for Screenshot Resolution Audit"
   },
   {
@@ -1935,7 +1935,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     keyFeatures: [
           "Visual interactive funnel reports pinpoint exact drop-off steps with demographic segmentation.",
           "Retention cohort curves measure long-term user stickiness and feature adoption.",
-          "Clean mobile SDKs for iOS, iOS, React Native, and web with offline event queuing."
+          "Clean mobile SDKs for iOS, iPadOS, React Native, and web with offline event queuing."
     ],
     bestUsedFor: "Analyzing subscription paywall conversion rates, retention curves, and onboarding engagement.",
     freeTierInfo: "Free plan includes 20 million monthly events and full access to core report templates.",
@@ -1943,7 +1943,7 @@ export const RESOURCES_DATA: ResourceItem[] = [
     reviewTraps: "Stay on track: Focus on your core conversion funnel: how many people download the app vs how many use your main feature.",
     url: "https://mixpanel.com",
     iconName: "PieChart",
-    promptOrCommand: "You are the autonomous mobile product funnel and conversion analyst.\n\nTASK & OBJECTIVE:\nConfigure Mixpanel funnel tracking and user cohort analysis across our core onboarding and activation journeys.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. FUNNEL TRACKING: Define step-by-step funnel events: 'App Launched' -> 'Onboarding Viewed' -> 'Step 1 Completed' -> 'Subscribed'.\n2. PROPERTY ENRICHMENT: Attach relevant contextual properties (platform: iOS/iOS, appVersion, activePhaseId) to each event.\n3. IDENTITY MERGING: Manage anonymous and authenticated user IDs cleanly with 'mixpanel.identify()' upon sign-in.\n4. ZERO REGRESSIONS: Verify that event calls are batched and flushed periodically to conserve mobile battery.",
+    promptOrCommand: "You are the autonomous mobile product funnel and conversion analyst.\n\nTASK & OBJECTIVE:\nConfigure Mixpanel funnel tracking and user cohort analysis across our core onboarding and activation journeys.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. FUNNEL TRACKING: Define step-by-step funnel events: 'App Launched' -> 'Onboarding Viewed' -> 'Step 1 Completed' -> 'Subscribed'.\n2. PROPERTY ENRICHMENT: Attach relevant contextual properties (platform: iOS/iPadOS, appVersion, activePhaseId) to each event.\n3. IDENTITY MERGING: Manage anonymous and authenticated user IDs cleanly with 'mixpanel.identify()' upon sign-in.\n4. ZERO REGRESSIONS: Verify that event calls are batched and flushed periodically to conserve mobile battery.",
     promptLabel: "AI Prompt for Funnel Tracking"
   },
   {
@@ -1954,20 +1954,20 @@ export const RESOURCES_DATA: ResourceItem[] = [
     badge: "Free",
     badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     platform: "both",
-    shortDescription: "Apple's free real-time crash reporter that groups crashes by severity and sends alerts if an issue affects multiple users.",
-    whyItMatters: "Completely free with zero event limits, seamlessly integrated with App Store Connect and iOS Vitals to keep your app crash-free.",
+    shortDescription: "Google's free real-time crash reporter that groups iOS crashes by severity and alerts you if an issue affects multiple users.",
+    whyItMatters: "Completely free with zero event limits, complementing Xcode Organizer Metrics to pinpoint native crashes and keep your app crash-free.",
     keyFeatures: [
-          "Detailed crash stack traces with symbolication for native Swift, Kotlin, and C++ binaries.",
+          "Detailed crash stack traces with dSYM symbolication for native Swift, Objective-C, and C++ binaries.",
           "Custom keys and logs attach contextual state snapshots to crash reports.",
           "Velocity alerts notify you immediately if a crash affects a high percentage of live users."
     ],
     bestUsedFor: "Production mobile crash reporting on iOS and iPadOS with zero quota limits.",
-    freeTierInfo: "100% free with unlimited crash reporting on Apple Firebase Spark plan.",
-    quickStart: "Enable Crashlytics in your Firebase console to get detailed crash logs on iOS and iPadOS for free.",
+    freeTierInfo: "100% free with unlimited crash reporting on the Google Firebase Spark plan.",
+    quickStart: "Enable Crashlytics in your Firebase console and upload dSYM files from Xcode to get symbolicated crash logs on iOS and iPadOS for free.",
     reviewTraps: "Stay on track: Check Crashlytics during your first week after launch to catch any device-specific bugs quickly.",
     url: "https://firebase.google.com/products/crashlytics",
     iconName: "Flame",
-    promptOrCommand: "You are the autonomous mobile native crash diagnostics engineer.\n\nTASK & OBJECTIVE:\nConfigure Firebase Crashlytics native crash reporting across our iOS and iPadOS builds.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. NATIVE INTEGRATION: Verify Firebase Crashlytics SDK is configured in 'ios/App/Podfile' and 'ios/app/build.gradle'.\n2. DSYM SYMBOLICATION: Configure automated Xcode build phase or Fastlane script to upload dSYM symbol files for human-readable stack traces.\n3. CUSTOM KEYS: Log non-sensitive diagnostic breadcrumbs (activeViewMode, currentPhaseNumber) to provide context for crashes.\n4. ZERO REGRESSIONS: Trigger a test crash in staging to verify that Crashlytics captures native thread dumps within 60 seconds.",
+    promptOrCommand: "You are the autonomous mobile native crash diagnostics engineer.\n\nTASK & OBJECTIVE:\nConfigure Firebase Crashlytics native crash reporting across our iOS and iPadOS builds.\n\nEXECUTION PROTOCOL FOR THE AGENT:\n1. NATIVE INTEGRATION: Verify Firebase Crashlytics SDK is configured in 'ios/App/App.xcodeproj' (Swift Package Manager) or 'ios/App/Podfile'.\n2. DSYM SYMBOLICATION: Configure an automated Xcode build phase or Fastlane script to upload dSYM symbol files for human-readable stack traces.\n3. CUSTOM KEYS: Log non-sensitive diagnostic breadcrumbs (activeViewMode, currentPhaseNumber) to provide context for crashes.\n4. ZERO REGRESSIONS: Trigger a test crash in staging to verify that Crashlytics captures symbolicated native thread dumps within 60 seconds.",
     promptLabel: "AI Prompt for Native Crashlytics"
   },
   {

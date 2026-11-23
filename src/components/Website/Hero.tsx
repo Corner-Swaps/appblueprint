@@ -4,6 +4,7 @@ import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
 
 const HERO_ALL_ITEMS = [...SETUP_STEPS_PHASE.items, ...PHASES_DATA.flatMap(p => p.items)];
 const HERO_TOTAL_COUNT = HERO_ALL_ITEMS.length;
+const HERO_PHASE_COUNT = PHASES_DATA.length;
 const HERO_IOS_COUNT = HERO_ALL_ITEMS.filter(i => i.platform === 'ios' || i.platform === 'both').length;
 const HERO_BLOCKER_COUNT = HERO_ALL_ITEMS.filter(i => i.priority === 'blocker').length;
 import { 
@@ -48,16 +49,16 @@ export const Hero: React.FC<HeroProps> = ({
     {
       id: 'checklist',
       title: 'Production Checklist',
-      subtitle: '101 store requirements with 1-click AI prompts & traps',
+      subtitle: `${HERO_TOTAL_COUNT} store requirements with 1-click AI prompts & traps`,
       image: './screenshots/02_production_checklist.png',
-      badge: '101 Guardrails',
+      badge: `${HERO_TOTAL_COUNT} Guardrails`,
     },
     {
       id: 'roadmap',
       title: 'Steps Roadmap',
       subtitle: 'Multi-phase milestones from idea to day-one approval',
       image: './screenshots/03_interactive_roadmap.png',
-      badge: '10 Phases',
+      badge: `${HERO_PHASE_COUNT} Phases`,
     },
     {
       id: 'academy',
@@ -141,7 +142,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto text-balance">
-            Save hundreds of hours and avoid store rejections. Browse 101 battle-tested guidelines, authentic mobile app screens, and copy 1-click AI prompts for Cursor, Claude &amp; Copilot.
+            Save hundreds of hours and avoid store rejections. Browse {HERO_TOTAL_COUNT} battle-tested guidelines, authentic mobile app screens, and copy 1-click AI prompts for Antigravity, Cursor &amp; Claude.
           </p>
 
           {/* Mobbin-Style Hero Search & Discovery Bar */}
@@ -292,7 +293,7 @@ export const Hero: React.FC<HeroProps> = ({
               className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm sm:text-base px-6 py-3.5 rounded-full border border-black/10 shadow-2xs hover:border-black/20 transition-all cursor-pointer"
             >
               <Layers className="w-4 h-4 text-slate-500 stroke-[2.2]" />
-              <span>Explore 10 Phases</span>
+              <span>Explore {HERO_PHASE_COUNT} Phases</span>
             </a>
           </div>
 
@@ -304,7 +305,7 @@ export const Hero: React.FC<HeroProps> = ({
                 <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Production Rules</div>
               </div>
               <div className="px-4 py-2 text-center">
-                <div className="text-xl sm:text-2xl font-black text-indigo-600 font-google tracking-tight">10</div>
+                <div className="text-xl sm:text-2xl font-black text-indigo-600 font-google tracking-tight">{HERO_PHASE_COUNT}</div>
                 <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Guided Phases</div>
               </div>
               <div className="px-4 py-2 text-center">

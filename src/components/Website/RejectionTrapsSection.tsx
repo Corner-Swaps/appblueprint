@@ -1,5 +1,10 @@
 import React from 'react';
 import { AlertTriangle, ShieldAlert, WifiOff, FileCheck2, UserX, Clock, ArrowRight } from 'lucide-react';
+import { PHASES_DATA } from '../../data/phases';
+import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
+
+const TRAPS_TOTAL_COUNT =
+  SETUP_STEPS_PHASE.items.length + PHASES_DATA.reduce((sum, p) => sum + p.items.length, 0);
 
 interface RejectionTrapsSectionProps {
   onLaunchApp: () => void;
@@ -14,7 +19,7 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = React
       title: 'IPv6 Launch & Network Crashes',
       description:
         'Apple reviewers test exclusively on IPv6 cellular NAT64 networks. Hardcoded IPv4 endpoints or apps taking over 2.0s to load crash and trigger an immediate rejection notice.',
-      guardrail: 'Pre-flight network audit & cold launch benchmark included in Phase 2 & 7.',
+      guardrail: 'Pre-flight network audit & cold launch benchmark included in Phase 5 & 8.',
     },
     {
       icon: FileCheck2,
@@ -121,7 +126,7 @@ export const RejectionTrapsSection: React.FC<RejectionTrapsSectionProps> = React
               Catch Every Rejection Trap Before Store Reviewers Do
             </h4>
             <p className="text-xs sm:text-sm text-slate-400">
-              App Blueprint encodes all 101 store guidelines into an actionable, self-auditing checklist.
+              App Blueprint encodes all {TRAPS_TOTAL_COUNT} store guidelines into an actionable, self-auditing checklist.
             </p>
           </div>
           <button
