@@ -112,6 +112,18 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = React.memo(({
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
   const [lockedNameModal, setLockedNameModal] = useState<{ type: 'created' | 'attempted_rename'; projectName: string } | null>(null);
+
+  useEffect(() => {
+    if (!lockedNameModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setLockedNameModal(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lockedNameModal]);
   const isCancellingRenameRef = useRef(false);
   const createFormRef = useRef<HTMLFormElement>(null);
   const isCancellingCreateRef = useRef(false);

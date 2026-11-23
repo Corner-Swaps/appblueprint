@@ -1,4 +1,11 @@
 import React, { useState } from 'react';
+import { PHASES_DATA } from '../../data/phases';
+import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
+
+const HERO_ALL_ITEMS = [...SETUP_STEPS_PHASE.items, ...PHASES_DATA.flatMap(p => p.items)];
+const HERO_TOTAL_COUNT = HERO_ALL_ITEMS.length;
+const HERO_IOS_COUNT = HERO_ALL_ITEMS.filter(i => i.platform === 'ios' || i.platform === 'both').length;
+const HERO_BLOCKER_COUNT = HERO_ALL_ITEMS.filter(i => i.priority === 'blocker').length;
 import { 
   Rocket, 
   ArrowRight, 
@@ -146,7 +153,7 @@ export const Hero: React.FC<HeroProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-                placeholder="Search 101 rules & prompts..."
+                placeholder={`Search ${HERO_TOTAL_COUNT} rules & prompts...`}
                 className="w-full pl-12 pr-24 py-4 rounded-2xl bg-white border border-black/10 text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-all"
               />
               <div className="absolute right-3 flex items-center space-x-2">
@@ -178,7 +185,7 @@ export const Hero: React.FC<HeroProps> = ({
                 }`}
               >
                 <Globe className="w-3.5 h-3.5" />
-                <span>All Platforms (101)</span>
+                <span>All Platforms ({HERO_TOTAL_COUNT})</span>
               </button>
 
               <button
@@ -191,7 +198,7 @@ export const Hero: React.FC<HeroProps> = ({
                 }`}
               >
                 <Apple className="w-3.5 h-3.5" />
-                <span>iOS HIG (84)</span>
+                <span>iOS HIG ({HERO_IOS_COUNT})</span>
               </button>
 
               <button
@@ -204,7 +211,7 @@ export const Hero: React.FC<HeroProps> = ({
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>iPadOS (101)</span>
+                <span>iPadOS ({HERO_TOTAL_COUNT})</span>
               </button>
 
               <button
@@ -213,7 +220,7 @@ export const Hero: React.FC<HeroProps> = ({
                 className="apple-press inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/80 shadow-2xs transition-all cursor-pointer"
               >
                 <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
-                <span>Store Blockers (28)</span>
+                <span>Store Blockers ({HERO_BLOCKER_COUNT})</span>
               </button>
             </div>
 
@@ -293,7 +300,7 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="pt-2 flex justify-center">
             <div className="inline-grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-0 sm:divide-x sm:divide-slate-200/90 bg-white/90 backdrop-blur-md rounded-2xl border border-black/8 shadow-2xs p-1.5 sm:p-2">
               <div className="px-4 py-2 text-center">
-                <div className="text-xl sm:text-2xl font-black text-slate-900 font-google tracking-tight">101</div>
+                <div className="text-xl sm:text-2xl font-black text-slate-900 font-google tracking-tight">{HERO_TOTAL_COUNT}</div>
                 <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Production Rules</div>
               </div>
               <div className="px-4 py-2 text-center">

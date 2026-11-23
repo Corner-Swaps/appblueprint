@@ -1,15 +1,50 @@
 const puppeteer = require('puppeteer-core');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
 
 const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const DOCS_DIR = path.join(__dirname, '../docs');
 const OUT_DIR_PROJECT = path.join(__dirname, '../ipad13_screenshots');
-const OUT_DIR_ARTIFACTS = '/Users/slava/.gemini/antigravity/brain/02a23414-cdda-418b-b018-4496b05c23b5';
+const OUT_DIR_APPSTORE_IPAD = path.join(__dirname, '../appstore_screenshots_ipad');
 const PORT = 8146;
 
-[OUT_DIR_PROJECT, OUT_DIR_ARTIFACTS].forEach(dir => {
+[OUT_DIR_PROJECT, OUT_DIR_APPSTORE_IPAD].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
+
+function startServer(port = PORT) {
+  const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'text/javascript',
+    '.css': 'text/css',
+    '.png': 'image/png',
+    '.svg': 'image/svg+xml',
+    '.json': 'application/json',
+    '.woff2': 'font/woff2',
+    '.ttf': 'font/ttf'
+  };
+
+  const server = http.createServer((req, res) => {
+    let reqPath = req.url.split('?')[0].split('#')[0];
+    if (reqPath === '/' || reqPath === '') reqPath = '/index.html';
+    const filePath = path.join(DOCS_DIR, reqPath);
+    fs.readFile(filePath, (err, content) => {
+      if (err) {
+        res.writeHead(404);
+        res.end('Not found');
+        return;
+      }
+      const ext = path.extname(filePath);
+      res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
+      res.end(content);
+    });
+  });
+
+  return new Promise((resolve) => {
+    server.listen(port, () => resolve(server));
+  });
+}
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -94,13 +129,14 @@ async function injectIPadChrome(page, { dark = false, isSplash = false } = {}) {
 
 async function saveScreenshot(page, filename) {
   const p1 = path.join(OUT_DIR_PROJECT, filename);
-  const p2 = path.join(OUT_DIR_ARTIFACTS, filename);
+  const p2 = path.join(OUT_DIR_APPSTORE_IPAD, filename);
   await page.screenshot({ path: p1 });
   fs.copyFileSync(p1, p2);
   console.log(`Saved screenshot: ${filename} (2064 x 2752 px)`);
 }
 
 async function run() {
+  const server = await startServer(PORT);
   console.log(`Launching Headless Chrome for iPad 13-inch (2064x2752) on port ${PORT}...`);
   const browser = await puppeteer.launch({
     executablePath: CHROME_PATH,
@@ -122,25 +158,23 @@ async function run() {
     hasTouch: true,
   });
 
-  // Setup initial pristine storage with 4 days left on trial and 5% completion
+  // Setup pristine unlocked storage (no trial or pricing badges in App Store screenshots)
   await page.evaluateOnNewDocument(() => {
     localStorage.clear();
     sessionStorage.clear();
 
-    // 2.5 days elapsed from 7-day trial: remaining = 4.5 days => "4 days left"
-    const trialStart = Date.now() - (2.5 * 24 * 60 * 60 * 1000);
-    localStorage.setItem('appblueprint_trial_start_date_v1', trialStart.toString());
-    localStorage.setItem('appblueprint_creations_ever_v2', '1');
+    localStorage.setItem('appblueprint_unlimited_unlocked_v2', 'true');
+    localStorage.setItem('appblueprint_pro_unlocked_v1', 'true');
+    localStorage.setItem('appblueprint_creations_ever_v2', '3');
     localStorage.setItem('appblueprint_free_project_claimed_v1', 'true');
     localStorage.setItem('appblueprint_fresh_brand_new_user_v29', 'true');
     localStorage.setItem('appblueprint_legal_agreed_v1', 'true');
     localStorage.setItem('launchready_legal_agreed_v1', 'true');
 
-    // 5 completed items gives exactly 5% completion
     const projects = [
       {
         id: 'proj-1',
-        name: 'My Mobile App',
+        name: 'App Blueprint v1.0',
         color: '#3B82F6',
         createdAt: new Date().toISOString(),
         completedItemIds: [
@@ -150,6 +184,22 @@ async function run() {
           'p2-touch-targets', 
           'p2-safe-areas'
         ],
+        isNameLocked: false,
+      },
+      {
+        id: 'proj-2',
+        name: 'Fitness Tracker Pro',
+        color: '#8B5CF6',
+        createdAt: new Date().toISOString(),
+        completedItemIds: ['p1-problem-solution', 'p2-liquid-glass', 'p2-touch-targets'],
+        isNameLocked: false,
+      },
+      {
+        id: 'proj-3',
+        name: 'SaaS Mobile Companion',
+        color: '#10B981',
+        createdAt: new Date().toISOString(),
+        completedItemIds: ['p1-problem-solution', 'p4-schema-models', 'p4-privacy-manifest'],
         isNameLocked: false,
       }
     ];
@@ -244,11 +294,16 @@ async function run() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   });
   await sleep(800);
+  await page.evaluate(() => {
+    const restoreBtn = document.querySelector('button[title="Restore previously purchased items"]');
+    if (restoreBtn) restoreBtn.style.display = 'none';
+  });
   await injectIPadChrome(page, { dark: false });
   await sleep(400);
   await saveScreenshot(page, 'ipad13_05_select_project.png');
 
   await browser.close();
+  server.close();
   console.log('\nAll 5 iPad 13-inch screenshots captured successfully!');
 }
 

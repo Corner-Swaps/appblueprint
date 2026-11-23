@@ -283,7 +283,7 @@ const SCREENS = [
     badge: 'CURATED LAUNCH ACADEMY',
     badgeColor: '#C084FC', // Purple
     accentGlow: 'rgba(168, 85, 247, 0.28)',
-    title: 'Avoid Costly App Rejections',
+    title: 'Pass App Review First Try',
     subtitle: 'Battle-tested checklists, Apple guidelines & developer tools in one place'
   },
   {
@@ -316,6 +316,9 @@ async function captureRawScreens(browser, isIpad = false) {
     localStorage.setItem('appblueprint_legal_agreed_v1', 'true');
     localStorage.setItem('launchready_legal_agreed_v1', 'true');
     localStorage.setItem('appblueprint_visits_count', '5');
+    localStorage.setItem('appblueprint_fresh_brand_new_user_v29', 'true');
+    localStorage.setItem('appblueprint_unlimited_unlocked_v2', 'true');
+    localStorage.setItem('appblueprint_pro_unlocked_v1', 'true');
 
     const completedItems = JSON.parse(listRaw);
     const projects = [
@@ -397,6 +400,10 @@ async function captureRawScreens(browser, isIpad = false) {
         if (projectsTab) projectsTab.click();
       });
       await sleep(700);
+      await page.evaluate(() => {
+        const restoreBtn = document.querySelector('button[title="Restore previously purchased items"]');
+        if (restoreBtn) restoreBtn.style.display = 'none';
+      });
       await injectChrome(page, false);
       await sleep(500);
     } else if (i === 3) {
@@ -424,6 +431,7 @@ async function captureRawScreens(browser, isIpad = false) {
       await sleep(600);
 
       await page.evaluate(({ ipad }) => {
+        document.querySelectorAll('[data-free-tier-box]').forEach(el => { el.style.display = 'none'; });
         const el = document.getElementById('ai-cursor');
         if (el) {
           const rect = el.getBoundingClientRect();

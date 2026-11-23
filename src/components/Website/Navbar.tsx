@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Rocket, Menu, X, ArrowRight, Search, Apple, Smartphone, Globe } from 'lucide-react';
+import { PHASES_DATA } from '../../data/phases';
+import { SETUP_STEPS_PHASE } from '../../data/setupSteps';
+
+const TOTAL_CATALOG_COUNT =
+  SETUP_STEPS_PHASE.items.length + PHASES_DATA.reduce((sum, p) => sum + p.items.length, 0);
 
 interface NavbarProps {
   onLaunchApp: () => void;
@@ -139,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <Globe className="w-3 h-3 stroke-[2.2]" />
-              <span>All (101)</span>
+              <span>All ({TOTAL_CATALOG_COUNT})</span>
             </button>
             <button
               type="button"
@@ -253,7 +258,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   activePlatform === 'all' ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600'
                 }`}
               >
-                All (101)
+                All ({TOTAL_CATALOG_COUNT})
               </button>
               <button
                 type="button"

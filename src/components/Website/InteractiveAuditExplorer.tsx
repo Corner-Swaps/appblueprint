@@ -360,7 +360,7 @@ export const InteractiveAuditExplorer: React.FC<InteractiveAuditExplorerProps> =
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 101 rules & prompts..."
+              placeholder={`Search ${allItems.length} rules & prompts...`}
               className="w-full pl-12 pr-24 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-sm sm:text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-slate-950/15 focus:border-slate-950 transition-all shadow-inner"
             />
             <div className="absolute right-3 flex items-center space-x-2">

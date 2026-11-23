@@ -157,7 +157,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'backend',
     title: 'Backend, Database & Cloud',
     badge: 'Serverless Cloud',
-    description: 'A backend lets your users save accounts, store data in the cloud, and sync across multiple devices. Modern platforms like Supabase and Firebase handle the complex server work automatically. They offer generous free plans that can comfortably support your first thousands of active users without charge. You can always start for free and scale up smoothly as your app grows.',
+    description: 'A backend lets your users save accounts, store data in the cloud, and sync across multiple devices. Modern platforms like Supabase and Firebase handle complex server infrastructure, authentication, and real-time sync automatically so your architecture scales smoothly as your app grows.',
     iconBg: 'bg-teal-600',
     icon: <Server className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -165,7 +165,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'security',
     title: 'Security & Keychain Auth',
     badge: 'Hardware Enclave',
-    description: 'Security protects your users and keeps private login passwords safe on their physical phones. Using the iOS Keychain and Secure Enclave hardware chips ensures sensitive data is never exposed. Following these essential guardrails prevents data leaks and helps you pass store security audits on your first try. All security patterns and system APIs shown here are built right into your phone for free.',
+    description: 'Security protects your users and keeps private login passwords safe on their physical phones. Using the iOS Keychain and Secure Enclave hardware chips ensures sensitive data is never exposed. Following these essential guardrails prevents data leaks and helps you pass store security audits on your first try. All security patterns and system APIs shown here are built natively into mobile operating systems.',
     iconBg: 'bg-emerald-600',
     icon: <Lock className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -173,7 +173,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'privacy',
     title: 'Privacy & Store Compliance',
     badge: 'Store Compliance',
-    description: 'User privacy is one of the most strictly enforced requirements in the Apple App Store. You must inform users what data you collect and declare required privacy manifests before publishing. Bundling fonts locally and avoiding hidden ad trackers keeps you completely safe from legal fines. These free privacy templates and tools guarantee you satisfy Apple rules.',
+    description: 'User privacy is one of the most strictly enforced requirements in the Apple App Store. You must inform users what data you collect and declare required privacy manifests before publishing. Bundling fonts locally and avoiding hidden ad trackers keeps you completely safe from compliance issues. These curated privacy templates and tools help you satisfy Apple rules.',
     iconBg: 'bg-indigo-600',
     icon: <EyeOff className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -181,7 +181,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'legal',
     title: 'Legal & Privacy Templates',
     badge: 'Terms & Policies',
-    description: 'Every published mobile app requires a publicly accessible Privacy Policy and Terms of Service before review. You can create and host these legal documents completely free using simple GitHub Pages. Having clear agreements also shields you from liability and protects your intellectual property. Use our copy-ready legal templates to get permanent HTTPS links in under 5 minutes.',
+    description: 'Every published mobile app requires a publicly accessible Privacy Policy and Terms of Service before review. You can create and host these legal documents easily using static GitHub Pages. Having clear agreements also shields you from liability and protects your intellectual property. Use our copy-ready legal templates to get permanent HTTPS links in under 5 minutes.',
     iconBg: 'bg-amber-600',
     icon: <ScrollText className="w-6 h-6 text-white stroke-[1.8]" />
   },
@@ -189,7 +189,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'launch',
     title: 'App Store Launch & Release',
     badge: 'Store Publishing',
-    description: 'Your store listing is the storefront window where people decide whether to download your application. Prepare eye-catching screenshot mockups and clear descriptions that explain your app\'s benefits simply. Avoid common rejection traps like broken demo accounts or prohibited pricing claims in your title. These free mockup tools and checklists guide you step-by-step through submission day.',
+    description: 'Your store listing is the storefront window where people decide whether to download your application. Prepare eye-catching screenshot mockups and clear descriptions that explain your app\'s benefits simply. Avoid common rejection traps like broken demo accounts or prohibited metadata claims. These curated mockup tools and checklists guide you step-by-step through submission day.',
     iconBg: 'bg-cyan-600',
     icon: <Rocket className="w-6 h-6 text-white stroke-[1.6]" />
   },
@@ -197,7 +197,7 @@ const SECTION_CONFIGS: SectionConfig[] = [
     id: 'analytics',
     title: 'Crash Reporting & Diagnostics',
     badge: 'Telemetry & Health',
-    description: 'Crash reporting helps you find and fix unexpected issues before frustrated users leave negative reviews. Privacy-friendly telemetry lets you see which features people enjoy without recording their personal identity. You can monitor performance speeds and battery health to keep your app running silky smooth. The observability tools featured here include robust free plans tailored for indie developers.',
+    description: 'Crash reporting helps you find and fix unexpected issues before frustrated users leave negative reviews. Privacy-friendly telemetry lets you see which features people enjoy without recording their personal identity. You can monitor performance speeds and battery health to keep your app running silky smooth. The observability tools featured here are tailored specifically for mobile developers.',
     iconBg: 'bg-violet-600',
     icon: <BarChart2 className="w-6 h-6 text-white stroke-[1.8]" />
   }
@@ -1299,6 +1299,7 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = React.memo(({ onBackT
                                 {/* Subsection 4: Free Access & Licensing Pill */}
                                 {item.freeTierInfo && (
                                   <div 
+                                    data-free-tier-box
                                     className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-slate-300/90 space-y-1.5 shadow-2xs cursor-pointer transition-colors"
                                   >
                                     <div className="select-none">

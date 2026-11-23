@@ -75,6 +75,27 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     }
   }, [isOpen]);
 
+  // Layered Escape key handling: closes only the top-most modal/sheet
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (showStoreKitSheet) {
+        if (storeKitState !== 'processing') {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowStoreKitSheet(false);
+        }
+      } else if (canDismiss && !isNativeProcessing) {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, showStoreKitSheet, storeKitState, canDismiss, isNativeProcessing, onClose]);
+
   if (!isOpen) return null;
 
   const currentPrice = purchaseTier === 'unlimited' ? unlimitedPrice : singlePrice;
@@ -352,7 +373,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
             {/* Apple StoreKit 3.1.1 Mandatory Compliance: Legal Links */}
             <div className="pt-0.5 flex items-center justify-center space-x-2 text-[11px] text-slate-400 font-medium">
               <a
-                href="/terms.html"
+                href="./terms.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer"
@@ -361,7 +382,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
               </a>
               <span>•</span>
               <a
-                href="/privacy.html"
+                href="./privacy.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer"

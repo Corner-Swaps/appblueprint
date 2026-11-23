@@ -254,10 +254,12 @@ const pbxprojContent = fs.readFileSync(pbxprojPath, 'utf8');
 const buildMatches = pbxprojContent.match(/CURRENT_PROJECT_VERSION = (\d+);/g);
 console.log(`  Current Xcode project build settings: ${buildMatches ? buildMatches.join(', ') : 'None'}`);
 
+const buildNumbers = (pbxprojContent.match(/CURRENT_PROJECT_VERSION = (\d+);/g) || [])
+  .map((m) => parseInt(m.replace(/\D/g, ''), 10));
 assert(
-  pbxprojContent.includes('CURRENT_PROJECT_VERSION = 10;'),
-  'CURRENT_PROJECT_VERSION bumped to Build 10 in Xcode project',
-  'Ready for App Store Connect release as Build 10'
+  buildNumbers.length >= 2 && buildNumbers.every((n) => n >= 10 && n === buildNumbers[0]),
+  `CURRENT_PROJECT_VERSION valid and synchronized (Build ${buildNumbers[0] || 'unknown'}) in Xcode project`,
+  'Ready for App Store Connect release'
 );
 
 console.log(`\n${BOLD}================================================================${RESET}`);

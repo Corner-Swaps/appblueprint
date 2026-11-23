@@ -67,7 +67,7 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
         "com.slava.appblueprint.keep_this_project",
         "com.slava.appblueprint.unlimited_projects"
     ]
-    private static var cachedProducts: [String: Product] = [:]
+    @MainActor private static var cachedProducts: [String: Product] = [:]
     private var updateListenerTask: Task<Void, Never>? = nil
 
     public override func load() {
@@ -84,8 +84,10 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
         Task {
             do {
                 let products = try await Product.products(for: StoreKitPlugin.knownProductIds)
-                for p in products {
-                    StoreKitPlugin.cachedProducts[p.id] = p
+                await MainActor.run {
+                    for p in products {
+                        StoreKitPlugin.cachedProducts[p.id] = p
+                    }
                 }
             } catch {
                 print("StoreKit warmup notice: \(error.localizedDescription)")
@@ -106,6 +108,49 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
         }
     }
 
+    @MainActor
+    private func resolvePresentationContext() -> (viewController: UIViewController?, scene: UIWindowScene?) {
+        let connectedScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let activeScene = connectedScenes.first(where: { $0.activationState == .foregroundActive })
+            ?? connectedScenes.first(where: { $0.activationState == .foregroundInactive })
+            ?? connectedScenes.first
+
+        var candidateVC: UIViewController? = self.bridge?.viewController
+        if candidateVC?.viewIfLoaded?.window?.windowScene == nil {
+            let keyWin = activeScene?.windows.first(where: { $0.isKeyWindow }) ?? activeScene?.windows.first
+            candidateVC = keyWin?.rootViewController ?? candidateVC
+        }
+
+        while let presented = candidateVC?.presentedViewController,
+              !presented.isBeingDismissed,
+              presented.viewIfLoaded?.window != nil {
+            candidateVC = presented
+        }
+
+        let resolvedScene = candidateVC?.viewIfLoaded?.window?.windowScene ?? activeScene
+        let validVC = (candidateVC?.viewIfLoaded?.window?.windowScene != nil) ? candidateVC : nil
+        return (validVC, resolvedScene)
+    }
+
+    @MainActor
+    private func executePurchase(for product: Product) async throws -> Product.PurchaseResult {
+        let context = resolvePresentationContext()
+        if #available(iOS 18.2, *), let vc = context.viewController {
+            do {
+                return try await product.purchase(confirmIn: vc)
+            } catch let skError as StoreKitError {
+                if #available(iOS 27.0, *), case .invalidPresentationContext = skError, let scene = context.scene {
+                    return try await product.purchase(confirmIn: scene)
+                }
+                throw skError
+            }
+        } else if #available(iOS 17.0, *), let scene = context.scene {
+            return try await product.purchase(confirmIn: scene)
+        } else {
+            return try await product.purchase()
+        }
+    }
+
     @objc public func purchaseProduct(_ call: CAPPluginCall) {
         guard let productId = call.getString("productId") else {
             call.resolve([
@@ -118,29 +163,46 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
 
         Task {
             do {
-                var targetProduct: Product? = StoreKitPlugin.cachedProducts[productId]
+                var targetProduct: Product? = await MainActor.run {
+                    StoreKitPlugin.cachedProducts[productId]
+                }
+                var lastFetchError: Error? = nil
+
                 if targetProduct == nil {
-                    // Try fetching with exponential backoff (up to 3 retries)
-                    for attempt in 0..<3 {
-                        if let fetched = try? await Product.products(for: [productId]), let first = fetched.first {
-                            targetProduct = first
-                            StoreKitPlugin.cachedProducts[productId] = first
-                            break
+                    let lookupIds = StoreKitPlugin.knownProductIds.union([productId])
+                    // Try fetching with exponential backoff (up to 4 retries)
+                    for attempt in 0..<4 {
+                        do {
+                            let fetched = try await Product.products(for: lookupIds)
+                            if !fetched.isEmpty {
+                                await MainActor.run {
+                                    for p in fetched {
+                                        StoreKitPlugin.cachedProducts[p.id] = p
+                                    }
+                                }
+                            }
+                            if let matched = fetched.first(where: { $0.id == productId }) {
+                                targetProduct = matched
+                                break
+                            }
+                        } catch {
+                            lastFetchError = error
                         }
-                        try? await Task.sleep(nanoseconds: UInt64(400_000_000 * (attempt + 1)))
+                        try? await Task.sleep(nanoseconds: UInt64(350_000_000 * (attempt + 1)))
                     }
                 }
 
                 guard let product = targetProduct else {
+                    let detail = lastFetchError?.localizedDescription ?? "Product temporarily unavailable from App Store sandbox. Please try again."
                     call.resolve([
                         "success": false,
                         "error": "PRODUCT_NOT_AVAILABLE",
-                        "message": "Product temporarily unavailable from App Store sandbox. Please try again."
+                        "message": detail
                     ])
                     return
                 }
 
-                let result = try await product.purchase()
+                let result = try await executePurchase(for: product)
                 switch result {
                 case .success(let verification):
                     switch verification {
@@ -183,6 +245,13 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                     ])
                 }
             } catch {
+                if let sk2Error = error as? StoreKitError, case .userCancelled = sk2Error {
+                    call.resolve([
+                        "success": false,
+                        "userCancelled": true
+                    ])
+                    return
+                }
                 let nsError = error as NSError
                 let lowerDescription = error.localizedDescription.lowercased()
                 if nsError.domain == SKErrorDomain && nsError.code == SKError.Code.paymentCancelled.rawValue ||
@@ -270,8 +339,10 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
         Task {
             do {
                 let products = try await Product.products(for: Set(productIds))
-                for p in products {
-                    StoreKitPlugin.cachedProducts[p.id] = p
+                await MainActor.run {
+                    for p in products {
+                        StoreKitPlugin.cachedProducts[p.id] = p
+                    }
                 }
                 let productList = products.map { p in
                     [

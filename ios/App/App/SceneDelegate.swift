@@ -250,10 +250,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         let purpleColor = UIColor(red: 147.0 / 255.0, green: 51.0 / 255.0, blue: 234.0 / 255.0, alpha: 1.0)
-        window = UIWindow(windowScene: windowScene)
-        window?.backgroundColor = purpleColor
-        window?.rootViewController = PortraitBridgeViewController()
-        window?.makeKeyAndVisible()
+        if let existingWindow = self.window ?? windowScene.windows.first {
+            self.window = existingWindow
+            existingWindow.backgroundColor = purpleColor
+            if !(existingWindow.rootViewController is PortraitBridgeViewController) {
+                existingWindow.rootViewController = PortraitBridgeViewController()
+            }
+            existingWindow.makeKeyAndVisible()
+        } else {
+            let newWindow = UIWindow(windowScene: windowScene)
+            newWindow.backgroundColor = purpleColor
+            newWindow.rootViewController = PortraitBridgeViewController()
+            newWindow.makeKeyAndVisible()
+            self.window = newWindow
+        }
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
     }

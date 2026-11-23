@@ -208,6 +208,9 @@ async function captureScreenSet(browser, config) {
     localStorage.setItem('appblueprint_legal_agreed_v1', 'true');
     localStorage.setItem('launchready_legal_agreed_v1', 'true');
     localStorage.setItem('appblueprint_visits_count', '5');
+    localStorage.setItem('appblueprint_fresh_brand_new_user_v29', 'true');
+    localStorage.setItem('appblueprint_unlimited_unlocked_v2', 'true');
+    localStorage.setItem('appblueprint_pro_unlocked_v1', 'true');
 
     const projects = [
       {
@@ -301,6 +304,10 @@ async function captureScreenSet(browser, config) {
     if (projectsTab) projectsTab.click();
   });
   await sleep(700);
+  await page.evaluate(() => {
+    const restoreBtn = document.querySelector('button[title="Restore previously purchased items"]');
+    if (restoreBtn) restoreBtn.style.display = 'none';
+  });
   await injectIOSChrome(page, false, false);
   await sleep(400);
   const shot3 = path.join(outDir, '03_projects_manager.png');
@@ -337,8 +344,9 @@ async function captureScreenSet(browser, config) {
   });
   await sleep(600);
 
-  // Scroll so Cursor AI card sits cleanly below status bar
+  // Hide pricing/free-tier box for App Store Guideline 2.3.7 screenshot compliance and align cleanly below status bar
   await page.evaluate(() => {
+    document.querySelectorAll('[data-free-tier-box]').forEach(el => { el.style.display = 'none'; });
     const el = document.getElementById('ai-cursor');
     if (el) {
       const rect = el.getBoundingClientRect();

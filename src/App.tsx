@@ -272,9 +272,9 @@ export const App: React.FC = () => {
       const hasReviewed30 = localStorage.getItem('appblueprint_review_prompted_30') || localStorage.getItem('launchready_review_prompted_30');
 
       if (currentVisits === 15 && !hasReviewed15) {
-        localStorage.setItem('appblueprint_review_prompted_15', 'true');
-        localStorage.setItem('launchready_review_prompted_15', 'true');
         const timer = setTimeout(() => {
+          localStorage.setItem('appblueprint_review_prompted_15', 'true');
+          localStorage.setItem('launchready_review_prompted_15', 'true');
           if (Capacitor.isNativePlatform()) {
             requestNativeStoreReview();
           } else {
@@ -283,9 +283,9 @@ export const App: React.FC = () => {
         }, 1500);
         return () => clearTimeout(timer);
       } else if (currentVisits === 30 && !hasReviewed30) {
-        localStorage.setItem('appblueprint_review_prompted_30', 'true');
-        localStorage.setItem('launchready_review_prompted_30', 'true');
         const timer = setTimeout(() => {
+          localStorage.setItem('appblueprint_review_prompted_30', 'true');
+          localStorage.setItem('launchready_review_prompted_30', 'true');
           if (Capacitor.isNativePlatform()) {
             requestNativeStoreReview();
           } else {
@@ -1126,7 +1126,7 @@ EXECUTION PROTOCOL FOR THE CODING AGENT:
                                 </span>
                                 <span className="text-xs text-slate-300">•</span>
                                 <span className="text-xs text-slate-500">
-                                  {delPhase.items.length} items
+                                  {delPhase.items.length} {delPhase.items.length === 1 ? 'item' : 'items'}
                                 </span>
                               </div>
                               <h3 className="text-sm font-bold text-slate-900 truncate font-google">
