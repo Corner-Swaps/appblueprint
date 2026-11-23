@@ -59,15 +59,15 @@ guard let userProfile = viewModel.currentUser else {
     triggerSymptom: 'Reviewer rejected with: "The In-App Purchase products in the app exhibited one or more bugs. Specifically, there was an error message displayed when we tapped Unlock."',
     rootCauses: [
       'StoreKit 2 product queries take longer on review sandbox servers and timeout without fallback retry.',
-      'Paid Apps Agreement in App Store Connect Business section is not accepted or pending banking/tax info.',
-      'The In-App Purchase capability is not enabled on the Xcode target attributes.',
-      'UI immediately pops an error alert instead of keeping the user in a loading state or offering a silent retry.'
+      'Paid Apps Agreement in App Store Connect Business > Agreements is not Active or pending banking/tax info.',
+      'App is signed with a Wildcard (*) provisioning profile instead of an Explicit App ID with In-App Purchase enabled, or products are in Missing Metadata / not attached to the submission version.',
+      'Calling deprecated product.purchase() without confirmIn: viewController on iPadOS, or surfacing a raw error banner instead of graceful handling.'
     ],
     immediateFix: [
-      'Step 1: Check App Store Connect -> Agreements -> Paid Apps Agreement and confirm status is "Active".',
-      'Step 2: Add `com.apple.InAppPurchase` capability to your Xcode target in `project.pbxproj`.',
-      'Step 3: Query StoreKit 2 products at app launch with automated retry logic so products are pre-cached before the paywall opens.',
-      'Step 4: Gracefully handle cancellation and sandbox latency without displaying red error banners to the reviewer.'
+      'Step 1: Check App Store Connect -> Business -> Agreements -> Paid Apps Agreement and confirm status is "Active".',
+      'Step 2: Verify exact matching Product IDs, Ready to Submit status (with review screenshot), attachment to the version page, and an Explicit App ID provisioning profile (not Wildcard *).',
+      'Step 3: Query StoreKit 2 products at app launch with retry logic and pass an active viewController/UIWindowScene to product.purchase(confirmIn:) on iOS 17+/iPadOS 26+.',
+      'Step 4: Gracefully handle cancellation and sandbox latency without displaying red error alerts to the reviewer.'
     ],
     codeSnippet: {
       language: 'swift',
@@ -191,15 +191,13 @@ SignInWithAppleButton(
       filename: 'apple-app-site-association',
       code: `{
   "applinks": {
-    "apps": [],
     "details": [
       {
-        "appID": "ABCDE12345.com.yourapp.bundle",
-        "paths": ["*"],
+        "appIDs": ["ABCDE12345.com.yourapp.bundle"],
         "components": [
           {
-            "/": "/*",
-            "comment": "Matches all routes"
+            "/": "/invite/*",
+            "comment": "Matches invite deep links"
           }
         ]
       }

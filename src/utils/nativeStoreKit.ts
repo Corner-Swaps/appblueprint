@@ -28,6 +28,7 @@ export interface StoreKitPluginInterface {
   restorePurchases(): Promise<{
     success: boolean;
     entitlements: string[];
+    userCancelled?: boolean;
     error?: string;
   }>;
   getEntitlements(): Promise<{
@@ -39,6 +40,11 @@ export interface StoreKitPluginInterface {
     products: StoreProduct[];
     error?: string;
   }>;
+  getBuildEnvironment(): Promise<{
+    isDebug: boolean;
+    bundleId?: string;
+    storefront?: string;
+  }>;
 }
 
 // Register native plugin
@@ -48,7 +54,33 @@ export interface PurchaseResult {
   success: boolean;
   userCancelled?: boolean;
   pending?: boolean;
+  errorCode?: string;
   error?: string;
+}
+
+export interface BuildEnvironment {
+  isDebug: boolean;
+  bundleId?: string;
+  storefront?: string;
+}
+
+/**
+ * Returns whether the app is running in a local Xcode DEBUG build (#if DEBUG).
+ * Always returns isDebug: false in Release / TestFlight / App Store builds.
+ */
+export async function getNativeBuildEnvironment(): Promise<BuildEnvironment> {
+  if (Capacitor.getPlatform() === 'ios') {
+    try {
+      const res = await StoreKit.getBuildEnvironment();
+      if (res && typeof res.isDebug === 'boolean') {
+        return res;
+      }
+    } catch {
+      return { isDebug: false };
+    }
+    return { isDebug: false };
+  }
+  return { isDebug: false };
 }
 
 /**
@@ -96,14 +128,18 @@ export async function purchaseWithStoreKit(productId: string, targetProjectId?: 
       if (rawError.includes('cancel') || rawError.includes('abort') || rawError.includes('dismiss')) {
         return { success: false, userCancelled: true };
       }
-      return { success: false, error: res.message || res.error || 'Purchase could not be completed at this time.' };
+      return {
+        success: false,
+        errorCode: res.error,
+        error: res.message || res.error || 'Purchase could not be completed at this time.'
+      };
     } catch (err: any) {
       const errorMsg = String(err?.message || err || '');
       const lower = errorMsg.toLowerCase();
       if (lower.includes('cancel') || lower.includes('abort') || lower.includes('dismiss')) {
         return { success: false, userCancelled: true };
       }
-      return { success: false, error: errorMsg };
+      return { success: false, errorCode: 'EXCEPTION', error: errorMsg };
     }
   }
 
@@ -121,10 +157,17 @@ export async function purchaseWithStoreKit(productId: string, targetProjectId?: 
  * Restores previous purchases via App Store sync and current entitlements.
  * Mandatory under Apple App Store Review Guideline 3.1.1.
  */
-export async function restoreWithStoreKit(): Promise<{ restoredCount: number; isUnlimited: boolean; error?: string }> {
+export async function restoreWithStoreKit(): Promise<{ restoredCount: number; isUnlimited: boolean; userCancelled?: boolean; error?: string }> {
   if (Capacitor.getPlatform() === 'ios') {
     try {
       const res = await StoreKit.restorePurchases();
+      if (res.userCancelled) {
+        return {
+          restoredCount: 0,
+          isUnlimited: isUnlimitedUnlocked(),
+          userCancelled: true
+        };
+      }
       const entitlements = res.entitlements || [];
       let isUnlimited = false;
 
@@ -141,13 +184,22 @@ export async function restoreWithStoreKit(): Promise<{ restoredCount: number; is
 
       return {
         restoredCount: entitlements.length,
-        isUnlimited: isUnlimited || isUnlimitedUnlocked()
+        isUnlimited: isUnlimited || isUnlimitedUnlocked(),
+        error: res.error
       };
     } catch (err: any) {
+      const msg = String(err?.message || err || 'Failed to restore purchases');
+      if (msg.toLowerCase().includes('cancel')) {
+        return {
+          restoredCount: 0,
+          isUnlimited: isUnlimitedUnlocked(),
+          userCancelled: true
+        };
+      }
       return {
         restoredCount: 0,
         isUnlimited: isUnlimitedUnlocked(),
-        error: String(err?.message || err || 'Failed to restore purchases')
+        error: msg
       };
     }
   }

@@ -97,6 +97,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({ isOpen, onCl
               src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0&modestbranding=1`}
               title={video.title}
               className="w-full h-full border-0"
+              referrerPolicy="strict-origin-when-cross-origin"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             />
@@ -123,7 +124,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({ isOpen, onCl
             className="apple-press flex-1 py-2.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition-colors border border-slate-700/50"
           >
             <ExternalLink className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-            <span className="truncate">Open in YouTube</span>
+            <span className="truncate">{videoId ? 'Open in YouTube' : 'Open Video'}</span>
           </button>
 
           <button

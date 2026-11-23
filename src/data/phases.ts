@@ -74,9 +74,9 @@ export const PHASES_DATA: Phase[] = [
           "Write code using strict TypeScript so the compiler catches bugs automatically.",
           "Build your web code and sync it into native iOS and iPadOS projects using Capacitor commands.",
           "Open the native project in Xcode and make sure it compiles cleanly and runs on your phone.",
-          "Set the minimum operating system version to modern standards (iOS 16+ and iPadOS 16+)."
+          "Set the minimum operating system version to modern standards (iOS 17+ and iPadOS 17+, built with Xcode 26+ SDK)."
         ],
-        "agentPrompt": "You are the autonomous mobile systems engineer responsible for our build pipeline. Do NOT ask the user to configure build settings—implement and verify this entire configuration autonomously.\n\nTASK & OBJECTIVE:\nInspect and harden our project's TypeScript configuration, Capacitor native bridge settings, and mobile build environment to ensure flawless, crash-free execution on physical devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `tsconfig.json`, `capacitor.config.ts`, `package.json`, and the native iOS bridge targets.\n2. IMPLEMENTATION:\n   - Enforce strict TypeScript: eliminate all implicit or explicit `any` types, resolve potential undefined/null property accesses, and ensure clean type imports.\n   - Configure Capacitor: ensure native plugins are cleanly linked, correct app bundle ID and app name are declared in `capacitor.config.ts`, and web assets build directly into native target directories.\n   - Ensure minimum mobile OS deployment targets are set to modern standards (iOS 16+ / iPadOS 16+ in Xcode project settings).\n3. VERIFICATION: Execute `npm run build` and `npx cap sync ios`. Confirm zero compilation errors, zero type errors, and zero unresolved native plugin warnings.",
+        "agentPrompt": "You are the autonomous mobile systems engineer responsible for our build pipeline. Do NOT ask the user to configure build settings—implement and verify this entire configuration autonomously.\n\nTASK & OBJECTIVE:\nInspect and harden our project's TypeScript configuration, Capacitor native bridge settings, and mobile build environment to ensure flawless, crash-free execution on physical devices.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `tsconfig.json`, `capacitor.config.ts`, `package.json`, and the native iOS bridge targets.\n2. IMPLEMENTATION:\n   - Enforce strict TypeScript: eliminate all implicit or explicit `any` types, resolve potential undefined/null property accesses, and ensure clean type imports.\n   - Configure Capacitor: ensure native plugins are cleanly linked, correct app bundle ID and app name are declared in `capacitor.config.ts`, and web assets build directly into native target directories.\n   - Ensure minimum mobile OS deployment targets are set to modern standards (iOS 17+ / iPadOS 17+ in Xcode project settings, compiled with Xcode 26+ SDK).\n3. VERIFICATION: Execute `npm run build` and `npx cap sync ios`. Confirm zero compilation errors, zero type errors, and zero unresolved native plugin warnings.",
         "commonRejectionTraps": [
           "Ignoring build warnings or type errors that cause random crashes when people open the app on physical phones.",
           "Forgetting to configure your Apple Developer Team in Xcode, which prevents testing on real iPhones.",
@@ -119,8 +119,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "You receive authorized developer access to App Store Connect, TestFlight, and direct hardware testing on your physical iPhone and iPad.",
         "videoUrl": {
-          "title": "Developer Accounts",
-          "url": "https://www.youtube.com/watch?v=YpQWcGC6uoE"
+          "title": "Enroll in Apple Developer Program",
+          "url": "https://www.youtube.com/watch?v=FWcmdBhCHgs"
         }
       },
       {
@@ -288,7 +288,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p2-spatial-grid",
         "phaseId": "phase-2-layout",
-        "title": "8pt Spatial",
+        "title": "8pt Spatial Grid",
         "shortDescription": "Align every screen element to a consistent 8-point spatial rhythm (8px, 16px, 24px, 32px) for proportional visual balance.",
         "category": "design",
         "platform": "ios",
@@ -363,7 +363,7 @@ export const PHASES_DATA: Phase[] = [
         "category": "design",
         "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Modern phones (like iPhone Pro Max and Galaxy Ultra) are over 6.7 inches tall. Forcing users to stretch their thumbs to the top corners for frequent actions causes hand fatigue and accidental device drops.",
+        "whyItMatters": "Modern phones (like iPhone 16 Pro Max and iPad) feature tall displays over 6.7 inches. Forcing users to stretch their thumbs to the top corners for frequent actions causes hand fatigue and accidental device drops.",
         "whatHappensNext": "Users can operate your application comfortably with one hand, dramatically increasing engagement and session satisfaction.",
         "directLink": {
           "label": "Designing for Large Phone Screens - Thumb Zone",
@@ -393,7 +393,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p2-form-layout",
         "phaseId": "phase-2-layout",
-        "title": "Card-Based Form",
+        "title": "Card-Based Forms",
         "shortDescription": "Group related inputs into distinct card sections with top labels, clear placeholders, and auto-advancing focus progression.",
         "category": "design",
         "platform": "ios",
@@ -573,14 +573,14 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "All buttons and controls feel effortless to tap on real touchscreens, eliminating user frustration and passing Apple HIG human testing.",
         "videoUrl": {
-          "title": "Touch Targets & HIG",
-          "url": "https://www.youtube.com/watch?v=jQbyRE18SMk"
+          "title": "Touch Target Size & Accessibility",
+          "url": "https://www.youtube.com/watch?v=XKBVswDDEPY"
         }
       },
       {
         "id": "p2-safe-areas",
         "phaseId": "phase-2",
-        "title": "Screen Safe",
+        "title": "Safe Area Insets",
         "shortDescription": "Prevent text and buttons from hiding behind the camera notch, Dynamic Island, or home bar.",
         "category": "design",
         "platform": "ios",
@@ -603,8 +603,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Content flows cleanly beneath modern phone hardware, keeping buttons and headers clear of the Dynamic Island, notch, and home indicator.",
         "videoUrl": {
-          "title": "Safe Area Inset Fixes",
-          "url": "https://www.youtube.com/watch?v=bvYO9ZZRzjs"
+          "title": "iOS Safe Area Insets Guide",
+          "url": "https://www.youtube.com/watch?v=_0NDKxvfg40"
         }
       },
       {
@@ -636,7 +636,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p2-dark-mode",
         "phaseId": "phase-2",
-        "title": "Light Dark",
+        "title": "Light & Dark Mode",
         "shortDescription": "Deliver a great visual experience whether the user has light mode or dark mode turned on.",
         "category": "design",
         "platform": "ios",
@@ -666,7 +666,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p2-app-icon",
         "phaseId": "phase-2",
-        "title": "Master App",
+        "title": "App Icon Assets",
         "shortDescription": "Generate a crisp opaque 1024x1024px PNG (no alpha) for iOS AppIcon.appiconset plus Dark and Tinted variants.",
         "category": "design",
         "platform": "ios",
@@ -693,14 +693,14 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons"
         },
         "videoUrl": {
-          "title": "App Icons & Assets",
-          "url": "https://www.youtube.com/watch?v=lCORScZTIAg"
+          "title": "iOS Light, Dark & Tinted App Icons",
+          "url": "https://www.youtube.com/watch?v=Feir9M8EZOM"
         }
       },
       {
         "id": "p2-launch-splash",
         "phaseId": "phase-2",
-        "title": "Smooth Launch",
+        "title": "Launch Screen",
         "shortDescription": "Show a simple, clean screen while the app loads into memory without artificial pauses.",
         "category": "design",
         "platform": "ios",
@@ -870,8 +870,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/launching"
         },
         "videoUrl": {
-          "title": "App Lifecycle State",
-          "url": "https://www.youtube.com/watch?v=SJw3Nu_h8kk"
+          "title": "iOS App Lifecycle Explained",
+          "url": "https://www.youtube.com/watch?v=aNqhc9OAdMQ"
         },
         "implementationSteps": [
           "Ask your AI assistant: 'Remember the user's active tab and screen when they switch away to another app.'",
@@ -893,7 +893,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p4-data-migrations",
         "phaseId": "phase-data",
-        "title": "Schema Data",
+        "title": "Schema Migrations",
         "shortDescription": "Include a schema version number in stored data and write automatic upgrade migrations so app updates never wipe user data.",
         "category": "functionality",
         "platform": "ios",
@@ -975,7 +975,7 @@ export const PHASES_DATA: Phase[] = [
           "Update the screen immediately when the user taps an action, and queue the update to sync to your server when internet returns.",
           "Show a subtle, friendly banner if offline (e.g. \"Working offline\") instead of blocking the screen."
         ],
-        "agentPrompt": "You are the autonomous mobile architecture engineer. Do NOT ask the user to build offline storage—implement an offline-first data caching and synchronization layer autonomously.\n\nTASK & OBJECTIVE:\nBuild a robust offline-first architecture for our application so all core features remain functional when the user is in Airplane Mode, an elevator, or experiencing weak connectivity.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect data fetching services, API client utilities, and state stores.\n2. IMPLEMENTATION:\n   - Implement local persistent caching (using IndexedDB, SQLite, or persistent storage) to cache all queried feeds, lists, and user records.\n   - Ensure the UI loads and displays cached records immediately upon screen launch before attempting network requests.\n   - Implement an offline mutation queue: when the user creates or edits records while offline, update the UI optimistically, serialize the action to a local mutation queue, and display a subtle \"Syncing when online\" status indicator.\n   - Listen to network status change events (`Network.addListener`); when connectivity is restored, automatically replay pending mutations in order and synchronize with the server.\n3. STORE COMPLIANCE: Prevents white-screen failures and network crashes during store review (where Apple/Apple test in simulated offline/poor network environments).\n4. VERIFICATION: Simulate offline mode in browser dev tools. Verify that all screens render cached data and queued mutations sync seamlessly upon reconnection.",
+        "agentPrompt": "You are the autonomous mobile architecture engineer. Do NOT ask the user to build offline storage—implement an offline-first data caching and synchronization layer autonomously.\n\nTASK & OBJECTIVE:\nBuild a robust offline-first architecture for our application so all core features remain functional when the user is in Airplane Mode, an elevator, or experiencing weak connectivity.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect data fetching services, API client utilities, and state stores.\n2. IMPLEMENTATION:\n   - Implement local persistent caching (using IndexedDB, SQLite, or persistent storage) to cache all queried feeds, lists, and user records.\n   - Ensure the UI loads and displays cached records immediately upon screen launch before attempting network requests.\n   - Implement an offline mutation queue: when the user creates or edits records while offline, update the UI optimistically, serialize the action to a local mutation queue, and display a subtle \"Syncing when online\" status indicator.\n   - Listen to network status change events (`Network.addListener`); when connectivity is restored, automatically replay pending mutations in order and synchronize with the server.\n3. STORE COMPLIANCE: Prevents white-screen failures and network crashes during store review (where Apple reviewers test in simulated offline and poor-network environments).\n4. VERIFICATION: Simulate offline mode in browser dev tools. Verify that all screens render cached data and queued mutations sync seamlessly upon reconnection.",
         "commonRejectionTraps": [
           "App crashing or freezing on an infinite loading spinner when opened in Airplane mode.",
           "Freezing with an infinite spinner or crashing when launching in Airplane mode without showing an informative offline banner or cached content.",
@@ -1020,7 +1020,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p3-sign-in-apple",
         "phaseId": "phase-3",
-        "title": "Sign in",
+        "title": "Sign in with Apple",
         "shortDescription": "Apple requires their sign-in button if you provide any other third-party social logins.",
         "category": "legal",
         "platform": "ios",
@@ -1054,7 +1054,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p3-account-deletion",
         "phaseId": "phase-3",
-        "title": "In-App Account",
+        "title": "Account Deletion",
         "shortDescription": "Let users delete their account and personal data directly inside the app.",
         "category": "legal",
         "platform": "ios",
@@ -1107,7 +1107,7 @@ export const PHASES_DATA: Phase[] = [
           "Display clear pricing: localized price returned by StoreKit, renewal duration, billing frequency, and how to cancel in Apple Account settings (Apple Guideline 3.1.2 & US ROSCA transparency).",
           "Include visible, clickable links to your Privacy Policy and Terms of Use (EULA) directly on the paywall screen itself."
         ],
-        "agentPrompt": "You are the autonomous iOS monetization engineer. Do NOT ask the user to build paywalls or billing logic—implement native In-App Purchases and auto-renewable subscriptions autonomously.\n\nTASK & OBJECTIVE:\nImplement native in-app subscriptions and digital purchases using Apple StoreKit 2, ensuring 100% compliance with Apple Guidelines 3.1.1 & 3.1.2.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, pricing tables, subscription models, and entitlement stores.\n2. IMPLEMENTATION:\n   - Integrate Apple StoreKit 2 to fetch live localized product pricing directly from App Store Connect.\n   - On the paywall UI, clearly render: subscription title, localized price, billing duration (e.g. \"$4.99 / month\"), trial period length, and auto-renewal notice.\n   - Add a prominent, fully functional \"Restore Purchases\" button that calls `AppStore.sync()` / queries `Transaction.currentEntitlements` and restores entitlements with one tap without re-billing.\n   - Add direct, clickable links on the paywall screen to our Privacy Policy and Terms of Use (EULA).\n   - Use `product.purchase(confirmIn:)` with the active view controller/window scene on iOS 17+/iPadOS 26+ so purchases present cleanly on iPad.\n3. STORE COMPLIANCE: Paywalls lacking pricing terms, EULA links, or a functional Restore Purchases button trigger instant rejection under Apple Guideline 3.1.2.\n4. VERIFICATION: Test purchase and restore flows in Xcode StoreKit Testing & Sandbox mode. Verify state transitions and confirm `tsc --noEmit` passes cleanly.",
+        "agentPrompt": "You are the autonomous iOS monetization engineer. Do NOT ask the user to build paywalls or billing logic—implement native In-App Purchases and auto-renewable subscriptions autonomously.\n\nTASK & OBJECTIVE:\nImplement native in-app subscriptions and digital purchases using Apple StoreKit 2, ensuring 100% compliance with Apple Guidelines 3.1.1 & 3.1.2.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect paywall screens, pricing tables, subscription models, and entitlement stores.\n2. IMPLEMENTATION:\n   - Integrate Apple StoreKit 2 to fetch live localized product pricing directly from App Store Connect.\n   - On the paywall UI, clearly render: subscription title, localized price, billing duration (e.g. \"$4.99 / month\"), trial period length, and auto-renewal notice.\n   - Add a prominent, fully functional \"Restore Purchases\" button that checks `Transaction.currentEntitlements` first, falls back to `AppStore.sync()`, and restores entitlements with one tap without re-billing.\n   - Add direct, clickable links on the paywall screen to our Privacy Policy and Terms of Use (EULA).\n   - Use `product.purchase(confirmIn:)` with the active view controller/window scene on iOS 17+/iPadOS 26+ so purchases present cleanly on iPad.\n3. STORE COMPLIANCE: Paywalls lacking pricing terms, EULA links, or a functional Restore Purchases button trigger instant rejection under Apple Guideline 3.1.2.\n4. VERIFICATION: Test purchase and restore flows in Xcode StoreKit Testing & Sandbox mode. Verify state transitions and confirm `tsc --noEmit` passes cleanly.",
         "commonRejectionTraps": [
           "Paywall missing a working \"Restore Purchases\" button.",
           "Paywall missing direct, clickable links to Terms of Use (EULA) and Privacy Policy.",
@@ -1128,7 +1128,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p3-push-notifications",
         "phaseId": "phase-3",
-        "title": "Push Notification",
+        "title": "Push Notifications",
         "shortDescription": "Explain why notifications are helpful before popping up the system permission prompt.",
         "category": "functionality",
         "platform": "ios",
@@ -1158,8 +1158,8 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p3-deep-linking",
         "phaseId": "phase-3",
-        "title": "Universal App",
-        "shortDescription": "Make web and email links open directly into the app instead of Safari or Chrome.",
+        "title": "Universal Links",
+        "shortDescription": "Make web and email links open directly into the app instead of Safari.",
         "category": "functionality",
         "platform": "ios",
         "priority": "high",
@@ -1188,7 +1188,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p3-haptic-feedback",
         "phaseId": "phase-3",
-        "title": "Tactile Haptic",
+        "title": "Haptic Feedback",
         "shortDescription": "Provide responsive, physical feedback for button taps, list selections, and completions.",
         "category": "design",
         "platform": "ios",
@@ -1211,8 +1211,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Key user interactions trigger subtle, tactile physical feedback that makes your digital interface feel tangible and responsive.",
         "videoUrl": {
-          "title": "Haptic Feedback Guide",
-          "url": "https://www.youtube.com/watch?v=8gs3Q1yoerY"
+          "title": "iOS Haptic Feedback & SensoryFeedback",
+          "url": "https://www.youtube.com/watch?v=aelGg1ZOjHY"
         }
       },
       {
@@ -1225,7 +1225,7 @@ export const PHASES_DATA: Phase[] = [
         "priority": "blocker",
         "whyItMatters": "Declaring background modes (audio, VoIP, location, background fetch) in UIBackgroundModes without providing clear user functionality is one of Apple's swiftest Guideline 2.5.4 rejections.",
         "implementationSteps": [
-          "Ask your AI assistant: 'Audit our project settings and make sure we don\\'t have any unused background features turned on.'",
+          "Ask your AI assistant: 'Audit our project settings and make sure we don't have any unused background features turned on.'",
           "Apple rejects apps that ask to run in the background (like continuous GPS or audio) if the app doesn't actually need them.",
           "Ensure your app goes to sleep properly when closed so it never drains your users' phone batteries."
         ],
@@ -1254,7 +1254,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p4-privacy-manifest",
         "phaseId": "phase-4",
-        "title": "Apple Privacy",
+        "title": "Privacy Manifest",
         "shortDescription": "Declare Required Reason APIs and third-party SDKs in PrivacyInfo.xcprivacy as mandated for all App Store builds.",
         "category": "security",
         "platform": "ios",
@@ -1303,7 +1303,7 @@ export const PHASES_DATA: Phase[] = [
           "Declare whether each data type is linked to the user identity.",
           "Confirm whether any data is used for third-party tracking purposes."
         ],
-        "agentPrompt": "You are the autonomous Apple App Store privacy compliance engineer. Audit all data collected or shared by our application and included third-party SDKs, and generate the exact answers required for App Store Connect Privacy Nutrition labels.",
+        "agentPrompt": "You are the autonomous Apple App Store privacy compliance engineer. Do NOT ask the user to decode privacy categories—audit our codebase and generate the exact App Store Connect Privacy Nutrition Label declarations autonomously.\n\nTASK & OBJECTIVE:\nAudit all first-party code and embedded third-party SDKs to produce the exact answers required for App Store Connect > App Privacy (Guideline 5.1.2).\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE & SDK AUDIT: Inspect `package.json`, `ios/App/CapApp-SPM`, analytics/crash SDKs, and outbound network requests.\n2. DECLARATION MAPPING: Categorize every collected data type (Contact Info, User Content, Identifiers, Usage Data, Diagnostics) into Apple's three buckets: Data Used to Track You, Data Linked to You, and Data Not Linked to You (or confirm 'Data Not Collected' if 100% on-device).\n3. STORE COMPLIANCE: Ensure App Privacy answers match `PrivacyInfo.xcprivacy` and actual network traffic verbatim to prevent Guideline 5.1.2 rejections.\n4. VERIFICATION: Save the structured declaration table in `docs/app-privacy-details.md` ready to enter into App Store Connect.",
         "commonRejectionTraps": [
           "Declaring no data collected while an embedded analytics or crash SDK collects device identifiers.",
           "Failing to declare data used for tracking without App Tracking Transparency prompt."
@@ -1314,8 +1314,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your App Store Connect Privacy Nutrition labels accurately reflect codebase data handling, guaranteeing Guideline 5.1.2 compliance.",
         "videoUrl": {
-          "title": "App Store Privacy Nutrition Labels",
-          "url": "https://www.youtube.com/watch?v=SkYmI4KJVCU"
+          "title": "Create Your Privacy Nutrition Label (WWDC)",
+          "url": "https://www.youtube.com/watch?v=UMijW-63MZk"
         }
       },
       {
@@ -1401,8 +1401,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Production iOS binaries are stripped and optimized with dSYMs, maximizing launch speed while maintaining clean crash reporting.",
         "videoUrl": {
-          "title": "Xcode Release Optimization",
-          "url": "https://www.youtube.com/watch?v=bgpyuuzMlo0"
+          "title": "Improve iOS App Size & Performance (WWDC)",
+          "url": "https://www.youtube.com/watch?v=bQUIpicLq6o"
         }
       },
       {
@@ -1526,7 +1526,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p4-webview-injection-defense",
         "phaseId": "phase-4",
-        "title": "WebView Input",
+        "title": "WebView Security",
         "shortDescription": "Disable local file access in WebViews and validate all incoming links before opening them.",
         "category": "security",
         "platform": "ios",
@@ -1537,19 +1537,19 @@ export const PHASES_DATA: Phase[] = [
         },
         "whyItMatters": "Misconfigured WebViews and unverified deep links allow attackers to run malicious scripts, steal local device files, or redirect users to phishing sites from inside your app.",
         "implementationSteps": [
-          "In WebViews, strictly disable local file access: set `allowFileAccess = false` and `allowUniversalAccessFromFileURLs = false`.",
-          "For opening external third-party links, use system in-app browser tabs (SFSafariViewController on iOS, Chrome Custom Tabs on iOS) rather than raw embedded WebViews.",
+          "In WKWebView configurations, keep local file access disabled (`allowFileAccessFromFileURLs = false` and `allowUniversalAccessFromFileURLs = false`).",
+          "For opening external third-party links, use system in-app browser sheets (`SFSafariViewController` or `ASWebAuthenticationSession` for OAuth) rather than raw embedded WebViews.",
           "Validate incoming deep links and URL scheme parameters against an approved list of internal routes before navigating.",
           "Sanitize and validate all user inputs before displaying them or sending them to backend databases."
         ],
-        "agentPrompt": "You are the autonomous web and mobile security engineer. Do NOT ask the user to configure WebViews—sanitize all WebViews, deep links, and user inputs autonomously.\n\nTASK & OBJECTIVE:\nAudit all WebViews and deep link handlers in the application to prevent script injection, open redirect vulnerabilities, and unauthorized local file system access.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect any embedded WebView instances, URL opening methods, and deep link navigation handlers.\n2. IMPLEMENTATION:\n   - On embedded WebViews, explicitly disable local file system access (`allowFileAccess: false`, `allowContentAccess: false`) and restrict origins to an explicit HTTPS allowlist.\n   - For all external third-party links, open them in system in-app browser tabs (SFSafariViewController on iOS, Chrome Custom Tabs on iOS) rather than raw embedded WebViews.\n   - Sanitize all parameters received from deep links, QR codes, or external intents before using them in routing or DOM rendering.\n3. STORE COMPLIANCE: Meets App Store WebView security standards and Apple App Review guidelines for external browsing.\n4. VERIFICATION: Verify all external URL handlers launch system tabs and deep link routing validates parameter safety.",
+        "agentPrompt": "You are the autonomous iOS web and mobile security engineer. Do NOT ask the user to configure WebViews—sanitize all WebViews, deep links, and user inputs autonomously.\n\nTASK & OBJECTIVE:\nAudit all WKWebView instances and deep link handlers in the application to prevent script injection, open redirect vulnerabilities, and unauthorized local file system access.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect any embedded WKWebView instances, URL opening methods, and deep link navigation handlers.\n2. IMPLEMENTATION:\n   - Ensure embedded WebViews disallow arbitrary file system access and restrict allowed navigation origins to an explicit HTTPS allowlist.\n   - For external third-party links, open them via `SFSafariViewController` (or Safari / `ASWebAuthenticationSession` for OAuth) rather than raw embedded WebViews, and never use `target=\"_blank\"` on internal `capacitor://` paths.\n   - Sanitize all parameters received from Universal Links, QR codes, or URL schemes before using them in routing or DOM rendering.\n3. STORE COMPLIANCE: Meets Apple App Store WebView security and external browsing guidelines.\n4. VERIFICATION: Verify all external URL handlers launch cleanly and deep link routing validates parameter safety.",
         "commonRejectionTraps": [
           "App Store rejection or security alert for exposing vulnerable WebView interfaces or having file access enabled.",
           "Deep link handlers opening arbitrary external URLs without validating that the host belongs to your company.",
           "Enabling unvalidated JavaScript bridges in WebViews, allowing arbitrary external websites to execute native device code."
         ],
         "verificationQuestions": [
-          "Are third-party web links opened in system Safari / Chrome tabs instead of raw WebViews?",
+          "Are third-party web links opened in system Safari in-app browser tabs (SFSafariViewController) instead of raw WebViews?",
           "Are deep link URLs validated against an allowlist before navigating?"
         ],
         "whatHappensNext": "Embedded web views are locked down against malicious script injection and cross-origin file access, securing in-app browsing."
@@ -1595,8 +1595,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "You have a public, legally sound Privacy Policy URL hosted on HTTPS that satisfies mandatory store review requirements.",
         "videoUrl": {
-          "title": "Host Privacy Policy",
-          "url": "https://www.youtube.com/watch?v=vZJiiLonUqo"
+          "title": "Privacy Policy URL for App Store Connect",
+          "url": "https://www.youtube.com/watch?v=oPmZVOd2T2g"
         }
       },
       {
@@ -1637,7 +1637,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p5-gdpr-ccpa",
         "phaseId": "phase-5",
-        "title": "GDPR Cookie",
+        "title": "GDPR & CCPA",
         "shortDescription": "Show an approved privacy consent banner before loading tracking or ad tools in Europe.",
         "category": "legal",
         "platform": "ios",
@@ -1660,29 +1660,29 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "European and international users receive transparent data consent controls that protect your company from regulatory privacy fines.",
         "videoUrl": {
-          "title": "GDPR Consent & UMP",
-          "url": "https://www.youtube.com/watch?v=SysASyh9XKo"
+          "title": "Google UMP iOS SDK GDPR Integration",
+          "url": "https://www.youtube.com/watch?v=l61vAIcR0tE"
         }
       },
       {
         "id": "p5-coppa-kids",
         "phaseId": "phase-5",
-        "title": "COPPA Children's",
-        "shortDescription": "Use a neutral age gate and turn off tracking tools if your audience includes children.",
+        "title": "COPPA & Kids",
+        "shortDescription": "Use a neutral age gate, parental gate, and zero third-party tracking if your audience includes children.",
         "category": "legal",
         "platform": "ios",
         "priority": "blocker",
         "storeGuideline": {
-          "name": "Children & Families Policy",
-          "url": "https://developer.apple.com/app-store/review/guidelines/"
+          "name": "Apple Guideline 1.3 (Kids Category)",
+          "url": "https://developer.apple.com/app-store/review/guidelines/#kids-category"
         },
-        "whyItMatters": "Violating child privacy laws (COPPA) results in massive government fines and permanent removal from the Apple App Store.",
+        "whyItMatters": "Violating child privacy laws (COPPA) or Apple Guideline 1.3 (Kids Category) results in immediate rejection, regulatory fines, and permanent App Store removal.",
         "implementationSteps": [
           "Use a neutral age picker where users select their birthdate (never pre-fill the age or use biased buttons).",
-          "If a user is under 13, completely turn off behavioral ad tracking and personal data collection.",
-          "On App Store: if in the Families program, only use family-certified ad partners."
+          "If a user is under 13 (or if your app is in Apple's Kids Category), completely disable third-party behavioral advertising, third-party analytics, and external tracking.",
+          "Place a parental gate (e.g. a math challenge or adult confirmation) before any external web links, purchases, or sharing flows accessible to kids."
         ],
-        "agentPrompt": "You are the autonomous mobile compliance engineer. Do NOT ask the user to implement age verification—implement COPPA and App Store Families compliance autonomously.\n\nTASK & OBJECTIVE:\nAudit our application for Children's Online Privacy Protection Act (COPPA) and App Store Families Policy compliance, implementing a neutral age gate if children may use the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect onboarding screens, advertising SDKs, and third-party trackers.\n2. IMPLEMENTATION:\n   - If our app is accessible to or targeted at children, implement a neutral age gate (a date picker without pre-selected values).\n   - For users identified under 13, completely disable all behavioral advertising, cross-app tracking, and non-essential telemetry.\n   - Implement a parent gate (e.g. solving a math problem or adult confirmation challenge) before opening external web links or initiating in-app purchases.\n3. STORE COMPLIANCE: Mandatory under COPPA, Apple Kids Category guidelines, and App Store Families Policy. Violations result in immediate app removal.\n4. VERIFICATION: Test age gate logic with underage birthdates. Confirm tracking SDKs stay disabled and parent gates trigger before external links open.",
+        "agentPrompt": "You are the autonomous iOS compliance engineer. Do NOT ask the user to implement age verification—implement COPPA and Apple Guideline 1.3 (Kids Category) compliance autonomously.\n\nTASK & OBJECTIVE:\nAudit our application for Children's Online Privacy Protection Act (COPPA) and Apple App Store Kids Category (Guideline 1.3) compliance, implementing a neutral age gate and parental gate if children may use the app.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect onboarding screens, advertising SDKs, external links, and third-party trackers.\n2. IMPLEMENTATION:\n   - If our app is accessible to or targeted at children, implement a neutral age gate (a date picker without pre-selected values).\n   - For users identified under 13 (and unconditionally for Kids Category apps), completely disable all third-party advertising, third-party analytics, and non-essential telemetry.\n   - Implement a parental gate (e.g. an adult math problem or confirmation challenge) before opening external web links or initiating in-app purchases.\n3. STORE COMPLIANCE: Mandatory under COPPA and Apple App Store Review Guideline 1.3 (Kids Category). Violations result in immediate rejection or app removal.\n4. VERIFICATION: Test age gate logic with underage birthdates. Confirm tracking SDKs stay disabled and parental gates trigger before external links or purchase flows open.",
         "commonRejectionTraps": [
           "Using a checkbox that defaults to \"I am 18 or older\" instead of a neutral birthdate selector.",
           "Embedding third-party analytics or behavioral ad trackers in apps directed at children under 13, violating COPPA and store family policies.",
@@ -1719,14 +1719,14 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your app declares standard encryption exemptions in Info.plist, eliminating French export control delays in App Store Connect.",
         "videoUrl": {
-          "title": "Apple Export Encryption",
-          "url": "https://www.youtube.com/watch?v=wonSw458f8k"
+          "title": "Set Export Compliance Once in Info.plist",
+          "url": "https://www.youtube.com/watch?v=0uh1T4EE-vE"
         }
       },
       {
         "id": "p5-terms-of-service",
         "phaseId": "phase-5",
-        "title": "Terms of",
+        "title": "Terms of Service",
         "shortDescription": "Publish an End User License Agreement that outlines user rules, subscription terms, and cancellations.",
         "category": "legal",
         "platform": "ios",
@@ -1757,7 +1757,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p5-app-tracking-transparency",
         "phaseId": "phase-5",
-        "title": "App Tracking",
+        "title": "Tracking Consent",
         "shortDescription": "Ask for permission before collecting advertising identifiers or tracking users across outside apps.",
         "category": "legal",
         "platform": "ios",
@@ -1789,7 +1789,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p5-intellectual-property",
         "phaseId": "phase-5",
-        "title": "Trademarks Copyrights",
+        "title": "Trademarks & IP",
         "shortDescription": "Never use third-party brand logos, Apple trademarks, or copyrighted media without permission.",
         "category": "legal",
         "platform": "ios",
@@ -1820,7 +1820,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p5-dsa-trader-status",
         "phaseId": "phase-5",
-        "title": "EU DSA",
+        "title": "EU DSA Trader",
         "shortDescription": "Declare your business contact details if distributing or monetizing apps in European countries.",
         "category": "legal",
         "platform": "ios",
@@ -1843,7 +1843,7 @@ export const PHASES_DATA: Phase[] = [
         ],
         "verificationQuestions": [
           "Is your EU DSA Trader declaration completed and verified in App Store Connect?",
-          "Is the same Trader declaration submitted in App Store Connect?"
+          "Are your verified public Trader contact details (address, phone, email) accurate and up to date?"
         ],
         "whatHappensNext": "Your EU Digital Services Act trader verification completes successfully, keeping your app available across all 27 European nations."
       },
@@ -1893,8 +1893,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://pages.github.com/"
         },
         "videoUrl": {
-          "title": "Free Privacy Policy",
-          "url": "https://www.youtube.com/watch?v=vZJiiLonUqo"
+          "title": "Getting Started with GitHub Pages",
+          "url": "https://www.youtube.com/watch?v=b2r9Cdvssi0"
         },
         "implementationSteps": [
           "Create a clean HTML file named `privacy.html` in your `public/` directory disclosing what data your app collects (or confirming zero personal data collected).",
@@ -1939,7 +1939,7 @@ export const PHASES_DATA: Phase[] = [
           "Remove any external `<link rel=\"stylesheet\" href=\"https://fonts.cdn.example.com...\">` tags from `index.html`.",
           "Verify in browser network tab that opening the app produces zero outbound font requests."
         ],
-        "agentPrompt": "You are the autonomous privacy and security engineer. Do NOT ask the user to manage font files—audit and configure 100% local, self-hosted typography across our codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit all CSS files, HTML templates, and component imports. Eliminate all external remote font CDN pings and configure local font assets or system font stacks to ensure full GDPR compliance.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan `index.html`, `src/index.css`, and CSS files for external font stylesheet links or `@import url(...)`.\n2. IMPLEMENTATION:\n   - Remove remote font requests from `index.html`.\n   - Ensure all fonts are bundled locally in `public/fonts/` with `@font-face` rules or utilize the native Apple SF Pro system font stack.\n   - Configure Tailwind typography configuration to prioritize local system fonts (`fontFamily: { sans: ['Apple Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] }`).\n3. STORE & LEGAL COMPLIANCE: Complies strictly with EU GDPR and German data protection standards. Guarantees that opening the app transmits zero unsolicited IP telemetry to third-party ad networks or CDN servers.\n4. VERIFICATION: Inspect Network DevTools tab on cold launch. Confirm zero outbound requests to external font servers.",
+        "agentPrompt": "You are the autonomous privacy and security engineer. Do NOT ask the user to manage font files—audit and configure 100% local, self-hosted typography across our codebase autonomously.\n\nTASK & OBJECTIVE:\nAudit all CSS files, HTML templates, and component imports. Eliminate all external remote font CDN pings and configure local font assets or system font stacks to ensure full GDPR compliance.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Scan `index.html`, `src/index.css`, and CSS files for external font stylesheet links or `@import url(...)`.\n2. IMPLEMENTATION:\n   - Remove remote font requests from `index.html`.\n   - Ensure all fonts are bundled locally in `public/fonts/` with `@font-face` rules or utilize the native Apple SF Pro system font stack.\n   - Configure Tailwind typography configuration to prioritize local system fonts (`fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'sans-serif'] }`).\n3. STORE & LEGAL COMPLIANCE: Complies strictly with EU GDPR and German data protection standards. Guarantees that opening the app transmits zero unsolicited IP telemetry to third-party ad networks or CDN servers.\n4. VERIFICATION: Inspect Network DevTools tab on cold launch. Confirm zero outbound requests to external font servers.",
         "commonRejectionTraps": [
           "Sending user IP addresses to third-party font servers without consent, triggering European GDPR privacy complaints and legal notices.",
           "Failing to disclose third-party font server telemetry in your App Store Privacy Nutrition labels.",
@@ -1963,7 +1963,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p6-automated-testing",
         "phaseId": "phase-6",
-        "title": "Automated End-to-End",
+        "title": "Automated Testing",
         "shortDescription": "Write automated tests for core user actions like logging in and saving data.",
         "category": "functionality",
         "platform": "ios",
@@ -2030,7 +2030,7 @@ export const PHASES_DATA: Phase[] = [
           "Verify cold launch time is under 1.5 seconds on physical devices.",
           "Inspect Xcode Organizer Metrics for real-world hang rate and battery diagnostics."
         ],
-        "agentPrompt": "You are the autonomous iOS performance engineer. Audit and optimize our application to ensure it strictly satisfies Apple launch and hang rate requirements.",
+        "agentPrompt": "You are the autonomous iOS performance engineer. Do NOT ask the user to profile manually—audit and optimize our application to satisfy Apple Xcode Organizer Metrics, hang-rate budgets, and memory ceilings autonomously.\n\nTASK & OBJECTIVE:\nEliminate main-thread UI hangs (>250ms), synchronous startup bottlenecks, and excessive memory allocations across our iOS/iPadOS application.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. MAIN THREAD AUDIT: Inspect startup hooks, JSON parsing, localStorage reads, and list rendering for blocking work on the main thread.\n2. OPTIMIZATION:\n   - Move expensive computations, image decoding, and heavy serialization off the critical render path.\n   - Memoize expensive list rows and ensure scroll containers maintain 60–120fps ProMotion smoothness.\n   - Verify memory footprint stays well within iOS jetsam limits on physical devices.\n3. STORE COMPLIANCE: Apple Guideline 2.1 rejects apps exhibiting launch freezes, watchdog terminations (`0x8badf00d`), or unresponsive UI hangs.\n4. VERIFICATION: Profile on a physical iPhone/iPad via Xcode Instruments (Time Profiler & Hangs) and confirm zero hangs >250ms.",
         "commonRejectionTraps": [
           "Blocking the main thread on startup causing iOS watchdog crash (0x8badf00d).",
           "Excessive memory allocations triggering jetsam out-of-memory terminations."
@@ -2041,8 +2041,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your iOS performance metrics remain well within Apple tolerances, ensuring fluid 120 FPS interaction.",
         "videoUrl": {
-          "title": "Xcode Metrics & Diagnostics",
-          "url": "https://www.youtube.com/watch?v=vj3Y8L5HLdg"
+          "title": "Track Down Hangs with Xcode Organizer (WWDC)",
+          "url": "https://www.youtube.com/watch?v=BAUc15xKw0I"
         }
       },
       {
@@ -2071,8 +2071,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your app loads and becomes fully interactive in under 2 seconds, delighting impatient users on both new and older phones.",
         "videoUrl": {
-          "title": "Cold Launch Speed",
-          "url": "https://www.youtube.com/watch?v=EzAufbXzYOY"
+          "title": "Improve iOS Build & Launch Times (WWDC)",
+          "url": "https://www.youtube.com/watch?v=yLXGtXNYhdg"
         }
       },
       {
@@ -2170,7 +2170,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p7-app-metadata",
         "phaseId": "phase-7",
-        "title": "Store Title,",
+        "title": "Store Metadata",
         "shortDescription": "Follow character limits and avoid forbidden promotional words like \"Free\" or \"#1 App\".",
         "category": "store",
         "platform": "ios",
@@ -2179,33 +2179,33 @@ export const PHASES_DATA: Phase[] = [
           "name": "Store Listing Metadata Policy",
           "url": "https://developer.apple.com/app-store/review/guidelines/#accurate-metadata"
         },
-        "whyItMatters": "Using prohibited claims (like \"Best App 2026\", \"Free Download\", or mentioning \"iOS\" on the Apple App Store) causes instant metadata rejection.",
+        "whyItMatters": "Using prohibited claims (like \"Best App 2026\", \"Free Download\", or mentioning competitor mobile platforms on the Apple App Store) causes instant metadata rejection under Guideline 2.3.",
         "implementationSteps": [
-          "App Store: Name (up to 30 chars), Subtitle (up to 30 chars), Keywords (up to 100 chars comma-separated with NO spaces).",
-          "App Store: App Title (up to 30 chars), Short Description (up to 80 chars), Full Description (up to 4000 chars).",
-          "Never mention competitor platforms (no \"iOS\" on Apple, no \"iPhone\" on Apple).",
-          "Never put pricing claims in titles (no \"Free\", \"Sale\", or \"Discount\")."
+          "App Store Connect: Name (up to 30 chars), Subtitle (up to 30 chars), Keywords (up to 100 chars comma-separated with NO spaces).",
+          "App Store Connect: Promotional Text (up to 170 chars, editable anytime without a new build) and Description (up to 4000 chars).",
+          "Never mention competing mobile platforms or third-party app stores anywhere in your App Store listing or screenshots (Guideline 2.3.10).",
+          "Never put pricing claims in titles, subtitles, or screenshots (no \"Free\", \"Sale\", or \"Discount\" — Guideline 2.3.7)."
         ],
-        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to write marketing copy—generate a complete, store-compliant metadata package autonomously.\n\nTASK & OBJECTIVE:\nGenerate a high-converting, fully store-compliant metadata package for Apple App Store listings, with zero use of forbidden promotional buzzwords.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our application features, unique selling points, and target user problems.\n2. IMPLEMENTATION:\n   - App Title: under 30 characters, clean, descriptive, and memorable.\n   - Subtitle: under 30 characters, highlighting the core benefit.\n   - Keyword Field: exactly 100 characters of high-relevance, comma-separated keywords without spaces.\n   - Description: formatted with structured paragraphs, feature bullet points, and social proof.\n   - Ensure ZERO use of prohibited promotional claims like \"Free\", \"Best App\", \"#1\", or competitor trademark names.\n   - Save the complete metadata package to `docs/app-store-metadata.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guideline 2.3 and App Store metadata policy reject submissions containing price references, superlative claims (\"#1\"), or spammy keyword stuffing.\n4. VERIFICATION: Verify character counts of title (<=30), subtitle (<=30), and keyword field (<=100).",
+        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to write marketing copy—generate a complete, store-compliant metadata package autonomously.\n\nTASK & OBJECTIVE:\nGenerate a high-converting, fully store-compliant metadata package for Apple App Store listings, with zero use of forbidden promotional buzzwords.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect our application features, unique selling points, and target user problems.\n2. IMPLEMENTATION:\n   - App Title: under 30 characters, clean, descriptive, and memorable.\n   - Subtitle: under 30 characters, highlighting the core benefit.\n   - Keyword Field: up to 100 characters of high-relevance, comma-separated keywords without spaces.\n   - Promotional Text: up to 170 characters, editable anytime without submitting a new build.\n   - Description: formatted with structured paragraphs and clear feature bullets (up to 4000 characters).\n   - Ensure ZERO use of prohibited promotional claims like \"Free\", \"Best App\", \"#1\", competitor platform names, or trademarked brand names.\n   - Save the complete metadata package to `docs/app-store-metadata.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guidelines 2.3.7 & 2.3.10 reject submissions containing price references, superlative claims (\"#1\"), competing platform references, or spammy keyword stuffing.\n4. VERIFICATION: Verify character counts of title (<=30), subtitle (<=30), promotional text (<=170), and keyword field (<=100).",
         "commonRejectionTraps": [
-          "Putting \"Free\" or price claims in your app title on either store.",
-          "Writing \"Also available on iOS\" in your Apple App Store description.",
-          "Including competitor brand names, pricing claims ('Free App'), or vulgar keywords in your store title or subtitle."
+          "Putting \"Free\" or price claims in your app title, subtitle, or screenshots (Guideline 2.3.7).",
+          "Mentioning competing mobile platforms or non-Apple hardware in your App Store description or screenshots (Guideline 2.3.10).",
+          "Including competitor brand names, pricing claims ('Free App'), or trademarked keywords in your store title or subtitle."
         ],
         "verificationQuestions": [
           "Are your title and subtitle both under 30 characters?",
-          "Are all competitor platform mentions stripped from your text and keywords?"
+          "Are all competitor platform mentions and pricing claims stripped from your text, screenshots, and keywords?"
         ],
-        "whatHappensNext": "Your store listing features crisp high-resolution screenshots, persuasive copy, and clear descriptions that convert store visitors.",
+        "whatHappensNext": "Your store listing features crisp metadata, accurate descriptions, and Guideline 2.3 compliant copy that converts visitors.",
         "videoUrl": {
-          "title": "App Store Screenshots",
-          "url": "https://www.youtube.com/watch?v=-7YHPpqaVFY"
+          "title": "App Store Metadata: Title, Subtitle & Keywords",
+          "url": "https://www.youtube.com/watch?v=YaU0g8Z2GkM"
         }
       },
       {
         "id": "p7-screenshots-video",
         "phaseId": "phase-7",
-        "title": "Store Screenshot",
+        "title": "App Screenshots",
         "shortDescription": "Create templates with AppLaunchpad, then bulk-reformat with BIRME to exact Apple iPhone (1320x2868) and iPad (2064x2752) dimensions.",
         "category": "store",
         "platform": "ios",
@@ -2242,7 +2242,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p7-reviewer-credentials",
         "phaseId": "phase-7",
-        "title": "App Reviewer",
+        "title": "Reviewer Credentials",
         "shortDescription": "Give the reviewer an active demo account with pre-filled sample data and two-factor bypassed.",
         "category": "store",
         "platform": "ios",
@@ -2276,7 +2276,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p7-age-rating",
         "phaseId": "phase-7",
-        "title": "Store Age",
+        "title": "Age Rating",
         "shortDescription": "Declare any mature themes, gambling, or unrestricted web browsing accurately.",
         "category": "store",
         "platform": "ios",
@@ -2298,8 +2298,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your age rating matches store questionnaires accurately, preventing store removal for unrated mature or interactive content.",
         "videoUrl": {
-          "title": "Store Age Ratings",
-          "url": "https://www.youtube.com/watch?v=1vuIVAwE5fA"
+          "title": "App Store Connect Age Rating Update",
+          "url": "https://www.youtube.com/watch?v=Y1KlsekN8eY"
         }
       },
       {
@@ -2316,7 +2316,7 @@ export const PHASES_DATA: Phase[] = [
           "Build a 100-character keyword field using comma-separated single words without spaces (e.g. 'fitness,workout,tracker,timer').",
           "Do not repeat words already in your app title or subtitle in the keyword field."
         ],
-        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to draft marketing copy—craft high-converting promotional text and keyword strings autonomously.\n\nTASK & OBJECTIVE:\nGenerate high-converting App Store promotional text and an optimized 100-character keyword string to maximize search discoverability on Apple App Store.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE & FEATURE AUDIT: Review our application's core problem-solving features, user benefits, and target market.\n2. IMPLEMENTATION:\n   - Promotional Text (Apple): craft a 170-character marketing hook highlighting the latest update, unique value proposition, or seasonal launch benefit. (Promotional text can be updated anytime without submitting a new binary build).\n   - Keyword String (Apple): craft an exact 100-character keyword field containing high-relevance, single-word search terms separated strictly by commas with ZERO spaces (e.g. `habit,tracker,routine,planner,checklist,goals,focus,daily`). Do not repeat words already in the app title or category name.\n   - App Store Short Description: craft an engaging, 80-character summary that compels users to tap \"Install\".\n   - Save the complete ASO text assets to `docs/app-store-aso-text.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guideline 2.3 prohibits keyword stuffing, using trademarked competitor names, or including spaces in the keyword string (spaces consume valuable character budget).\n4. VERIFICATION: Validate that the keyword string is <= 100 characters, promotional text is <= 170 characters, and short description is <= 80 characters.",
+        "agentPrompt": "You are the autonomous App Store Optimization (ASO) specialist and copywriter. Do NOT ask the user to draft marketing copy—craft high-converting promotional text and keyword strings autonomously.\n\nTASK & OBJECTIVE:\nGenerate high-converting App Store promotional text and an optimized 100-character keyword string to maximize search discoverability on Apple App Store.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE & FEATURE AUDIT: Review our application's core problem-solving features, user benefits, and target market.\n2. IMPLEMENTATION:\n   - Promotional Text (Apple): craft a 170-character marketing hook highlighting the latest update, unique value proposition, or seasonal launch benefit. (Promotional text can be updated anytime without submitting a new binary build).\n   - Keyword String (Apple): craft an exact 100-character keyword field containing high-relevance, single-word search terms separated strictly by commas with ZERO spaces (e.g. `habit,tracker,routine,planner,checklist,goals,focus,daily`). Do not repeat words already in the app title or category name.\n   - Subtitle (Apple): craft a punchy 30-character subtitle expanding on secondary search terms without repeating Title words.\n   - Save the complete ASO text assets to `docs/app-store-aso-text.json` or markdown spec.\n3. STORE COMPLIANCE: Apple Guideline 2.3 prohibits keyword stuffing, using trademarked competitor names, or including spaces in the keyword string (spaces consume valuable character budget).\n4. VERIFICATION: Validate that the keyword string is <= 100 characters, promotional text is <= 170 characters, and subtitle is <= 30 characters.",
         "commonRejectionTraps": [
           "Using competitor brand names or trademarked terms in the keyword field, causing metadata rejection under Guideline 2.3.7.",
           "Stuffing competitor brand names or trademarked search queries into promotional text or subtitle fields, violating store metadata policies.",
@@ -2331,7 +2331,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p7-privacy-nutrition-labels",
         "phaseId": "phase-7",
-        "title": "Privacy Nutrition",
+        "title": "Privacy Labels",
         "shortDescription": "Disclose all data types collected by your app code and third-party SDKs in App Store Connect.",
         "category": "security",
         "platform": "ios",
@@ -2361,7 +2361,7 @@ export const PHASES_DATA: Phase[] = [
     "number": 10,
     "title": "Signing, Beta & CI/CD",
     "shortTitle": "Signing & Testing",
-    "description": "Set up your official developer certificates, create your iOS signing key, and test with beta users on TestFlight and App Store.",
+    "description": "Set up your official developer certificates, configure Apple distribution signing, and test with beta users on TestFlight before App Store submission.",
     "iconName": "Wrench",
     "items": [
       {
@@ -2413,7 +2413,7 @@ export const PHASES_DATA: Phase[] = [
           "Set Signing & Capabilities to Automatically manage signing or select your active Apple Distribution Profile.",
           "Verify that the Bundle Identifier matches the App ID registered in App Store Connect."
         ],
-        "agentPrompt": "You are the autonomous Apple code signing and release engineer configuring our production distribution profiles.",
+        "agentPrompt": "You are the autonomous Apple code signing and release engineer. Do NOT ask the user to manually configure signing profiles—verify and harden our Xcode distribution signing settings autonomously.\n\nTASK & OBJECTIVE:\nVerify our Apple Distribution Certificate, Explicit App ID (`com.company.appname`), and App Store Connect export configuration so Release archives validate and upload cleanly.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect `ios/App/App.xcodeproj/project.pbxproj` (`CODE_SIGN_STYLE`, `DEVELOPMENT_TEAM`, `PRODUCT_BUNDLE_IDENTIFIER`) and export options plist.\n2. EXPLICIT APP ID CHECK: Confirm the distribution profile uses an Explicit App ID (never a Wildcard `*` profile), which is mandatory for StoreKit In-App Purchases and Push Notifications.\n3. ARCHIVE & EXPORT: Verify `xcodebuild archive -configuration Release -destination 'generic/platform=iOS'` compiles cleanly and `xcodebuild -exportArchive` uploads to TestFlight / App Store Connect processing.\n4. VERIFICATION: Confirm zero signing, missing capability, or invalid signature warnings during archive validation.",
         "commonRejectionTraps": [
           "Expired Apple Distribution certificates or invalid team provisioning profiles.",
           "Mismatched bundle identifiers between Xcode target and App Store Connect."
@@ -2424,8 +2424,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Your release archive is digitally signed with an active Apple Distribution certificate, ready for store export.",
         "videoUrl": {
-          "title": "Apple Code Signing Guide",
-          "url": "https://www.youtube.com/watch?v=s7_oD4SkzU0"
+          "title": "Xcode Archive & Upload to App Store Connect",
+          "url": "https://www.youtube.com/watch?v=N211JMYg_Hk"
         }
       },
       {
@@ -2443,24 +2443,24 @@ export const PHASES_DATA: Phase[] = [
         "whyItMatters": "Apple Review tests In-App Purchases in the sandbox (often on iPad). If the Paid Apps Agreement is not Active, if `product.purchase(confirmIn:)` lacks a valid foreground window scene on iPadOS, or if there is no distinct Restore Purchases button, the app is rejected.",
         "implementationSteps": [
           "Confirm your Paid Apps Agreement status is Active in App Store Connect > Business > Agreements.",
-          "Verify that product identifiers in App Store Connect match your code exactly.",
-          "Use StoreKit 2 `product.purchase(confirmIn: viewController)` (or active `UIWindowScene`) on iOS 17+/iPadOS 26+ and avoid creating duplicate `UIWindow` instances in `SceneDelegate`.",
-          "Provide a distinct, visible Restore Purchases button that initiates `AppStore.sync()` and tests cleanly with a Sandbox Apple Account on both iPhone and iPad."
+          "Verify that product identifiers in App Store Connect match your code exactly, have status Ready to Submit (with Review Screenshot), and are attached to your version submission.",
+          "Use StoreKit 2 `product.purchase(confirmIn: viewController)` (or active `UIWindowScene`) on iOS 17+/iPadOS 26+ with an Explicit App ID provisioning profile (never Wildcard *), and avoid creating duplicate `UIWindow` instances in `SceneDelegate`.",
+          "Provide a distinct, visible Restore Purchases button that checks `Transaction.currentEntitlements` first, falls back to `AppStore.sync()`, and tests cleanly with a Sandbox Apple Account on both iPhone and iPad."
         ],
-        "agentPrompt": "You are the autonomous Apple StoreKit 2 and In-App Purchase engineer. Configure StoreKit 2 `Transaction.updates` listeners, `@MainActor`-isolated product caching, `product.purchase(confirmIn:)` presentation context for iPhone & iPad, sandbox retry fallback, and Restore Purchases.",
+        "agentPrompt": "You are the autonomous Apple StoreKit 2 and In-App Purchase engineer. Do NOT ask the user to wire StoreKit manually—audit and harden our entire StoreKit 2 pipeline autonomously.\n\nTASK & OBJECTIVE:\nVerify end-to-end StoreKit 2 product loading, iPhone/iPad purchase presentation, transaction finishing, and Restore Purchases compliance for Apple Guidelines 2.1(b) & 3.1.1.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CAPABILITY & EXPLICIT APP ID: Verify `com.apple.InAppPurchase` is enabled and signed with an Explicit App ID (not Wildcard `*`) so `Product.products(for:)` returns live App Store Connect products.\n2. TRANSACTION LIFECYCLE: Run `Transaction.updates` from app boot, cache fetched products on `@MainActor`, retry transient sandbox fetches, and call `await transaction.finish()` after unlocking entitlements.\n3. IPADOS PRESENTATION CONTEXT: Invoke `product.purchase(confirmIn: viewController)` with fallback to `confirmIn: windowScene` so iPadOS never throws `StoreKitError.invalidPresentationContext`.\n4. RESTORE & LEGAL LINKS: Verify a prominent Restore Purchases button checks `Transaction.currentEntitlements` before `AppStore.sync()`, silently handles cancellation, and paywall Terms/Privacy links open cleanly in-app without broken `capacitor://` redirects.",
         "commonRejectionTraps": [
-          "Tapping Unlock displays an error alert during review (Guideline 2.1b), often caused by `StoreKitError.invalidPresentationContext` on iPadOS when calling deprecated `product.purchase()` without an explicit scene/viewController.",
-          "Missing a distinct, dedicated Restore Purchases button on the paywall (Guideline 3.1.1).",
-          "Pending Paid Apps Agreement in App Store Connect preventing product queries."
+          "Tapping Unlock displays an error alert during review (Guideline 2.1b), often caused by `Product.products(for:)` returning 0 products (inactive Paid Apps Agreement, mismatched Product IDs, or Wildcard profile) or `StoreKitError.invalidPresentationContext` on iPadOS.",
+          "Missing a distinct, dedicated Restore Purchases button or working Terms/Privacy links on the paywall (Guidelines 3.1.1 & 3.1.2).",
+          "Pending Paid Apps Agreement in App Store Connect > Business > Agreements preventing product queries."
         ],
         "verificationQuestions": [
-          "Is your Paid Apps Agreement signed and active in App Store Connect?",
-          "Does your paywall have a prominent Restore Purchases button?"
+          "Is your Paid Apps Agreement signed and Active in App Store Connect > Business > Agreements?",
+          "Does your paywall load live prices, display Apple's native double-tap sheet, and have a working Restore Purchases button?"
         ],
         "whatHappensNext": "StoreKit 2 in-app purchases and restore flows function flawlessly under Apple Review sandbox conditions.",
         "videoUrl": {
-          "title": "StoreKit 2 Testing Guide",
-          "url": "https://www.youtube.com/watch?v=SSv--IrWH3c"
+          "title": "StoreKit 2 Paywall & Testing Guide (2026)",
+          "url": "https://www.youtube.com/watch?v=9QmnlxGHINU"
         }
       },
       {
@@ -2506,7 +2506,7 @@ export const PHASES_DATA: Phase[] = [
           "Set up automatic build number incrementing so you never accidentally upload duplicate version numbers.",
           "Use GitHub Actions or local release scripts to upload to TestFlight and App Store."
         ],
-        "agentPrompt": "You are the autonomous mobile DevOps engineer. Do NOT ask the user to write deployment scripts—implement an automated CI/CD build and upload pipeline autonomously.\n\nTASK & OBJECTIVE:\nImplement an automated continuous integration and deployment pipeline using Fastlane and GitHub Actions to build, test, and upload native bundles autonomously.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project build scripts, dependencies, and deployment workflows.\n2. IMPLEMENTATION:\n   - Create a `fastlane/Fastfile` with automated lanes:\n     - `lane :test`: runs TypeScript checks (`tsc --noEmit`) and unit tests.\n     - `lane :beta`: increments build numbers, builds iOS `.ipa` and iOS `.xcarchive`, and uploads directly to TestFlight and App Store Internal Testing.\n   - Create a `.github/workflows/deploy.yml` workflow file that executes automated lanes on push to the main branch.\n   - Configure secure handling of App Store Connect API keys and App Store Service Account JSON keys via environment secrets.\n3. STORE COMPLIANCE: Eliminates human error during releases and ensures consistent, reproducible binary builds.\n4. VERIFICATION: Verify Fastlane configuration syntax and ensure build commands execute cleanly.",
+        "agentPrompt": "You are the autonomous mobile DevOps engineer. Do NOT ask the user to write deployment scripts—implement an automated CI/CD build and upload pipeline autonomously.\n\nTASK & OBJECTIVE:\nImplement an automated continuous integration and deployment pipeline using Fastlane and GitHub Actions to build, test, and upload native bundles autonomously.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect project build scripts, dependencies, and deployment workflows.\n2. IMPLEMENTATION:\n   - Create a `fastlane/Fastfile` with automated lanes:\n     - `lane :test`: runs TypeScript checks (`tsc --noEmit`) and unit tests.\n     - `lane :beta`: increments build numbers, builds a signed iOS `.xcarchive` / `.ipa`, and uploads directly to Apple TestFlight.\n   - Create a `.github/workflows/deploy.yml` workflow file that executes automated lanes on push to the main branch.\n   - Configure secure handling of App Store Connect API keys (`.p8`) and certificate credentials via encrypted CI secrets.\n3. STORE COMPLIANCE: Eliminates human error during releases and ensures consistent, reproducible binary builds.\n4. VERIFICATION: Verify Fastlane configuration syntax and ensure build commands execute cleanly.",
         "commonRejectionTraps": [
           "Trying to upload a build with a version or build number that has already been used.",
           "Storing App Store Connect API keys or signing certificate passwords in plaintext within public CI/CD repository workflows.",
@@ -2518,8 +2518,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Single-command or CI/CD pipelines automate testing, building, and uploading release binaries directly to App Store Connect and TestFlight.",
         "videoUrl": {
-          "title": "Fastlane CI/CD Setup",
-          "url": "https://www.youtube.com/watch?v=NCmkL__Mq-I"
+          "title": "Automate iOS TestFlight with Fastlane",
+          "url": "https://www.youtube.com/watch?v=vTsKCEZA5Eo"
         }
       },
       {
@@ -2551,7 +2551,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p8-testflight-external-groups",
         "phaseId": "phase-8",
-        "title": "TestFlight External",
+        "title": "External Beta",
         "shortDescription": "Distribute beta builds via TestFlight public links and collect real device logs before launch.",
         "category": "store",
         "platform": "ios",
@@ -2587,7 +2587,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p9-apple-rejection-audit",
         "phaseId": "phase-9",
-        "title": "Apple Rejection",
+        "title": "Rejection Audit",
         "shortDescription": "Audit against top rejection reasons: broken buttons, placeholder text, and missing privacy details.",
         "category": "store",
         "platform": "ios",
@@ -2637,7 +2637,7 @@ export const PHASES_DATA: Phase[] = [
           "Verify a distinct Restore Purchases button is clearly visible and initiates restore (Guideline 3.1.1).",
           "Verify zero references to third-party platforms exist in metadata or binary (Guideline 2.3.10)."
         ],
-        "agentPrompt": "You are the autonomous Apple App Store pre-submission auditor verifying our release readiness against all review guidelines.",
+        "agentPrompt": "You are the autonomous Apple App Store pre-submission auditor. Do NOT ask the user to inspect guidelines manually—execute a full technical audit of our release candidate autonomously.\n\nTASK & OBJECTIVE:\nVerify our Release build against Apple App Store Review Guidelines 2.1 (Performance & IAP Completeness), 2.3 (Accurate Metadata & Screenshots), 3.1.1 (StoreKit & Restore), and 5.1 (Privacy & Legal).\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODE & BUNDLE SCAN: Verify zero forbidden dev URLs, zero placeholder copy, zero broken links, zero competing platform mentions (Guideline 2.3.10), and clean TypeScript compilation.\n2. PAYWALL & STOREKIT AUDIT: Verify live StoreKit 2 product IDs match App Store Connect, Restore Purchases is prominent and functional, and Terms/Privacy links open cleanly in-app.\n3. SCREENSHOT & METADATA CHECK: Confirm screenshots match exact iPhone/iPad pixel specs with zero alpha channel and zero pricing/\"free\" claims (Guideline 2.3.7).\n4. VERIFICATION: Output a pass/fail pre-submission readiness checklist before uploading the final TestFlight archive.",
         "commonRejectionTraps": [
           "Tapping Unlock or purchase displays an error message in review sandbox.",
           "Omitting a prominent Restore Purchases button on paywall screens.",
@@ -2701,14 +2701,14 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "You have structured, professional response templates ready if reviewers request clarifications in the App Store Resolution Center.",
         "videoUrl": {
-          "title": "Appeal Store Rejection",
-          "url": "https://www.youtube.com/watch?v=rxfAwIEzxMQ"
+          "title": "Fix & Replace a Rejected Build in App Store Connect",
+          "url": "https://www.youtube.com/watch?v=abTTMnGJadY"
         }
       },
       {
         "id": "p9-reviewer-demo-video",
         "phaseId": "phase-9",
-        "title": "Reviewer Demo",
+        "title": "Demo Walkthrough",
         "shortDescription": "Include an unlisted video link and demo credentials for Apple reviewers in App Store Connect.",
         "category": "store",
         "platform": "ios",
@@ -2731,8 +2731,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Reviewers quickly understand complex features or hardware integrations through an attached video demonstration link.",
         "videoUrl": {
-          "title": "Review Demo Video",
-          "url": "https://www.youtube.com/watch?v=IjGMEdy1rkc"
+          "title": "App Store Submission Walkthrough (2026)",
+          "url": "https://www.youtube.com/watch?v=zionIAZlsuY"
         }
       },
       {
@@ -2774,12 +2774,12 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p10-crash-debugging",
         "phaseId": "phase-10",
-        "title": "Production Crash",
+        "title": "Crash Debugging",
         "shortDescription": "Diagnose crashes that work fine on your laptop but crash when downloaded from the store.",
         "category": "security",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Apps often run fine in development, but crash in production if code shrinking accidentally removed a needed data model or reflection class.",
+        "whyItMatters": "Apps often run fine in Debug mode, but crash in TestFlight or Production if Release compiler optimizations (`-O`), missing `Info.plist` usage descriptions, missing bundle resources, or Sandbox environment differences expose edge-case bugs.",
         "implementationSteps": [
           "Inspect device crash logs on your iPhone/iPad using Xcode > Window > Devices and Simulators > Open Recent Logs, Xcode Organizer > Crashes, or macOS Console.app.",
           "Check Release-only failure causes: missing `Info.plist` usage descriptions, missing bundle resources, or Swift concurrency/optimization race conditions.",
@@ -2804,12 +2804,12 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p10-deep-link-troubleshooting",
         "phaseId": "phase-10",
-        "title": "Deep Link",
+        "title": "Deep Link Fixes",
         "shortDescription": "Diagnose why shared web links open the browser instead of routing directly into your app.",
         "category": "functionality",
         "platform": "ios",
         "priority": "high",
-        "whyItMatters": "Deep links fail silently. If your website file has a minor typo or an HTTP redirect, links will open in Safari or Chrome without showing any error message.",
+        "whyItMatters": "Deep links fail silently. If your website file has a minor typo or an HTTP redirect, links will open in Safari without showing any error message.",
         "implementationSteps": [
           "Check that your website file returns HTTP 200 with no redirects.",
           "Verify that the domain format in your app project does not include \"https://\" or trailing slashes.",
@@ -2830,15 +2830,15 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p10-iap-troubleshooting",
         "phaseId": "phase-10",
-        "title": "IAP Subscription",
+        "title": "StoreKit Fixes",
         "shortDescription": "Diagnose missing StoreKit products, iPadOS presentation errors, or unfinished transactions.",
         "category": "store",
         "platform": "ios",
         "priority": "blocker",
-        "whyItMatters": "Payment bugs directly stop revenue and trigger Guideline 2.1(b) rejections. On iOS StoreKit 2, if you fail to call `await transaction.finish()` after unlocking entitlements or fail to listen to `Transaction.updates` on launch, purchases stay stuck pending and repeat purchases fail.",
+        "whyItMatters": "Payment bugs directly stop revenue and trigger Guideline 2.1(b) rejections. On iOS StoreKit 2, if the Paid Apps Agreement is inactive, a Wildcard (*) profile is used, or you fail to call `await transaction.finish()` and observe `Transaction.updates`, purchases fail or stay stuck pending.",
         "implementationSteps": [
-          "App Store Connect: Verify that your Paid Apps Agreement is Active and banking/tax info is approved.",
-          "Check that Product IDs in your code match App Store Connect exactly and the `In-App Purchase` capability is enabled on your Xcode target.",
+          "App Store Connect: Verify that your Paid Apps Agreement is Active under Business > Agreements and banking/tax info is approved.",
+          "Check that Product IDs match App Store Connect exactly, products are Ready to Submit and attached to the app version, and your build uses an Explicit App ID provisioning profile (not Wildcard *).",
           "Ensure you call `await transaction.finish()` after verifying and unlocking every StoreKit 2 transaction, and pass an active viewController/UIWindowScene to `product.purchase(confirmIn:)` on iPadOS."
         ],
         "agentPrompt": "You are the autonomous Apple StoreKit 2 billing systems engineer. Do NOT ask the user to test purchases—build an end-to-end StoreKit 2 diagnostic test suite autonomously.\n\nTASK & OBJECTIVE:\nBuild an end-to-end IAP diagnostic test suite for Apple StoreKit 2 to isolate and resolve failed payments, iPadOS presentation errors, unfinished transactions, and subscription renewal issues.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect purchase flows, StoreKit 2 Swift plugins, and entitlement state stores.\n2. IMPLEMENTATION:\n   - Create a local StoreKit Testing configuration file (`.storekit`) in Xcode to simulate purchases, subscription renewals, failed transactions, billing grace periods, and Family Sharing locally.\n   - Verify `Transaction.updates` runs from app boot and every verified transaction calls `await transaction.finish()` after unlocking entitlements.\n   - Implement graceful UI handling for all transaction states: `purchasing` (loading spinner), `purchased` (instant unlock), `userCancelled` (clean dismiss with zero error alert), and `pending` (Ask to Buy parental approval).\n   - Implement robust Restore Purchases (`AppStore.sync()` + `Transaction.currentEntitlements`) with one click.\n3. STORE COMPLIANCE: StoreKit 2 sandbox testing on both iPhone and iPad prevents Guideline 2.1(b) rejections and launch-day revenue loss.\n4. VERIFICATION: Verify that local StoreKit testing configuration is in place and all purchase states trigger appropriate UI feedback.",
@@ -2856,7 +2856,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p10-push-troubleshooting",
         "phaseId": "phase-10",
-        "title": "Push Notification",
+        "title": "APNs Fixes",
         "shortDescription": "Diagnose why push tokens register successfully but notifications never show up on phones.",
         "category": "functionality",
         "platform": "ios",
@@ -2893,7 +2893,7 @@ export const PHASES_DATA: Phase[] = [
           "If the crash rate spikes above 0.5%, immediately click \"Pause Phased Release\" in App Store Connect.",
           "Respond to any negative reviews within 24 hours with an empathetic message and a direct support email."
         ],
-        "agentPrompt": "You are the autonomous mobile release operations engineer. Do NOT ask the user to monitor rollouts—configure a staged rollout strategy and live app monitoring protocols autonomously.\n\nTASK & OBJECTIVE:\nConfigure a staged release (phased rollout) strategy for public store updates and set up automated health monitoring protocols to protect users from unexpected release regressions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect release management configs, version tags, and review response procedures.\n2. IMPLEMENTATION:\n   - Configure Apple 7-day phased release schedule (Day 1: 1%, Day 2: 2%, Day 3: 5%, Day 4: 10%, Day 5: 20%, Day 6: 50%, Day 7: 100%) and App Store staged rollout percentages.\n   - Set up automated alerting thresholds: define rules to pause rollout immediately if crash-free sessions drop below 99.5% or negative reviews spike.\n   - Create standardized, empathetic response templates to engage with early user reviews, resolve reported issues, and encourage positive rating updates.\n3. STORE COMPLIANCE: Standard industry best practice to mitigate release risks and protect app store rating averages.\n4. VERIFICATION: Document phased rollout timeline and emergency pause procedures in the release operations guide.",
+        "agentPrompt": "You are the autonomous mobile release operations engineer. Do NOT ask the user to monitor rollouts—configure a staged rollout strategy and live app monitoring protocols autonomously.\n\nTASK & OBJECTIVE:\nConfigure a staged release (phased rollout) strategy for public store updates and set up automated health monitoring protocols to protect users from unexpected release regressions.\n\nSPECIFIC EXECUTION REQUIREMENTS:\n1. CODEBASE INSPECTION: Inspect release management configs, version tags, and review response procedures.\n2. IMPLEMENTATION:\n   - Configure Apple's 7-day Phased Release for Automatic Updates (Day 1: 1%, Day 2: 2%, Day 3: 5%, Day 4: 10%, Day 5: 20%, Day 6: 50%, Day 7: 100%) in App Store Connect.\n   - Set up automated alerting thresholds: define rules to pause rollout immediately if crash-free sessions drop below 99.5% or negative reviews spike.\n   - Create standardized, empathetic response templates to engage with early user reviews, resolve reported issues, and encourage positive rating updates.\n3. STORE COMPLIANCE: Standard industry best practice to mitigate release risks and protect app store rating averages.\n4. VERIFICATION: Document phased rollout timeline and emergency pause procedures in the release operations guide.",
         "commonRejectionTraps": [
           "Ignoring negative reviews reporting a crash that only happens on a specific phone model.",
           "Releasing a major refactor to 100% of users simultaneously without monitoring phased release crash rates or customer support tickets.",
@@ -2905,8 +2905,8 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Updates roll out gradually to 1%, 5%, and 20% of users first, catching unexpected server spikes before they affect everyone.",
         "videoUrl": {
-          "title": "Phased App Rollouts",
-          "url": "https://www.youtube.com/watch?v=JmfbD6RmZn0"
+          "title": "iOS Production Release Management",
+          "url": "https://www.youtube.com/watch?v=SmGSZPdefGI"
         }
       },
       {
@@ -2938,7 +2938,7 @@ export const PHASES_DATA: Phase[] = [
       {
         "id": "p10-force-update-changelog",
         "phaseId": "phase-10",
-        "title": "Force-Update Version",
+        "title": "Force Updates",
         "shortDescription": "Notify or require users to update if a breaking API schema change or security flaw is patched.",
         "category": "functionality",
         "platform": "ios",
@@ -2961,14 +2961,14 @@ export const PHASES_DATA: Phase[] = [
         ],
         "whatHappensNext": "Critical updates can be mandated remotely, preventing legacy app versions from communicating with updated backend APIs.",
         "videoUrl": {
-          "title": "Force Update Guide",
-          "url": "https://www.youtube.com/watch?v=Z5VjmLhnoJU"
+          "title": "iOS App Update Checker in SwiftUI",
+          "url": "https://www.youtube.com/watch?v=J8ekRzqRnKk"
         }
       },
       {
         "id": "p10-native-review-prompt",
         "phaseId": "phase-10",
-        "title": "Native Store",
+        "title": "Review Prompt",
         "shortDescription": "Prompt users for App Store ratings using StoreKit 2 AppStore.requestReview(in:) after 15 and 30 positive visits.",
         "category": "store",
         "platform": "ios",
@@ -2980,8 +2980,8 @@ export const PHASES_DATA: Phase[] = [
           "url": "https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews"
         },
         "videoUrl": {
-          "title": "Native Review Prompts",
-          "url": "https://www.youtube.com/watch?v=krp3yDDVa70"
+          "title": "Request App Store Reviews with StoreKit",
+          "url": "https://www.youtube.com/watch?v=LKWJBrqh5-4"
         },
         "implementationSteps": [
           "Track app session visit count in local storage (e.g. `app_session_count`).",

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, 
-  Check, 
-  Unlock,
   CheckCircle2,
   Loader2,
   AlertCircle,
   Info,
-  RotateCcw
+  RotateCcw,
+  ShieldCheck,
+  ArrowLeft,
+  ExternalLink
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { 
@@ -21,9 +22,13 @@ import {
 import { 
   purchaseWithStoreKit, 
   restoreWithStoreKit, 
-  getStoreProducts 
+  getStoreProducts,
+  getNativeBuildEnvironment
 } from '../utils/nativeStoreKit';
 import { triggerHaptic, ImpactStyle } from '../utils/haptics';
+
+const LIVE_TERMS_URL = 'https://corner-swaps.github.io/appblueprint/terms.html';
+const LIVE_PRIVACY_URL = 'https://corner-swaps.github.io/appblueprint/privacy.html';
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -39,21 +44,27 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   onClose,
   onUnlocked,
   targetProjectId,
-  targetProjectName,
   canDismiss = true,
 }) => {
   const [showStoreKitSheet, setShowStoreKitSheet] = useState(false);
   const [storeKitState, setStoreKitState] = useState<'idle' | 'processing' | 'done'>('idle');
   const [purchaseTier, setPurchaseTier] = useState<'single' | 'unlimited'>('unlimited');
-  const [isNativeProcessing, setIsNativeProcessing] = useState(false);
+  const [processingAction, setProcessingAction] = useState<null | 'single' | 'unlimited' | 'restore'>(null);
+  const [isDebugBuild, setIsDebugBuild] = useState(false);
+  const [activeLegalDoc, setActiveLegalDoc] = useState<null | 'terms' | 'privacy'>(null);
   const [singlePrice, setSinglePrice] = useState(NEXT_PROJECT_PRICE_DISPLAY);
   const [unlimitedPrice, setUnlimitedPrice] = useState(UNLIMITED_PRICE_DISPLAY);
   const [inlineMessage, setInlineMessage] = useState<{ type: 'info' | 'error' | 'success'; text: string } | null>(null);
 
-  // Fetch native StoreKit product details when modal opens
+  const isBusy = processingAction !== null;
+
+  // Fetch native StoreKit product details and build environment when modal opens
   useEffect(() => {
     if (isOpen) {
       setInlineMessage(null);
+      getNativeBuildEnvironment().then((env) => {
+        setIsDebugBuild(Boolean(env.isDebug));
+      });
       getStoreProducts([PRODUCT_ID_NEXT_PROJECT, PRODUCT_ID_UNLIMITED_PROJECTS]).then((products) => {
         if (products[PRODUCT_ID_NEXT_PROJECT]?.displayPrice) {
           setSinglePrice(products[PRODUCT_ID_NEXT_PROJECT].displayPrice);
@@ -71,6 +82,8 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     if (!isOpen) {
       setShowStoreKitSheet(false);
       setStoreKitState('idle');
+      setProcessingAction(null);
+      setActiveLegalDoc(null);
       setInlineMessage(null);
     }
   }, [isOpen]);
@@ -80,13 +93,17 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (showStoreKitSheet) {
+      if (activeLegalDoc) {
+        e.preventDefault();
+        e.stopPropagation();
+        setActiveLegalDoc(null);
+      } else if (showStoreKitSheet) {
         if (storeKitState !== 'processing') {
           e.preventDefault();
           e.stopPropagation();
           setShowStoreKitSheet(false);
         }
-      } else if (canDismiss && !isNativeProcessing) {
+      } else if (canDismiss && !isBusy) {
         e.preventDefault();
         e.stopPropagation();
         onClose();
@@ -94,7 +111,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, showStoreKitSheet, storeKitState, canDismiss, isNativeProcessing, onClose]);
+  }, [isOpen, activeLegalDoc, showStoreKitSheet, storeKitState, canDismiss, isBusy, onClose]);
 
   if (!isOpen) return null;
 
@@ -109,9 +126,9 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     const productId = tier === 'unlimited' ? PRODUCT_ID_UNLIMITED_PROJECTS : PRODUCT_ID_NEXT_PROJECT;
 
     if (Capacitor.getPlatform() === 'ios') {
-      setIsNativeProcessing(true);
+      setProcessingAction(tier);
       const res = await purchaseWithStoreKit(productId, targetProjectId);
-      setIsNativeProcessing(false);
+      setProcessingAction(null);
 
       if (res.success) {
         triggerHaptic(ImpactStyle.Heavy);
@@ -130,7 +147,9 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
       } else if (res.error) {
         setInlineMessage({
           type: 'info',
-          text: 'Connecting to the App Store. Please tap Unlock again to proceed.'
+          text: isDebugBuild
+            ? `StoreKit (${res.errorCode || 'ERROR'}): ${res.error}`
+            : 'Unable to reach the App Store right now. Please check your connection and try again.'
         });
       }
       return;
@@ -138,6 +157,17 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
     setStoreKitState('idle');
     setShowStoreKitSheet(true);
+  };
+
+  const handleAdminUnlock = () => {
+    if (!isDebugBuild) return;
+    triggerHaptic(ImpactStyle.Heavy);
+    unlockUnlimited();
+    setInlineMessage({ type: 'success', text: 'Admin access unlocked!' });
+    setTimeout(() => {
+      onUnlocked();
+      onClose();
+    }, 300);
   };
 
   const handleConfirmStoreKitPurchase = async () => {
@@ -171,10 +201,15 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
   const handleRestore = async () => {
     triggerHaptic(ImpactStyle.Light);
-    setIsNativeProcessing(true);
+    setProcessingAction('restore');
     setInlineMessage(null);
     const res = await restoreWithStoreKit();
-    setIsNativeProcessing(false);
+    setProcessingAction(null);
+
+    if (res.userCancelled) {
+      // Silently dismiss if user cancels Apple Account sign-in
+      return;
+    }
 
     if (res.isUnlimited || res.restoredCount > 0) {
       triggerHaptic(ImpactStyle.Heavy);
@@ -197,7 +232,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
           className="fixed inset-0 cursor-pointer"
           aria-hidden="true"
           onClick={() => {
-            if (canDismiss && !showStoreKitSheet && storeKitState !== 'processing' && !isNativeProcessing) {
+            if (canDismiss && !activeLegalDoc && !showStoreKitSheet && storeKitState !== 'processing' && !isBusy) {
               onClose();
             }
           }}
@@ -215,7 +250,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              disabled={isNativeProcessing}
+              disabled={isBusy}
               className="absolute top-3.5 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer z-20 disabled:opacity-50"
               title="Close"
               aria-label="Close"
@@ -329,12 +364,12 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
             <button
               type="button"
-              disabled={isNativeProcessing}
+              disabled={isBusy}
               onClick={() => handleStartPurchase('single')}
-              className="apple-press w-full py-3.5 px-5 rounded-2xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 disabled:opacity-60 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              className="apple-press w-full h-12 px-5 rounded-2xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 disabled:opacity-60 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
-              {isNativeProcessing && purchaseTier === 'single' ? (
-                <Loader2 className="w-4.5 h-4.5 animate-spin text-white" />
+              {processingAction === 'single' ? (
+                <Loader2 className="w-4 h-4 animate-spin text-white shrink-0" />
               ) : (
                 <span>Keep This Project • {singlePrice}</span>
               )}
@@ -342,49 +377,68 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
 
             <button
               type="button"
-              disabled={isNativeProcessing}
+              disabled={isBusy}
               onClick={() => handleStartPurchase('unlimited')}
-              className="apple-press w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 disabled:opacity-60 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              className="apple-press w-full h-12 px-5 rounded-2xl bg-purple-800 hover:bg-purple-900 active:bg-purple-950 disabled:opacity-60 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
-              {isNativeProcessing && purchaseTier === 'unlimited' ? (
-                <Loader2 className="w-4.5 h-4.5 animate-spin text-white" />
+              {processingAction === 'unlimited' ? (
+                <Loader2 className="w-4 h-4 animate-spin text-white shrink-0" />
               ) : (
                 <span>Unlock for Life • {unlimitedPrice}</span>
               )}
             </button>
 
+            {/* Local #if DEBUG Build Only — Never compiled into Release / TestFlight / App Store builds */}
+            {isDebugBuild && (
+              <button
+                type="button"
+                disabled={isBusy}
+                onClick={handleAdminUnlock}
+                className="apple-press w-full h-12 px-5 rounded-2xl bg-violet-600 hover:bg-violet-700 active:bg-violet-800 disabled:opacity-60 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                <ShieldCheck className="w-4 h-4 text-white shrink-0" />
+                <span>Admin</span>
+              </button>
+            )}
+
             {/* Apple StoreKit 3.1.1 Mandatory Compliance: Distinct Restore Purchases Button */}
             <button
               type="button"
-              disabled={isNativeProcessing}
+              disabled={isBusy}
               onClick={handleRestore}
-              className="apple-press w-full py-3 px-5 rounded-2xl bg-white hover:bg-slate-50 active:bg-slate-100 disabled:opacity-60 text-slate-700 font-semibold text-xs sm:text-sm border border-slate-200/90 shadow-2xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              className="apple-press w-full h-12 px-5 rounded-2xl bg-purple-100 hover:bg-purple-200/80 active:bg-purple-200 disabled:opacity-60 text-purple-800 font-semibold text-sm sm:text-base border border-purple-200/90 shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
-              {isNativeProcessing ? (
-                <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+              {processingAction === 'restore' ? (
+                <Loader2 className="w-4 h-4 animate-spin text-purple-700 shrink-0" />
               ) : (
                 <>
-                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                  <RotateCcw className="w-4 h-4 text-purple-700 shrink-0" />
                   <span>Restore Purchases</span>
                 </>
               )}
             </button>
 
-            {/* Apple StoreKit 3.1.1 Mandatory Compliance: Legal Links */}
+            {/* Apple StoreKit 3.1.1 Mandatory Compliance: Working In-App + Live HTTPS Legal Links */}
             <div className="pt-0.5 flex items-center justify-center space-x-2 text-[11px] text-slate-400 font-medium">
               <a
-                href="./terms.html"
-                target="_blank"
-                rel="noopener noreferrer"
+                href={LIVE_TERMS_URL}
+                onClick={(e) => {
+                  e.preventDefault();
+                  triggerHaptic(ImpactStyle.Light);
+                  setActiveLegalDoc('terms');
+                }}
                 className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer"
               >
                 Terms of Use (EULA)
               </a>
               <span>•</span>
               <a
-                href="./privacy.html"
-                target="_blank"
-                rel="noopener noreferrer"
+                href={LIVE_PRIVACY_URL}
+                onClick={(e) => {
+                  e.preventDefault();
+                  triggerHaptic(ImpactStyle.Light);
+                  setActiveLegalDoc('privacy');
+                }}
                 className="hover:text-purple-600 transition-colors underline underline-offset-2 cursor-pointer"
               >
                 Privacy Policy
@@ -393,6 +447,142 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* 1b. In-App Legal Document Sheet (Works 100% offline & natively on iOS/iPadOS/Web) */}
+      {activeLegalDoc && (
+        <div className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in select-none pointer-events-auto">
+          <div
+            className="fixed inset-0 cursor-pointer"
+            aria-hidden="true"
+            onClick={() => setActiveLegalDoc(null)}
+          />
+          <div
+            className="relative z-10 w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden h-[660px] max-h-[90vh]"
+            role="dialog"
+            aria-modal="true"
+            aria-label={activeLegalDoc === 'terms' ? 'Terms of Use (EULA)' : 'Privacy Policy'}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setActiveLegalDoc(null)}
+              className="absolute top-3.5 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer z-20"
+              aria-label="Close legal document"
+            >
+              <X className="w-3.5 h-3.5 stroke-[2.5]" />
+            </button>
+
+            <div className="py-4 px-12 border-b border-slate-100 bg-white text-center shrink-0">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight font-google">
+                {activeLegalDoc === 'terms' ? 'Terms of Use (EULA)' : 'Privacy Policy'}
+              </h2>
+              <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
+                {activeLegalDoc === 'terms'
+                  ? 'One-time purchases & licensing terms'
+                  : '100% on-device storage & zero tracking'}
+              </p>
+            </div>
+
+            {activeLegalDoc === 'terms' ? (
+              <div className="flex-1 px-5 py-3.5 overflow-y-auto space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100 select-text">
+                <div>
+                  <p className="font-medium text-slate-700">
+                    These Terms of Use (EULA) govern your use of App Blueprint on iOS, iPadOS, and the web, alongside Apple&apos;s Standard Licensed Application End User License Agreement.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">1. One-Time Non-Consumable Purchases</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    Keep This Project ({singlePrice}) and Unlock for Life ({unlimitedPrice}) are one-time non-consumable Apple In-App Purchases—never recurring subscriptions. Payment is charged to your Apple Account upon confirmation via Apple StoreKit 2.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">2. Restore Purchases &amp; Refunds</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    Previously purchased lifetime unlocks can be restored anytime on devices signed into the same Apple Account via &ldquo;Restore Purchases&rdquo;. Billing and refunds are managed directly by Apple at reportaproblem.apple.com.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">3. Educational Guidance &amp; No Guarantee</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    App Blueprint provides production checklists, AI agent prompts, and configuration templates for educational and productivity guidance. Final App Store approval decisions belong solely to Apple App Review.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">4. Acceptable Use &amp; Liability</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    You remain solely responsible for code, apps, and store submissions you build. The app is provided &ldquo;as is&rdquo; without warranties, and may not be used to build unlawful or malicious software.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">5. Contact</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    Questions about these terms? Email cornerswaps@gmail.com.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 px-5 py-3.5 overflow-y-auto space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed font-sans divide-y divide-slate-100 select-text">
+                <div>
+                  <p className="font-medium text-slate-700">
+                    App Blueprint is built with a strict privacy-first, 100% on-device architecture. We collect zero personal data.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">1. 100% Local On-Device Storage</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    All projects, checklist progress, custom phases, and generated config files stay exclusively on your device. No backend servers store or process your project data.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">2. Zero Tracking, Analytics, or Ads</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    App Blueprint contains no third-party analytics SDKs, no ad networks, no behavioral profiling, and no cross-app tracking.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">3. Apple StoreKit 2 Payment Privacy</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    In-app purchases and restorations are processed directly by Apple via native StoreKit 2. We never receive, view, or store your Apple Account credentials or payment details.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">4. External Links</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    Curated developer documentation links open in your browser and are governed by each respective third-party site&apos;s privacy policy.
+                  </p>
+                </div>
+                <div className="pt-2.5 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-xs">5. Data Control &amp; Contact</h3>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    Deleting projects or uninstalling the app permanently removes all stored local data. Contact cornerswaps@gmail.com with any privacy questions.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="px-4 sm:px-5 pt-2.5 pb-3.5 border-t border-slate-100 bg-slate-50/70 flex flex-col space-y-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveLegalDoc(null)}
+                className="apple-press w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-semibold text-sm shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
+                <span>Back to Unlock</span>
+              </button>
+              <a
+                href={activeLegalDoc === 'terms' ? LIVE_TERMS_URL : LIVE_PRIVACY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2 px-4 rounded-xl text-slate-500 hover:text-purple-700 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors"
+              >
+                <span>Open Full Web Page</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 2. Authentic Apple StoreKit Payment Sheet (The "Apple Pop-Up" at z-[70] above all navigation) */}
       {showStoreKitSheet && (

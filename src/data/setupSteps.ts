@@ -12,11 +12,11 @@ export const SETUP_STEPS_PHASE: Phase = {
       id: 'setup-prerequisites',
       phaseId: 'phase-setup',
       title: 'Mac Prerequisites',
-      shortDescription: 'Install Node.js (v20+ LTS), npm, and Git on your Mac so your computer can build mobile applications.',
+      shortDescription: 'Install Node.js (v22+ LTS), npm, and Git on your Mac so your computer can build mobile applications.',
       category: 'functionality',
       platform: 'both',
       priority: 'blocker',
-      whyItMatters: 'Mobile development tools like Vite, React, TypeScript, and Capacitor run on top of Node.js. Installing the long-term stable (LTS) release of Node.js guarantees that all packages, build scripts, and native compilers run smoothly without mysterious version incompatibilities.',
+      whyItMatters: 'Mobile development tools like Vite, React, TypeScript, and Capacitor run on top of Node.js. Installing the active Long-Term Support (LTS) release of Node.js guarantees that all packages, build scripts, and native compilers run smoothly without version incompatibilities.',
       whatHappensNext: 'Your computer has the foundational runtime required to install mobile dependencies, run local test servers, and compile your app for iOS and iPadOS.',
       directLink: {
         label: 'Download Node.js',
@@ -28,23 +28,23 @@ export const SETUP_STEPS_PHASE: Phase = {
       },
       implementationSteps: [
         'Open the Terminal application on your Mac (press Command + Space, type "Terminal", and press Enter).',
-        'Verify if Node.js is already installed by running: node -v. If it shows v20.x or higher, you are good to go!',
-        'If not installed, download and run the macOS Installer (.pkg) for Node.js LTS from nodejs.org, or install Homebrew and run: brew install node@20.',
+        'Verify if Node.js is already installed by running: node -v. If it shows v22.x or higher (active LTS), you are good to go!',
+        'If not installed, download and run the macOS Installer (.pkg) for Node.js LTS from nodejs.org, or install Homebrew and run: brew install node.',
         'Install Xcode Command Line Tools by running: xcode-select --install (click "Install" on the Apple prompt).',
         'Verify your setup by running: git --version, node -v, and npm -v in Terminal.'
       ],
       agentPrompt: `You are the autonomous senior mobile DevOps and systems architect preparing our local development environment.
 
 TASK & OBJECTIVE:
-Inspect and verify our Mac system runtime prerequisites: Node.js (v20+ LTS), npm/pnpm, Git, and Apple Command Line Tools.
+Inspect and verify our Mac system runtime prerequisites: Node.js (v22+ LTS), npm/pnpm, Git, and Apple Command Line Tools.
 
 EXECUTION PROTOCOL FOR THE AGENT:
 1. RUN DIAGNOSTICS: Execute 'node -v', 'npm -v', 'git --version', and 'xcode-select -p' in the terminal.
-2. ENVIRONMENT CHECK: Ensure Node version is >= 20.0.0. If an older version is detected, provide the precise 'nvm use 20' or 'brew install node@20' command.
+2. ENVIRONMENT CHECK: Ensure Node version is >= 22.0.0 (active LTS). If an older version is detected, provide the precise 'nvm use --lts' or 'brew install node' command.
 3. DEPENDENCY INTEGRITY: Inspect 'package.json' for valid scripts ('dev', 'build', 'preview') and verify that 'npm run build' completes with zero compilation warnings.
 4. ZERO REGRESSIONS: Ensure all workspace dependencies are installed with exit code 0 and no deprecated peer dependency collisions.`,
       commonRejectionTraps: [
-        'Using odd-numbered or bleeding-edge Node versions (e.g. Node 21 or 23) which frequently break native mobile compiler plugins.',
+        'Using odd-numbered or end-of-life Node versions (e.g. Node 18, 21, or 23) which frequently break native mobile compiler plugins.',
         'Installing global npm packages with "sudo", which breaks directory permissions and causes build scripts to fail.',
         'Skipping the Apple Command Line Tools installation (xcode-select --install), which causes native C++ plugins to fail compilation.'
       ],
@@ -173,7 +173,7 @@ Inspect and verify local Xcode installation, command-line developer tools, and C
 EXECUTION PROTOCOL FOR THE AGENT:
 1. RUN DIAGNOSTICS: Run 'xcode-select -p' to verify path points to '/Applications/Xcode.app/Contents/Developer'.
 2. VERIFY SIMULATORS: Run 'xcrun simctl list devices' to confirm available iOS simulator runtimes.
-3. HEALTH CHECK: Run 'npx cap doctor' to detect any missing CocoaPods or native dependency warnings.
+3. HEALTH CHECK: Run 'npx cap doctor' to detect any missing Swift Package Manager, CocoaPods, or native dependency warnings.
 4. ZERO REGRESSIONS: Ensure 'ios/App/App.xcodeproj' workspace compiles cleanly without schema migration errors.`,
       commonRejectionTraps: [
         'Running an outdated version of Xcode—Apple requires all submissions to be built with the latest release SDK.',
@@ -193,41 +193,41 @@ EXECUTION PROTOCOL FOR THE AGENT:
       category: 'functionality',
       platform: 'ios',
       priority: 'high',
-      whyItMatters: 'Apple App Review strictly requires that all In-App Purchases and Restore Purchases work seamlessly in the sandbox environment. Testing with a StoreKit Configuration file or Sandbox Apple ID before submission prevents immediate Guideline 2.1(b) and 3.1.1 rejections.',
+      whyItMatters: 'Apple App Review strictly requires that all In-App Purchases and Restore Purchases work seamlessly in the sandbox environment. Testing with a StoreKit Configuration file or Sandbox Apple Account before submission prevents immediate Guideline 2.1(b) and 3.1.1 rejections.',
       whatHappensNext: 'Your app offers reliable in-app purchases and restore functionality, verified against Apple StoreKit servers.',
       directLink: {
         label: 'Apple StoreKit 2 Testing Documentation',
         url: 'https://developer.apple.com/documentation/storekit/in-app_purchase/testing_in-app_purchases_with_sandbox'
       },
       videoUrl: {
-        title: 'StoreKit 2 Testing in Xcode',
-        url: 'https://www.youtube.com/watch?v=SSv--IrWH3c'
+        title: 'StoreKit 2 in Xcode & SwiftUI',
+        url: 'https://www.youtube.com/watch?v=BI-ohzQ7GuI'
       },
       implementationSteps: [
-        'In App Store Connect, ensure the Paid Apps Agreement is signed and Active under Agreements, Tax, and Banking.',
-        'Configure your in-app purchase products in App Store Connect with identical product IDs in your code.',
-        'Create a Sandbox Apple ID in App Store Connect > Users and Access > Sandbox Testers.',
-        'On your test device, sign in to your Sandbox account in Settings > App Store > Sandbox Account.',
-        'Verify that tapping purchase displays Apple\'s native sandbox payment sheet, and tapping "Restore Purchases" completes successfully.'
+        'In App Store Connect > Business > Agreements, ensure the Paid Apps Agreement is signed and Active (including Tax & Banking).',
+        'Configure your In-App Purchase products in App Store Connect with exact matching Product IDs, Display Name, Price, Review Screenshot, and attach them to your app version.',
+        'Create a Sandbox Tester in App Store Connect > Users and Access > Sandbox, and make sure your app uses an Explicit App ID provisioning profile (never a Wildcard * profile).',
+        'On your test iPhone/iPad, sign in to your Sandbox Apple Account under Settings > Developer > Sandbox Apple Account (or attach a .storekit file in Xcode Scheme > Run > Options for local UI testing).',
+        'Verify that tapping purchase displays Apple\'s native double-click / Face ID payment sheet, and tapping "Restore Purchases" completes without error.'
       ],
       agentPrompt: `You are the autonomous iOS monetization engineer verifying our StoreKit 2 pipeline.
 
 TASK & OBJECTIVE:
-Inspect and verify StoreKit 2 product queries, transaction listeners, error handling, and restore purchases.
+Inspect and verify StoreKit 2 product queries, transaction listeners, presentation context, error handling, and restore purchases.
 
 EXECUTION PROTOCOL FOR THE AGENT:
-1. STOREKIT CAPABILITY: Verify 'com.apple.InAppPurchase' is enabled in Xcode target attributes.
-2. PRODUCT LOOKUP: Ensure StoreKit queries handle sandbox latency gracefully with automated retries.
-3. RESTORE FLOW: Verify distinct 'Restore Purchases' button initiates AppStore.sync() and unlocks entitlements.
+1. STOREKIT CAPABILITY: Verify 'com.apple.InAppPurchase' is enabled and builds use an Explicit App ID provisioning profile (Wildcard * profiles return 0 products from Sandbox).
+2. PRODUCT LOOKUP & IPAD CONTEXT: Ensure StoreKit queries handle sandbox latency gracefully with retries and pass an active viewController/UIWindowScene to 'product.purchase(confirmIn:)' on iOS 17+/iPadOS 26+.
+3. RESTORE FLOW: Verify distinct 'Restore Purchases' button checks 'Transaction.currentEntitlements' first, falls back to 'AppStore.sync()', and handles cancellation silently.
 4. ZERO REGRESSIONS: Ensure zero unhandled error alerts when running under Apple Review sandbox environments.`,
       commonRejectionTraps: [
-        'Missing Paid Apps Agreement in App Store Connect, causing products to fail to load during review.',
-        'Displaying an error alert or banner when the reviewer taps Unlock in the sandbox.',
-        'Omitting a distinct, visible "Restore Purchases" button on the paywall screen (Guideline 3.1.1).'
+        'Missing or inactive Paid Apps Agreement in App Store Connect > Business > Agreements, causing Product.products(for:) to return 0 products during review.',
+        'Signing a local device build with a Wildcard (*) provisioning profile instead of an Explicit App ID, which blocks StoreKit Sandbox product queries.',
+        'Omitting a distinct, visible "Restore Purchases" button or working Terms/Privacy links on the paywall screen (Guidelines 3.1.1 & 3.1.2).'
       ],
       verificationQuestions: [
-        'Is your Paid Apps Agreement active in App Store Connect?',
-        'Does your paywall have a prominent "Restore Purchases" button?'
+        'Is your Paid Apps Agreement Active in App Store Connect > Business > Agreements?',
+        'Do your Product IDs match App Store Connect exactly and does your paywall have a working "Restore Purchases" button?'
       ]
     },
     {
@@ -252,7 +252,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
         'Enroll in the Apple Developer Program ($99/year) at developer.apple.com. Individual accounts require government photo ID; Company accounts require a free D-U-N-S business number.',
         'Choose a store-safe App Name (max 30 characters). Avoid trademarked words (e.g. do NOT include "Apple", "iPhone", or "ChatGPT" in your title to prevent instant Guideline 5.2.5 rejections).',
         'Choose a permanent reverse-DNS Bundle Identifier (e.g. "com.yourname.appname" or "com.yourcompany.appname"). This ID is permanent and cannot be changed once published.',
-        'Sign all pending Paid Applications and Tax Agreements in App Store Connect (Agreements, Tax, and Banking).',
+        'Sign all pending Paid Apps and Tax Agreements in App Store Connect > Business > Agreements.',
         'Configure TestFlight external testing groups and internal testers for pre-release validation.'
       ],
       agentPrompt: `You are the autonomous mobile release engineer responsible for store registrations and identifier mapping.
@@ -385,8 +385,8 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://developer.apple.com/design/human-interface-guidelines/app-icons'
       },
       videoUrl: {
-        title: 'App Icon & Splash Screen Design Specs',
-        url: 'https://www.youtube.com/watch?v=MtCzNJ1EA4E'
+        title: 'App Icons in Xcode: Complete Guide',
+        url: 'https://www.youtube.com/watch?v=GZtmwzvEdc0'
       },
       implementationSteps: [
         'Create your master app icon at exactly 1024 x 1024 pixels in square format.',
@@ -451,7 +451,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
 1. COMPILE TS: Run 'npx tsc --noEmit' and resolve any remaining type errors.
 2. ASSET BUNDLE: Run 'npm run build' to generate the production web distribution in 'dist/'.
 3. SYNC NATIVE: Run 'npx cap sync ios' to copy web assets to native iOS bundles.
-4. VERIFY NATIVE PLUGINS: Ensure all Capacitor plugins (@capacitor/haptics, @capacitor/status-bar) are linked without missing pod warnings.`,
+4. VERIFY NATIVE PLUGINS: Ensure all Capacitor plugins (@capacitor/haptics, @capacitor/status-bar) are linked without missing Swift Package Manager or native plugin warnings.`,
       commonRejectionTraps: [
         'Forgetting to build and sync before opening Xcode, causing an older version of your app to run on the phone.',
         'Using desktop web browser features that do not exist on mobile phones without testing on hardware.',
@@ -477,7 +477,7 @@ EXECUTION PROTOCOL FOR THE AGENT:
         url: 'https://capacitorjs.com/docs/cli'
       },
       videoUrl: {
-        title: 'Automate Mobile Builds with AI',
+        title: 'Capacitor iOS Build & Release Guide',
         url: 'https://www.youtube.com/watch?v=SSv--IrWH3c'
       },
       implementationSteps: [

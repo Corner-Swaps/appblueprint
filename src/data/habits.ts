@@ -92,7 +92,7 @@ export const INITIAL_HABITS: HabitTask[] = [
     id: 'task-security-manifest',
     title: 'Data Security & Privacy Manifest',
     subtitle: 'PrivacyInfo.xcprivacy & AES-256',
-    badgeText: 'iOS 17+ Required',
+    badgeText: 'Mandatory',
     category: 'security',
     currentValue: 2,
     targetValue: 2,
@@ -250,7 +250,7 @@ export const INITIAL_HABITS: HabitTask[] = [
     isCompleted: true,
     phaseId: 'phase-9',
     priority: 'blocker',
-    whyItMatters: 'Accurate App Privacy Nutrition declarations, localized 6.7" screenshots, and demo reviewer credentials prevent Guideline 2.1 and 2.3 rejections.',
+    whyItMatters: 'Accurate App Privacy Nutrition declarations, 6.9" iPhone and 13" iPad screenshots, and demo reviewer credentials prevent Guideline 2.1 and 2.3 rejections.',
     implementationSteps: [
       'Provide dedicated reviewer test credentials with pre-populated demo data',
       'Include OTP / SMS 2FA bypass code in App Review Notes',
@@ -265,7 +265,7 @@ export const INITIAL_HABITS: HabitTask[] = [
   {
     id: 'task-post-launch',
     title: 'Post-Launch Operations & Ops',
-    subtitle: 'Crash Monitoring & SKStoreReview',
+    subtitle: 'Crash Monitoring & StoreKit Review',
     badgeText: 'Live Ops',
     category: 'launch',
     currentValue: 2,

@@ -60,7 +60,8 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "purchaseProduct", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "restorePurchases", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "getEntitlements", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getProducts", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "getProducts", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getBuildEnvironment", returnType: CAPPluginReturnPromise)
     ]
 
     private static let knownProductIds: Set<String> = [
@@ -80,17 +81,37 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
         updateListenerTask?.cancel()
     }
 
+    @objc public func getBuildEnvironment(_ call: CAPPluginCall) {
+        #if DEBUG
+        let isDebug = true
+        #else
+        let isDebug = false
+        #endif
+        Task {
+            let storefront = await Storefront.current
+            call.resolve([
+                "isDebug": isDebug,
+                "bundleId": Bundle.main.bundleIdentifier ?? "",
+                "storefront": storefront?.countryCode ?? "unknown"
+            ])
+        }
+    }
+
     private func warmupProducts() {
         Task {
             do {
+                let storefront = await Storefront.current
                 let products = try await Product.products(for: StoreKitPlugin.knownProductIds)
                 await MainActor.run {
                     for p in products {
                         StoreKitPlugin.cachedProducts[p.id] = p
                     }
                 }
+                let summary = products.map { "\($0.id)(\($0.displayPrice))" }.joined(separator: ", ")
+                print("[StoreKit] Warmup bundleId=\(Bundle.main.bundleIdentifier ?? "nil") storefront=\(storefront?.countryCode ?? "nil") fetched=\(products.count) [\(summary)]")
             } catch {
-                print("StoreKit warmup notice: \(error.localizedDescription)")
+                let nsErr = error as NSError
+                print("[StoreKit] Warmup notice domain=\(nsErr.domain) code=\(nsErr.code): \(error.localizedDescription)")
             }
         }
     }
@@ -139,6 +160,9 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
             do {
                 return try await product.purchase(confirmIn: vc)
             } catch let skError as StoreKitError {
+                if case .userCancelled = skError {
+                    throw skError
+                }
                 if #available(iOS 27.0, *), case .invalidPresentationContext = skError, let scene = context.scene {
                     return try await product.purchase(confirmIn: scene)
                 }
@@ -149,6 +173,23 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
         } else {
             return try await product.purchase()
         }
+    }
+
+    private func collectCurrentEntitlements() async -> [String] {
+        var activeEntitlements: [String] = []
+        for await result in Transaction.currentEntitlements {
+            switch result {
+            case .verified(let transaction):
+                if transaction.revocationDate == nil {
+                    activeEntitlements.append(transaction.productID)
+                }
+            case .unverified(let transaction, _):
+                if transaction.revocationDate == nil {
+                    activeEntitlements.append(transaction.productID)
+                }
+            }
+        }
+        return activeEntitlements
     }
 
     @objc public func purchaseProduct(_ call: CAPPluginCall) {
@@ -174,6 +215,7 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                     for attempt in 0..<4 {
                         do {
                             let fetched = try await Product.products(for: lookupIds)
+                            print("[StoreKit] purchaseProduct fetch attempt=\(attempt + 1) requested=\(lookupIds) fetched=\(fetched.map { $0.id })")
                             if !fetched.isEmpty {
                                 await MainActor.run {
                                     for p in fetched {
@@ -187,13 +229,17 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                             }
                         } catch {
                             lastFetchError = error
+                            let nsErr = error as NSError
+                            print("[StoreKit] purchaseProduct fetch error attempt=\(attempt + 1) domain=\(nsErr.domain) code=\(nsErr.code): \(error.localizedDescription)")
                         }
                         try? await Task.sleep(nanoseconds: UInt64(350_000_000 * (attempt + 1)))
                     }
                 }
 
                 guard let product = targetProduct else {
-                    let detail = lastFetchError?.localizedDescription ?? "Product temporarily unavailable from App Store sandbox. Please try again."
+                    let storefront = await Storefront.current
+                    let detail = lastFetchError?.localizedDescription ?? "App Store returned 0 products for \(productId) (storefront: \(storefront?.countryCode ?? "unknown"))."
+                    print("[StoreKit] purchaseProduct PRODUCT_NOT_AVAILABLE: \(detail)")
                     call.resolve([
                         "success": false,
                         "error": "PRODUCT_NOT_AVAILABLE",
@@ -202,6 +248,7 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                     return
                 }
 
+                print("[StoreKit] Calling executePurchase for \(product.id) (\(product.displayPrice))")
                 let result = try await executePurchase(for: product)
                 switch result {
                 case .success(let verification):
@@ -253,6 +300,7 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
                     return
                 }
                 let nsError = error as NSError
+                print("[StoreKit] purchaseProduct exception domain=\(nsError.domain) code=\(nsError.code): \(error.localizedDescription)")
                 let lowerDescription = error.localizedDescription.lowercased()
                 if nsError.domain == SKErrorDomain && nsError.code == SKError.Code.paymentCancelled.rawValue ||
                    lowerDescription.contains("cancel") ||
@@ -275,26 +323,47 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc public func restorePurchases(_ call: CAPPluginCall) {
         Task {
-            do {
-                try await AppStore.sync()
-                var activeEntitlements: [String] = []
-                for await result in Transaction.currentEntitlements {
-                    switch result {
-                    case .verified(let transaction):
-                        if transaction.revocationDate == nil {
-                            activeEntitlements.append(transaction.productID)
-                        }
-                    case .unverified(let transaction, _):
-                        if transaction.revocationDate == nil {
-                            activeEntitlements.append(transaction.productID)
-                        }
-                    }
-                }
+            // Check already-synced local entitlements first to avoid unnecessary Apple Account sign-in prompts
+            let localEntitlements = await collectCurrentEntitlements()
+            if !localEntitlements.isEmpty {
+                print("[StoreKit] restorePurchases resolved from local currentEntitlements: \(localEntitlements)")
                 call.resolve([
                     "success": true,
-                    "entitlements": activeEntitlements
+                    "entitlements": localEntitlements
+                ])
+                return
+            }
+
+            do {
+                try await AppStore.sync()
+                let syncedEntitlements = await collectCurrentEntitlements()
+                print("[StoreKit] restorePurchases synced entitlements: \(syncedEntitlements)")
+                call.resolve([
+                    "success": true,
+                    "entitlements": syncedEntitlements
                 ])
             } catch {
+                if let sk2Error = error as? StoreKitError, case .userCancelled = sk2Error {
+                    call.resolve([
+                        "success": false,
+                        "userCancelled": true,
+                        "entitlements": []
+                    ])
+                    return
+                }
+                let nsError = error as NSError
+                let lower = error.localizedDescription.lowercased()
+                if (nsError.domain == SKErrorDomain && nsError.code == SKError.Code.paymentCancelled.rawValue) ||
+                   lower.contains("cancel") ||
+                   lower.contains("abort") {
+                    call.resolve([
+                        "success": false,
+                        "userCancelled": true,
+                        "entitlements": []
+                    ])
+                    return
+                }
+                print("[StoreKit] restorePurchases error domain=\(nsError.domain) code=\(nsError.code): \(error.localizedDescription)")
                 call.resolve([
                     "success": false,
                     "entitlements": [],
@@ -306,19 +375,7 @@ public class StoreKitPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc public func getEntitlements(_ call: CAPPluginCall) {
         Task {
-            var activeEntitlements: [String] = []
-            for await result in Transaction.currentEntitlements {
-                switch result {
-                case .verified(let transaction):
-                    if transaction.revocationDate == nil {
-                        activeEntitlements.append(transaction.productID)
-                    }
-                case .unverified(let transaction, _):
-                    if transaction.revocationDate == nil {
-                        activeEntitlements.append(transaction.productID)
-                    }
-                }
-            }
+            let activeEntitlements = await collectCurrentEntitlements()
             call.resolve([
                 "success": true,
                 "entitlements": activeEntitlements

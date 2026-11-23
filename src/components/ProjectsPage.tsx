@@ -27,7 +27,7 @@ import {
   isProjectUnlocked,
   getPaidProjectIds
 } from '../utils/paywall';
-import { restoreWithStoreKit } from '../utils/nativeStoreKit';
+import { restoreWithStoreKit, getNativeBuildEnvironment } from '../utils/nativeStoreKit';
 import { triggerHaptic, ImpactStyle } from '../utils/haptics';
 
 interface ProjectsPageProps {
@@ -84,6 +84,13 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = React.memo(({
   const [paidProjectsKey, setPaidProjectsKey] = useState<string>(() => getPaidProjectIds().join(','));
   const [isRestoring, setIsRestoring] = useState(false);
   const [restoreNotice, setRestoreNotice] = useState<string | null>(null);
+  const [isDebugBuild, setIsDebugBuild] = useState(false);
+
+  useEffect(() => {
+    getNativeBuildEnvironment().then((env) => {
+      setIsDebugBuild(Boolean(env.isDebug));
+    });
+  }, []);
 
   const isUnlocked = isPro || unlimitedUnlocked || (trialActive && canCreateNewProject(projects.length));
   const isLocked = !isUnlocked;
@@ -94,6 +101,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = React.memo(({
     setRestoreNotice(null);
     const res = await restoreWithStoreKit();
     setIsRestoring(false);
+    if (res.userCancelled) {
+      return;
+    }
     if (res.isUnlimited || res.restoredCount > 0) {
       triggerHaptic(ImpactStyle.Heavy);
       setUnlimitedUnlocked(isUnlimitedUnlocked());
@@ -493,7 +503,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = React.memo(({
               if (editingProjectId) {
                 handleSaveRename(editingProjectId);
               }
-              if (isLocked) {
+              if (isLocked || isDebugBuild) {
                 triggerHaptic(ImpactStyle.Light);
                 onOpenPaywall?.();
                 return;
